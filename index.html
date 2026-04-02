@@ -1,198 +1,266 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Traductor Manga - Modo Pro</title>
-
-<style>
-/* --- TU ESTILO ORIGINAL (CON PEQUEÑAS MEJORAS) --- */
-body {
-  background: #0f0f0f;
-  color: #f0f0f0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 90vh;
-}
-
-h1 {
-  text-align: center;
-  color: #3b82f6;
-  margin-bottom: 30px;
-  letter-spacing: 1px;
-}
-
-.card {
-    background: #1a1a1a;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    border: 1px solid #333;
-}
-
-label {
-    font-size: 0.9em;
-    color: #888;
-    margin-bottom: 5px;
-    display: block;
-}
-
-textarea, select, button {
-  width: 100%;
-  margin-top: 5px;
-  margin-bottom: 20px;
-  padding: 15px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #333;
-  box-sizing: border-box; /* Importante para que no se salga del margen */
-  transition: all 0.3s ease;
-}
-
-textarea {
-  resize: vertical;
-  background: #252525;
-  color: #fff;
-  font-family: 'Consolas', monospace; /* Fuente tipo código para leer mejor */
-  min-height: 100px;
-}
-
-textarea:focus, select:focus {
-    outline: none;
-    border-color: #3b82f6;
-    background: #2a2a2a;
-}
-
-select {
-  background: #252525;
-  color: #fff;
-}
-
-button {
-  background: linear-gradient(90deg, #3b82f6, #2563eb);
-  color: white;
-  cursor: pointer;
-  font-weight: bold;
-  border: none;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-top: 10px;
-}
-
-button:hover {
-  background: linear-gradient(90deg, #2563eb, #1d4ed8);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-}
-
-.resultado {
-  background: #111;
-  margin-top: 20px;
-  padding: 15px;
-  border-radius: 8px;
-  border-left: 4px solid #3b82f6;
-  min-height: 60px;
-  color: #aaa;
-  font-size: 0.95em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.footer-note {
-    text-align: center;
-    font-size: 0.8em;
-    color: #555;
-    margin-top: 20px;
-}
-</style>
-</head>
-
-<body>
-
-<div class="card">
-    <h1>📖 Traductor Manga (Contexto + Alma)</h1>
-
-    <label for="idiomaSelect">Idioma del Panel:</label>
-    <select id="idiomaSelect">
-      <option value="Japonés">Japonés (Manga)</option>
-      <option value="Coreano">Coreano (Manhwa)</option>
-      <option value="Chino">Chino (Manhua)</option>
-      <option value="Inglés">Inglés</option>
-      <option value="Ruso">Ruso</option>
-    </select>
-
-    <label for="textoInput">Texto RAW:</label>
-    <textarea id="textoInput" rows="6" placeholder="Pega aquí el texto del panel..."></textarea>
-
-    <button onclick="generarPrompt()">✨ Copiar Fórmula Mágica</button>
-
-    <div id="resultadoBox" class="resultado">
-      El estado aparecerá aquí...
-    </div>
-</div>
-
-<div class="footer-note">
-    Este botón copia el PROMPT DE EXPERTO a tu portapapeles. <br>
-    Luego solo pégalo (Ctrl+V) en ChatGPT o Gemini.
-</div>
-
-<script>
-    // Aquí está la magia: El prompt que tu conseguiste
-    const promptBase = `
-Actúa como un traductor profesional especializado en manga/manhwa.
-Tu tarea es interpretar y adaptar el texto al español natural y LATINO, manteniendo emociones, subtexto y contexto.
-
-Reglas:
-1. Si suena robótico, cámbialo a natural.
-2. Adapta honoríficos solo si es vital.
-3. Mantén el tono (agresivo, sarcástico, tímido, etc.).
-4. Refleja silencios y pausas.
-5. NO CENSURES insultos si el contexto lo pide.
-6. Haz que el lector sienta lo que el personaje siente.
-
-Idioma original: [IDIOMA]
-Texto a traducir:
-"[TEXTO]"
-
-Dame solo la traducción final y una nota breve de contexto si es necesario.
-    `;
-
-    function generarPrompt() {
-        // 1. Capturamos lo que escribiste
-        const idioma = document.getElementById('idiomaSelect').value;
-        const texto = document.getElementById('textoInput').value;
-        const output = document.getElementById('resultadoBox');
-
-        // Validación simple
-        if (!texto.trim()) {
-            output.textContent = "⚠️ ¡Primero pega algún texto del manga!";
-            output.style.color = "#ff6b6b";
-            return;
-        }
-
-        // 2. Insertamos tus datos en la fórmula
-        let promptFinal = promptBase.replace('[IDIOMA]', idioma);
-        promptFinal = promptFinal.replace('[TEXTO]', texto);
-
-        // 3. Copiamos al portapapeles del PC
-        navigator.clipboard.writeText(promptFinal).then(() => {
-            // Éxito
-            output.innerHTML = "✅ <b>¡Fórmula Copiada!</b> <br>Ahora ve a tu IA y presiona Ctrl+V";
-            output.style.color = "#4ecdc4";
-        }).catch(err => {
-            // Error
-            output.textContent = "❌ Error al copiar. Intenta manual.";
-            console.error('Error:', err);
-        });
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>App INACAP - Hidráulica y Neumática (Cálculos)</title>
+  <style>
+    :root {
+      --bg: #f3f4f6; --surface: #ffffff; --text: #1f2937; --text-muted: #6b7280;
+      --primary: #dc2626; --border: #e5e7eb;
+      --success: #10b981; --success-bg: #d1fae5; --danger: #ef4444; --danger-bg: #fee2e2;
+      --warning: #f59e0b; --nav-bg: #ffffff; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --xp-color: #0ea5e9; /* Azul Hidráulico */
     }
-</script>
+    [data-theme="dark"] {
+      --bg: #0f172a; --surface: #1e293b; --text: #f8fafc; --text-muted: #94a3b8;
+      --primary: #ef4444; --border: #334155;
+      --nav-bg: #1e293b; --success: #34d399; --success-bg: rgba(16, 185, 129, 0.15);
+      --danger: #f87171; --danger-bg: rgba(239, 68, 68, 0.15); --warning: #fbbf24;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    }
+    * { box-sizing: border-box; transition: background-color 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 70px; overflow-x: hidden; }
+    .top-bar { background: var(--nav-bg); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
+    .xp-badge { background: var(--xp-color); color: white; padding: 4px 12px; border-radius: 999px; font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 5px; }
+    .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+    h1, h2, h3 { margin-top: 0; }
+    .sub { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; cursor: pointer; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; position: relative; }
+    .card:active { transform: scale(0.98); }
+    .badge { align-self: flex-start; font-size: 11px; padding: 4px 10px; border-radius: 999px; margin-bottom: 8px; font-weight: bold; background: var(--xp-color); color: white; }
+    .btn { width: 100%; border: none; border-radius: 12px; padding: 14px; cursor: pointer; font-weight: bold; font-size: 15px; margin-bottom: 10px; }
+    .btn-primary { background: var(--xp-color); color: white; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .question-box { background: var(--surface); padding: 20px; border-radius: 16px; margin-bottom: 15px; border: 1px solid var(--border); }
+    .explanation { background: var(--surface); border-left: 4px solid var(--xp-color); padding: 15px; border-radius: 0 12px 12px 0; font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
+    .progress-bar-container { width: 100%; height: 8px; background: var(--border); border-radius: 4px; margin-bottom: 15px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: var(--xp-color); width: 0%; transition: width 0.3s ease; }
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--nav-bg); display: flex; justify-content: space-around; align-items: center; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); border-top: 1px solid var(--border); z-index: 1000; }
+    .bottom-nav button { background: none; border: none; color: var(--text-muted); font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; width: 25%; }
+    .bottom-nav button.active-tab { color: var(--xp-color); font-weight: bold; }
+    .nav-icon { font-size: 20px; }
+    .section { display: none; animation: fadeIn 0.3s ease; }
+    .active { display: block; }
+    .hidden { display: none !important; }
+    textarea { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); min-height: 120px; font-family: monospace; font-size: 15px; resize: vertical; margin-bottom: 15px;}
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <strong style="font-size: 18px;">💧 App Hidráulica</strong>
+      <button onclick="toggleTheme()" style="background:none; border:none; font-size: 20px; cursor:pointer;">🌗</button>
+    </div>
+    <div class="xp-badge" id="xpDisplay">✨ Nivel 1</div>
+  </div>
 
+  <div class="container">
+    <section id="homeSection" class="section active">
+      <h2>Modo Cálculos y Fórmulas</h2>
+      <p class="sub">Aquí no hay alternativas. Saca cuaderno, calculadora y resuelve. El sistema te mostrará el paso a paso para que te autoevalúes.</p>
+
+      <div class="grid">
+        <div class="card" onclick="startQuiz('gases')"><div class="badge">Termodinámica</div><strong>Leyes de Gases (Boyle, Charles)</strong></div>
+        <div class="card" onclick="startQuiz('pascal')"><div class="badge">Fuerza y Presión</div><strong>Ley de Pascal y Cilindros</strong></div>
+        <div class="card" onclick="startQuiz('caudal')"><div class="badge">Fluidos</div><strong>Caudal y Ecuación de Continuidad</strong></div>
+      </div>
+      <div class="card" style="border-color: var(--xp-color); margin-bottom: 15px;" onclick="startQuiz('all')">
+        <div class="badge" style="background: var(--text);">Modo Dios 👑</div><strong>Simulacro General (Todas las fórmulas)</strong>
+      </div>
+      <div class="card" style="border-color: var(--warning);" onclick="startQuiz('mistakes')">
+        <div class="badge" style="background: var(--warning); color: black;">Repaso Inteligente 🧠</div><strong>Ejercicios en los que fallaste</strong>
+      </div>
+    </section>
+
+    <section id="quizSection" class="section">
+      <div class="progress-bar-container"><div class="progress-bar-fill" id="quizProgressBar"></div></div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; font-weight: bold;">
+        <span id="quizProgressText">1/10</span>
+        <span style="color: var(--success);">Aciertos: <span id="scoreText">0</span></span>
+      </div>
+
+      <div class="question-box">
+        <h3 id="questionText" style="margin: 0; line-height: 1.4;"></h3>
+      </div>
+
+      <div id="calcArea">
+        <textarea id="calcInput" placeholder="Anota aquí tu resultado final (Ej: F = 250 N, o P2 = 3 bar). O úsalo como borrador..."></textarea>
+        <button class="btn btn-primary" id="btnShowDev" onclick="revealDevelopment()">Ver Desarrollo Paso a Paso</button>
+        
+        <div id="evalArea" class="hidden">
+          <div class="explanation">
+            <strong style="color: var(--success); font-size: 16px;">✓ Desarrollo Correcto:</strong><br><br>
+            <span id="modelDevelopment"></span>
+          </div>
+          <p style="text-align: center; margin-top: 20px; font-weight: bold; font-size: 16px;">Sé honesto con la rúbrica, ¿Llegaste al resultado correcto con el procedimiento adecuado?</p>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn" style="background: var(--danger); color: white;" onclick="gradeCalc(false)">Fallé ❌</button>
+            <button class="btn" style="background: var(--success); color: white;" onclick="gradeCalc(true)">Acerté ✅</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary hidden" id="btnNext" onclick="nextQuestion()" style="margin-top: 15px;">Siguiente Ejercicio →</button>
+    </section>
+
+    <section id="resultsSection" class="section text-center">
+      <div class="card" style="text-align: center; padding: 40px 20px;">
+        <div id="resEmoji" style="font-size: 60px; margin-bottom: 10px;">🏆</div>
+        <h1 id="resScore" style="font-size: 48px; color: var(--xp-color); margin: 0;">100%</h1>
+        <p class="sub" id="resMsg" style="font-size: 16px; margin-top: 5px;">¡Excelente!</p>
+        <button class="btn btn-primary" style="margin-top: 20px;" onclick="switchTab('homeSection')">Terminar y volver</button>
+      </div>
+    </section>
+  </div>
+
+  <nav class="bottom-nav" id="bottomNav">
+    <button onclick="switchTab('homeSection')" id="tab-homeSection" class="active-tab"><span class="nav-icon">📝</span><span>Test</span></button>
+  </nav>
+
+  <script>
+    // ==========================================
+    // BASE DE DATOS DE EJERCICIOS CON DESARROLLO EXPLICADO
+    // ==========================================
+    const db = {
+      gases: [
+        { 
+          question: "[LEY DE BOYLE] Un acumulador neumático tiene un volumen de 50 Litros y el manómetro indica una presión de 4 bar. Se asume presión atmosférica de 1 bar. Si se comprime el aire a temperatura constante hasta que ocupe 25 Litros, ¿cuál será la presión absoluta final y la presión manométrica final?",
+          development: "PASO 1: Identificar datos y convertir a Presión Absoluta.\n• V1 = 50 L\n• P1(man) = 4 bar -> P1(abs) = 4 + 1 = 5 bar\n• V2 = 25 L\n• P2(abs) = ?\n\nPASO 2: Aplicar Ley de Boyle (Temperatura Constante).\n• P1 * V1 = P2 * V2\n• 5 bar * 50 L = P2 * 25 L\n• 250 = P2 * 25\n• P2(abs) = 250 / 25 = 10 bar absolutos.\n\nPASO 3: Convertir a Presión Manométrica.\n• P2(man) = P2(abs) - Patm\n• P2(man) = 10 - 1 = 9 bar.\n\nRESULTADO: Presión Absoluta = 10 bar. Presión Manométrica = 9 bar."
+        },
+        { 
+          question: "[LEY DE CHARLES] En un cilindro a presión constante, tenemos 10 Litros de gas a una temperatura de 27 °C. Si calentamos el cilindro hasta los 127 °C, ¿Cuál será el volumen final del gas en Litros?",
+          development: "TRAMPA DE RÚBRICA: Nunca operar con °C.\n\nPASO 1: Convertir Temperaturas a Kelvin.\n• T1 = 27 °C + 273 = 300 K\n• T2 = 127 °C + 273 = 400 K\n• V1 = 10 L\n• V2 = ?\n\nPASO 2: Aplicar Ley de Charles (Presión Constante).\n• V1 / T1 = V2 / T2\n• 10 / 300 = V2 / 400\n• Despejando V2:\n• V2 = (10 * 400) / 300\n• V2 = 4000 / 300 = 13.33 Litros.\n\nRESULTADO FINAL: El volumen se expande a 13.33 Litros."
+        },
+        { 
+          question: "[GAY-LUSSAC] Un neumático de maquinaria tiene un volumen constante. En la mañana, a 17 °C, su presión absoluta es de 3 bar. Después de trabajar toda la tarde, la fricción eleva la temperatura interior a 75 °C. Calcula la nueva presión absoluta dentro del neumático.",
+          development: "PASO 1: Convertir Temperaturas a Kelvin obligatoriamente.\n• T1 = 17 °C + 273 = 290 K\n• T2 = 75 °C + 273 = 348 K\n• P1(abs) = 3 bar\n• P2(abs) = ?\n\nPASO 2: Aplicar Ley de Gay-Lussac (Volumen Constante).\n• P1 / T1 = P2 / T2\n• 3 / 290 = P2 / 348\n• Despejando P2:\n• P2 = (3 * 348) / 290\n• P2 = 1044 / 290 = 3.6 bar absolutos.\n\nRESULTADO FINAL: La presión sube a 3.6 bar absolutos debido al calor."
+        }
+      ],
+      pascal: [
+        { 
+          question: "[FUERZA Y PRESIÓN] Un cilindro hidráulico de simple efecto tiene un émbolo con un diámetro de 10 cm. El sistema suministra una presión de 50 bar. Calcula la fuerza de empuje (avance) del cilindro en Newtons (N). (Dato: 1 bar = 100,000 Pascales N/m²).",
+          development: "PASO 1: Estandarizar unidades a metros y Pascales.\n• Diámetro = 10 cm = 0.1 metros.\n• Radio (r) = D/2 = 0.05 metros.\n• Presión (P) = 50 bar = 5,000,000 N/m².\n\nPASO 2: Calcular el Área del émbolo.\n• A = π * r²\n• A = 3.1416 * (0.05 m)²\n• A = 3.1416 * 0.0025 = 0.007854 m².\n\nPASO 3: Calcular la Fuerza (Ley de Pascal).\n• P = F / A  =>  F = P * A\n• F = 5,000,000 N/m² * 0.007854 m²\n• F = 39,270 Newtons.\n\nRESULTADO FINAL: La fuerza de avance es de 39,270 N (Aprox. 4 Toneladas fuerza)."
+        },
+        {
+          question: "[CILINDRO DOBLE EFECTO - RETROCESO] Un cilindro de doble efecto tiene un diámetro de émbolo de 8 cm y un diámetro de vástago de 3 cm. El sistema trabaja a 100 bar. Calcula el Área útil de retroceso (área anular) en cm² y la Fuerza de retroceso en Newtons (N). (Asume 1 bar = 10 N/cm²).",
+          development: "PASO 1: Calcular Área del Émbolo (A_e) y Área del Vástago (A_v).\n• A_e = π * (8/2)² = 3.1416 * 16 = 50.26 cm².\n• A_v = π * (3/2)² = 3.1416 * 2.25 = 7.07 cm².\n\nPASO 2: Calcular Área Anular de Retroceso (A_r).\n• A_r = A_e - A_v\n• A_r = 50.26 - 7.07 = 43.19 cm².\n\nPASO 3: Calcular Fuerza de Retroceso (F = P * A).\n• Presión = 100 bar = 1000 N/cm² (Factor 1 bar = 10 N/cm²).\n• F_ret = 1000 N/cm² * 43.19 cm² = 43,190 N.\n\nRESULTADO FINAL: Área útil = 43.19 cm². Fuerza de retroceso = 43,190 N."
+        }
+      ],
+      caudal: [
+        {
+          question: "[CAUDAL BÁSICO] Una bomba hidráulica llena un tanque de 120 litros en exactamente 2 minutos. ¿Cuál es el caudal (Q) del sistema expresado en Litros por Minuto (L/min) y en Litros por Segundo (L/s)?",
+          development: "PASO 1: Fórmula base de Caudal (Volumen / Tiempo).\n• Q = V / t\n\nPASO 2: Calcular en L/min.\n• V = 120 L, t = 2 min.\n• Q = 120 / 2 = 60 L/min.\n\nPASO 3: Calcular en L/s.\n• Convertir tiempo: 2 min = 120 segundos.\n• Q = 120 L / 120 s = 1 L/s.\n\nRESULTADO FINAL: El caudal es de 60 L/min o 1 L/s."
+        },
+        {
+          question: "[ECUACIÓN DE CONTINUIDAD] Por una tubería de sección A1 = 20 cm² fluye aceite a una velocidad (v1) de 5 m/s. La tubería sufre un estrechamiento a una sección A2 = 5 cm². ¿Cuál será la velocidad del fluido (v2) en la sección estrecha en m/s?",
+          development: "PASO 1: Aplicar el principio de Continuidad.\n• El caudal que entra es igual al que sale (Q1 = Q2).\n• Fórmula: A1 * v1 = A2 * v2\n\nPASO 2: Reemplazar datos.\n• 20 cm² * 5 m/s = 5 cm² * v2\n• (Nota: Como ambas áreas están en cm², no es obligatorio convertir a m² porque se anulan en la división).\n\nPASO 3: Despejar v2.\n• 100 = 5 * v2\n• v2 = 100 / 5\n• v2 = 20 m/s.\n\nRESULTADO FINAL: En el estrechamiento, la velocidad aumenta a 20 m/s."
+        }
+      ]
+    };
+
+    // ==========================================
+    // SISTEMA DEL QUIZ
+    // ==========================================
+    let mistakes = JSON.parse(localStorage.getItem('neumatica_calc_mistakes')) || [];
+    let userXP = parseInt(localStorage.getItem('neumatica_calc_xp')) || 0;
+    let currentBank = [], currIdx = 0, score = 0, earnedSessionXP = 0;
+
+    function renderXP() {
+      let lvl = Math.floor(userXP / 100) + 1;
+      document.getElementById('xpDisplay').innerHTML = `⚙️ Nivel ${lvl} | ${userXP} XP`;
+    }
+    renderXP();
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    function toggleTheme() {
+      let current = document.documentElement.getAttribute('data-theme');
+      let target = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', target);
+    }
+
+    function startQuiz(topic) {
+      currentBank = [];
+      if (topic === 'all') {
+        ['gases', 'pascal', 'caudal'].forEach(t => currentBank = currentBank.concat(db[t]));
+      } else if (topic === 'mistakes') {
+        if(mistakes.length === 0) return alert("¡Sin errores registrados! 🏆");
+        currentBank = [...mistakes];
+      } else {
+        currentBank = [...db[topic]];
+      }
+
+      if(currentBank.length === 0) return;
+      currentBank.sort(() => Math.random() - 0.5); // Siempre aleatorio
+      
+      currIdx = 0; score = 0; earnedSessionXP = 0;
+      switchTab('quizSection');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      let q = currentBank[currIdx];
+      document.getElementById('quizProgressText').innerText = `Ejercicio ${currIdx + 1} de ${currentBank.length}`;
+      document.getElementById('quizProgressBar').style.width = `${((currIdx) / currentBank.length) * 100}%`;
+      document.getElementById('scoreText').innerText = score;
+      
+      document.getElementById('questionText').innerText = q.question;
+      document.getElementById('openInput').value = "";
+      
+      document.getElementById('btnShowDev').classList.remove('hidden');
+      document.getElementById('evalArea').classList.add('hidden');
+      document.getElementById('btnNext').classList.add('hidden');
+    }
+
+    function revealDevelopment() {
+      if(document.getElementById('openInput').value.trim() === "") {
+        if(!confirm("Aún no has anotado nada. ¿Estás seguro de que quieres ver el resultado y rendirte en este cálculo?")) return;
+      }
+      
+      let q = currentBank[currIdx];
+      document.getElementById('btnShowDev').classList.add('hidden');
+      document.getElementById('modelDevelopment').innerText = q.development;
+      document.getElementById('evalArea').classList.remove('hidden');
+    }
+
+    function gradeCalc(isCorrect) {
+      let qObj = currentBank[currIdx];
+      if(isCorrect) {
+        score++;
+        userXP += 20; // 20 XP por cálculo (vale más)
+        earnedSessionXP += 20;
+        mistakes = mistakes.filter(m => m.question !== qObj.question);
+      } else {
+        if(!mistakes.find(m => m.question === qObj.question)) mistakes.push(qObj);
+      }
+      
+      localStorage.setItem('neumatica_calc_mistakes', JSON.stringify(mistakes));
+      localStorage.setItem('neumatica_calc_xp', userXP);
+      renderXP();
+      
+      document.getElementById('evalArea').classList.add('hidden');
+      document.getElementById('quizProgressBar').style.width = `${((currIdx + 1) / currentBank.length) * 100}%`;
+      document.getElementById('btnNext').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+      currIdx++;
+      if(currIdx < currentBank.length) loadQuestion();
+      else showResults();
+    }
+
+    function showResults() {
+      switchTab('resultsSection');
+      let pct = Math.round((score / currentBank.length) * 100);
+      document.getElementById('resScore').innerText = pct + "%";
+      document.getElementById('resEmoji').innerText = pct >= 80 ? "🔥" : pct >= 50 ? "👍" : "💀";
+      document.getElementById('resMsg').innerText = `Resolviste correctamente ${score} de ${currentBank.length} ejercicios.\nGanaste +${earnedSessionXP} XP.`;
+    }
+  </script>
 </body>
 </html>
