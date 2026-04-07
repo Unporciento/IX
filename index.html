@@ -10,7 +10,7 @@
       --primary: #dc2626; --border: #e5e7eb;
       --success: #10b981; --success-bg: #d1fae5; --danger: #ef4444; --danger-bg: #fee2e2;
       --warning: #f59e0b; --nav-bg: #ffffff; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      --xp-color: #0ea5e9; /* Azul Hidráulico */
+      --xp-color: #0ea5e9;
     }
     [data-theme="dark"] {
       --bg: #0f172a; --surface: #1e293b; --text: #f8fafc; --text-muted: #94a3b8;
@@ -52,7 +52,7 @@
   <div class="top-bar">
     <div style="display: flex; align-items: center; gap: 10px;">
       <strong style="font-size: 18px;">💧 App Hidráulica</strong>
-      <button onclick="toggleTheme()" style="background:none; border:none; font-size: 20px; cursor:pointer;">🌗</button>
+      <button type="button" onclick="toggleTheme()" style="background:none; border:none; font-size: 20px; cursor:pointer;">🌗</button>
     </div>
     <div class="xp-badge" id="xpDisplay">✨ Nivel 1</div>
   </div>
@@ -88,7 +88,7 @@
 
       <div id="calcArea">
         <textarea id="calcInput" placeholder="Anota aquí tu resultado final (Ej: F = 250 N, o P2 = 3 bar). O úsalo como borrador..."></textarea>
-        <button class="btn btn-primary" id="btnShowDev" onclick="revealDevelopment()">Ver Desarrollo Paso a Paso</button>
+        <button type="button" class="btn btn-primary" id="btnShowDev" onclick="revealDevelopment()">Ver Desarrollo Paso a Paso</button>
         
         <div id="evalArea" class="hidden">
           <div class="explanation">
@@ -97,12 +97,12 @@
           </div>
           <p style="text-align: center; margin-top: 20px; font-weight: bold; font-size: 16px;">Sé honesto con la rúbrica, ¿Llegaste al resultado correcto con el procedimiento adecuado?</p>
           <div style="display: flex; gap: 10px;">
-            <button class="btn" style="background: var(--danger); color: white;" onclick="gradeCalc(false)">Fallé ❌</button>
-            <button class="btn" style="background: var(--success); color: white;" onclick="gradeCalc(true)">Acerté ✅</button>
+            <button type="button" class="btn" style="background: var(--danger); color: white;" onclick="gradeCalc(false)">Fallé ❌</button>
+            <button type="button" class="btn" style="background: var(--success); color: white;" onclick="gradeCalc(true)">Acerté ✅</button>
           </div>
         </div>
       </div>
-      <button class="btn btn-primary hidden" id="btnNext" onclick="nextQuestion()" style="margin-top: 15px;">Siguiente Ejercicio →</button>
+      <button type="button" class="btn btn-primary hidden" id="btnNext" onclick="nextQuestion()" style="margin-top: 15px;">Siguiente Ejercicio →</button>
     </section>
 
     <section id="resultsSection" class="section text-center">
@@ -110,19 +110,16 @@
         <div id="resEmoji" style="font-size: 60px; margin-bottom: 10px;">🏆</div>
         <h1 id="resScore" style="font-size: 48px; color: var(--xp-color); margin: 0;">100%</h1>
         <p class="sub" id="resMsg" style="font-size: 16px; margin-top: 5px;">¡Excelente!</p>
-        <button class="btn btn-primary" style="margin-top: 20px;" onclick="switchTab('homeSection')">Terminar y volver</button>
+        <button type="button" class="btn btn-primary" style="margin-top: 20px;" onclick="switchTab('homeSection')">Terminar y volver</button>
       </div>
     </section>
   </div>
 
   <nav class="bottom-nav" id="bottomNav">
-    <button onclick="switchTab('homeSection')" id="tab-homeSection" class="active-tab"><span class="nav-icon">📝</span><span>Test</span></button>
+    <button type="button" onclick="switchTab('homeSection')" id="tab-homeSection" class="active-tab"><span class="nav-icon">📝</span><span>Test</span></button>
   </nav>
 
   <script>
-    // ==========================================
-    // BASE DE DATOS DE EJERCICIOS CON DESARROLLO EXPLICADO
-    // ==========================================
     const db = {
       gases: [
         { 
@@ -160,9 +157,6 @@
       ]
     };
 
-    // ==========================================
-    // SISTEMA DEL QUIZ
-    // ==========================================
     let mistakes = JSON.parse(localStorage.getItem('neumatica_calc_mistakes')) || [];
     let userXP = parseInt(localStorage.getItem('neumatica_calc_xp')) || 0;
     let currentBank = [], currIdx = 0, score = 0, earnedSessionXP = 0;
@@ -176,6 +170,11 @@
     function switchTab(tabId) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
+      let tabBtn = document.getElementById('tab-' + tabId);
+      if (tabBtn) {
+        document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active-tab'));
+        tabBtn.classList.add('active-tab');
+      }
     }
 
     function toggleTheme() {
@@ -196,7 +195,7 @@
       }
 
       if(currentBank.length === 0) return;
-      currentBank.sort(() => Math.random() - 0.5); // Siempre aleatorio
+      currentBank.sort(() => Math.random() - 0.5);
       
       currIdx = 0; score = 0; earnedSessionXP = 0;
       switchTab('quizSection');
@@ -210,7 +209,8 @@
       document.getElementById('scoreText').innerText = score;
       
       document.getElementById('questionText').innerText = q.question;
-      document.getElementById('openInput').value = "";
+      let calcInput = document.getElementById('calcInput');
+      if(calcInput) calcInput.value = "";
       
       document.getElementById('btnShowDev').classList.remove('hidden');
       document.getElementById('evalArea').classList.add('hidden');
@@ -218,7 +218,8 @@
     }
 
     function revealDevelopment() {
-      if(document.getElementById('openInput').value.trim() === "") {
+      let calcInput = document.getElementById('calcInput');
+      if(calcInput && calcInput.value.trim() === "") {
         if(!confirm("Aún no has anotado nada. ¿Estás seguro de que quieres ver el resultado y rendirte en este cálculo?")) return;
       }
       
@@ -232,7 +233,7 @@
       let qObj = currentBank[currIdx];
       if(isCorrect) {
         score++;
-        userXP += 20; // 20 XP por cálculo (vale más)
+        userXP += 20;
         earnedSessionXP += 20;
         mistakes = mistakes.filter(m => m.question !== qObj.question);
       } else {
