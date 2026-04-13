@@ -1,267 +1,273 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>App INACAP - Hidráulica y Neumática (Cálculos)</title>
-  <style>
-    :root {
-      --bg: #f3f4f6; --surface: #ffffff; --text: #1f2937; --text-muted: #6b7280;
-      --primary: #dc2626; --border: #e5e7eb;
-      --success: #10b981; --success-bg: #d1fae5; --danger: #ef4444; --danger-bg: #fee2e2;
-      --warning: #f59e0b; --nav-bg: #ffffff; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      --xp-color: #0ea5e9;
-    }
-    [data-theme="dark"] {
-      --bg: #0f172a; --surface: #1e293b; --text: #f8fafc; --text-muted: #94a3b8;
-      --primary: #ef4444; --border: #334155;
-      --nav-bg: #1e293b; --success: #34d399; --success-bg: rgba(16, 185, 129, 0.15);
-      --danger: #f87171; --danger-bg: rgba(239, 68, 68, 0.15); --warning: #fbbf24;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-    }
-    * { box-sizing: border-box; transition: background-color 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 70px; overflow-x: hidden; }
-    .top-bar { background: var(--nav-bg); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
-    .xp-badge { background: var(--xp-color); color: white; padding: 4px 12px; border-radius: 999px; font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 5px; }
-    .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
-    h1, h2, h3 { margin-top: 0; }
-    .sub { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; cursor: pointer; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; position: relative; }
-    .card:active { transform: scale(0.98); }
-    .badge { align-self: flex-start; font-size: 11px; padding: 4px 10px; border-radius: 999px; margin-bottom: 8px; font-weight: bold; background: var(--xp-color); color: white; }
-    .btn { width: 100%; border: none; border-radius: 12px; padding: 14px; cursor: pointer; font-weight: bold; font-size: 15px; margin-bottom: 10px; }
-    .btn-primary { background: var(--xp-color); color: white; }
-    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    .question-box { background: var(--surface); padding: 20px; border-radius: 16px; margin-bottom: 15px; border: 1px solid var(--border); }
-    .explanation { background: var(--surface); border-left: 4px solid var(--xp-color); padding: 15px; border-radius: 0 12px 12px 0; font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
-    .progress-bar-container { width: 100%; height: 8px; background: var(--border); border-radius: 4px; margin-bottom: 15px; overflow: hidden; }
-    .progress-bar-fill { height: 100%; background: var(--xp-color); width: 0%; transition: width 0.3s ease; }
-    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--nav-bg); display: flex; justify-content: space-around; align-items: center; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); border-top: 1px solid var(--border); z-index: 1000; }
-    .bottom-nav button { background: none; border: none; color: var(--text-muted); font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; width: 25%; }
-    .bottom-nav button.active-tab { color: var(--xp-color); font-weight: bold; }
-    .nav-icon { font-size: 20px; }
-    .section { display: none; animation: fadeIn 0.3s ease; }
-    .active { display: block; }
-    .hidden { display: none !important; }
-    textarea { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); min-height: 120px; font-family: monospace; font-size: 15px; resize: vertical; margin-bottom: 15px;}
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Física Mecánica - DCL y Cálculos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #b30000; /* Rojo oscuro institucional */
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .canvas-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            background-color: #fdfdfd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .diagram-box {
+            text-align: center;
+        }
+        .math-block {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-left: 4px solid #b30000;
+            margin: 15px 0;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+        }
+        .question {
+            font-weight: bold;
+            margin-top: 20px;
+            color: #222;
+        }
+        .answer {
+            margin-bottom: 15px;
+            padding-left: 15px;
+        }
+        .legend {
+            font-size: 0.9em;
+            margin-top: 5px;
+            text-align: left;
+            display: inline-block;
+        }
+        .legend span { font-weight: bold; }
+    </style>
 </head>
 <body>
-  <div class="top-bar">
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <strong style="font-size: 18px;">💧 App Hidráulica</strong>
-      <button type="button" onclick="toggleTheme()" style="background:none; border:none; font-size: 20px; cursor:pointer;">🌗</button>
-    </div>
-    <div class="xp-badge" id="xpDisplay">✨ Nivel 1</div>
-  </div>
 
-  <div class="container">
-    <section id="homeSection" class="section active">
-      <h2>Modo Cálculos y Fórmulas</h2>
-      <p class="sub">Aquí no hay alternativas. Saca cuaderno, calculadora y resuelve. El sistema te mostrará el paso a paso para que te autoevalúes.</p>
+<div class="container">
+    <h1>Desarrollo Evaluación Sumativa 1 - Física Mecánica</h1>
+    <p><strong>Parámetros utilizados:</strong> Fuerza Aplicada = 650 N | Masa = 50 kg | Gravedad = 9.8 m/s<sup>2</sup></p>
 
-      <div class="grid">
-        <div class="card" onclick="startQuiz('gases')"><div class="badge">Termodinámica</div><strong>Leyes de Gases (Boyle, Charles)</strong></div>
-        <div class="card" onclick="startQuiz('pascal')"><div class="badge">Fuerza y Presión</div><strong>Ley de Pascal y Cilindros</strong></div>
-        <div class="card" onclick="startQuiz('caudal')"><div class="badge">Fluidos</div><strong>Caudal y Ecuación de Continuidad</strong></div>
-      </div>
-      <div class="card" style="border-color: var(--xp-color); margin-bottom: 15px;" onclick="startQuiz('all')">
-        <div class="badge" style="background: var(--text);">Modo Dios 👑</div><strong>Simulacro General (Todas las fórmulas)</strong>
-      </div>
-      <div class="card" style="border-color: var(--warning);" onclick="startQuiz('mistakes')">
-        <div class="badge" style="background: var(--warning); color: black;">Repaso Inteligente 🧠</div><strong>Ejercicios en los que fallaste</strong>
-      </div>
-    </section>
-
-    <section id="quizSection" class="section">
-      <div class="progress-bar-container"><div class="progress-bar-fill" id="quizProgressBar"></div></div>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; font-weight: bold;">
-        <span id="quizProgressText">1/10</span>
-        <span style="color: var(--success);">Aciertos: <span id="scoreText">0</span></span>
-      </div>
-
-      <div class="question-box">
-        <h3 id="questionText" style="margin: 0; line-height: 1.4;"></h3>
-      </div>
-
-      <div id="calcArea">
-        <textarea id="calcInput" placeholder="Anota aquí tu resultado final (Ej: F = 250 N, o P2 = 3 bar). O úsalo como borrador..."></textarea>
-        <button type="button" class="btn btn-primary" id="btnShowDev" onclick="revealDevelopment()">Ver Desarrollo Paso a Paso</button>
-        
-        <div id="evalArea" class="hidden">
-          <div class="explanation">
-            <strong style="color: var(--success); font-size: 16px;">✓ Desarrollo Correcto:</strong><br><br>
-            <span id="modelDevelopment"></span>
-          </div>
-          <p style="text-align: center; margin-top: 20px; font-weight: bold; font-size: 16px;">Sé honesto con la rúbrica, ¿Llegaste al resultado correcto con el procedimiento adecuado?</p>
-          <div style="display: flex; gap: 10px;">
-            <button type="button" class="btn" style="background: var(--danger); color: white;" onclick="gradeCalc(false)">Fallé ❌</button>
-            <button type="button" class="btn" style="background: var(--success); color: white;" onclick="gradeCalc(true)">Acerté ✅</button>
-          </div>
+    <h2>Actividad 2: Diagramas de Cuerpo Libre (DCL)</h2>
+    
+    <div class="canvas-container">
+        <div class="diagram-box">
+            <h3>A. Tramo Horizontal</h3>
+            <canvas id="canvasHorizontal" width="400" height="350"></canvas>
+            <div class="legend">
+                <span style="color: blue;">&rarr; Azul:</span> Fuerza Aplicada (F_ap)<br>
+                <span style="color: red;">&rarr; Rojo:</span> Fricción (f_k)<br>
+                <span style="color: green;">&rarr; Verde:</span> Normal (N)<br>
+                <span style="color: purple;">&rarr; Morado:</span> Peso (P)
+            </div>
         </div>
-      </div>
-      <button type="button" class="btn btn-primary hidden" id="btnNext" onclick="nextQuestion()" style="margin-top: 15px;">Siguiente Ejercicio →</button>
-    </section>
+        <div class="diagram-box">
+            <h3>B. Tramo Inclinado (10&deg;)</h3>
+            <canvas id="canvasInclinado" width="400" height="350"></canvas>
+            <div class="legend">
+                <span style="color: blue;">&rarr; Azul:</span> Fuerza Aplicada (F_ap)<br>
+                <span style="color: red;">&rarr; Rojo:</span> Fricción (f_k)<br>
+                <span style="color: green;">&rarr; Verde:</span> Normal (N)<br>
+                <span style="color: purple;">&rarr; Morado:</span> Peso (P) y componentes (Px, Py)
+            </div>
+        </div>
+    </div>
 
-    <section id="resultsSection" class="section text-center">
-      <div class="card" style="text-align: center; padding: 40px 20px;">
-        <div id="resEmoji" style="font-size: 60px; margin-bottom: 10px;">🏆</div>
-        <h1 id="resScore" style="font-size: 48px; color: var(--xp-color); margin: 0;">100%</h1>
-        <p class="sub" id="resMsg" style="font-size: 16px; margin-top: 5px;">¡Excelente!</p>
-        <button type="button" class="btn btn-primary" style="margin-top: 20px;" onclick="switchTab('homeSection')">Terminar y volver</button>
-      </div>
-    </section>
-  </div>
+    <h2>Actividad 2: Cálculos Teóricos</h2>
+    
+    <h3>a) Para el Tramo Horizontal:</h3>
+    <p><strong>Fuerza de roce y capacidad de traslación:</strong></p>
+    <div class="math-block">
+        Normal (N) = m &middot; g = 50 kg &middot; 9.8 m/s&sup2; = 490 N<br>
+        Fricción estática máxima (f_s) = &mu;_s &middot; N = 0.5 &middot; 490 = 245 N<br>
+        Fricción cinética (f_k) = &mu;_k &middot; N = 0.3 &middot; 490 = 147 N
+    </div>
+    <p>Sí, es capaz de trasladarse porque la Fuerza Aplicada (650 N) supera ampliamente la fricción estática máxima (245 N) necesaria para romper el reposo.</p>
+    
+    <p><strong>Cálculo de la aceleración:</strong></p>
+    <div class="math-block">
+        &Sigma;F = m &middot; a<br>
+        F_ap - f_k = m &middot; a<br>
+        650 - 147 = 50 &middot; a<br>
+        503 = 50 &middot; a  &rarr;  a = 10.06 m/s&sup2;
+    </div>
 
-  <nav class="bottom-nav" id="bottomNav">
-    <button type="button" onclick="switchTab('homeSection')" id="tab-homeSection" class="active-tab"><span class="nav-icon">📝</span><span>Test</span></button>
-  </nav>
+    <h3>b) Para el Tramo Inclinado:</h3>
+    <p><strong>Descomposición del peso y Normal:</strong></p>
+    <div class="math-block">
+        P = 490 N<br>
+        P_x (paralelo) = P &middot; sin(10&deg;) = 490 &middot; 0.1736 = 85.09 N<br>
+        P_y (perpendicular) = P &middot; cos(10&deg;) = 490 &middot; 0.9848 = 482.56 N<br>
+        Normal (N) = P_y = 482.56 N
+    </div>
+    
+    <p><strong>Fuerza de roce dinámica y Fuerza neta:</strong></p>
+    <div class="math-block">
+        Fricción cinética (f_k) = &mu;_k &middot; N = 0.2 &middot; 482.56 = 96.51 N<br>
+        <br>
+        Fuerza Neta = F_ap - f_k - P_x<br>
+        Fuerza Neta = 650 - 96.51 - 85.09 = 468.40 N
+    </div>
+    <p><em>Nota: La aceleración en este tramo sería a = 468.40 / 50 = 9.37 m/s&sup2;</em></p>
 
-  <script>
-    const db = {
-      gases: [
-        { 
-          question: "[LEY DE BOYLE] Un acumulador neumático tiene un volumen de 50 Litros y el manómetro indica una presión de 4 bar. Se asume presión atmosférica de 1 bar. Si se comprime el aire a temperatura constante hasta que ocupe 25 Litros, ¿cuál será la presión absoluta final y la presión manométrica final?",
-          development: "PASO 1: Identificar datos y convertir a Presión Absoluta.\n• V1 = 50 L\n• P1(man) = 4 bar -> P1(abs) = 4 + 1 = 5 bar\n• V2 = 25 L\n• P2(abs) = ?\n\nPASO 2: Aplicar Ley de Boyle (Temperatura Constante).\n• P1 * V1 = P2 * V2\n• 5 bar * 50 L = P2 * 25 L\n• 250 = P2 * 25\n• P2(abs) = 250 / 25 = 10 bar absolutos.\n\nPASO 3: Convertir a Presión Manométrica.\n• P2(man) = P2(abs) - Patm\n• P2(man) = 10 - 1 = 9 bar.\n\nRESULTADO: Presión Absoluta = 10 bar. Presión Manométrica = 9 bar."
-        },
-        { 
-          question: "[LEY DE CHARLES] En un cilindro a presión constante, tenemos 10 Litros de gas a una temperatura de 27 °C. Si calentamos el cilindro hasta los 127 °C, ¿Cuál será el volumen final del gas en Litros?",
-          development: "TRAMPA DE RÚBRICA: Nunca operar con °C.\n\nPASO 1: Convertir Temperaturas a Kelvin.\n• T1 = 27 °C + 273 = 300 K\n• T2 = 127 °C + 273 = 400 K\n• V1 = 10 L\n• V2 = ?\n\nPASO 2: Aplicar Ley de Charles (Presión Constante).\n• V1 / T1 = V2 / T2\n• 10 / 300 = V2 / 400\n• Despejando V2:\n• V2 = (10 * 400) / 300\n• V2 = 4000 / 300 = 13.33 Litros.\n\nRESULTADO FINAL: El volumen se expande a 13.33 Litros."
-        },
-        { 
-          question: "[GAY-LUSSAC] Un neumático de maquinaria tiene un volumen constante. En la mañana, a 17 °C, su presión absoluta es de 3 bar. Después de trabajar toda la tarde, la fricción eleva la temperatura interior a 75 °C. Calcula la nueva presión absoluta dentro del neumático.",
-          development: "PASO 1: Convertir Temperaturas a Kelvin obligatoriamente.\n• T1 = 17 °C + 273 = 290 K\n• T2 = 75 °C + 273 = 348 K\n• P1(abs) = 3 bar\n• P2(abs) = ?\n\nPASO 2: Aplicar Ley de Gay-Lussac (Volumen Constante).\n• P1 / T1 = P2 / T2\n• 3 / 290 = P2 / 348\n• Despejando P2:\n• P2 = (3 * 348) / 290\n• P2 = 1044 / 290 = 3.6 bar absolutos.\n\nRESULTADO FINAL: La presión sube a 3.6 bar absolutos debido al calor."
-        }
-      ],
-      pascal: [
-        { 
-          question: "[FUERZA Y PRESIÓN] Un cilindro hidráulico de simple efecto tiene un émbolo con un diámetro de 10 cm. El sistema suministra una presión de 50 bar. Calcula la fuerza de empuje (avance) del cilindro en Newtons (N). (Dato: 1 bar = 100,000 Pascales N/m²).",
-          development: "PASO 1: Estandarizar unidades a metros y Pascales.\n• Diámetro = 10 cm = 0.1 metros.\n• Radio (r) = D/2 = 0.05 metros.\n• Presión (P) = 50 bar = 5,000,000 N/m².\n\nPASO 2: Calcular el Área del émbolo.\n• A = π * r²\n• A = 3.1416 * (0.05 m)²\n• A = 3.1416 * 0.0025 = 0.007854 m².\n\nPASO 3: Calcular la Fuerza (Ley de Pascal).\n• P = F / A  =>  F = P * A\n• F = 5,000,000 N/m² * 0.007854 m²\n• F = 39,270 Newtons.\n\nRESULTADO FINAL: La fuerza de avance es de 39,270 N (Aprox. 4 Toneladas fuerza)."
-        },
-        {
-          question: "[CILINDRO DOBLE EFECTO - RETROCESO] Un cilindro de doble efecto tiene un diámetro de émbolo de 8 cm y un diámetro de vástago de 3 cm. El sistema trabaja a 100 bar. Calcula el Área útil de retroceso (área anular) en cm² y la Fuerza de retroceso en Newtons (N). (Asume 1 bar = 10 N/cm²).",
-          development: "PASO 1: Calcular Área del Émbolo (A_e) y Área del Vástago (A_v).\n• A_e = π * (8/2)² = 3.1416 * 16 = 50.26 cm².\n• A_v = π * (3/2)² = 3.1416 * 2.25 = 7.07 cm².\n\nPASO 2: Calcular Área Anular de Retroceso (A_r).\n• A_r = A_e - A_v\n• A_r = 50.26 - 7.07 = 43.19 cm².\n\nPASO 3: Calcular Fuerza de Retroceso (F = P * A).\n• Presión = 100 bar = 1000 N/cm² (Factor 1 bar = 10 N/cm²).\n• F_ret = 1000 N/cm² * 43.19 cm² = 43,190 N.\n\nRESULTADO FINAL: Área útil = 43.19 cm². Fuerza de retroceso = 43,190 N."
-        }
-      ],
-      caudal: [
-        {
-          question: "[CAUDAL BÁSICO] Una bomba hidráulica llena un tanque de 120 litros en exactamente 2 minutos. ¿Cuál es el caudal (Q) del sistema expresado en Litros por Minuto (L/min) y en Litros por Segundo (L/s)?",
-          development: "PASO 1: Fórmula base de Caudal (Volumen / Tiempo).\n• Q = V / t\n\nPASO 2: Calcular en L/min.\n• V = 120 L, t = 2 min.\n• Q = 120 / 2 = 60 L/min.\n\nPASO 3: Calcular en L/s.\n• Convertir tiempo: 2 min = 120 segundos.\n• Q = 120 L / 120 s = 1 L/s.\n\nRESULTADO FINAL: El caudal es de 60 L/min o 1 L/s."
-        },
-        {
-          question: "[ECUACIÓN DE CONTINUIDAD] Por una tubería de sección A1 = 20 cm² fluye aceite a una velocidad (v1) de 5 m/s. La tubería sufre un estrechamiento a una sección A2 = 5 cm². ¿Cuál será la velocidad del fluido (v2) en la sección estrecha en m/s?",
-          development: "PASO 1: Aplicar el principio de Continuidad.\n• El caudal que entra es igual al que sale (Q1 = Q2).\n• Fórmula: A1 * v1 = A2 * v2\n\nPASO 2: Reemplazar datos.\n• 20 cm² * 5 m/s = 5 cm² * v2\n• (Nota: Como ambas áreas están en cm², no es obligatorio convertir a m² porque se anulan en la división).\n\nPASO 3: Despejar v2.\n• 100 = 5 * v2\n• v2 = 100 / 5\n• v2 = 20 m/s.\n\nRESULTADO FINAL: En el estrechamiento, la velocidad aumenta a 20 m/s."
-        }
-      ]
-    };
+    <hr>
 
-    let mistakes = JSON.parse(localStorage.getItem('neumatica_calc_mistakes')) || [];
-    let userXP = parseInt(localStorage.getItem('neumatica_calc_xp')) || 0;
-    let currentBank = [], currIdx = 0, score = 0, earnedSessionXP = 0;
+    <h2>Actividad 3: Evaluación y Reflexión final</h2>
+    
+    <div class="question">1. Comparación de Resultados:</div>
+    <div class="answer">
+        <strong>a) Contrasta los resultados:</strong> Los valores teóricos calculados (Fuerza Neta, Aceleración) deben ser matemáticamente idénticos a los entregados por un simulador ideal como PhET, siempre que se ingresen los datos exactos (gravedad a 9.8 m/s&sup2;, masa de 50 kg y coeficientes precisos).<br><br>
+        <strong>b) Reflexiona sobre discrepancias:</strong> Si existen pequeñas variaciones entre la teoría y la simulación, suelen deberse a que los simuladores a veces incorporan variables de la vida real que la fórmula básica ignora, como la resistencia del aire, la fricción interna de los rodamientos de las ruedas, o el uso de un valor de gravedad distinto (por ejemplo, 9.81 m/s&sup2; en lugar de 9.8).
+    </div>
 
-    function renderXP() {
-      let lvl = Math.floor(userXP / 100) + 1;
-      document.getElementById('xpDisplay').innerHTML = `⚙️ Nivel ${lvl} | ${userXP} XP`;
-    }
-    renderXP();
+    <div class="question">2. Preguntas de Finalización:</div>
+    <div class="answer">
+        <strong>a) Diferencia entre la fuerza aplicada:</strong> La fuerza aplicada exteriormente por el operador o motor es exactamente la misma en ambos tramos (650 N). Lo que difiere es la <em>Fuerza Neta (efectiva)</em>. Esto ocurre porque en el tramo inclinado, la gravedad tira de una parte del carrito hacia abajo de la rampa (la componente P_x del peso), restándole eficacia al empuje inicial.
+        <br><br>
+        <strong>b) Efecto del coeficiente de fricción:</strong> La fricción actúa siempre como una pérdida de energía mecánica. En el tramo horizontal, la fricción depende del 100% del peso del carrito. En el tramo inclinado, como el carrito está "ladeado", presiona menos contra el suelo, por lo que la fuerza normal disminuye levemente y, en consecuencia, la fuerza de roce por fricción también disminuye. Sin embargo, esta pequeña ganancia se pierde porque ahora hay que luchar contra la pendiente.
+        <br><br>
+        <strong>c) Velocidad final observada:</strong> Teóricamente, si el carrito parte del reposo en cada tramo, alcanza 14.18 m/s en el horizontal y 10.60 m/s en el inclinado. Si en el simulador se registra una velocidad mucho mayor al final de la rampa, es porque el carrito entró al tramo 2 con el impulso (velocidad inicial) que ya traía del tramo 1, sumando las velocidades en lugar de partir desde cero.
+        <br><br>
+        <strong>d) Optimizar el uso de herramientas:</strong> Para modelar estos fenómenos de manera profesional, se puede pasar de simuladores 2D básicos (como PhET) a software de diseño asistido y simuladores físicos 3D. Esto permite visualizar el comportamiento de fluidos hidráulicos en la carga, fatiga de materiales en los ejes, y la distribución del peso cuando la maquinaria frena o acelera bruscamente.
+        <br><br>
+        <strong>e) Sugerencias para mejorar la eficiencia y seguridad en la industria:</strong> Basado en estos principios físicos aplicados a la maquinaria pesada, se sugiere: 1) Optimizar las rutas de las plantas minimizando los grados de inclinación de las rampas de transporte para reducir el desgaste del tren motriz y el consumo de combustible/energía. 2) Mantener una correcta tribología y lubricación en los ejes de rodadura para mantener el coeficiente de roce dinámico lo más bajo posible. 3) Asegurar los límites de carga útil, ya que a mayor masa, la fuerza de fricción normal y la inercia a vencer aumentan drásticamente, comprometiendo los sistemas de frenos en pendientes descendentes.
+    </div>
 
-    function switchTab(tabId) {
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      let tabBtn = document.getElementById('tab-' + tabId);
-      if (tabBtn) {
-        document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active-tab'));
-        tabBtn.classList.add('active-tab');
-      }
-    }
+</div>
 
-    function toggleTheme() {
-      let current = document.documentElement.getAttribute('data-theme');
-      let target = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', target);
-    }
+<script>
+    // Función auxiliar para dibujar flechas
+    function drawArrow(ctx, fromx, fromy, tox, toy, color, text, textOffsetX, textOffsetY) {
+        var headlen = 10; 
+        var dx = tox - fromx;
+        var dy = toy - fromy;
+        var angle = Math.atan2(dy, dx);
+        
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.moveTo(fromx, fromy);
+        ctx.lineTo(tox, toy);
+        ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+        ctx.moveTo(tox, toy);
+        ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+        ctx.stroke();
 
-    function startQuiz(topic) {
-      currentBank = [];
-      if (topic === 'all') {
-        ['gases', 'pascal', 'caudal'].forEach(t => currentBank = currentBank.concat(db[t]));
-      } else if (topic === 'mistakes') {
-        if(mistakes.length === 0) return alert("¡Sin errores registrados! 🏆");
-        currentBank = [...mistakes];
-      } else {
-        currentBank = [...db[topic]];
-      }
-
-      if(currentBank.length === 0) return;
-      currentBank.sort(() => Math.random() - 0.5);
-      
-      currIdx = 0; score = 0; earnedSessionXP = 0;
-      switchTab('quizSection');
-      loadQuestion();
+        ctx.fillStyle = color;
+        ctx.font = "14px Arial";
+        ctx.fillText(text, tox + textOffsetX, toy + textOffsetY);
     }
 
-    function loadQuestion() {
-      let q = currentBank[currIdx];
-      document.getElementById('quizProgressText').innerText = `Ejercicio ${currIdx + 1} de ${currentBank.length}`;
-      document.getElementById('quizProgressBar').style.width = `${((currIdx) / currentBank.length) * 100}%`;
-      document.getElementById('scoreText').innerText = score;
-      
-      document.getElementById('questionText').innerText = q.question;
-      let calcInput = document.getElementById('calcInput');
-      if(calcInput) calcInput.value = "";
-      
-      document.getElementById('btnShowDev').classList.remove('hidden');
-      document.getElementById('evalArea').classList.add('hidden');
-      document.getElementById('btnNext').classList.add('hidden');
-    }
+    // Dibujar Tramo Horizontal
+    const ctxH = document.getElementById('canvasHorizontal').getContext('2d');
+    const cx = 200, cy = 180; // Centro del carrito
+    
+    // Suelo
+    ctxH.beginPath();
+    ctxH.moveTo(50, cy + 25);
+    ctxH.lineTo(350, cy + 25);
+    ctxH.lineWidth = 3;
+    ctxH.strokeStyle = "#555";
+    ctxH.stroke();
 
-    function revealDevelopment() {
-      let calcInput = document.getElementById('calcInput');
-      if(calcInput && calcInput.value.trim() === "") {
-        if(!confirm("Aún no has anotado nada. ¿Estás seguro de que quieres ver el resultado y rendirte en este cálculo?")) return;
-      }
-      
-      let q = currentBank[currIdx];
-      document.getElementById('btnShowDev').classList.add('hidden');
-      document.getElementById('modelDevelopment').innerText = q.development;
-      document.getElementById('evalArea').classList.remove('hidden');
-    }
+    // Carrito
+    ctxH.fillStyle = "#e0e0e0";
+    ctxH.fillRect(cx - 30, cy - 25, 60, 50);
+    ctxH.strokeRect(cx - 30, cy - 25, 60, 50);
 
-    function gradeCalc(isCorrect) {
-      let qObj = currentBank[currIdx];
-      if(isCorrect) {
-        score++;
-        userXP += 20;
-        earnedSessionXP += 20;
-        mistakes = mistakes.filter(m => m.question !== qObj.question);
-      } else {
-        if(!mistakes.find(m => m.question === qObj.question)) mistakes.push(qObj);
-      }
-      
-      localStorage.setItem('neumatica_calc_mistakes', JSON.stringify(mistakes));
-      localStorage.setItem('neumatica_calc_xp', userXP);
-      renderXP();
-      
-      document.getElementById('evalArea').classList.add('hidden');
-      document.getElementById('quizProgressBar').style.width = `${((currIdx + 1) / currentBank.length) * 100}%`;
-      document.getElementById('btnNext').classList.remove('hidden');
-    }
+    // Ruedas
+    ctxH.beginPath(); ctxH.arc(cx - 15, cy + 25, 8, 0, 2*Math.PI); ctxH.fillStyle = "#333"; ctxH.fill();
+    ctxH.beginPath(); ctxH.arc(cx + 15, cy + 25, 8, 0, 2*Math.PI); ctxH.fillStyle = "#333"; ctxH.fill();
 
-    function nextQuestion() {
-      currIdx++;
-      if(currIdx < currentBank.length) loadQuestion();
-      else showResults();
-    }
+    // Fuerzas Horizontal
+    drawArrow(ctxH, cx, cy, cx + 100, cy, "blue", "F_ap = 650 N", 5, -5); // Aplicada
+    drawArrow(ctxH, cx, cy, cx - 60, cy, "red", "f_k", -20, -5); // Fricción
+    drawArrow(ctxH, cx, cy, cx, cy - 80, "green", "N", -5, -10); // Normal
+    drawArrow(ctxH, cx, cy, cx, cy + 80, "purple", "P = m·g", -10, 15); // Peso
 
-    function showResults() {
-      switchTab('resultsSection');
-      let pct = Math.round((score / currentBank.length) * 100);
-      document.getElementById('resScore').innerText = pct + "%";
-      document.getElementById('resEmoji').innerText = pct >= 80 ? "🔥" : pct >= 50 ? "👍" : "💀";
-      document.getElementById('resMsg').innerText = `Resolviste correctamente ${score} de ${currentBank.length} ejercicios.\nGanaste +${earnedSessionXP} XP.`;
-    }
-  </script>
+    // Dibujar Tramo Inclinado
+    const ctxI = document.getElementById('canvasInclinado').getContext('2d');
+    const cxI = 200, cyI = 160;
+    const angleRad = -15 * Math.PI / 180; // Inclinación visual (exagerada un poco para claridad)
+
+    ctxI.save(); // Guardar contexto
+    
+    // Suelo inclinado (lo rotamos visualmente)
+    ctxI.translate(cxI, cyI);
+    
+    // Dibujar ángulo base para referencia
+    ctxI.beginPath();
+    ctxI.moveTo(-100, 50);
+    ctxI.lineTo(120, 50);
+    ctxI.lineTo(120, 50 + 120 * Math.tan(angleRad));
+    ctxI.strokeStyle = "#aaa";
+    ctxI.setLineDash([5, 5]);
+    ctxI.stroke();
+    ctxI.setLineDash([]);
+    ctxI.fillStyle = "#aaa";
+    ctxI.fillText("10°", 90, 45);
+
+    ctxI.rotate(angleRad); // Rotar todo el sistema de coordenadas
+    
+    // Suelo de la rampa
+    ctxI.beginPath();
+    ctxI.moveTo(-150, 25);
+    ctxI.lineTo(150, 25);
+    ctxI.lineWidth = 3;
+    ctxI.strokeStyle = "#555";
+    ctxI.stroke();
+
+    // Carrito
+    ctxI.fillStyle = "#e0e0e0";
+    ctxI.fillRect(-30, -25, 60, 50);
+    ctxI.strokeRect(-30, -25, 60, 50);
+
+    // Ruedas
+    ctxI.beginPath(); ctxI.arc(-15, 25, 8, 0, 2*Math.PI); ctxI.fillStyle = "#333"; ctxI.fill();
+    ctxI.beginPath(); ctxI.arc(15, 25, 8, 0, 2*Math.PI); ctxI.fillStyle = "#333"; ctxI.fill();
+
+    // Fuerzas en el plano inclinado (sistema rotado)
+    drawArrow(ctxI, 0, 0, 100, 0, "blue", "F_ap", 5, -5); // Aplicada (paralela a rampa)
+    drawArrow(ctxI, 0, 0, -50, 0, "red", "f_k", -20, -5); // Fricción (paralela a rampa)
+    drawArrow(ctxI, 0, 0, 0, -80, "green", "N", -5, -10); // Normal (perpendicular)
+    
+    // Componentes del peso (líneas punteadas)
+    ctxI.setLineDash([3, 3]);
+    ctxI.beginPath(); ctxI.moveTo(0,0); ctxI.lineTo(-30, 80); ctxI.strokeStyle = "purple"; ctxI.stroke(); // Peso real visual
+    drawArrow(ctxI, 0, 0, 0, 80, "purple", "Py", -20, 10); // Py
+    drawArrow(ctxI, 0, 0, -30, 0, "purple", "Px", -20, -15); // Px
+    ctxI.setLineDash([]);
+
+    ctxI.restore(); // Restaurar rotación para dibujar el peso real recto hacia abajo
+    
+    // Peso real que siempre va recto hacia abajo (sin rotación)
+    drawArrow(ctxI, cxI, cyI, cxI, cyI + 90, "purple", "P", 5, 15); 
+    
+</script>
+
 </body>
 </html>
