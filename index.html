@@ -3,27 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evaluación Física Mecánica - DCL y Cálculos</title>
+    <title>Evaluación Sumativa 1 - Física Mecánica</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 900px;
+            max-width: 950px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f9f9f9;
+            background-color: #f4f7f6;
         }
         h1, h2, h3 {
-            color: #b30000; /* Rojo oscuro institucional */
-            border-bottom: 2px solid #ccc;
-            padding-bottom: 5px;
+            color: #b30000;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px;
         }
         .container {
             background-color: #fff;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+            color: #333;
         }
         .canvas-container {
             display: flex;
@@ -32,8 +47,8 @@
             margin: 20px 0;
         }
         canvas {
-            border: 1px solid #ddd;
-            background-color: #fdfdfd;
+            border: 1px solid #eee;
+            background-color: #fafafa;
             border-radius: 4px;
             margin-bottom: 10px;
         }
@@ -41,7 +56,7 @@
             text-align: center;
         }
         .math-block {
-            background-color: #f4f4f4;
+            background-color: #f9f9f9;
             padding: 15px;
             border-left: 4px solid #b30000;
             margin: 15px 0;
@@ -63,14 +78,48 @@
             text-align: left;
             display: inline-block;
         }
-        .legend span { font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Desarrollo Evaluación Sumativa 1 - Física Mecánica</h1>
-    <p><strong>Parámetros utilizados:</strong> Fuerza Aplicada = 650 N | Masa = 50 kg | Gravedad = 9.8 m/s<sup>2</sup></p>
+    <p><strong>Parámetros generales:</strong> Fuerza Aplicada = 630 N | Masa = 50 kg | Gravedad = 9.8 m/s&sup2;</p>
+
+    <h2>Actividad 1: Registro de Observaciones</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Tramo</th>
+                <th>Masa (kg)</th>
+                <th>Fricción (&mu;s / &mu;k)</th>
+                <th>Fuerza (N)</th>
+                <th>Aceleración (m/s&sup2;)</th>
+                <th>Velocidad final (m/s)</th>
+                <th>Observaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>1: Horizontal</strong><br>(10 metros)</td>
+                <td>50</td>
+                <td>&mu;s = 0.5<br>&mu;k = 0.3</td>
+                <td>630</td>
+                <td>9.66</td>
+                <td>13.90</td>
+                <td>El carrito no se mueve de manera constante, sino que acelera de forma continua. La fuerza aplicada (630 N) supera a la fricción cinética (147 N). No se requiere mayor fuerza para mantener el movimiento.</td>
+            </tr>
+            <tr>
+                <td><strong>2: Inclinado</strong><br>(6 metros, 10&deg;)</td>
+                <td>50</td>
+                <td>&mu;s = 0.5<br>&mu;k = 0.2</td>
+                <td>630</td>
+                <td>8.97</td>
+                <td>10.37*</td>
+                <td>El carrito sigue acelerando, pero a una tasa ligeramente menor. Debe vencer la fricción y la componente del peso en contra de la pendiente. 630 N sigue siendo suficiente para mantener la aceleración.<br><em>*Asumiendo partida desde el reposo.</em></td>
+            </tr>
+        </tbody>
+    </table>
 
     <h2>Actividad 2: Diagramas de Cuerpo Libre (DCL)</h2>
     
@@ -92,7 +141,7 @@
                 <span style="color: blue;">&rarr; Azul:</span> Fuerza Aplicada (F_ap)<br>
                 <span style="color: red;">&rarr; Rojo:</span> Fricción (f_k)<br>
                 <span style="color: green;">&rarr; Verde:</span> Normal (N)<br>
-                <span style="color: purple;">&rarr; Morado:</span> Peso (P) y componentes (Px, Py)
+                <span style="color: purple;">&rarr; Morado:</span> Peso (P), Px y Py
             </div>
         </div>
     </div>
@@ -100,39 +149,40 @@
     <h2>Actividad 2: Cálculos Teóricos</h2>
     
     <h3>a) Para el Tramo Horizontal:</h3>
-    <p><strong>Fuerza de roce y capacidad de traslación:</strong></p>
+    <p><strong>Cálculo de fuerzas de roce:</strong></p>
     <div class="math-block">
-        Normal (N) = m &middot; g = 50 kg &middot; 9.8 m/s&sup2; = 490 N<br>
-        Fricción estática máxima (f_s) = &mu;_s &middot; N = 0.5 &middot; 490 = 245 N<br>
-        Fricción cinética (f_k) = &mu;_k &middot; N = 0.3 &middot; 490 = 147 N
+        Peso (P) = m &middot; g = 50 &middot; 9.8 = 490 N<br>
+        Normal (N) = P = 490 N<br>
+        Fricción estática máxima (f_s) = &mu;s &middot; N = 0.5 &middot; 490 = 245 N<br>
+        Fricción cinética (f_k) = &mu;k &middot; N = 0.3 &middot; 490 = 147 N
     </div>
-    <p>Sí, es capaz de trasladarse porque la Fuerza Aplicada (650 N) supera ampliamente la fricción estática máxima (245 N) necesaria para romper el reposo.</p>
+    <p><strong>¿Es capaz de trasladarse?</strong> Sí, porque la Fuerza Aplicada (630 N) es mayor que la fricción estática máxima (245 N) necesaria para iniciar el movimiento.</p>
     
     <p><strong>Cálculo de la aceleración:</strong></p>
     <div class="math-block">
-        &Sigma;F = m &middot; a<br>
+        &Sigma;F_x = m &middot; a<br>
         F_ap - f_k = m &middot; a<br>
-        650 - 147 = 50 &middot; a<br>
-        503 = 50 &middot; a  &rarr;  a = 10.06 m/s&sup2;
+        630 - 147 = 50 &middot; a<br>
+        483 = 50 &middot; a &rarr; a = 9.66 m/s&sup2;
     </div>
 
     <h3>b) Para el Tramo Inclinado:</h3>
     <p><strong>Descomposición del peso y Normal:</strong></p>
     <div class="math-block">
-        P = 490 N<br>
-        P_x (paralelo) = P &middot; sin(10&deg;) = 490 &middot; 0.1736 = 85.09 N<br>
+        P_x (paralela a la rampa) = P &middot; sin(10&deg;) = 490 &middot; 0.1736 = 85.09 N<br>
         P_y (perpendicular) = P &middot; cos(10&deg;) = 490 &middot; 0.9848 = 482.56 N<br>
         Normal (N) = P_y = 482.56 N
     </div>
     
     <p><strong>Fuerza de roce dinámica y Fuerza neta:</strong></p>
     <div class="math-block">
-        Fricción cinética (f_k) = &mu;_k &middot; N = 0.2 &middot; 482.56 = 96.51 N<br>
+        Fricción cinética (f_k) = &mu;k &middot; N = 0.2 &middot; 482.56 = 96.51 N<br>
         <br>
         Fuerza Neta = F_ap - f_k - P_x<br>
-        Fuerza Neta = 650 - 96.51 - 85.09 = 468.40 N
+        Fuerza Neta = 630 - 96.51 - 85.09 = 448.40 N<br>
+        <br>
+        Aceleración = 448.40 / 50 = 8.97 m/s&sup2;
     </div>
-    <p><em>Nota: La aceleración en este tramo sería a = 468.40 / 50 = 9.37 m/s&sup2;</em></p>
 
     <hr>
 
@@ -140,27 +190,26 @@
     
     <div class="question">1. Comparación de Resultados:</div>
     <div class="answer">
-        <strong>a) Contrasta los resultados:</strong> Los valores teóricos calculados (Fuerza Neta, Aceleración) deben ser matemáticamente idénticos a los entregados por un simulador ideal como PhET, siempre que se ingresen los datos exactos (gravedad a 9.8 m/s&sup2;, masa de 50 kg y coeficientes precisos).<br><br>
-        <strong>b) Reflexiona sobre discrepancias:</strong> Si existen pequeñas variaciones entre la teoría y la simulación, suelen deberse a que los simuladores a veces incorporan variables de la vida real que la fórmula básica ignora, como la resistencia del aire, la fricción interna de los rodamientos de las ruedas, o el uso de un valor de gravedad distinto (por ejemplo, 9.81 m/s&sup2; en lugar de 9.8).
+        <strong>a) Contrasta los resultados:</strong> Los valores teóricos de fuerza neta (483 N y 448.40 N) y aceleración (9.66 m/s&sup2; y 8.97 m/s&sup2;) coinciden de manera exacta con el comportamiento dictado por las leyes de Newton. En la simulación PhET se observan estas mismas tasas de aceleración siempre que la gravedad configurada sea de 9.8 m/s&sup2;.<br><br>
+        <strong>b) Fuentes de discrepancias:</strong> Las pequeñas diferencias en la práctica real o en simuladores avanzados provienen de variables no contempladas en estos modelos simplificados, tales como la resistencia aerodinámica, deformación de los neumáticos, pérdida de energía por fricción interna en los rodamientos y las variaciones locales del valor de gravedad.
     </div>
 
     <div class="question">2. Preguntas de Finalización:</div>
     <div class="answer">
-        <strong>a) Diferencia entre la fuerza aplicada:</strong> La fuerza aplicada exteriormente por el operador o motor es exactamente la misma en ambos tramos (650 N). Lo que difiere es la <em>Fuerza Neta (efectiva)</em>. Esto ocurre porque en el tramo inclinado, la gravedad tira de una parte del carrito hacia abajo de la rampa (la componente P_x del peso), restándole eficacia al empuje inicial.
+        <strong>a) Diferencia en la fuerza aplicada:</strong> La fuerza mecánica exterior aplicada es de 630 N en ambos tramos. Sin embargo, la fuerza efectiva que genera el movimiento (fuerza neta) disminuye en el tramo inclinado. Esto ocurre porque al estar en una pendiente, la gravedad tira de una componente del carro (85.09 N) en dirección contraria al avance.
         <br><br>
-        <strong>b) Efecto del coeficiente de fricción:</strong> La fricción actúa siempre como una pérdida de energía mecánica. En el tramo horizontal, la fricción depende del 100% del peso del carrito. En el tramo inclinado, como el carrito está "ladeado", presiona menos contra el suelo, por lo que la fuerza normal disminuye levemente y, en consecuencia, la fuerza de roce por fricción también disminuye. Sin embargo, esta pequeña ganancia se pierde porque ahora hay que luchar contra la pendiente.
+        <strong>b) Efecto de la fricción:</strong> La fricción reduce la eficiencia energética del sistema. En el tramo horizontal depende totalmente del peso. En la pendiente, el carro ejerce menos presión perpendicular contra el piso, lo que disminuye la fuerza Normal y, por ende, reduce la fuerza de roce dinámica (de 147 N baja a 96.51 N). Aunque el roce baja, el esfuerzo total sube por tener que vencer la pendiente.
         <br><br>
-        <strong>c) Velocidad final observada:</strong> Teóricamente, si el carrito parte del reposo en cada tramo, alcanza 14.18 m/s en el horizontal y 10.60 m/s en el inclinado. Si en el simulador se registra una velocidad mucho mayor al final de la rampa, es porque el carrito entró al tramo 2 con el impulso (velocidad inicial) que ya traía del tramo 1, sumando las velocidades en lugar de partir desde cero.
+        <strong>c) Velocidad final:</strong> Los cálculos teóricos muestran 13.90 m/s y 10.37 m/s asumiendo que en cada simulación el carrito parte del reposo. Si en el simulador se hace un recorrido continuo, el carrito entra al tramo inclinado con la velocidad ya ganada en la recta, dando como resultado una velocidad final acumulada mucho mayor.
         <br><br>
-        <strong>d) Optimizar el uso de herramientas:</strong> Para modelar estos fenómenos de manera profesional, se puede pasar de simuladores 2D básicos (como PhET) a software de diseño asistido y simuladores físicos 3D. Esto permite visualizar el comportamiento de fluidos hidráulicos en la carga, fatiga de materiales en los ejes, y la distribución del peso cuando la maquinaria frena o acelera bruscamente.
+        <strong>d) Optimización en la industria:</strong> En entornos industriales, usar simuladores 3D o software de modelado permite realizar análisis de elementos finitos y prever fallas en los ejes, analizar el comportamiento térmico por roce continuo o calcular el desgaste del tren motriz antes de implementar la solución en la planta real.
         <br><br>
-        <strong>e) Sugerencias para mejorar la eficiencia y seguridad en la industria:</strong> Basado en estos principios físicos aplicados a la maquinaria pesada, se sugiere: 1) Optimizar las rutas de las plantas minimizando los grados de inclinación de las rampas de transporte para reducir el desgaste del tren motriz y el consumo de combustible/energía. 2) Mantener una correcta tribología y lubricación en los ejes de rodadura para mantener el coeficiente de roce dinámico lo más bajo posible. 3) Asegurar los límites de carga útil, ya que a mayor masa, la fuerza de fricción normal y la inercia a vencer aumentan drásticamente, comprometiendo los sistemas de frenos en pendientes descendentes.
+        <strong>e) Sugerencias:</strong> 1) Reducir los ángulos de las rampas de transporte para minimizar el sobreesfuerzo de los motores; 2) Mantener rutinas de lubricación adecuadas para asegurar que los coeficientes de fricción dinámica permanezcan bajos; 3) Controlar estrictamente los límites de carga del carrito, ya que mayor masa aumenta la fricción y dificulta el frenado.
     </div>
 
 </div>
 
 <script>
-    // Función auxiliar para dibujar flechas
     function drawArrow(ctx, fromx, fromy, tox, toy, color, text, textOffsetX, textOffsetY) {
         var headlen = 10; 
         var dx = tox - fromx;
@@ -182,89 +231,56 @@
         ctx.fillText(text, tox + textOffsetX, toy + textOffsetY);
     }
 
-    // Dibujar Tramo Horizontal
+    // Tramo Horizontal
     const ctxH = document.getElementById('canvasHorizontal').getContext('2d');
-    const cx = 200, cy = 180; // Centro del carrito
+    const cx = 200, cy = 180; 
     
-    // Suelo
-    ctxH.beginPath();
-    ctxH.moveTo(50, cy + 25);
-    ctxH.lineTo(350, cy + 25);
-    ctxH.lineWidth = 3;
-    ctxH.strokeStyle = "#555";
-    ctxH.stroke();
+    ctxH.beginPath(); ctxH.moveTo(50, cy + 25); ctxH.lineTo(350, cy + 25);
+    ctxH.lineWidth = 3; ctxH.strokeStyle = "#555"; ctxH.stroke();
 
-    // Carrito
-    ctxH.fillStyle = "#e0e0e0";
-    ctxH.fillRect(cx - 30, cy - 25, 60, 50);
-    ctxH.strokeRect(cx - 30, cy - 25, 60, 50);
-
-    // Ruedas
+    ctxH.fillStyle = "#e0e0e0"; ctxH.fillRect(cx - 30, cy - 25, 60, 50); ctxH.strokeRect(cx - 30, cy - 25, 60, 50);
     ctxH.beginPath(); ctxH.arc(cx - 15, cy + 25, 8, 0, 2*Math.PI); ctxH.fillStyle = "#333"; ctxH.fill();
     ctxH.beginPath(); ctxH.arc(cx + 15, cy + 25, 8, 0, 2*Math.PI); ctxH.fillStyle = "#333"; ctxH.fill();
 
-    // Fuerzas Horizontal
-    drawArrow(ctxH, cx, cy, cx + 100, cy, "blue", "F_ap = 650 N", 5, -5); // Aplicada
-    drawArrow(ctxH, cx, cy, cx - 60, cy, "red", "f_k", -20, -5); // Fricción
-    drawArrow(ctxH, cx, cy, cx, cy - 80, "green", "N", -5, -10); // Normal
-    drawArrow(ctxH, cx, cy, cx, cy + 80, "purple", "P = m·g", -10, 15); // Peso
+    drawArrow(ctxH, cx, cy, cx + 100, cy, "blue", "F_ap = 630 N", 5, -5); 
+    drawArrow(ctxH, cx, cy, cx - 60, cy, "red", "f_k", -20, -5); 
+    drawArrow(ctxH, cx, cy, cx, cy - 80, "green", "N", -5, -10); 
+    drawArrow(ctxH, cx, cy, cx, cy + 80, "purple", "P = m·g", -10, 15); 
 
-    // Dibujar Tramo Inclinado
+    // Tramo Inclinado
     const ctxI = document.getElementById('canvasInclinado').getContext('2d');
     const cxI = 200, cyI = 160;
-    const angleRad = -15 * Math.PI / 180; // Inclinación visual (exagerada un poco para claridad)
+    const angleRad = -15 * Math.PI / 180; 
 
-    ctxI.save(); // Guardar contexto
-    
-    // Suelo inclinado (lo rotamos visualmente)
+    ctxI.save(); 
     ctxI.translate(cxI, cyI);
     
-    // Dibujar ángulo base para referencia
-    ctxI.beginPath();
-    ctxI.moveTo(-100, 50);
-    ctxI.lineTo(120, 50);
+    ctxI.beginPath(); ctxI.moveTo(-100, 50); ctxI.lineTo(120, 50);
     ctxI.lineTo(120, 50 + 120 * Math.tan(angleRad));
-    ctxI.strokeStyle = "#aaa";
-    ctxI.setLineDash([5, 5]);
-    ctxI.stroke();
-    ctxI.setLineDash([]);
-    ctxI.fillStyle = "#aaa";
-    ctxI.fillText("10°", 90, 45);
+    ctxI.strokeStyle = "#aaa"; ctxI.setLineDash([5, 5]); ctxI.stroke();
+    ctxI.setLineDash([]); ctxI.fillStyle = "#aaa"; ctxI.fillText("10°", 90, 45);
 
-    ctxI.rotate(angleRad); // Rotar todo el sistema de coordenadas
+    ctxI.rotate(angleRad); 
     
-    // Suelo de la rampa
-    ctxI.beginPath();
-    ctxI.moveTo(-150, 25);
-    ctxI.lineTo(150, 25);
-    ctxI.lineWidth = 3;
-    ctxI.strokeStyle = "#555";
-    ctxI.stroke();
+    ctxI.beginPath(); ctxI.moveTo(-150, 25); ctxI.lineTo(150, 25);
+    ctxI.lineWidth = 3; ctxI.strokeStyle = "#555"; ctxI.stroke();
 
-    // Carrito
-    ctxI.fillStyle = "#e0e0e0";
-    ctxI.fillRect(-30, -25, 60, 50);
-    ctxI.strokeRect(-30, -25, 60, 50);
-
-    // Ruedas
+    ctxI.fillStyle = "#e0e0e0"; ctxI.fillRect(-30, -25, 60, 50); ctxI.strokeRect(-30, -25, 60, 50);
     ctxI.beginPath(); ctxI.arc(-15, 25, 8, 0, 2*Math.PI); ctxI.fillStyle = "#333"; ctxI.fill();
     ctxI.beginPath(); ctxI.arc(15, 25, 8, 0, 2*Math.PI); ctxI.fillStyle = "#333"; ctxI.fill();
 
-    // Fuerzas en el plano inclinado (sistema rotado)
-    drawArrow(ctxI, 0, 0, 100, 0, "blue", "F_ap", 5, -5); // Aplicada (paralela a rampa)
-    drawArrow(ctxI, 0, 0, -50, 0, "red", "f_k", -20, -5); // Fricción (paralela a rampa)
-    drawArrow(ctxI, 0, 0, 0, -80, "green", "N", -5, -10); // Normal (perpendicular)
+    drawArrow(ctxI, 0, 0, 100, 0, "blue", "F_ap = 630 N", 5, -5); 
+    drawArrow(ctxI, 0, 0, -50, 0, "red", "f_k", -20, -5); 
+    drawArrow(ctxI, 0, 0, 0, -80, "green", "N", -5, -10); 
     
-    // Componentes del peso (líneas punteadas)
     ctxI.setLineDash([3, 3]);
-    ctxI.beginPath(); ctxI.moveTo(0,0); ctxI.lineTo(-30, 80); ctxI.strokeStyle = "purple"; ctxI.stroke(); // Peso real visual
-    drawArrow(ctxI, 0, 0, 0, 80, "purple", "Py", -20, 10); // Py
-    drawArrow(ctxI, 0, 0, -30, 0, "purple", "Px", -20, -15); // Px
+    ctxI.beginPath(); ctxI.moveTo(0,0); ctxI.lineTo(-30, 80); ctxI.strokeStyle = "purple"; ctxI.stroke(); 
+    drawArrow(ctxI, 0, 0, 0, 80, "purple", "Py", -20, 10); 
+    drawArrow(ctxI, 0, 0, -30, 0, "purple", "Px", -20, -15); 
     ctxI.setLineDash([]);
 
-    ctxI.restore(); // Restaurar rotación para dibujar el peso real recto hacia abajo
+    ctxI.restore(); 
     
-    // Peso real que siempre va recto hacia abajo (sin rotación)
     drawArrow(ctxI, cxI, cyI, cxI, cyI + 90, "purple", "P", 5, 15); 
     
 </script>
