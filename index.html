@@ -629,7 +629,7 @@
       display: none;
       gap: 0;
       position: relative;
-      perspective: 1500px;
+      perspective: 2500px; /* Perspectiva alta para el 3D */
     }
 
     .page-spread.active {
@@ -644,7 +644,7 @@
       overflow-y: auto;
       position: relative;
       transform-style: preserve-3d;
-      transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+      transition: box-shadow 0.15s ease-out;
     }
 
     .reader-page:first-child {
@@ -668,6 +668,7 @@
       );
       flex-shrink: 0;
       position: relative;
+      z-index: 2;
     }
 
     .book-gutter::before {
@@ -681,19 +682,49 @@
       background: rgba(0,0,0,0.3);
     }
 
-    /* Animación de paso de página */
-    @keyframes turnPageRight {
-      0%   { transform: rotateY(0deg); transform-origin: left center; }
-      100% { transform: rotateY(-180deg); transform-origin: left center; }
+    /* ════════════════════════════════════════════
+       NUEVAS ANIMACIONES 3D PARA PASAR PÁGINA
+    ════════════════════════════════════════════ */
+    
+    /* Avanzar a la siguiente página (La hoja derecha cae) */
+    .page-turn-next { display: flex; }
+    .page-turn-next .reader-page:last-child {
+      animation: flipDownRight 0.6s cubic-bezier(0.3, 0.1, 0.2, 1) forwards;
+      transform-origin: left center;
+    }
+    @keyframes flipDownRight {
+      0% { 
+        transform: rotateY(90deg); 
+        filter: brightness(0.6) drop-shadow(-15px 0px 20px rgba(0,0,0,0.5)); 
+        opacity: 0; 
+      }
+      20% { opacity: 1; }
+      100% { 
+        transform: rotateY(0deg); 
+        filter: brightness(1) drop-shadow(0px 0px 0px rgba(0,0,0,0)); 
+        opacity: 1; 
+      }
     }
 
-    @keyframes turnPageLeft {
-      0%   { transform: rotateY(0deg); transform-origin: right center; }
-      100% { transform: rotateY(180deg); transform-origin: right center; }
+    /* Retroceder a la página anterior (La hoja izquierda cae) */
+    .page-turn-prev { display: flex; }
+    .page-turn-prev .reader-page:first-child {
+      animation: flipDownLeft 0.6s cubic-bezier(0.3, 0.1, 0.2, 1) forwards;
+      transform-origin: right center;
     }
-
-    .turning-right { animation: turnPageRight 0.5s ease-in-out; }
-    .turning-left  { animation: turnPageLeft 0.5s ease-in-out; }
+    @keyframes flipDownLeft {
+      0% { 
+        transform: rotateY(-90deg); 
+        filter: brightness(0.6) drop-shadow(15px 0px 20px rgba(0,0,0,0.5)); 
+        opacity: 0; 
+      }
+      20% { opacity: 1; }
+      100% { 
+        transform: rotateY(0deg); 
+        filter: brightness(1) drop-shadow(0px 0px 0px rgba(0,0,0,0)); 
+        opacity: 1; 
+      }
+    }
 
     /* ════════════════════════════════════════════
        CONTENIDO DE LAS PÁGINAS DEL LECTOR
@@ -1169,22 +1200,6 @@
     .card-blue h3 { color: var(--blue); } .card-blue { border-top: 6px solid var(--blue); }
 
     /* ════════════════════════════════════════════
-       TRANSICIÓN DE PÁGINAS
-    ════════════════════════════════════════════ */
-    @keyframes slideInRight {
-      from { transform: translateX(60px); opacity: 0; }
-      to   { transform: translateX(0); opacity: 1; }
-    }
-
-    @keyframes slideInLeft {
-      from { transform: translateX(-60px); opacity: 0; }
-      to   { transform: translateX(0); opacity: 1; }
-    }
-
-    .slide-in-right { animation: slideInRight 0.3s ease-out; }
-    .slide-in-left  { animation: slideInLeft 0.3s ease-out; }
-
-    /* ════════════════════════════════════════════
        EFECTO HOVER 3D EN EL SPREAD
     ════════════════════════════════════════════ */
     #spread-container {
@@ -1219,6 +1234,11 @@
         box-shadow: none;
         max-height: none;
         height: 500px;
+        animation: none !important;
+      }
+      .reader-page {
+        animation: none !important;
+        transform: none !important;
       }
       #spread-container {
         box-shadow: none;
@@ -1233,9 +1253,6 @@
   <source src="https://actions.google.com/sounds/v1/foley/page_turning.ogg" type="audio/ogg">
 </audio>
 
-<!-- ════════════════════════════════════════════
-     PANTALLA INTRO — CÓMIC EN LA MESA
-════════════════════════════════════════════ -->
 <div id="intro-screen" onclick="openComic()">
 
   <div class="desk-objects">
@@ -1256,7 +1273,7 @@
         </div>
         <div class="table-comic-title">Playa<br>La Virgen</div>
         <div class="table-comic-img-placeholder">
-          <img src="1.jpg" alt="Portada" onerror="this.style.display='none'">
+          <img src="0.jpg" alt="Portada" onerror="this.style.display='none'">
           <div class="img-fallback">🏜️</div>
         </div>
         <div class="table-comic-subtitle">Agua Inteligente para el Desierto</div>
@@ -1268,13 +1285,9 @@
   <div class="intro-hint">✦ Haz clic para abrir el cómic ✦</div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     ANIMACIÓN APERTURA DEL LIBRO
-════════════════════════════════════════════ -->
 <div id="book-open-overlay">
   <div class="book-3d" id="book3d">
 
-    <!-- Páginas internas (siempre visibles atrás) -->
     <div class="book-left-page">
       <div class="blp-logo">PROYECTO HÍDRICO</div>
       <div class="icl-seal">
@@ -1300,10 +1313,8 @@
       <div style="font-family:'Bangers',cursive;font-size:1.2rem;letter-spacing:3px;color:#666;">CARGANDO...</div>
     </div>
 
-    <!-- Lomo -->
     <div class="book-spine"></div>
 
-    <!-- Portada (gira sobre el eje derecho) -->
     <div class="book-cover-front" id="bookCoverFront">
       <div class="cover-header-bar" style="width:calc(100% + 40px);margin:-20px -20px 8px;padding:6px 16px;">
         <span style="font-size:0.7rem;letter-spacing:1px;">📚 Innovación Vol. 2</span>
@@ -1311,7 +1322,7 @@
       </div>
       <div class="bcf-title">Playa<br>La Virgen</div>
       <div class="bcf-img">
-        <img src="1.jpg" alt="Portada" onerror="this.style.display='none'">
+        <img src="0.jpg" alt="Portada" onerror="this.style.display='none'">
         🏜️
       </div>
       <div class="bcf-sub">Agua Inteligente para el Desierto</div>
@@ -1320,9 +1331,6 @@
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     LECTOR DE CÓMIC
-════════════════════════════════════════════ -->
 <div id="comic-reader">
   <div class="reader-topbar">
     <div class="topbar-title">🗺️ Playa La Virgen — Cómic</div>
@@ -1336,7 +1344,6 @@
 
   <div class="reader-viewport" id="readerViewport">
 
-    <!-- Partículas de polvo decorativas -->
     <div class="dust" style="left:10%;animation-duration:8s;animation-delay:0s;"></div>
     <div class="dust" style="left:30%;animation-duration:12s;animation-delay:2s;"></div>
     <div class="dust" style="left:55%;animation-duration:9s;animation-delay:4s;"></div>
@@ -1345,9 +1352,7 @@
 
     <div id="spread-container">
 
-      <!-- ══════ SPREAD 0: PORTADA ══════ -->
       <div class="page-spread active" id="spread-0">
-        <!-- Página izquierda: interior de portada -->
         <div class="reader-page inner-cover-left">
           <div class="icl-logo">PROYECTO HÍDRICO</div>
           <div class="icl-seal" style="width:90px;height:90px;font-size:0.65rem;">
@@ -1371,7 +1376,6 @@
 
         <div class="book-gutter"></div>
 
-        <!-- Página derecha: PORTADA REAL -->
         <div class="reader-page cover-spread-right">
           <div class="cover-page-content">
             <div class="cover-header-bar">
@@ -1381,7 +1385,7 @@
             <div class="cover-main-title" contenteditable="true">Playa<br>La Virgen</div>
             <div class="cover-main-subtitle" contenteditable="true">Proyecto: Agua Inteligente para el Desierto</div>
             <div class="cover-main-img">
-              <img src="1.jpg" alt="Portada" onerror="this.style.display='none'">
+              <img src="0.jpg" alt="Portada" onerror="this.style.display='none'">
               🏜️
             </div>
             <div class="cover-footer-bar">
@@ -1392,14 +1396,12 @@
         </div>
       </div>
 
-      <!-- ══════ SPREAD 1: PÁGINAS 1-2 ══════ -->
       <div class="page-spread" id="spread-1">
-        <!-- Página 1 -->
         <div class="reader-page">
           <div class="page-content">
             <div class="scene-label">Cap. 1: El Oasis que se seca</div>
             <div class="panel panel-tall">
-              <img src="2.jpg" alt="Pág 1" onerror="this.style.background='#1a3a6e'">
+              <img src="1.jpg" alt="Pág 1" onerror="this.style.background='#1a3a6e'">
             </div>
             <div class="speech-bubble" contenteditable="true">
               "Tener turismo en pleno Atacama es genial, ¡pero la logística del agua es una pesadilla! Y encima estamos perdiendo plata bajo la arena..."
@@ -1410,12 +1412,11 @@
 
         <div class="book-gutter"></div>
 
-        <!-- Página 2 -->
         <div class="reader-page">
           <div class="page-content">
             <div class="scene-label">Cap. 2: El Terreno Habla</div>
             <div class="panel panel-tall">
-              <img src="3.jpg" alt="Pág 2" onerror="this.style.background='#1a3a6e'">
+              <img src="2.jpg" alt="Pág 2" onerror="this.style.background='#1a3a6e'">
             </div>
             <div class="speech-bubble think" contenteditable="true">
               Hallazgo crítico: el mantenimiento es reactivo — arreglamos solo cuando ya falló. Detectamos consumos extraños de madrugada...
@@ -1429,13 +1430,12 @@
         </div>
       </div>
 
-      <!-- ══════ SPREAD 2: PÁGINAS 3-4 ══════ -->
       <div class="page-spread" id="spread-2">
         <div class="reader-page">
           <div class="page-content">
             <div class="scene-label">Cap. 3: Sistema Sustentable</div>
             <div class="panel panel-tall">
-              <img src="4.jpg" alt="Pág 3" onerror="this.style.background='#1a3a6e'">
+              <img src="3.jpg" alt="Pág 3" onerror="this.style.background='#1a3a6e'">
             </div>
             <div class="speech-bubble shout" contenteditable="true">
               ¡Osmosis inversa + IoT en tiempo real! ¡Detectamos micro-fugas antes de que exploten los costos!
@@ -1450,7 +1450,7 @@
           <div class="page-content">
             <div class="scene-label">Cap. 4: Prototipo y Ajustes</div>
             <div class="panel panel-tall">
-              <img src="5.jpg" alt="Pág 4" onerror="this.style.background='#1a3a6e'">
+              <img src="4.jpg" alt="Pág 4" onerror="this.style.background='#1a3a6e'">
             </div>
             <div class="speech-bubble caption" contenteditable="true">
               Simulamos tuberías bajo arena y validamos la detección de presión. ¡Tras el feedback, agregamos reutilización de aguas grises!
@@ -1460,13 +1460,12 @@
         </div>
       </div>
 
-      <!-- ══════ SPREAD 3: PÁGINAS 5-6 ══════ -->
       <div class="page-spread" id="spread-3">
         <div class="reader-page">
           <div class="page-content">
             <div class="scene-label">Cap. 5: El Nuevo Escenario</div>
             <div class="panel panel-tall">
-              <img src="6.jpg" alt="Pág 5" onerror="this.style.background='#1a3a6e'">
+              <img src="5.jpg" alt="Pág 5" onerror="this.style.background='#1a3a6e'">
             </div>
             <div class="speech-bubble shout" contenteditable="true">
               ¡Control total y mayor autonomía hídrica! Transformamos un gasto reactivo en inversión inteligente. ¡Temporada alta garantizada!
@@ -1511,13 +1510,10 @@
         </div>
       </div>
 
-      <!-- ══════ SPREAD 4: CRÉDITOS ══════ -->
       <div class="page-spread" id="spread-4">
 
-        <!-- Página izquierda créditos: foto/arte decorativo -->
         <div class="reader-page" style="background:#111;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;overflow:hidden;padding:0;">
           <div style="width:100%;height:100%;background:linear-gradient(160deg,#0a1628 0%,#0d2240 50%,#071018 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;position:relative;">
-            <!-- Estrellas de fondo -->
             <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
               <div style="position:absolute;top:12%;left:20%;width:2px;height:2px;background:rgba(255,255,255,0.7);border-radius:50%;box-shadow:40px 20px 0 rgba(255,255,255,0.4),80px -10px 0 rgba(255,255,255,0.6),120px 40px 0 rgba(255,255,255,0.3),160px 10px 0 rgba(255,255,255,0.5),20px 80px 0 rgba(255,255,255,0.4),60px 100px 0 rgba(255,255,255,0.6),100px 60px 0 rgba(255,255,255,0.3),140px 90px 0 rgba(255,255,255,0.5),30px 140px 0 rgba(255,255,255,0.4),70px 170px 0 rgba(255,255,255,0.3);"></div>
             </div>
@@ -1534,7 +1530,6 @@
 
         <div class="book-gutter" style="background:linear-gradient(90deg,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 50%,rgba(0,0,0,0.6) 100%);"></div>
 
-        <!-- Página derecha: CRÉDITOS ESTILO CÓMIC REAL -->
         <div class="reader-page credits-page">
           <div class="credits-content">
 
@@ -1543,7 +1538,6 @@
               <div class="credits-subtitle">STAFF CREATIVO · PRIMERA EDICIÓN 2026</div>
             </div>
 
-            <!-- Equipo -->
             <div class="credits-box">
               <div class="credits-box-label">EQUIPO DE PROYECTO</div>
               <div style="height:6px;"></div>
@@ -1589,7 +1583,6 @@
               </div>
             </div>
 
-            <!-- Docente -->
             <div class="credits-docente credits-box">
               <div class="credits-box-label" style="color:var(--red);">DOCENTE GUÍA</div>
               <div style="height:6px;"></div>
@@ -1597,7 +1590,6 @@
               <div class="docente-role">Innovación y Emprendimiento · INACAP</div>
             </div>
 
-            <!-- Cita -->
             <div class="credits-quote" contenteditable="true">
               "La innovación hídrica es el primer paso hacia un turismo sustentable en el desierto de Atacama."
             </div>
@@ -1609,11 +1601,7 @@
 
       </div>
 
-    </div><!-- #spread-container -->
-  </div><!-- .reader-viewport -->
-</div><!-- #comic-reader -->
-
-<script>
+    </div></div></div><script>
   /* ════════════════════════════════════════════
      VARIABLES DE ESTADO
   ════════════════════════════════════════════ */
@@ -1678,21 +1666,30 @@
   }
 
   /* ════════════════════════════════════════════
-     3. NAVEGACIÓN DE PÁGINAS
+     3. NAVEGACIÓN DE PÁGINAS (CON FÍSICAS DE HOJA 3D)
   ════════════════════════════════════════════ */
   function showSpread(index, direction = 'next') {
-    // Ocultar el spread actual
+    // Ocultar el spread actual quitándole las clases
     const current = document.getElementById('spread-' + currentSpread);
-    if (current) current.classList.remove('active');
+    if (current) {
+        current.classList.remove('active', 'page-turn-next', 'page-turn-prev');
+    }
 
     currentSpread = index;
-
     const next = document.getElementById('spread-' + currentSpread);
+    
     if (next) {
+      // Remover clases de animación previas por si acaso
+      next.classList.remove('page-turn-next', 'page-turn-prev');
+      
+      // Forzar un reflow para reiniciar la animación CSS
+      void next.offsetWidth; 
+      
+      // Añadir las clases para mostrarlo con el efecto 3D correcto
       next.classList.add('active');
-      next.classList.remove('slide-in-right', 'slide-in-left');
-      void next.offsetWidth; // reflow
-      next.classList.add(direction === 'next' ? 'slide-in-right' : 'slide-in-left');
+      if (currentSpread > 0 || direction === 'prev') {
+          next.classList.add(direction === 'next' ? 'page-turn-next' : 'page-turn-prev');
+      }
     }
 
     // Sonido de página
