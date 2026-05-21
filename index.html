@@ -14,59 +14,51 @@
       --white: #FAFAFA;
       --green: #2E8B57;
       --panel-border: 4px solid var(--black);
-      --shadow: 6px 6px 0px var(--black);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* Fondo animado suave */
+    @keyframes gradientBackground {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     body {
-      background: #1a1a2e;
+      background: linear-gradient(-45deg, #1a1a2e, #0f2027, #203a43, #2c5364);
+      background-size: 400% 400%;
+      animation: gradientBackground 15s ease infinite;
       font-family: 'Comic Neue', cursive;
       min-height: 100vh;
       padding: 20px;
-      background-image:
-        radial-gradient(circle at 20% 50%, rgba(0,87,168,0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(227,27,35,0.15) 0%, transparent 40%);
       overflow-x: hidden;
+    }
+
+    /* ── ANIMACIÓN SCROLL (FADE IN) ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     /* ── PORTADA ── */
     #cover {
-      max-width: 900px;
-      margin: 0 auto 40px;
-      background: var(--yellow);
-      border: 6px solid var(--black);
-      box-shadow: 10px 10px 0 var(--black);
-      position: relative;
-      overflow: hidden;
-      min-height: 500px;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.2s ease-out;
-      transform-style: preserve-3d;
+      max-width: 900px; margin: 0 auto 40px; background: var(--yellow); border: 6px solid var(--black); box-shadow: 10px 10px 0 var(--black); position: relative; overflow: hidden; min-height: 500px; display: flex; flex-direction: column; transition: transform 0.2s ease-out; transform-style: preserve-3d;
     }
-
-    .cover-header {
-      background: var(--red);
-      padding: 12px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 4px solid var(--black);
-    }
-
+    .cover-header { background: var(--red); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--black); }
     .cover-header .series-tag { font-family: 'Bangers', cursive; font-size: 1.1rem; color: var(--yellow); letter-spacing: 2px; text-transform: uppercase; }
     .cover-header .issue-number { font-family: 'Bangers', cursive; font-size: 1.4rem; color: var(--white); background: var(--blue); padding: 4px 12px; border: 3px solid var(--black); }
-    
     .cover-title-block { padding: 20px 30px 10px; position: relative; z-index: 2; transform: translateZ(30px); }
-    .cover-title { font-family: 'Bangers', cursive; font-size: clamp(3rem, 8vw, 6rem); line-height: 0.9; color: var(--black); text-shadow: 4px 4px 0 var(--white), 8px 8px 0 rgba(0,0,0,0.2); letter-spacing: 3px; text-transform: uppercase; }
+    .cover-title { font-family: 'Bangers', cursive; font-size: clamp(2.5rem, 8vw, 5rem); line-height: 0.9; color: var(--black); text-shadow: 4px 4px 0 var(--white), 8px 8px 0 rgba(0,0,0,0.2); letter-spacing: 2px; text-transform: uppercase; }
     .cover-subtitle { font-family: 'Permanent Marker', cursive; font-size: 1.3rem; color: var(--blue); margin-top: 6px; text-shadow: 2px 2px 0 var(--black); }
 
-    .cover-image-area {
-      flex: 1; margin: 10px 20px 20px; border: var(--panel-border); background: #ddd; min-height: 280px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; transform: translateZ(20px);
-    }
+    .cover-image-area { flex: 1; margin: 10px 20px 20px; border: var(--panel-border); background: #ddd; min-height: 280px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; transform: translateZ(20px); }
     .cover-image-area img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
-
     .img-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; color: #666; font-family: 'Bangers', cursive; font-size: 1.4rem; letter-spacing: 2px; background: repeating-linear-gradient(45deg, #e0e0e0, #e0e0e0 10px, #d0d0d0 10px, #d0d0d0 20px); cursor: pointer; transition: opacity 0.2s; gap: 10px; text-align: center; padding: 10px;}
     .img-placeholder .icon { font-size: 3rem; }
     .img-placeholder:hover { opacity: 0.8; }
@@ -74,21 +66,17 @@
     .cover-footer { display: flex; justify-content: space-between; align-items: center; padding: 8px 24px; background: var(--blue); border-top: 4px solid var(--black); transform: translateZ(30px);}
     .cover-footer span { font-family: 'Bangers', cursive; color: var(--white); font-size: 1rem; letter-spacing: 2px; }
 
-    /* ── CONTROLES (OCULTOS POR DEFECTO) ── */
+    /* ── CONTROLES OCULTOS ── */
     .controls-wrapper { text-align: center; margin-bottom: 20px; }
-    .controls-hint { color: #888; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; margin-bottom: 10px; }
-    .controls {
-      max-width: 900px; margin: 0 auto; display: none; gap: 12px; flex-wrap: wrap; justify-content: center;
-      background: rgba(0,0,0,0.7); padding: 15px; border-radius: 10px; border: 2px dashed var(--yellow);
-    }
-
+    .controls-hint { color: rgba(255,255,255,0.7); font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; margin-bottom: 10px; }
+    .controls { max-width: 900px; margin: 0 auto; display: none; gap: 12px; flex-wrap: wrap; justify-content: center; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 10px; border: 2px dashed var(--yellow); }
     .btn { font-family: 'Bangers', cursive; font-size: 1.2rem; letter-spacing: 2px; padding: 10px 24px; border: 3px solid var(--black); cursor: pointer; box-shadow: 4px 4px 0 var(--black); transition: transform 0.1s, box-shadow 0.1s; text-transform: uppercase; }
     .btn:active { transform: translate(4px,4px); box-shadow: 0 0 0 var(--black); }
-    .btn-pdf  { background: var(--red);  color: var(--white); }
+    .btn-pdf  { background: var(--red); color: var(--white); }
     .btn-html { background: var(--blue); color: var(--white); }
     .btn-edit { background: var(--yellow); color: var(--black); }
 
-    /* ── PÁGINAS Y PANELES ── */
+    /* ── PÁGINAS Y GRIDS ── */
     .comic-pages { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
     .page { background: var(--white); border: 6px solid var(--black); box-shadow: 10px 10px 0 var(--black); padding: 20px; position: relative; }
     .page-number { position: absolute; top: -18px; left: 20px; background: var(--yellow); border: 3px solid var(--black); font-family: 'Bangers', cursive; font-size: 1rem; padding: 2px 12px; letter-spacing: 2px; z-index: 100;}
@@ -97,10 +85,7 @@
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
     .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; }
 
-    .panel {
-      border: var(--panel-border); position: relative; background: #f5f5f5; min-height: 180px; overflow: hidden; display: flex; flex-direction: column;
-      transition: transform 0.1s ease-out, box-shadow 0.1s ease-out; transform-style: preserve-3d;
-    }
+    .panel { border: var(--panel-border); position: relative; background: #f5f5f5; min-height: 180px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.1s ease-out, box-shadow 0.1s ease-out; transform-style: preserve-3d; }
     .panel.tall { min-height: 320px; }
     .panel.short { min-height: 120px; }
     .panel img { width: 100%; height: 200px; object-fit: cover; display: block; border-bottom: var(--panel-border); }
@@ -109,46 +94,62 @@
     .panel.tall .img-placeholder { height: 260px; }
 
     /* ── BOCADILLOS ── */
-    .speech-bubble {
-      position: relative; background: var(--white); border: 3px solid var(--black); border-radius: 20px; margin: 10px 12px; padding: 8px 14px; font-family: 'Comic Neue', cursive; font-size: 0.95rem; font-weight: 700; line-height: 1.3; color: var(--black); flex: 1;
-      transform: translateZ(25px); box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
-    }
+    .speech-bubble { position: relative; background: var(--white); border: 3px solid var(--black); border-radius: 20px; margin: 10px 12px; padding: 8px 14px; font-family: 'Comic Neue', cursive; font-size: 0.95rem; font-weight: 700; line-height: 1.3; color: var(--black); flex: 1; transform: translateZ(25px); box-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
     .speech-bubble.think { border-style: dashed; border-radius: 50%; text-align: center; }
     .speech-bubble.shout { background: var(--yellow); border-radius: 4px; font-size: 1.1rem; clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%); }
     .speech-bubble.caption { background: var(--blue); color: var(--white); border-radius: 4px; font-style: italic; }
     .speech-bubble [contenteditable] { outline: none; }
 
-    .sfx { font-family: 'Bangers', cursive; font-size: 2.5rem; color: var(--red); text-shadow: 3px 3px 0 var(--black); text-align: center; padding: 6px 12px; letter-spacing: 4px; line-height: 1; transform: translateZ(40px); }
     .scene-label { font-family: 'Bangers', cursive; font-size: 1.1rem; letter-spacing: 3px; color: var(--white); background: var(--black); text-align: center; padding: 6px; text-transform: uppercase; margin-bottom: 12px; }
 
-    /* ── ANÁLISIS (PÁG 6) ── */
-    .analysis-section { padding: 20px; display: block; height: auto; transform: translateZ(15px); }
-    .analysis-title { font-family: 'Bangers', cursive; font-size: 2.2rem; margin-bottom: 10px; letter-spacing: 1px; }
-    .analysis-list { margin-left: 20px; margin-bottom: 20px; font-size: 1.2rem; line-height: 1.5; font-weight: 700; }
-    .analysis-list li { margin-bottom: 8px; }
-    .analysis-list li[contenteditable]:focus { background: rgba(255,215,0,0.2); outline: none; }
+    /* ── EFECTO IDEA / SONIDO ── */
+    @keyframes pulse {
+      0% { transform: scale(1) translateZ(40px); }
+      50% { transform: scale(1.1) translateZ(50px); color: var(--yellow); }
+      100% { transform: scale(1) translateZ(40px); }
+    }
+    .sfx { font-family: 'Bangers', cursive; font-size: 2.5rem; color: var(--red); text-shadow: 3px 3px 0 var(--black); text-align: center; padding: 6px 12px; letter-spacing: 4px; line-height: 1; transform: translateZ(40px); cursor: pointer; }
+    .sfx.pulse:hover { animation: pulse 0.5s infinite; }
 
-    /* ── CRÉDITOS ── */
-    .credits-page { background: var(--black); color: var(--yellow); text-align: center; padding: 40px 30px; }
-    .credits-page h2 { font-family: 'Bangers', cursive; font-size: 2.5rem; letter-spacing: 4px; margin-bottom: 20px; text-shadow: 3px 3px 0 var(--red); }
-    .team { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin: 24px 0; }
-    .member { background: #1a1a1a; border: 2px solid var(--yellow); padding: 10px 20px; font-family: 'Bangers', cursive; font-size: 1.1rem; letter-spacing: 2px; color: var(--white); }
+    /* ── NUEVO DASHBOARD (PÁG 6) ── */
+    .dashboard-container { padding: 10px; display: flex; flex-direction: column; gap: 15px; transform: translateZ(15px); }
+    .dash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+    .dash-card { background: #fff; border: 3px solid var(--black); border-radius: 8px; padding: 15px; box-shadow: 4px 4px 0 rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 10px;}
+    .dash-card h3 { font-family: 'Bangers', cursive; font-size: 1.5rem; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; border-bottom: 2px dashed #ccc; padding-bottom: 5px;}
+    .dash-card ul { list-style: none; font-family: 'Comic Neue', cursive; font-weight: bold; font-size: 0.95rem; line-height: 1.4; padding-left: 0; }
+    .dash-card ul li { margin-bottom: 8px; padding-left: 20px; position: relative; }
+    .dash-card ul li::before { content: "•"; position: absolute; left: 0; color: var(--black); font-size: 1.5rem; line-height: 0.8; }
     
+    .card-green h3 { color: var(--green); } .card-green { border-top: 8px solid var(--green); }
+    .card-red h3 { color: var(--red); } .card-red { border-top: 8px solid var(--red); }
+    .card-blue h3 { color: var(--blue); } .card-blue { border-top: 8px solid var(--blue); }
+
+    /* ── RESPONSIVE PARA MÓVILES ── */
+    @media (max-width: 768px) {
+      .grid-2, .grid-3, .grid-1-2, .dash-grid { grid-template-columns: 1fr; }
+      .cover-title { font-size: 2.5rem; }
+      .panel { min-height: auto; }
+      .sfx { font-size: 2rem; }
+    }
+
     /* ── PRINT ── */
     @media print {
-      body { background: white; padding: 0; overflow: visible; }
+      body { background: white; padding: 0; overflow: visible; animation: none; }
       .controls-wrapper { display: none !important; }
-      .page, #cover { box-shadow: none; border: 4px solid black; transform: none !important; page-break-after: always; }
+      .page, #cover { box-shadow: none; border: 4px solid black; transform: none !important; page-break-after: always; opacity: 1; }
+      .fade-in { opacity: 1; transform: none; transition: none; }
       .comic-pages { gap: 0; }
       .panel { transform: none !important; transition: none !important; box-shadow: none !important; }
-      .speech-bubble, .sfx, .cover-title-block, .cover-image-area, .cover-footer { transform: none !important; }
+      .speech-bubble, .sfx, .cover-title-block, .cover-image-area, .cover-footer, .dashboard-container { transform: none !important; }
     }
   </style>
 </head>
 <body>
 
-<div class="controls-wrapper">
-  <div class="controls-hint">💡 Pista de presentación: Presiona <strong>Ctrl + L</strong> para mostrar/ocultar los botones.</div>
+<audio id="popSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg" preload="auto"></audio>
+
+<div class="controls-wrapper fade-in">
+  <div class="controls-hint">💡 Pista de presentación: Presiona <strong>Ctrl + L</strong> para mostrar/ocultar botones.</div>
   <div class="controls" id="controlsPanel">
     <button class="btn btn-pdf"  onclick="window.print()">🖨️ Imprimir / PDF</button>
     <button class="btn btn-html" onclick="downloadHTML()">💾 Descargar HTML</button>
@@ -156,242 +157,171 @@
   </div>
 </div>
 
-<div id="cover">
+<div id="cover" class="fade-in">
   <div class="cover-header">
-    <span class="series-tag">📚 Innovación & Emprendimiento Vol. 2</span>
+    <span class="series-tag">📚 Innovación Vol. 2</span>
     <span class="issue-number">#01</span>
   </div>
   <div class="cover-title-block">
-    <div class="cover-title" contenteditable="true">PLAYA LA VIRGEN</div>
-    <div class="cover-subtitle" contenteditable="true">¡Operación: Autonomía Hídrica Smart!</div>
+    <div class="cover-title" contenteditable="true">Playa La Virgen</div>
+    <div class="cover-subtitle" contenteditable="true">Proyecto: Agua Inteligente para el Desierto</div>
   </div>
   <div class="cover-image-area">
     <div class="img-placeholder" onclick="triggerImageUpload(this)">
-      <span class="icon">🖼️</span><span>Sube tu Portada (Ej: El Complejo)</span>
+      <span class="icon">🖼️</span><span>Sube tu Portada</span>
     </div>
   </div>
   <div class="cover-footer">
     <span contenteditable="true">Equipo: Simón, Renato, Wiljer, Julio, Millaray</span>
     <span contenteditable="true">INACAP · 2026</span>
-    <span contenteditable="true">V.1.0</span>
   </div>
 </div>
 
 <div class="comic-pages" id="comicPages">
-
-  <div class="page">
+  <div class="page fade-in">
     <div class="page-number">PÁG. 1</div>
-    <div class="scene-label" contenteditable="true">Capítulo 1: El Oasis en Peligro</div>
+    <div class="scene-label" contenteditable="true">Capítulo 1: El Oasis que se seca</div>
     <div class="grid-1-2">
       <div class="panel tall">
-        <div class="img-placeholder" onclick="triggerImageUpload(this)">
-          <span class="icon">🏜️</span><span>Equipo mirando estanque vacío</span>
-        </div>
-        <div class="speech-bubble">
-          <span contenteditable="true">"¡Todo comenzó cuando vimos que mantener el suministro hídrico aquí era una pesadilla logística!"</span>
-        </div>
+        <div class="img-placeholder" onclick="triggerImageUpload(this)"><span class="icon">🏜️</span><span>Estanque vacío</span></div>
+        <div class="speech-bubble"><span contenteditable="true">"Tener turismo en pleno Atacama es genial, ¡pero la logística del agua es una pesadilla!"</span></div>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div class="panel">
-          <div class="img-placeholder" onclick="triggerImageUpload(this)">
-            <span class="icon">🚚</span><span>Gerente frustrado y Camión Aljibe</span>
-          </div>
-          <div class="speech-bubble caption">
-            <span contenteditable="true">Históricamente dependemos de costosos camiones aljibe externos...</span>
-          </div>
+          <div class="img-placeholder" onclick="triggerImageUpload(this)"><span class="icon">🚚</span><span>Camión Aljibe</span></div>
+          <div class="speech-bubble caption"><span contenteditable="true">Depender de camiones aljibe externos ahoga nuestras finanzas...</span></div>
         </div>
         <div class="panel">
-          <div class="speech-bubble shout">
-            <span contenteditable="true">"¡Y las fugas ocultas en las tuberías HDPE nos cuestan una fortuna!"</span>
-          </div>
-          <div class="img-placeholder" onclick="triggerImageUpload(this)" style="height:120px;border-top:3px solid #bbb;border-bottom:none;">
-            <span class="icon">💧</span><span>Charco en la arena</span>
-          </div>
+          <div class="speech-bubble shout"><span contenteditable="true">"¡Y además estamos perdiendo plata bajo la arena por tuberías rotas!"</span></div>
+          <div class="img-placeholder" onclick="triggerImageUpload(this)" style="height:120px;border-top:3px solid #bbb;border-bottom:none;"><span class="icon">💧</span><span>Charco</span></div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="page">
+  <div class="page fade-in">
     <div class="page-number">PÁG. 2</div>
-    <div class="scene-label" contenteditable="true">Capítulo 2: La Búsqueda (Iteración)</div>
+    <div class="scene-label" contenteditable="true">Capítulo 2: El Terreno habla</div>
     <div class="grid-3">
       <div class="panel">
-        <div class="img-placeholder" onclick="triggerImageUpload(this)">
-          <span class="icon">🔍</span><span>Revisando Tuberías</span>
-        </div>
-        <div class="speech-bubble">
-          <span contenteditable="true">Hallazgo: El reemplazo de redes es 100% reactivo. ¡Solo arreglamos cuando ya falló!</span>
-        </div>
+        <div class="img-placeholder" onclick="triggerImageUpload(this)"><span class="icon">🔍</span><span>Revisando Red</span></div>
+        <div class="speech-bubble"><span contenteditable="true">Dato crítico: Nuestro mantenimiento es 100% reactivo. Arreglamos solo cuando ya está todo inundado.</span></div>
       </div>
       <div class="panel">
-        <div class="img-placeholder" onclick="triggerImageUpload(this)">
-          <span class="icon">📈</span><span>Consumo nocturno</span>
-        </div>
-        <div class="speech-bubble">
-          <span contenteditable="true">¡Hay consumos anormales en la noche! Claramente tenemos fugas fantasmas en el terreno salino.</span>
-        </div>
+        <div class="img-placeholder" onclick="triggerImageUpload(this)"><span class="icon">📈</span><span>Consumo Raro</span></div>
+        <div class="speech-bubble"><span contenteditable="true">¿Picos de consumo en la madrugada? Tenemos fugas fantasmas gigantes.</span></div>
       </div>
       <div class="panel">
-        <div class="img-placeholder" onclick="triggerImageUpload(this)">
-          <span class="icon">👷</span><span>Entrevista Sergio</span>
-        </div>
-        <div class="speech-bubble think">
-          <span contenteditable="true">"Actualmente solo tenemos inspección visual. Necesitamos tecnología predictiva."</span>
-        </div>
+        <div class="img-placeholder" onclick="triggerImageUpload(this)"><span class="icon">👷</span><span>Usuario frustrado</span></div>
+        <div class="speech-bubble think"><span contenteditable="true">"No podemos seguir adivinando dónde está la fuga."</span></div>
       </div>
     </div>
     <div style="margin-top:12px;">
       <div class="panel short" style="flex-direction:row;align-items:center;gap:16px;padding:12px;">
-        <div class="sfx">¡IDEA!</div>
-        <div class="speech-bubble caption" style="margin:0;flex:1">
-          <span contenteditable="true">Solución: Pasar de un modelo reactivo a uno predictivo con tecnología IoT y osmosis inversa.</span>
-        </div>
+        <div class="sfx pulse" onclick="document.getElementById('popSound').play()" title="Haz clic para escuchar!">¡IDEA!</div>
+        <div class="speech-bubble caption" style="margin:0;flex:1"><span contenteditable="true">¿Y si usamos sensores para ver lo que la arena esconde?</span></div>
       </div>
     </div>
   </div>
 
-  <div class="page">
+  <div class="page fade-in">
     <div class="page-number">PÁG. 3</div>
-    <div class="scene-label" contenteditable="true">Capítulo 3: La Solución Smart</div>
+    <div class="scene-label" contenteditable="true">Capítulo 3: Sistema Hídrico Sustentable</div>
     <div class="grid-2">
       <div class="panel tall">
-        <div class="img-placeholder" onclick="triggerImageUpload(this)">
-          <span class="icon">🌊</span><span>Planta Desalinizadora</span>
-        </div>
-        <div class="speech-bubble shout">
-          <span contenteditable="true">¡Planta Desalinizadora + Smart Water!</span>
-        </div>
-        <div class="speech-bubble">
-          <span contenteditable="true">Un sistema integral de osmosis inversa monitoreado 100% en tiempo real.</span>
-        </div>
+        <div class="img-placeholder" onclick="triggerImageUpload(this)"><span class="icon">🌊</span><span>Planta / Software</span></div>
+        <div class="speech-bubble shout"><span contenteditable="true">¡Planta Desalinizadora Monitoreada!</span></div>
+        <div class="speech-bubble"><span contenteditable="true">Integramos osmosis inversa con un tablero de control en tiempo real.</span></div>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div class="panel">
-          <div class="img-placeholder" onclick="triggerImageUpload(this)">
-            <span class="icon">📡</span><span>Sensor ultrasónico</span>
-          </div>
-          <div class="speech-bubble">
-            <span contenteditable="true"><strong>Hardware:</strong> Sensores ultrasónicos en el estanque para control volumétrico autónomo.</span>
-          </div>
+          <div class="img-placeholder" onclick="triggerImageUpload(this)"><span class="icon">📡</span><span>Sensores</span></div>
+          <div class="speech-bubble"><span contenteditable="true">Sensores ultrasónicos miden el nivel del estanque y la presión de la matriz.</span></div>
         </div>
         <div class="panel">
-          <div class="img-placeholder" onclick="triggerImageUpload(this)">
-            <span class="icon">📱</span><span>Dashboard App</span>
-          </div>
-          <div class="speech-bubble">
-            <span contenteditable="true"><strong>Software:</strong> Algoritmos que detectan micro-fugas y alertan a la jefatura al instante.</span>
-          </div>
+          <div class="img-placeholder" onclick="triggerImageUpload(this)"><span class="icon">📱</span><span>Dashboard App</span></div>
+          <div class="speech-bubble"><span contenteditable="true">¡Detectamos micro-fugas antes de que exploten los costos!</span></div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="page">
+  <div class="page fade-in">
     <div class="page-number">PÁG. 4</div>
-    <div class="scene-label" contenteditable="true">Capítulo 4: Validación y Prototipo</div>
+    <div class="scene-label" contenteditable="true">Capítulo 4: Prototipo y Ajustes</div>
     <div class="grid-2">
       <div class="panel">
-        <div class="img-placeholder" onclick="triggerImageUpload(this)">
-          <span class="icon">📦</span><span>Foto de la Maqueta</span>
-        </div>
-        <div class="speech-bubble">
-          <span contenteditable="true">En nuestro prototipo simulamos la detección de presión en tuberías ocultas bajo la arena.</span>
-        </div>
+        <div class="img-placeholder" onclick="triggerImageUpload(this)"><span class="icon">📦</span><span>Foto Maqueta</span></div>
+        <div class="speech-bubble"><span contenteditable="true">Simulamos las tuberías enterradas para probar cómo los sensores detectan caídas de presión reales.</span></div>
       </div>
       <div class="panel">
-        <div class="img-placeholder" onclick="triggerImageUpload(this)">
-          <span class="icon">🔄</span><span>Filtro / Mejoras</span>
-        </div>
-        <div class="speech-bubble caption">
-          <span contenteditable="true">Tras iterar con el usuario, agregamos un sistema mecánico simple para reutilizar aguas grises en riego.</span>
-        </div>
+        <div class="img-placeholder" onclick="triggerImageUpload(this)"><span class="icon">🔄</span><span>Mejora Iterativa</span></div>
+        <div class="speech-bubble caption"><span contenteditable="true">Validando con el cliente, descubrimos que también podíamos reciclar aguas grises para riego.</span></div>
       </div>
     </div>
   </div>
 
-  <div class="page">
+  <div class="page fade-in">
     <div class="page-number">PÁG. 5</div>
-    <div class="scene-label" contenteditable="true">Capítulo 5: Impacto Logrado</div>
+    <div class="scene-label" contenteditable="true">Capítulo 5: El Nuevo Escenario</div>
     <div class="grid-1-2">
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div class="panel short" style="background:var(--blue);justify-content:center;align-items:center;">
-          <div style="font-family:'Bangers',cursive;font-size:2.5rem;color:var(--yellow);text-align:center;padding:10px;" contenteditable="true">100%<br><span style="font-size:1rem;color:white;">AUTONOMÍA HÍDRICA</span></div>
+          <div style="font-family:'Bangers',cursive;font-size:2rem;color:var(--yellow);text-align:center;padding:10px;" contenteditable="true">MAYOR<br><span style="font-size:1rem;color:white;">AUTONOMÍA</span></div>
         </div>
         <div class="panel short" style="background:var(--red);justify-content:center;align-items:center;">
-          <div style="font-family:'Bangers',cursive;font-size:2.5rem;color:var(--yellow);text-align:center;padding:10px;" contenteditable="true">0%<br><span style="font-size:1rem;color:white;">FUGAS FANTASMAS</span></div>
-        </div>
-        <div class="panel short" style="background:var(--black);justify-content:center;align-items:center;">
-          <div style="font-family:'Bangers',cursive;font-size:2rem;color:var(--yellow);text-align:center;padding:10px;" contenteditable="true">+ AÑOS<br><span style="font-size:1rem;color:white;">VIDA ÚTIL HDPE</span></div>
+          <div style="font-family:'Bangers',cursive;font-size:2rem;color:var(--yellow);text-align:center;padding:10px;" contenteditable="true">- Pérdidas<br><span style="font-size:1rem;color:white;">OPERACIONALES</span></div>
         </div>
       </div>
       <div class="panel tall">
-        <div class="img-placeholder" onclick="triggerImageUpload(this)">
-          <span class="icon">🏆</span><span>Turistas / Complejo Verde</span>
-        </div>
-        <div class="speech-bubble">
-          <span contenteditable="true">¡Logramos el control total! Mejoramos la autonomía y garantizamos el suministro durante toda la temporada alta turística.</span>
-        </div>
+        <div class="img-placeholder" onclick="triggerImageUpload(this)"><span class="icon">🏆</span><span>Complejo Feliz</span></div>
+        <div class="speech-bubble"><span contenteditable="true">Transformamos un gasto ciego en una inversión inteligente. ¡Temporada alta asegurada!</span></div>
       </div>
     </div>
   </div>
 
-  <div class="page">
+  <div class="page fade-in">
     <div class="page-number">PÁG. 6</div>
-    <div class="scene-label" contenteditable="true">Capítulo 6: Análisis de Validación</div>
-    <div class="panel analysis-section">
+    <div class="scene-label" contenteditable="true">Capítulo 6: Panel de Validación</div>
+    <div class="dashboard-container">
       
-      <h2 class="analysis-title" style="color: var(--blue);">🌟 Cualidades (Lo Positivo)</h2>
-      <ul class="analysis-list">
-        <li contenteditable="true">Elimina por completo la dependencia logística y económica de los camiones aljibes externos.</li>
-        <li contenteditable="true">Permite un control total del consumo y detección rápida de anomalías a través del software "Smart Water".</li>
-        <li contenteditable="true">Mejora la continuidad del servicio durante la temporada alta, asegurando la mejor experiencia para el turista.</li>
-      </ul>
+      <div class="dash-grid">
+        <div class="dash-card card-green">
+          <h3>✅ Logros del Sistema</h3>
+          <ul>
+            <li contenteditable="true">Reduce drásticamente la dependencia de camiones externos.</li>
+            <li contenteditable="true">Control visual de datos en tiempo real.</li>
+            <li contenteditable="true">Asegura la continuidad del turismo en verano.</li>
+          </ul>
+        </div>
+        <div class="dash-card card-red">
+          <h3>⚠️ Puntos Críticos</h3>
+          <ul>
+            <li contenteditable="true">Alta inversión de capital inicial (CAPEX).</li>
+            <li contenteditable="true">Mantenimiento delicado de membranas de osmosis.</li>
+          </ul>
+        </div>
+        <div class="dash-card card-blue">
+          <h3>🚀 Visión Futura</h3>
+          <ul>
+            <li contenteditable="true">Integración total del reuso de aguas grises.</li>
+            <li contenteditable="true">Soterramiento profundo con protección UV.</li>
+          </ul>
+        </div>
+      </div>
 
-      <h2 class="analysis-title" style="color: var(--red);">⚠️ Debilidades (A Considerar)</h2>
-      <ul class="analysis-list">
-        <li contenteditable="true">Requiere una alta inversión inicial para la planta de osmosis inversa y la tecnología de sensores.</li>
-        <li contenteditable="true">Exige protocolos estrictos y capacitación técnica rigurosa para la limpieza y mantenimiento de las membranas.</li>
-      </ul>
-
-      <h2 class="analysis-title" style="color: var(--green);">🚀 Mejoras (El Siguiente Nivel)</h2>
-      <ul class="analysis-list">
-        <li contenteditable="true">Se puede integrar al 100% el reuso de aguas grises (domésticas) para mantener las áreas verdes, reduciendo la demanda del estanque principal.</li>
-        <li contenteditable="true">Se podría evaluar a largo plazo el soterramiento profundo de las matrices con protección UV avanzada.</li>
-      </ul>
-
-    </div>
-  </div>
-
-  <div class="page credits-page">
-    <h2>⚡ EL EQUIPO ⚡</h2>
-    <p contenteditable="true">Innovación y Emprendimiento · INACAP · 2026</p>
-
-    <div class="team">
-      <div class="member" contenteditable="true">👤 Simón Olivares</div>
-      <div class="member" contenteditable="true">👤 Renato Bórquez</div>
-      <div class="member" contenteditable="true">👤 Wiljer Mamani</div>
-      <div class="member" contenteditable="true">👤 Julio Sinisterra</div>
-      <div class="member" contenteditable="true">👤 Millaray Aguirre</div>
-    </div>
-
-    <p contenteditable="true">Docente: <strong>Raúl Alberto Araya Zepeda</strong></p>
-
-    <div style="margin:30px 0;border-top:2px solid #333;border-bottom:2px solid #333;padding:20px;">
-      <p style="font-style:italic;color:#aaa;" contenteditable="true">
-        "La innovación hídrica es el primer paso hacia un turismo 100% sustentable en el desierto de Atacama."
-      </p>
     </div>
   </div>
 
 </div>
+
 <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="loadImage(event)" />
 
 <script>
   let currentPlaceholder = null;
   let editMode = true;
 
-  // 1. Mostrar/Ocultar controles con Ctrl+L
+  // 1. Mostrar/Ocultar botones
   document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && (e.key === 'l' || e.key === 'L')) {
       e.preventDefault();
@@ -400,27 +330,21 @@
     }
   });
 
-  // 2. Efecto 3D Parallax al pasar el mouse
+  // 2. Efecto Parallax en Paneles
   const panels = document.querySelectorAll('.panel, #cover');
   panels.forEach(panel => {
     panel.addEventListener('mousemove', e => {
-      // Si estamos imprimiendo, no hacemos el efecto
       if (window.matchMedia('print').matches) return;
-
       const rect = panel.getBoundingClientRect();
       const x = e.clientX - rect.left; 
       const y = e.clientY - rect.top;  
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      
-      const rotateX = ((y - centerY) / centerY) * -6; 
-      const rotateY = ((x - centerX) / centerX) * 6;
+      const rotateX = ((y - (rect.height / 2)) / (rect.height / 2)) * -6; 
+      const rotateY = ((x - (rect.width / 2)) / (rect.width / 2)) * 6;
       
       panel.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
       panel.style.boxShadow = `${-rotateY}px ${rotateX + 10}px 15px rgba(0,0,0,0.3)`;
       panel.style.zIndex = 10;
     });
-
     panel.addEventListener('mouseleave', () => {
       panel.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
       panel.style.boxShadow = `10px 10px 0 var(--black)`; 
@@ -428,12 +352,22 @@
     });
   });
 
-  // 3. Subir imágenes
+  // 3. Scroll Reveal (Fade in)
+  const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, observerOptions);
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // 4. Subida de Imágenes
   function triggerImageUpload(placeholder) {
     currentPlaceholder = placeholder;
     document.getElementById('imageInput').click();
   }
-
   function loadImage(event) {
     const file = event.target.files[0];
     if (!file || !currentPlaceholder) return;
@@ -443,9 +377,7 @@
       const img = document.createElement('img');
       img.src = e.target.result;
       img.style.cursor = 'pointer';
-      img.title = 'Haz clic para cambiar la imagen';
       img.onclick = function() {
-        currentPlaceholder = panel.querySelector('.img-placeholder') || currentPlaceholder;
         currentPlaceholder = panel;
         document.getElementById('imageInput').click();
       };
@@ -455,26 +387,24 @@
     event.target.value = '';
   }
 
-  // 4. Activar/Desactivar edición
+  // 5. Modo Edición
   function toggleEditMode() {
     editMode = !editMode;
-    const editables = document.querySelectorAll('[contenteditable]');
-    editables.forEach(el => {
+    document.querySelectorAll('[contenteditable]').forEach(el => {
       el.contentEditable = editMode ? 'true' : 'false';
       el.style.outline = editMode ? '2px dashed var(--yellow)' : 'none';
       el.style.background = editMode ? 'rgba(255,215,0,0.08)' : '';
     });
-    const btn = document.querySelector('.btn-edit');
-    btn.textContent = editMode ? '✅ Guardar Cambios' : '✏️ Modo Edición';
+    document.querySelector('.btn-edit').textContent = editMode ? '✅ Guardar Cambios' : '✏️ Modo Edición';
   }
 
-  // 5. Descargar HTML
+  // 6. Descargar HTML
   function downloadHTML() {
     const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'comic_playa_la_virgen_final.html';
+    a.download = 'comic_startup_playalavirgen.html';
     a.click();
   }
 </script>
