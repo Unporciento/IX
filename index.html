@@ -12,6 +12,7 @@
       --blue: #0057A8;
       --black: #0A0A0A;
       --white: #FAFAFA;
+      --green: #2E8B57;
       --panel-border: 4px solid var(--black);
       --shadow: 6px 6px 0px var(--black);
     }
@@ -74,20 +75,12 @@
     .cover-footer span { font-family: 'Bangers', cursive; color: var(--white); font-size: 1rem; letter-spacing: 2px; }
 
     /* ── CONTROLES (OCULTOS POR DEFECTO) ── */
+    .controls-wrapper { text-align: center; margin-bottom: 20px; }
+    .controls-hint { color: #888; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; margin-bottom: 10px; }
     .controls {
-      max-width: 900px;
-      margin: 0 auto 30px;
-      display: none; /* Oculto inicialmente */
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-      background: rgba(0,0,0,0.7);
-      padding: 15px;
-      border-radius: 10px;
-      border: 2px dashed var(--yellow);
+      max-width: 900px; margin: 0 auto; display: none; gap: 12px; flex-wrap: wrap; justify-content: center;
+      background: rgba(0,0,0,0.7); padding: 15px; border-radius: 10px; border: 2px dashed var(--yellow);
     }
-
-    .controls-hint { text-align: center; color: #888; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; margin-bottom: 10px; }
 
     .btn { font-family: 'Bangers', cursive; font-size: 1.2rem; letter-spacing: 2px; padding: 10px 24px; border: 3px solid var(--black); cursor: pointer; box-shadow: 4px 4px 0 var(--black); transition: transform 0.1s, box-shadow 0.1s; text-transform: uppercase; }
     .btn:active { transform: translate(4px,4px); box-shadow: 0 0 0 var(--black); }
@@ -98,7 +91,7 @@
     /* ── PÁGINAS Y PANELES ── */
     .comic-pages { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
     .page { background: var(--white); border: 6px solid var(--black); box-shadow: 10px 10px 0 var(--black); padding: 20px; position: relative; }
-    .page-number { position: absolute; top: -18px; left: 20px; background: var(--yellow); border: 3px solid var(--black); font-family: 'Bangers', cursive; font-size: 1rem; padding: 2px 12px; letter-spacing: 2px; }
+    .page-number { position: absolute; top: -18px; left: 20px; background: var(--yellow); border: 3px solid var(--black); font-family: 'Bangers', cursive; font-size: 1rem; padding: 2px 12px; letter-spacing: 2px; z-index: 100;}
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
@@ -106,8 +99,7 @@
 
     .panel {
       border: var(--panel-border); position: relative; background: #f5f5f5; min-height: 180px; overflow: hidden; display: flex; flex-direction: column;
-      transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
-      transform-style: preserve-3d;
+      transition: transform 0.1s ease-out, box-shadow 0.1s ease-out; transform-style: preserve-3d;
     }
     .panel.tall { min-height: 320px; }
     .panel.short { min-height: 120px; }
@@ -119,8 +111,7 @@
     /* ── BOCADILLOS ── */
     .speech-bubble {
       position: relative; background: var(--white); border: 3px solid var(--black); border-radius: 20px; margin: 10px 12px; padding: 8px 14px; font-family: 'Comic Neue', cursive; font-size: 0.95rem; font-weight: 700; line-height: 1.3; color: var(--black); flex: 1;
-      transform: translateZ(25px); /* Efecto 3D Pop-up */
-      box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+      transform: translateZ(25px); box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
     }
     .speech-bubble.think { border-style: dashed; border-radius: 50%; text-align: center; }
     .speech-bubble.shout { background: var(--yellow); border-radius: 4px; font-size: 1.1rem; clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%); }
@@ -130,24 +121,39 @@
     .sfx { font-family: 'Bangers', cursive; font-size: 2.5rem; color: var(--red); text-shadow: 3px 3px 0 var(--black); text-align: center; padding: 6px 12px; letter-spacing: 4px; line-height: 1; transform: translateZ(40px); }
     .scene-label { font-family: 'Bangers', cursive; font-size: 1.1rem; letter-spacing: 3px; color: var(--white); background: var(--black); text-align: center; padding: 6px; text-transform: uppercase; margin-bottom: 12px; }
 
+    /* ── ANÁLISIS (PÁG 6) ── */
+    .analysis-section { padding: 20px; display: block; height: auto; transform: translateZ(15px); }
+    .analysis-title { font-family: 'Bangers', cursive; font-size: 2.2rem; margin-bottom: 10px; letter-spacing: 1px; }
+    .analysis-list { margin-left: 20px; margin-bottom: 20px; font-size: 1.2rem; line-height: 1.5; font-weight: 700; }
+    .analysis-list li { margin-bottom: 8px; }
+    .analysis-list li[contenteditable]:focus { background: rgba(255,215,0,0.2); outline: none; }
+
+    /* ── CRÉDITOS ── */
+    .credits-page { background: var(--black); color: var(--yellow); text-align: center; padding: 40px 30px; }
+    .credits-page h2 { font-family: 'Bangers', cursive; font-size: 2.5rem; letter-spacing: 4px; margin-bottom: 20px; text-shadow: 3px 3px 0 var(--red); }
+    .team { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin: 24px 0; }
+    .member { background: #1a1a1a; border: 2px solid var(--yellow); padding: 10px 20px; font-family: 'Bangers', cursive; font-size: 1.1rem; letter-spacing: 2px; color: var(--white); }
+    
     /* ── PRINT ── */
     @media print {
       body { background: white; padding: 0; overflow: visible; }
-      .controls, .controls-hint { display: none !important; }
+      .controls-wrapper { display: none !important; }
       .page, #cover { box-shadow: none; border: 4px solid black; transform: none !important; page-break-after: always; }
       .comic-pages { gap: 0; }
-      .panel { transform: none !important; transition: none !important; }
+      .panel { transform: none !important; transition: none !important; box-shadow: none !important; }
+      .speech-bubble, .sfx, .cover-title-block, .cover-image-area, .cover-footer { transform: none !important; }
     }
   </style>
 </head>
 <body>
 
-<div class="controls-hint">Pista: Presiona <strong>Ctrl + L</strong> para mostrar/ocultar las herramientas de edición e impresión.</div>
-
-<div class="controls" id="controlsPanel">
-  <button class="btn btn-pdf"  onclick="window.print()">🖨️ Imprimir / PDF</button>
-  <button class="btn btn-html" onclick="downloadHTML()">💾 Descargar HTML</button>
-  <button class="btn btn-edit" onclick="toggleEditMode()">✏️ Modo Edición</button>
+<div class="controls-wrapper">
+  <div class="controls-hint">💡 Pista de presentación: Presiona <strong>Ctrl + L</strong> para mostrar/ocultar los botones.</div>
+  <div class="controls" id="controlsPanel">
+    <button class="btn btn-pdf"  onclick="window.print()">🖨️ Imprimir / PDF</button>
+    <button class="btn btn-html" onclick="downloadHTML()">💾 Descargar HTML</button>
+    <button class="btn btn-edit" onclick="toggleEditMode()">✏️ Modo Edición</button>
+  </div>
 </div>
 
 <div id="cover">
@@ -179,7 +185,7 @@
     <div class="grid-1-2">
       <div class="panel tall">
         <div class="img-placeholder" onclick="triggerImageUpload(this)">
-          <span class="icon">🏜️</span><span>Equipo mirando el estanque</span>
+          <span class="icon">🏜️</span><span>Equipo mirando estanque vacío</span>
         </div>
         <div class="speech-bubble">
           <span contenteditable="true">"¡Todo comenzó cuando vimos que mantener el suministro hídrico aquí era una pesadilla logística!"</span>
@@ -188,7 +194,7 @@
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div class="panel">
           <div class="img-placeholder" onclick="triggerImageUpload(this)">
-            <span class="icon">🚚</span><span>Camión Aljibe</span>
+            <span class="icon">🚚</span><span>Gerente frustrado y Camión Aljibe</span>
           </div>
           <div class="speech-bubble caption">
             <span contenteditable="true">Históricamente dependemos de costosos camiones aljibe externos...</span>
@@ -212,7 +218,7 @@
     <div class="grid-3">
       <div class="panel">
         <div class="img-placeholder" onclick="triggerImageUpload(this)">
-          <span class="icon">🔍</span><span>Dato #1</span>
+          <span class="icon">🔍</span><span>Revisando Tuberías</span>
         </div>
         <div class="speech-bubble">
           <span contenteditable="true">Hallazgo: El reemplazo de redes es 100% reactivo. ¡Solo arreglamos cuando ya falló!</span>
@@ -251,7 +257,7 @@
     <div class="grid-2">
       <div class="panel tall">
         <div class="img-placeholder" onclick="triggerImageUpload(this)">
-          <span class="icon">🌊</span><span>Planta / Software</span>
+          <span class="icon">🌊</span><span>Planta Desalinizadora</span>
         </div>
         <div class="speech-bubble shout">
           <span contenteditable="true">¡Planta Desalinizadora + Smart Water!</span>
@@ -290,17 +296,91 @@
           <span class="icon">📦</span><span>Foto de la Maqueta</span>
         </div>
         <div class="speech-bubble">
-          <span contenteditable="true">En nuestro prototipo (maqueta) simulamos la detección de presión en tuberías bajo arena.</span>
+          <span contenteditable="true">En nuestro prototipo simulamos la detección de presión en tuberías ocultas bajo la arena.</span>
         </div>
       </div>
       <div class="panel">
         <div class="img-placeholder" onclick="triggerImageUpload(this)">
-          <span class="icon">🔄</span><span>Mejora Iterativa</span>
+          <span class="icon">🔄</span><span>Filtro / Mejoras</span>
         </div>
         <div class="speech-bubble caption">
-          <span contenteditable="true">Tras iterar, agregamos un sistema mecánico simple para reutilizar aguas grises en el riego.</span>
+          <span contenteditable="true">Tras iterar con el usuario, agregamos un sistema mecánico simple para reutilizar aguas grises en riego.</span>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-number">PÁG. 5</div>
+    <div class="scene-label" contenteditable="true">Capítulo 5: Impacto Logrado</div>
+    <div class="grid-1-2">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="panel short" style="background:var(--blue);justify-content:center;align-items:center;">
+          <div style="font-family:'Bangers',cursive;font-size:2.5rem;color:var(--yellow);text-align:center;padding:10px;" contenteditable="true">100%<br><span style="font-size:1rem;color:white;">AUTONOMÍA HÍDRICA</span></div>
+        </div>
+        <div class="panel short" style="background:var(--red);justify-content:center;align-items:center;">
+          <div style="font-family:'Bangers',cursive;font-size:2.5rem;color:var(--yellow);text-align:center;padding:10px;" contenteditable="true">0%<br><span style="font-size:1rem;color:white;">FUGAS FANTASMAS</span></div>
+        </div>
+        <div class="panel short" style="background:var(--black);justify-content:center;align-items:center;">
+          <div style="font-family:'Bangers',cursive;font-size:2rem;color:var(--yellow);text-align:center;padding:10px;" contenteditable="true">+ AÑOS<br><span style="font-size:1rem;color:white;">VIDA ÚTIL HDPE</span></div>
+        </div>
+      </div>
+      <div class="panel tall">
+        <div class="img-placeholder" onclick="triggerImageUpload(this)">
+          <span class="icon">🏆</span><span>Turistas / Complejo Verde</span>
+        </div>
+        <div class="speech-bubble">
+          <span contenteditable="true">¡Logramos el control total! Mejoramos la autonomía y garantizamos el suministro durante toda la temporada alta turística.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-number">PÁG. 6</div>
+    <div class="scene-label" contenteditable="true">Capítulo 6: Análisis de Validación</div>
+    <div class="panel analysis-section">
+      
+      <h2 class="analysis-title" style="color: var(--blue);">🌟 Cualidades (Lo Positivo)</h2>
+      <ul class="analysis-list">
+        <li contenteditable="true">Elimina por completo la dependencia logística y económica de los camiones aljibes externos.</li>
+        <li contenteditable="true">Permite un control total del consumo y detección rápida de anomalías a través del software "Smart Water".</li>
+        <li contenteditable="true">Mejora la continuidad del servicio durante la temporada alta, asegurando la mejor experiencia para el turista.</li>
+      </ul>
+
+      <h2 class="analysis-title" style="color: var(--red);">⚠️ Debilidades (A Considerar)</h2>
+      <ul class="analysis-list">
+        <li contenteditable="true">Requiere una alta inversión inicial para la planta de osmosis inversa y la tecnología de sensores.</li>
+        <li contenteditable="true">Exige protocolos estrictos y capacitación técnica rigurosa para la limpieza y mantenimiento de las membranas.</li>
+      </ul>
+
+      <h2 class="analysis-title" style="color: var(--green);">🚀 Mejoras (El Siguiente Nivel)</h2>
+      <ul class="analysis-list">
+        <li contenteditable="true">Se puede integrar al 100% el reuso de aguas grises (domésticas) para mantener las áreas verdes, reduciendo la demanda del estanque principal.</li>
+        <li contenteditable="true">Se podría evaluar a largo plazo el soterramiento profundo de las matrices con protección UV avanzada.</li>
+      </ul>
+
+    </div>
+  </div>
+
+  <div class="page credits-page">
+    <h2>⚡ EL EQUIPO ⚡</h2>
+    <p contenteditable="true">Innovación y Emprendimiento · INACAP · 2026</p>
+
+    <div class="team">
+      <div class="member" contenteditable="true">👤 Simón Olivares</div>
+      <div class="member" contenteditable="true">👤 Renato Bórquez</div>
+      <div class="member" contenteditable="true">👤 Wiljer Mamani</div>
+      <div class="member" contenteditable="true">👤 Julio Sinisterra</div>
+      <div class="member" contenteditable="true">👤 Millaray Aguirre</div>
+    </div>
+
+    <p contenteditable="true">Docente: <strong>Raúl Alberto Araya Zepeda</strong></p>
+
+    <div style="margin:30px 0;border-top:2px solid #333;border-bottom:2px solid #333;padding:20px;">
+      <p style="font-style:italic;color:#aaa;" contenteditable="true">
+        "La innovación hídrica es el primer paso hacia un turismo 100% sustentable en el desierto de Atacama."
+      </p>
     </div>
   </div>
 
@@ -320,28 +400,30 @@
     }
   });
 
-  // 2. Efecto 3D Parallax al pasar el mouse (Vanilla Tilt)
+  // 2. Efecto 3D Parallax al pasar el mouse
   const panels = document.querySelectorAll('.panel, #cover');
   panels.forEach(panel => {
     panel.addEventListener('mousemove', e => {
+      // Si estamos imprimiendo, no hacemos el efecto
+      if (window.matchMedia('print').matches) return;
+
       const rect = panel.getBoundingClientRect();
-      const x = e.clientX - rect.left; // Posición X dentro del panel
-      const y = e.clientY - rect.top;  // Posición Y dentro del panel
+      const x = e.clientX - rect.left; 
+      const y = e.clientY - rect.top;  
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       
-      // Calcular rotación (máximo 8 grados para no exagerar)
-      const rotateX = ((y - centerY) / centerY) * -8; 
-      const rotateY = ((x - centerX) / centerX) * 8;
+      const rotateX = ((y - centerY) / centerY) * -6; 
+      const rotateY = ((x - centerX) / centerX) * 6;
       
-      panel.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-      panel.style.boxShadow = `${-rotateY}px ${rotateX}px 15px rgba(0,0,0,0.3)`;
+      panel.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
+      panel.style.boxShadow = `${-rotateY}px ${rotateX + 10}px 15px rgba(0,0,0,0.3)`;
       panel.style.zIndex = 10;
     });
 
     panel.addEventListener('mouseleave', () => {
       panel.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-      panel.style.boxShadow = `10px 10px 0 var(--black)`; // reset a la sombra default
+      panel.style.boxShadow = `10px 10px 0 var(--black)`; 
       panel.style.zIndex = 1;
     });
   });
@@ -392,7 +474,7 @@
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'comic_playa_la_virgen.html';
+    a.download = 'comic_playa_la_virgen_final.html';
     a.click();
   }
 </script>
