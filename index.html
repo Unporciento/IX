@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cómic — Proyecto Hídrico Playa La Virgen</title>
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet" />
   <style>
@@ -38,16 +38,30 @@
       overflow: hidden;
     }
 
+    /* Textura madera */
     #intro-screen::before {
       content: '';
       position: absolute;
       inset: 0;
       background-image: 
-        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px),
-        repeating-linear-gradient(180deg, transparent, transparent 8px, rgba(255,255,255,0.02) 8px, rgba(255,255,255,0.02) 9px);
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(0,0,0,0.08) 2px,
+          rgba(0,0,0,0.08) 4px
+        ),
+        repeating-linear-gradient(
+          180deg,
+          transparent,
+          transparent 8px,
+          rgba(255,255,255,0.02) 8px,
+          rgba(255,255,255,0.02) 9px
+        );
       pointer-events: none;
     }
 
+    /* Luz de lámpara en la mesa */
     #intro-screen::after {
       content: '';
       position: absolute;
@@ -62,15 +76,13 @@
 
     .intro-hint {
       font-family: 'Bangers', cursive;
-      font-size: clamp(0.9rem, 3vw, 1.3rem);
+      font-size: 1.3rem;
       letter-spacing: 4px;
       color: rgba(255,220,120,0.7);
       text-transform: uppercase;
       animation: blink 2s ease-in-out infinite;
       position: relative;
       z-index: 2;
-      text-align: center;
-      padding: 0 10px;
     }
 
     @keyframes blink {
@@ -84,8 +96,8 @@
     #comic-on-table {
       position: relative;
       z-index: 2;
-      width: clamp(180px, 50vw, 280px);
-      height: clamp(240px, 66vw, 370px);
+      width: 280px;
+      height: 370px;
       perspective: 1200px;
       cursor: pointer;
       transition: transform 0.3s ease;
@@ -105,37 +117,47 @@
       background: linear-gradient(145deg, #FFD700 0%, #FFA500 40%, #FF8C00 100%);
       border-radius: 4px 12px 12px 4px;
       border: 3px solid #0A0A0A;
-      box-shadow: -8px 0 0 #8B6914, -12px 4px 20px rgba(0,0,0,0.6), 0 0 40px rgba(255,200,50,0.15), inset -3px 0 15px rgba(0,0,0,0.2);
+      box-shadow:
+        -8px 0 0 #8B6914,
+        -12px 4px 20px rgba(0,0,0,0.6),
+        0 0 40px rgba(255,200,50,0.15),
+        inset -3px 0 15px rgba(0,0,0,0.2);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 16px 12px;
+      gap: 10px;
+      padding: 20px 15px;
       overflow: hidden;
     }
 
+    /* Lomo del cómic */
     .table-cover::before {
       content: '';
       position: absolute;
-      left: 0; top: 0;
-      width: 16px; height: 100%;
+      left: 0;
+      top: 0;
+      width: 16px;
+      height: 100%;
       background: linear-gradient(180deg, #8B6914, #5C4A0E, #8B6914);
       border-right: 2px solid rgba(0,0,0,0.4);
     }
 
+    /* Brillo portada */
     .table-cover::after {
       content: '';
       position: absolute;
-      top: 0; right: 0;
-      width: 40%; height: 100%;
+      top: 0;
+      right: 0;
+      width: 40%;
+      height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06));
       pointer-events: none;
     }
 
     .table-comic-title {
       font-family: 'Bangers', cursive;
-      font-size: clamp(1.1rem, 5vw, 1.7rem);
+      font-size: 1.7rem;
       color: #0A0A0A;
       text-align: center;
       letter-spacing: 2px;
@@ -147,9 +169,10 @@
 
     .table-comic-subtitle {
       font-family: 'Permanent Marker', cursive;
-      font-size: clamp(0.5rem, 2vw, 0.7rem);
+      font-size: 0.7rem;
       color: #0057A8;
       text-align: center;
+      padding-left: 10px;
       background: white;
       padding: 3px 8px 3px 14px;
       border: 2px solid #0A0A0A;
@@ -157,40 +180,68 @@
 
     .table-comic-img-placeholder {
       width: 85%;
-      height: clamp(80px, 22vw, 150px);
+      height: 150px;
       background: linear-gradient(135deg, #1a3a6e 0%, #0a1f3e 100%);
       border: 3px solid #0A0A0A;
       margin-left: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
       position: relative;
     }
 
     .table-comic-img-placeholder img {
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-      position: absolute; top: 0; left: 0; z-index: 10;
+      position: absolute; /* Asegura que la imagen cubra todo */
+      top: 0;
+      left: 0;
+      z-index: 10; /* Asegura que la imagen esté por encima de cualquier otro elemento */
     }
 
     .table-comic-badge {
       font-family: 'Bangers', cursive;
       background: var(--red);
       color: white;
-      font-size: clamp(0.65rem, 2vw, 0.9rem);
+      font-size: 0.9rem;
       padding: 3px 10px;
       border: 2px solid #0A0A0A;
       letter-spacing: 2px;
       margin-left: 10px;
     }
 
+    /* Páginas apiladas debajo de la portada */
+    .table-pages-stack {
+      position: absolute;
+      right: -6px;
+      top: 3px;
+      width: 12px;
+      height: calc(100% - 6px);
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .stack-page {
+      flex: 1;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* Sombra bajo el cómic */
     .table-shadow {
       position: absolute;
-      bottom: -20px; left: 10%;
-      width: 80%; height: 30px;
+      bottom: -20px;
+      left: 10%;
+      width: 80%;
+      height: 30px;
       background: radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%);
       filter: blur(8px);
       pointer-events: none;
     }
 
+    /* Objetos decorativos en la mesa */
     .desk-objects {
       position: absolute;
       inset: 0;
@@ -200,8 +251,10 @@
 
     .desk-pencil {
       position: absolute;
-      bottom: 15%; right: 20%;
-      width: 120px; height: 12px;
+      bottom: 15%;
+      right: 20%;
+      width: 120px;
+      height: 12px;
       background: linear-gradient(90deg, #FFD700 80%, #F4A460 80%, #8B4513 90%, #C0C0C0 95%);
       border: 1px solid rgba(0,0,0,0.4);
       border-radius: 0 0 0 2px;
@@ -212,8 +265,10 @@
     .desk-pencil::before {
       content: '';
       position: absolute;
-      right: -8px; top: -4px;
-      width: 0; height: 0;
+      right: -8px;
+      top: -4px;
+      width: 0;
+      height: 0;
       border-left: 10px solid #F4A460;
       border-top: 10px solid transparent;
       border-bottom: 10px solid transparent;
@@ -221,8 +276,10 @@
 
     .desk-coffee {
       position: absolute;
-      bottom: 18%; left: 12%;
-      width: 45px; height: 50px;
+      bottom: 18%;
+      left: 12%;
+      width: 45px;
+      height: 50px;
       background: radial-gradient(ellipse at 50% 40%, #8B4513 0%, #4a2208 100%);
       border-radius: 0 0 12px 12px;
       border: 2px solid rgba(0,0,0,0.5);
@@ -233,13 +290,16 @@
       content: '☕';
       font-size: 1.8rem;
       position: absolute;
-      top: -20px; left: -2px;
+      top: -20px;
+      left: -2px;
     }
 
     .desk-notes {
       position: absolute;
-      top: 20%; left: 8%;
-      width: 80px; height: 90px;
+      top: 20%;
+      left: 8%;
+      width: 80px;
+      height: 90px;
       background: #FFFDE7;
       border: 1px solid rgba(0,0,0,0.3);
       transform: rotate(8deg);
@@ -252,18 +312,14 @@
     }
 
     .desk-notes span {
-      display: block; height: 2px;
+      display: block;
+      height: 2px;
       background: rgba(0,0,0,0.2);
       border-radius: 1px;
     }
 
-    /* En móvil ocultamos objetos de escritorio para limpiar */
-    @media (max-width: 480px) {
-      .desk-pencil, .desk-coffee, .desk-notes { display: none; }
-    }
-
     /* ════════════════════════════════════════════
-       ANIMACIÓN APERTURA DEL CÓMIC
+       ANIMACIÓN DE APERTURA DEL CÓMIC
     ════════════════════════════════════════════ */
     #book-open-overlay {
       position: fixed;
@@ -276,11 +332,13 @@
       background: #1a0a02;
     }
 
-    #book-open-overlay.active { display: flex; }
+    #book-open-overlay.active {
+      display: flex;
+    }
 
     .book-3d {
-      width: clamp(300px, 80vw, 560px);
-      height: clamp(220px, 55vw, 400px);
+      width: 560px;
+      height: 400px;
       position: relative;
       transform-style: preserve-3d;
       transform: rotateX(25deg) rotateY(-30deg);
@@ -297,15 +355,18 @@
       border: 2px solid rgba(0,0,0,0.7);
     }
 
+    /* Página derecha (siempre visible — contenido) */
     .book-right-page {
-      width: 50%; height: 100%;
-      left: 50%; top: 0;
+      width: 280px;
+      height: 400px;
+      left: 280px;
+      top: 0;
       background: white;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Bangers', cursive;
-      font-size: clamp(0.9rem, 3vw, 1.4rem);
+      font-size: 1.4rem;
       color: #0A0A0A;
       letter-spacing: 3px;
       flex-direction: column;
@@ -313,9 +374,12 @@
       border-left: none;
     }
 
+    /* Portada delantera — ESTA gira */
     .book-cover-front {
-      width: 50%; height: 100%;
-      left: 0; top: 0;
+      width: 280px;
+      height: 400px;
+      left: 0;
+      top: 0;
       background: linear-gradient(145deg, #FFD700, #FFA500);
       transform-origin: right center;
       transform-style: preserve-3d;
@@ -324,21 +388,23 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 16px;
+      padding: 20px;
       overflow: hidden;
     }
 
     .book-cover-front::before {
       content: '';
       position: absolute;
-      left: 0; top: 0;
-      width: 20px; height: 100%;
+      left: 0;
+      top: 0;
+      width: 20px;
+      height: 100%;
       background: linear-gradient(90deg, rgba(0,0,0,0.3), transparent);
     }
 
     .bcf-title {
       font-family: 'Bangers', cursive;
-      font-size: clamp(1.2rem, 4vw, 2rem);
+      font-size: 2rem;
       color: #0A0A0A;
       text-align: center;
       letter-spacing: 2px;
@@ -347,22 +413,30 @@
 
     .bcf-img {
       width: 90%;
-      height: clamp(80px, 20vw, 140px);
+      height: 140px;
       background: linear-gradient(135deg, #1a3a6e, #0a1f3e);
       border: 3px solid #0A0A0A;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
       position: relative;
     }
 
-    .bcf-img img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      position: absolute; top: 0; left: 0; z-index: 10;
+    .bcf-img img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
     }
 
     .bcf-sub {
       font-family: 'Permanent Marker', cursive;
-      font-size: clamp(0.5rem, 1.5vw, 0.65rem);
+      font-size: 0.65rem;
       background: white;
       color: #0057A8;
       border: 2px solid #0A0A0A;
@@ -370,17 +444,22 @@
       text-align: center;
     }
 
+    /* Lomo */
     .book-spine {
-      width: 20px; height: 100%;
-      left: calc(50% - 10px); top: 0;
+      width: 20px;
+      height: 400px;
+      left: 274px;
+      top: 0;
       background: linear-gradient(180deg, #8B6914, #5C4A0E, #8B6914);
       transform: rotateY(90deg);
       transform-origin: left center;
-      border-left: none; border-right: none;
+      border-left: none;
+      border-right: none;
     }
 
+    /* Animación de apertura de la portada */
     .book-cover-front.opening {
-      animation: openCover 1.4s cubic-bezier(0.4,0,0.2,1) forwards;
+      animation: openCover 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
 
     @keyframes openCover {
@@ -388,22 +467,34 @@
       100% { transform: rotateY(-175deg); }
     }
 
+    /* El interior de la portada (reverso) */
+    .book-cover-back-face {
+      position: absolute;
+      inset: 0;
+      background: white;
+      backface-visibility: hidden;
+      transform: rotateY(180deg);
+    }
+
+    /* Página izquierda interior */
     .book-left-page {
-      width: 50%; height: 100%;
-      left: 0; top: 0;
+      width: 280px;
+      height: 400px;
+      left: 0;
+      top: 0;
       background: #FFFDF7;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      gap: 10px;
-      padding: 16px;
+      gap: 15px;
+      padding: 20px;
       border-right: none;
     }
 
     .blp-logo {
       font-family: 'Bangers', cursive;
-      font-size: clamp(0.8rem, 2.5vw, 1.2rem);
+      font-size: 1.2rem;
       letter-spacing: 4px;
       color: var(--red);
       border-bottom: 3px solid var(--black);
@@ -413,14 +504,15 @@
 
     .blp-info {
       font-family: 'Comic Neue', cursive;
-      font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+      font-size: 0.8rem;
       color: #333;
       text-align: center;
       line-height: 1.6;
     }
 
     .blp-divider {
-      width: 80%; height: 2px;
+      width: 80%;
+      height: 2px;
       background: repeating-linear-gradient(90deg, var(--black) 0, var(--black) 5px, transparent 5px, transparent 10px);
     }
 
@@ -434,7 +526,7 @@
     }
 
     /* ════════════════════════════════════════════
-       LECTOR DE PÁGINAS
+       LECTOR DE PÁGINAS (Comic Reader)
     ════════════════════════════════════════════ */
     #comic-reader {
       display: none;
@@ -446,15 +538,18 @@
       flex-direction: column;
     }
 
-    #comic-reader.active { display: flex; }
+    #comic-reader.active {
+      display: flex;
+    }
 
+    /* Barra superior */
     .reader-topbar {
       height: 50px;
       background: #0A0A0A;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 12px;
+      padding: 0 20px;
       border-bottom: 3px solid var(--yellow);
       flex-shrink: 0;
       z-index: 10;
@@ -462,32 +557,27 @@
 
     .topbar-title {
       font-family: 'Bangers', cursive;
-      font-size: clamp(0.75rem, 2.5vw, 1.3rem);
+      font-size: 1.3rem;
       color: var(--yellow);
-      letter-spacing: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      letter-spacing: 3px;
     }
 
     .topbar-nav {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
-      flex-shrink: 0;
     }
 
     .nav-btn {
       font-family: 'Bangers', cursive;
-      font-size: clamp(0.7rem, 2vw, 1.1rem);
+      font-size: 1.1rem;
       letter-spacing: 1px;
-      padding: 5px 10px;
+      padding: 6px 16px;
       background: var(--red);
       color: white;
       border: 2px solid var(--yellow);
       cursor: pointer;
       transition: transform 0.1s, background 0.1s;
-      white-space: nowrap;
     }
 
     .nav-btn:hover { background: #c01018; }
@@ -497,41 +587,34 @@
     .page-counter {
       font-family: 'Bangers', cursive;
       color: white;
-      font-size: clamp(0.8rem, 2vw, 1.1rem);
+      font-size: 1.1rem;
       letter-spacing: 2px;
-      min-width: 50px;
+      min-width: 80px;
       text-align: center;
     }
 
     .btn-print {
       background: var(--blue);
-      font-size: clamp(0.6rem, 1.8vw, 0.9rem);
-      padding: 5px 8px;
+      font-size: 0.9rem;
+      padding: 5px 12px;
     }
 
-    /* Ocultar texto "ANTERIOR"/"SIGUIENTE" en móvil, solo flechas */
-    @media (max-width: 480px) {
-      .btn-text { display: none; }
-      .nav-btn { padding: 5px 8px; font-size: 1rem; }
-      .topbar-title { font-size: 0.75rem; letter-spacing: 1px; }
-    }
-
-    /* ════════════════════════════════════════════
-       VIEWPORT Y SPREADS — MODO ESCRITORIO (2 páginas)
-    ════════════════════════════════════════════ */
+    /* Área de páginas */
     .reader-viewport {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 20px;
       overflow: hidden;
       position: relative;
     }
 
+    /* Partícula de polvo */
     .dust {
       position: absolute;
-      width: 3px; height: 3px;
+      width: 3px;
+      height: 3px;
       border-radius: 50%;
       background: rgba(255,220,120,0.4);
       animation: dustFloat linear infinite;
@@ -545,28 +628,23 @@
       to   { transform: translateY(-100px) translateX(30px); opacity: 0; }
     }
 
-    #spread-container {
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.1s ease-out;
+    /* Spread de 2 páginas */
+    .page-spread {
       width: 100%;
       max-width: 1100px;
       height: 100%;
       max-height: 720px;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.7);
-    }
-
-    .page-spread {
-      width: 100%;
-      height: 100%;
       display: none;
       gap: 0;
       position: relative;
-      perspective: 2500px;
+      perspective: 2500px; /* Perspectiva alta para el 3D */
     }
 
-    .page-spread.active { display: flex; }
+    .page-spread.active {
+      display: flex;
+    }
 
+    /* Página individual en el lector */
     .reader-page {
       flex: 1;
       background: var(--white);
@@ -587,9 +665,15 @@
       box-shadow: 8px 0 20px rgba(0,0,0,0.5), inset 5px 0 15px rgba(0,0,0,0.08);
     }
 
+    /* Lomo central del libro abierto */
     .book-gutter {
       width: 24px;
-      background: linear-gradient(90deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0.4) 100%);
+      background: linear-gradient(90deg, 
+        rgba(0,0,0,0.4) 0%, 
+        rgba(0,0,0,0.05) 40%, 
+        rgba(0,0,0,0.05) 60%, 
+        rgba(0,0,0,0.4) 100%
+      );
       flex-shrink: 0;
       position: relative;
       z-index: 2;
@@ -598,132 +682,63 @@
     .book-gutter::before {
       content: '';
       position: absolute;
-      top: 0; left: 50%;
+      top: 0;
+      left: 50%;
       transform: translateX(-50%);
-      width: 2px; height: 100%;
+      width: 2px;
+      height: 100%;
       background: rgba(0,0,0,0.3);
     }
 
     /* ════════════════════════════════════════════
-       MODO MÓVIL — UNA PÁGINA A LA VEZ
+       NUEVAS ANIMACIONES 3D PARA PASAR PÁGINA
     ════════════════════════════════════════════ */
-    @media (max-width: 700px) {
-      .reader-viewport { padding: 6px 4px; }
-
-      #spread-container {
-        max-width: 100%;
-        max-height: 100%;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-      }
-
-      .page-spread {
-        flex-direction: column;
-        height: 100%;
-        overflow: hidden;
-      }
-
-      /* En móvil mostramos solo una página a la vez */
-      .page-spread.active {
-        display: block;
-        position: relative;
-      }
-
-      .reader-page {
-        width: 100%;
-        height: 100%;
-        border: 3px solid var(--black);
-        border-radius: 2px;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      .reader-page:first-child,
-      .reader-page:last-child {
-        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        border-right: 3px solid var(--black);
-        border-left: 3px solid var(--black);
-      }
-
-      /* Ocultar segunda página y gutter en móvil — JS las alterna */
-      .book-gutter { display: none !important; }
-
-      .panel-tall { height: clamp(160px, 40vw, 280px); }
-      .panel-medium { height: clamp(120px, 30vw, 200px); }
-
-      .speech-bubble { font-size: 0.78rem; margin-top: 6px; }
-      .sfx { font-size: 1.6rem; }
-      .scene-label { font-size: 0.85rem; }
-    }
-
-    /* ════════════════════════════════════════════
-       INDICADOR DE PÁGINA EN MÓVIL
-    ════════════════════════════════════════════ */
-    #mobile-page-indicator {
-      display: none;
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.7);
-      color: var(--yellow);
-      font-family: 'Bangers', cursive;
-      font-size: 0.85rem;
-      letter-spacing: 2px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      border: 1px solid var(--yellow);
-      pointer-events: none;
-      z-index: 20;
-    }
-
-    @media (max-width: 700px) {
-      #mobile-page-indicator { display: block; }
-    }
-
-    /* ════════════════════════════════════════════
-       ANIMACIONES 3D AL PASAR PÁGINA
-    ════════════════════════════════════════════ */
+    
+    /* Avanzar a la siguiente página (La hoja derecha cae) */
     .page-turn-next { display: flex; }
     .page-turn-next .reader-page:last-child {
-      animation: flipDownRight 0.6s cubic-bezier(0.3,0.1,0.2,1) forwards;
+      animation: flipDownRight 0.6s cubic-bezier(0.3, 0.1, 0.2, 1) forwards;
       transform-origin: left center;
     }
     @keyframes flipDownRight {
-      0%   { transform: rotateY(90deg); filter: brightness(0.6) drop-shadow(-15px 0px 20px rgba(0,0,0,0.5)); opacity: 0; }
-      20%  { opacity: 1; }
-      100% { transform: rotateY(0deg); filter: brightness(1); opacity: 1; }
+      0% { 
+        transform: rotateY(90deg); 
+        filter: brightness(0.6) drop-shadow(-15px 0px 20px rgba(0,0,0,0.5)); 
+        opacity: 0; 
+      }
+      20% { opacity: 1; }
+      100% { 
+        transform: rotateY(0deg); 
+        filter: brightness(1) drop-shadow(0px 0px 0px rgba(0,0,0,0)); 
+        opacity: 1; 
+      }
     }
 
+    /* Retroceder a la página anterior (La hoja izquierda cae) */
     .page-turn-prev { display: flex; }
     .page-turn-prev .reader-page:first-child {
-      animation: flipDownLeft 0.6s cubic-bezier(0.3,0.1,0.2,1) forwards;
+      animation: flipDownLeft 0.6s cubic-bezier(0.3, 0.1, 0.2, 1) forwards;
       transform-origin: right center;
     }
     @keyframes flipDownLeft {
-      0%   { transform: rotateY(-90deg); filter: brightness(0.6) drop-shadow(15px 0px 20px rgba(0,0,0,0.5)); opacity: 0; }
-      20%  { opacity: 1; }
-      100% { transform: rotateY(0deg); filter: brightness(1); opacity: 1; }
-    }
-
-    /* Animación móvil: deslizamiento horizontal */
-    @media (max-width: 700px) {
-      .page-turn-next .reader-page { animation: slideInRight 0.35s ease-out forwards; }
-      .page-turn-prev .reader-page { animation: slideInLeft 0.35s ease-out forwards; }
-      @keyframes slideInRight {
-        from { transform: translateX(60px); opacity: 0.3; }
-        to   { transform: translateX(0); opacity: 1; }
+      0% { 
+        transform: rotateY(-90deg); 
+        filter: brightness(0.6) drop-shadow(15px 0px 20px rgba(0,0,0,0.5)); 
+        opacity: 0; 
       }
-      @keyframes slideInLeft {
-        from { transform: translateX(-60px); opacity: 0.3; }
-        to   { transform: translateX(0); opacity: 1; }
+      20% { opacity: 1; }
+      100% { 
+        transform: rotateY(0deg); 
+        filter: brightness(1) drop-shadow(0px 0px 0px rgba(0,0,0,0)); 
+        opacity: 1; 
       }
     }
 
     /* ════════════════════════════════════════════
-       CONTENIDO DE PÁGINAS
+       CONTENIDO DE LAS PÁGINAS DEL LECTOR
     ════════════════════════════════════════════ */
     .page-content {
-      padding: 12px 10px;
+      padding: 16px 14px;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -751,12 +766,13 @@
     }
 
     .panel img {
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    .panel-tall  { height: 240px; }
+    .panel-tall { height: 240px; }
     .panel-medium { height: 180px; }
 
     .speech-bubble {
@@ -777,8 +793,10 @@
     .speech-bubble::before {
       content: '';
       position: absolute;
-      top: -14px; left: 24px;
-      width: 0; height: 0;
+      top: -14px;
+      left: 24px;
+      width: 0;
+      height: 0;
       border-left: 10px solid transparent;
       border-right: 10px solid transparent;
       border-bottom: 14px solid var(--black);
@@ -787,8 +805,10 @@
     .speech-bubble::after {
       content: '';
       position: absolute;
-      top: -10px; left: 26px;
-      width: 0; height: 0;
+      top: -10px;
+      left: 26px;
+      width: 0;
+      height: 0;
       border-left: 8px solid transparent;
       border-right: 8px solid transparent;
       border-bottom: 12px solid white;
@@ -799,8 +819,8 @@
       color: white;
       border-radius: 4px;
     }
-    .speech-bubble.caption::before,
-    .speech-bubble.caption::after { display: none; }
+
+    .speech-bubble.caption::before, .speech-bubble.caption::after { display: none; }
 
     .speech-bubble.think {
       border-style: dashed;
@@ -827,7 +847,8 @@
 
     .page-num-display {
       position: absolute;
-      bottom: 8px; right: 12px;
+      bottom: 8px;
+      right: 12px;
       font-family: 'Bangers', cursive;
       font-size: 0.85rem;
       color: #999;
@@ -835,14 +856,15 @@
     }
 
     /* ════════════════════════════════════════════
-       PORTADA
+       PORTADA (spread 0 — solo página derecha)
     ════════════════════════════════════════════ */
     .cover-spread-right {
       background: linear-gradient(145deg, #FFD700 0%, #FFA500 100%);
     }
 
     .cover-page-content {
-      padding: 0; height: 100%;
+      padding: 0;
+      height: 100%;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -873,21 +895,21 @@
 
     .cover-main-title {
       font-family: 'Bangers', cursive;
-      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
       color: var(--black);
       text-shadow: 3px 3px 0 rgba(255,255,255,0.4);
       letter-spacing: 2px;
       text-transform: uppercase;
       line-height: 0.95;
-      padding: 12px 16px 4px;
+      padding: 14px 16px 4px;
       flex-shrink: 0;
     }
 
     .cover-main-subtitle {
       font-family: 'Permanent Marker', cursive;
-      font-size: clamp(0.65rem, 2vw, 0.85rem);
+      font-size: 0.85rem;
       color: var(--blue);
-      padding: 0 16px 8px;
+      padding: 0 16px 10px;
       text-shadow: 1px 1px 0 white;
       flex-shrink: 0;
     }
@@ -899,11 +921,16 @@
       overflow: hidden;
       min-height: 0;
       background: #1a3a6e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
       position: relative;
     }
 
     .cover-main-img img {
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       position: absolute;
     }
@@ -920,23 +947,24 @@
     .cover-footer-bar span {
       font-family: 'Bangers', cursive;
       color: white;
-      font-size: clamp(0.6rem, 1.8vw, 0.8rem);
+      font-size: 0.8rem;
       letter-spacing: 1px;
     }
 
+    /* Página izquierda de la portada (tapa interna) */
     .inner-cover-left {
       background: #FFFDF7;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      gap: 14px;
+      padding: 24px;
+      gap: 16px;
     }
 
     .icl-logo {
       font-family: 'Bangers', cursive;
-      font-size: clamp(1rem, 3vw, 1.5rem);
+      font-size: 1.5rem;
       letter-spacing: 4px;
       color: var(--red);
       border-bottom: 3px solid var(--black);
@@ -945,17 +973,20 @@
 
     .icl-text {
       font-family: 'Comic Neue', cursive;
-      font-size: clamp(0.65rem, 2vw, 0.78rem);
+      font-size: 0.78rem;
       color: #555;
       text-align: center;
       line-height: 1.7;
     }
 
-    .icl-divider { width: 80%; border-top: 2px dashed #ccc; }
+    .icl-divider {
+      width: 80%;
+      border-top: 2px dashed #ccc;
+    }
 
     .icl-seal {
-      width: clamp(60px, 15vw, 80px);
-      height: clamp(60px, 15vw, 80px);
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       border: 4px solid var(--black);
       background: var(--yellow);
@@ -972,7 +1003,7 @@
     }
 
     /* ════════════════════════════════════════════
-       CRÉDITOS
+       PÁGINA DE CRÉDITOS (ESTILO CÓMIC REAL)
     ════════════════════════════════════════════ */
     .credits-page {
       background: #0A0A0A !important;
@@ -982,10 +1013,10 @@
     }
 
     .credits-content {
-      padding: 14px 12px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       height: 100%;
     }
 
@@ -997,7 +1028,7 @@
 
     .credits-title {
       font-family: 'Bangers', cursive;
-      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      font-size: 1.8rem;
       color: var(--yellow);
       letter-spacing: 5px;
       text-transform: uppercase;
@@ -1005,20 +1036,21 @@
 
     .credits-subtitle {
       font-family: 'Permanent Marker', cursive;
-      font-size: clamp(0.55rem, 1.5vw, 0.7rem);
+      font-size: 0.7rem;
       color: rgba(255,255,255,0.5);
       letter-spacing: 2px;
     }
 
     .credits-box {
       border: 2px solid var(--yellow);
-      padding: 8px 10px;
+      padding: 8px 12px;
       position: relative;
     }
 
     .credits-box-label {
       position: absolute;
-      top: -10px; left: 12px;
+      top: -10px;
+      left: 12px;
       background: #0A0A0A;
       font-family: 'Bangers', cursive;
       font-size: 0.75rem;
@@ -1031,35 +1063,39 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 3px 0;
+      padding: 4px 0;
       border-bottom: 1px solid rgba(255,215,0,0.15);
     }
+
     .credits-member:last-child { border-bottom: none; }
 
     .member-icon {
-      width: 26px; height: 26px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       background: var(--blue);
       border: 2px solid var(--yellow);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       flex-shrink: 0;
     }
 
-    .member-info { flex: 1; }
+    .member-info {
+      flex: 1;
+    }
 
     .member-name {
       font-family: 'Bangers', cursive;
-      font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+      font-size: 0.95rem;
       color: white;
       letter-spacing: 1px;
     }
 
     .member-role {
       font-family: 'Comic Neue', cursive;
-      font-size: clamp(0.55rem, 1.5vw, 0.65rem);
+      font-size: 0.65rem;
       color: rgba(255,255,255,0.45);
     }
 
@@ -1068,7 +1104,7 @@
       border-left: 4px solid var(--yellow);
       padding: 8px 10px;
       font-family: 'Permanent Marker', cursive;
-      font-size: clamp(0.58rem, 1.8vw, 0.68rem);
+      font-size: 0.68rem;
       color: rgba(255,255,255,0.65);
       line-height: 1.5;
       font-style: italic;
@@ -1077,7 +1113,7 @@
     .credits-inacap {
       text-align: center;
       font-family: 'Bangers', cursive;
-      font-size: clamp(0.6rem, 2vw, 0.85rem);
+      font-size: 0.85rem;
       letter-spacing: 3px;
       color: rgba(255,255,255,0.3);
       margin-top: auto;
@@ -1085,33 +1121,38 @@
       border-top: 1px solid rgba(255,255,255,0.1);
     }
 
+    /* Columna del docente */
     .credits-docente {
       border: 2px solid var(--red);
       padding: 6px 10px;
       position: relative;
     }
 
+    .credits-docente .credits-box-label {
+      color: var(--red);
+    }
+
     .docente-name {
       font-family: 'Bangers', cursive;
-      font-size: clamp(0.8rem, 2.5vw, 1rem);
+      font-size: 1rem;
       color: white;
       letter-spacing: 1px;
     }
 
     .docente-role {
       font-family: 'Comic Neue', cursive;
-      font-size: clamp(0.55rem, 1.5vw, 0.65rem);
+      font-size: 0.65rem;
       color: rgba(255,255,255,0.4);
     }
 
     /* ════════════════════════════════════════════
-       DASHBOARD
+       DASHBOARD (Pág 6)
     ════════════════════════════════════════════ */
     .dash-page-content {
-      padding: 8px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
       height: 100%;
     }
 
@@ -1126,7 +1167,7 @@
       background: white;
       border: 3px solid var(--black);
       border-radius: 6px;
-      padding: 7px 9px;
+      padding: 8px 10px;
       display: flex;
       flex-direction: column;
       gap: 4px;
@@ -1134,7 +1175,7 @@
 
     .dash-card h3 {
       font-family: 'Bangers', cursive;
-      font-size: clamp(0.8rem, 2.5vw, 1rem);
+      font-size: 1rem;
       letter-spacing: 1px;
       border-bottom: 2px dashed #ccc;
       padding-bottom: 3px;
@@ -1144,14 +1185,14 @@
       list-style: none;
       font-family: 'Comic Neue', cursive;
       font-weight: bold;
-      font-size: clamp(0.65rem, 1.8vw, 0.72rem);
+      font-size: 0.72rem;
       line-height: 1.4;
     }
 
     .dash-card ul li {
       padding-left: 14px;
       position: relative;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
     }
 
     .dash-card ul li::before {
@@ -1163,15 +1204,28 @@
     }
 
     .card-green h3 { color: var(--green); } .card-green { border-top: 6px solid var(--green); }
-    .card-red h3   { color: var(--red); }   .card-red   { border-top: 6px solid var(--red); }
-    .card-blue h3  { color: var(--blue); }  .card-blue  { border-top: 6px solid var(--blue); }
+    .card-red h3 { color: var(--red); } .card-red { border-top: 6px solid var(--red); }
+    .card-blue h3 { color: var(--blue); } .card-blue { border-top: 6px solid var(--blue); }
+
+    /* ════════════════════════════════════════════
+       EFECTO HOVER 3D EN EL SPREAD
+    ════════════════════════════════════════════ */
+    #spread-container {
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.1s ease-out;
+      width: 100%;
+      max-width: 1100px;
+      height: 100%;
+      max-height: 720px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.7);
+    }
 
     /* ════════════════════════════════════════════
        PRINT
     ════════════════════════════════════════════ */
     @media print {
-      #intro-screen, #book-open-overlay, .reader-topbar,
-      #mobile-page-indicator { display: none !important; }
+      #intro-screen, #book-open-overlay, .reader-topbar { display: none !important; }
       #comic-reader {
         display: block !important;
         position: static;
@@ -1207,8 +1261,8 @@
   <source src="https://actions.google.com/sounds/v1/foley/page_turning.ogg" type="audio/ogg">
 </audio>
 
-<!-- ═══════════════════════════════════════════ INTRO ═══ -->
 <div id="intro-screen" onclick="openComic()">
+
   <div class="desk-objects">
     <div class="desk-pencil"></div>
     <div class="desk-coffee"></div>
@@ -1216,6 +1270,7 @@
       <span></span><span></span><span></span><span></span><span></span>
     </div>
   </div>
+
   <div id="comic-on-table">
     <div class="table-shadow"></div>
     <div class="table-comic-inner" id="tableComicInner">
@@ -1227,59 +1282,74 @@
         <div class="table-comic-title">Playa<br>La Virgen</div>
         <div class="table-comic-img-placeholder">
           <img src="0.jpg" alt="Portada" onerror="this.style.display='none'">
-        </div>
+          </div>
         <div class="table-comic-subtitle">Agua Inteligente para el Desierto</div>
         <div class="table-comic-badge">INACAP · 2026</div>
       </div>
     </div>
   </div>
-  <div class="intro-hint">✦ Toca para abrir el cómic ✦</div>
+
+  <div class="intro-hint">✦ Haz clic para abrir el cómic ✦</div>
 </div>
 
-<!-- ═══════════════════════════════════════════ APERTURA ═══ -->
 <div id="book-open-overlay">
   <div class="book-3d" id="book3d">
+
     <div class="book-left-page">
       <div class="blp-logo">PROYECTO HÍDRICO</div>
-      <div class="icl-seal" style="width:70px;height:70px;font-size:0.6rem;">
-        <div>💧</div><div>INACAP</div><div>2026</div>
+      <div class="icl-seal">
+        <div>💧</div>
+        <div>INACAP</div>
+        <div>2026</div>
       </div>
-      <div class="blp-info">Innovación y Emprendimiento<br>Playa La Virgen · Atacama<br><br><em>Primera Edición</em></div>
+      <div class="blp-info">
+        Innovación y Emprendimiento<br>
+        Playa La Virgen · Atacama<br>
+        <br>
+        <em>Primera Edición</em>
+      </div>
       <div class="blp-divider"></div>
-      <div class="blp-info" style="font-size:0.65rem;">Todos los derechos del proyecto<br>reservados al equipo creador.</div>
+      <div class="blp-info" style="font-size:0.65rem;">
+        Todos los derechos del proyecto<br>
+        reservados al equipo creador.
+      </div>
     </div>
+
     <div class="book-right-page">
-      <div style="font-size:2.5rem;">📖</div>
-      <div style="font-family:'Bangers',cursive;font-size:clamp(0.9rem,3vw,1.2rem);letter-spacing:3px;color:#666;">CARGANDO...</div>
+      <div style="font-size:3rem;">📖</div>
+      <div style="font-family:'Bangers',cursive;font-size:1.2rem;letter-spacing:3px;color:#666;">CARGANDO...</div>
     </div>
+
     <div class="book-spine"></div>
+
     <div class="book-cover-front" id="bookCoverFront">
-      <div class="cover-header-bar" style="width:calc(100% + 32px);margin:-16px -16px 8px;padding:6px 16px;">
+      <div class="cover-header-bar" style="width:calc(100% + 40px);margin:-20px -20px 8px;padding:6px 16px;">
         <span style="font-size:0.7rem;letter-spacing:1px;">📚 Innovación Vol. 2</span>
         <span class="cover-issue" style="font-size:0.75rem;">#01</span>
       </div>
       <div class="bcf-title">Playa<br>La Virgen</div>
       <div class="bcf-img">
         <img src="0.jpg" alt="Portada" onerror="this.style.display='none'">
-      </div>
+        </div>
       <div class="bcf-sub">Agua Inteligente para el Desierto</div>
     </div>
+
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ LECTOR ═══ -->
 <div id="comic-reader">
   <div class="reader-topbar">
-    <div class="topbar-title">🗺️ Playa La Virgen</div>
+    <div class="topbar-title">🗺️ Playa La Virgen — Cómic</div>
     <div class="topbar-nav">
-      <button class="nav-btn" id="btnPrev" onclick="prevPage()" disabled>◀ <span class="btn-text">ANTERIOR</span></button>
-      <div class="page-counter" id="pageCounter">1 / 10</div>
-      <button class="nav-btn" id="btnNext" onclick="nextPage()"><span class="btn-text">SIGUIENTE</span> ▶</button>
-      <button class="nav-btn btn-print" onclick="window.print()">🖨️</button>
+      <button class="nav-btn" id="btnPrev" onclick="prevSpread()" disabled>◀ ANTERIOR</button>
+      <div class="page-counter" id="pageCounter">1 / 5</div>
+      <button class="nav-btn" id="btnNext" onclick="nextSpread()">SIGUIENTE ▶</button>
+      <button class="nav-btn btn-print" onclick="window.print()">🖨️ PDF</button>
     </div>
   </div>
 
   <div class="reader-viewport" id="readerViewport">
+
     <div class="dust" style="left:10%;animation-duration:8s;animation-delay:0s;"></div>
     <div class="dust" style="left:30%;animation-duration:12s;animation-delay:2s;"></div>
     <div class="dust" style="left:55%;animation-duration:9s;animation-delay:4s;"></div>
@@ -1288,25 +1358,31 @@
 
     <div id="spread-container">
 
-      <!-- SPREAD 0: Portada -->
       <div class="page-spread active" id="spread-0">
-        <div class="reader-page inner-cover-left" data-side="left">
+        <div class="reader-page inner-cover-left">
           <div class="icl-logo">PROYECTO HÍDRICO</div>
-          <div class="icl-seal" style="width:80px;height:80px;font-size:0.65rem;">
-            <div style="font-size:1.4rem;">💧</div><div>INACAP</div><div>2026</div>
+          <div class="icl-seal" style="width:90px;height:90px;font-size:0.65rem;">
+            <div style="font-size:1.5rem;">💧</div>
+            <div>INACAP</div>
+            <div>2026</div>
           </div>
           <div class="icl-divider"></div>
           <div class="icl-text">
             <strong>Innovación y Emprendimiento</strong><br>
             Playa La Virgen · Desierto de Atacama<br><br>
             Primera Edición · 2026<br><br>
-            <em>Todos los derechos del proyecto<br>reservados al equipo creador.</em>
+            <em>Todos los derechos del proyecto<br>
+            reservados al equipo creador.</em>
           </div>
           <div class="icl-divider"></div>
-          <div class="icl-text" style="font-size:0.68rem;color:#888;">Cómic educativo — Uso académico.</div>
+          <div class="icl-text" style="font-size:0.68rem;color:#888;">
+            Cómic educativo — Uso académico.
+          </div>
         </div>
+
         <div class="book-gutter"></div>
-        <div class="reader-page cover-spread-right" data-side="right">
+
+        <div class="reader-page cover-spread-right">
           <div class="cover-page-content">
             <div class="cover-header-bar">
               <span>📚 Innovación Vol. 2</span>
@@ -1316,7 +1392,7 @@
             <div class="cover-main-subtitle" contenteditable="true">Proyecto: Agua Inteligente para el Desierto</div>
             <div class="cover-main-img">
               <img src="0.jpg" alt="Portada" onerror="this.style.display='none'">
-            </div>
+              </div>
             <div class="cover-footer-bar">
               <span contenteditable="true">Simón · Renato · Wiljer · Julio · Millaray</span>
               <span>INACAP · 2026</span>
@@ -1325,9 +1401,8 @@
         </div>
       </div>
 
-      <!-- SPREAD 1 -->
       <div class="page-spread" id="spread-1">
-        <div class="reader-page" data-side="left">
+        <div class="reader-page">
           <div class="page-content">
             <div class="scene-label">Cap. 1: El Oasis que se seca</div>
             <div class="panel panel-tall">
@@ -1339,8 +1414,10 @@
           </div>
           <div class="page-num-display">PÁG. 1</div>
         </div>
+
         <div class="book-gutter"></div>
-        <div class="reader-page" data-side="right">
+
+        <div class="reader-page">
           <div class="page-content">
             <div class="scene-label">Cap. 2: El Terreno Habla</div>
             <div class="panel panel-tall">
@@ -1358,9 +1435,8 @@
         </div>
       </div>
 
-      <!-- SPREAD 2 -->
       <div class="page-spread" id="spread-2">
-        <div class="reader-page" data-side="left">
+        <div class="reader-page">
           <div class="page-content">
             <div class="scene-label">Cap. 3: Sistema Sustentable</div>
             <div class="panel panel-tall">
@@ -1372,8 +1448,10 @@
           </div>
           <div class="page-num-display">PÁG. 3</div>
         </div>
+
         <div class="book-gutter"></div>
-        <div class="reader-page" data-side="right">
+
+        <div class="reader-page">
           <div class="page-content">
             <div class="scene-label">Cap. 4: Prototipo y Ajustes</div>
             <div class="panel panel-tall">
@@ -1387,9 +1465,8 @@
         </div>
       </div>
 
-      <!-- SPREAD 3 -->
       <div class="page-spread" id="spread-3">
-        <div class="reader-page" data-side="left">
+        <div class="reader-page">
           <div class="page-content">
             <div class="scene-label">Cap. 5: El Nuevo Escenario</div>
             <div class="panel panel-tall">
@@ -1401,10 +1478,12 @@
           </div>
           <div class="page-num-display">PÁG. 5</div>
         </div>
+
         <div class="book-gutter"></div>
-        <div class="reader-page" data-side="right">
+
+        <div class="reader-page">
           <div class="page-content">
-            <div class="scene-label">Cap. 6: Panel de Validación</div>
+            <div class="scene-label">Cap. 6: Matriz CDM (Cualidades, Debilidades y Mejoras)</div>
             <div class="dash-page-content" style="padding:8px;">
               <div class="dash-grid">
                 <div class="dash-card card-green">
@@ -1436,17 +1515,17 @@
         </div>
       </div>
 
-      <!-- SPREAD 4: Final + Créditos -->
       <div class="page-spread" id="spread-4">
-        <div class="reader-page" data-side="left" style="background:#111;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;overflow:hidden;padding:0;">
+
+        <div class="reader-page" style="background:#111;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;overflow:hidden;padding:0;">
           <div style="width:100%;height:100%;background:linear-gradient(160deg,#0a1628 0%,#0d2240 50%,#071018 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;position:relative;">
             <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
               <div style="position:absolute;top:12%;left:20%;width:2px;height:2px;background:rgba(255,255,255,0.7);border-radius:50%;box-shadow:40px 20px 0 rgba(255,255,255,0.4),80px -10px 0 rgba(255,255,255,0.6),120px 40px 0 rgba(255,255,255,0.3),160px 10px 0 rgba(255,255,255,0.5),20px 80px 0 rgba(255,255,255,0.4),60px 100px 0 rgba(255,255,255,0.6),100px 60px 0 rgba(255,255,255,0.3),140px 90px 0 rgba(255,255,255,0.5),30px 140px 0 rgba(255,255,255,0.4),70px 170px 0 rgba(255,255,255,0.3);"></div>
             </div>
-            <div style="font-size:2.5rem;">🏜️</div>
-            <div style="font-family:'Bangers',cursive;font-size:clamp(1rem,3vw,1.3rem);color:rgba(255,215,0,0.8);letter-spacing:3px;text-align:center;">PLAYA LA VIRGEN</div>
+            <div style="font-size:3rem;">🏜️</div>
+            <div style="font-family:'Bangers',cursive;font-size:1.3rem;color:rgba(255,215,0,0.8);letter-spacing:3px;text-align:center;">PLAYA LA VIRGEN</div>
             <div style="width:60%;border-top:1px solid rgba(255,215,0,0.3);"></div>
-            <div style="font-family:'Permanent Marker',cursive;font-size:clamp(0.6rem,1.8vw,0.7rem);color:rgba(255,255,255,0.4);text-align:center;line-height:1.7;">
+            <div style="font-family:'Permanent Marker',cursive;font-size:0.7rem;color:rgba(255,255,255,0.4);text-align:center;line-height:1.7;">
               "La innovación hídrica es<br>el primer paso hacia un<br>turismo sustentable<br>en el desierto."
             </div>
             <div style="width:60%;border-top:1px solid rgba(255,215,0,0.3);"></div>
@@ -1456,15 +1535,18 @@
 
         <div class="book-gutter" style="background:linear-gradient(90deg,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 50%,rgba(0,0,0,0.6) 100%);"></div>
 
-        <div class="reader-page credits-page" data-side="right">
+        <div class="reader-page credits-page">
           <div class="credits-content">
+
             <div class="credits-masthead">
               <div class="credits-title">⚡ CRÉDITOS ⚡</div>
               <div class="credits-subtitle">STAFF CREATIVO · PRIMERA EDICIÓN 2026</div>
             </div>
+
             <div class="credits-box">
               <div class="credits-box-label">EQUIPO DE PROYECTO</div>
               <div style="height:6px;"></div>
+
               <div class="credits-member">
                 <div class="member-icon">🧑</div>
                 <div class="member-info">
@@ -1472,6 +1554,7 @@
                   <div class="member-role">Investigación · Prototipo</div>
                 </div>
               </div>
+
               <div class="credits-member">
                 <div class="member-icon">👦</div>
                 <div class="member-info">
@@ -1479,6 +1562,7 @@
                   <div class="member-role">Desarrollo · IoT</div>
                 </div>
               </div>
+
               <div class="credits-member">
                 <div class="member-icon">🧑</div>
                 <div class="member-info">
@@ -1486,6 +1570,7 @@
                   <div class="member-role">Diseño · Análisis</div>
                 </div>
               </div>
+
               <div class="credits-member">
                 <div class="member-icon">👦</div>
                 <div class="member-info">
@@ -1493,6 +1578,7 @@
                   <div class="member-role">Validación · Datos</div>
                 </div>
               </div>
+
               <div class="credits-member">
                 <div class="member-icon">👩</div>
                 <div class="member-info">
@@ -1501,73 +1587,47 @@
                 </div>
               </div>
             </div>
+
             <div class="credits-docente credits-box">
               <div class="credits-box-label" style="color:var(--red);">DOCENTE GUÍA</div>
               <div style="height:6px;"></div>
               <div class="docente-name" contenteditable="true">Raúl Alberto Araya Zepeda</div>
               <div class="docente-role">Innovación y Emprendimiento · INACAP</div>
             </div>
+
             <div class="credits-quote" contenteditable="true">
               "La innovación hídrica es el primer paso hacia un turismo sustentable en el desierto de Atacama."
             </div>
+
             <div class="credits-inacap">INACAP · 2026 · TODOS LOS DERECHOS RESERVADOS</div>
+
           </div>
         </div>
+
       </div>
 
-    </div><!-- /spread-container -->
-
-    <div id="mobile-page-indicator">PÁG. 1 / 10</div>
-
-  </div><!-- /reader-viewport -->
-</div><!-- /comic-reader -->
-
-<script>
+    </div></div></div><script>
   /* ════════════════════════════════════════════
-     DETECCIÓN DE MODO
+     VARIABLES DE ESTADO
   ════════════════════════════════════════════ */
-  const isMobile = () => window.innerWidth <= 700;
-
-  /* ════════════════════════════════════════════
-     ESTADO
-     En móvil manejamos "páginas" individuales (0..9)
-     En desktop manejamos "spreads" (0..4)
-  ════════════════════════════════════════════ */
-  const TOTAL_SPREADS = 5;
-
-  // Lista plana de todas las páginas para modo móvil
-  // Cada entrada: { spreadId, side }
-  const ALL_PAGES = [
-    { spreadId: 0, side: 'left'  },  // 0: contratapa
-    { spreadId: 0, side: 'right' },  // 1: portada
-    { spreadId: 1, side: 'left'  },  // 2: pág 1
-    { spreadId: 1, side: 'right' },  // 3: pág 2
-    { spreadId: 2, side: 'left'  },  // 4: pág 3
-    { spreadId: 2, side: 'right' },  // 5: pág 4
-    { spreadId: 3, side: 'left'  },  // 6: pág 5
-    { spreadId: 3, side: 'right' },  // 7: pág 6 (dashboard)
-    { spreadId: 4, side: 'left'  },  // 8: página final
-    { spreadId: 4, side: 'right' },  // 9: créditos
-  ];
-
-  const TOTAL_PAGES = ALL_PAGES.length; // 10
-
+  const TOTAL_SPREADS = 5; // 0..4
   let currentSpread = 0;
-  let currentPage   = 0; // índice en ALL_PAGES (solo móvil)
 
   /* ════════════════════════════════════════════
-     INTRO — EFECTO 3D
+     1. EFECTO 3D EN LA MESA (intro)
   ════════════════════════════════════════════ */
-  const tableInner  = document.getElementById('tableComicInner');
+  const tableInner = document.getElementById('tableComicInner');
   const introScreen = document.getElementById('intro-screen');
 
   introScreen.addEventListener('mousemove', (e) => {
     const rect = introScreen.getBoundingClientRect();
-    const cx = rect.width / 2, cy = rect.height / 2;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
     const x = e.clientX - rect.left - cx;
-    const y = e.clientY - rect.top  - cy;
-    tableInner.style.transform =
-      `perspective(800px) rotateX(${(y/cy)*-12}deg) rotateY(${(x/cx)*14}deg)`;
+    const y = e.clientY - rect.top - cy;
+    const rotX = (y / cy) * -12;
+    const rotY = (x / cx) * 14;
+    tableInner.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
   });
 
   introScreen.addEventListener('mouseleave', () => {
@@ -1575,19 +1635,24 @@
   });
 
   /* ════════════════════════════════════════════
-     ABRIR CÓMIC
+     2. ABRIR EL CÓMIC
   ════════════════════════════════════════════ */
   function openComic() {
+    // Ocultar intro
     introScreen.style.transition = 'opacity 0.5s ease';
     introScreen.style.opacity = '0';
     setTimeout(() => { introScreen.style.display = 'none'; }, 500);
 
+    // Mostrar overlay de apertura
     const overlay = document.getElementById('book-open-overlay');
     overlay.classList.add('active');
 
+    // Animar apertura de portada después de 600ms
     setTimeout(() => {
-      document.getElementById('bookCoverFront').classList.add('opening');
+      const coverFront = document.getElementById('bookCoverFront');
+      coverFront.classList.add('opening');
 
+      // Después de que termina la animación de giro, hacer zoom
       setTimeout(() => {
         const book = document.getElementById('book3d');
         book.classList.add('page-zoom-out');
@@ -1595,212 +1660,113 @@
         setTimeout(() => {
           overlay.classList.remove('active');
           overlay.style.display = 'none';
-          document.getElementById('comic-reader').classList.add('active');
 
-          if (isMobile()) {
-            showMobilePage(0, 'next');
-          } else {
-            showSpread(0, 'next');
-          }
+          // Mostrar lector
+          const reader = document.getElementById('comic-reader');
+          reader.classList.add('active');
+          showSpread(0);
         }, 1000);
       }, 1400);
     }, 600);
   }
 
   /* ════════════════════════════════════════════
-     MODO DESKTOP — SPREADS (2 páginas)
+     3. NAVEGACIÓN DE PÁGINAS (CON FÍSICAS DE HOJA 3D)
   ════════════════════════════════════════════ */
-  function showSpread(index, direction) {
-    const old = document.getElementById('spread-' + currentSpread);
-    if (old) old.classList.remove('active', 'page-turn-next', 'page-turn-prev');
-
-    // Restaurar páginas ocultas del spread anterior
-    if (old) {
-      old.querySelectorAll('.reader-page').forEach(p => { p.style.display = ''; });
-      const g = old.querySelector('.book-gutter');
-      if (g) g.style.display = '';
+  function showSpread(index, direction = 'next') {
+    // Ocultar el spread actual quitándole las clases
+    const current = document.getElementById('spread-' + currentSpread);
+    if (current) {
+        current.classList.remove('active', 'page-turn-next', 'page-turn-prev');
     }
 
     currentSpread = index;
     const next = document.getElementById('spread-' + currentSpread);
-
+    
     if (next) {
+      // Remover clases de animación previas por si acaso
       next.classList.remove('page-turn-next', 'page-turn-prev');
-      void next.offsetWidth;
+      
+      // Forzar un reflow para reiniciar la animación CSS
+      void next.offsetWidth; 
+      
+      // Añadir las clases para mostrarlo con el efecto 3D correcto
       next.classList.add('active');
-      if (direction === 'next' && currentSpread > 0) next.classList.add('page-turn-next');
-      if (direction === 'prev') next.classList.add('page-turn-prev');
-    }
-
-    playPageSound();
-    updateNav();
-  }
-
-  /* ════════════════════════════════════════════
-     MODO MÓVIL — PÁGINAS INDIVIDUALES
-  ════════════════════════════════════════════ */
-  function showMobilePage(index, direction) {
-    // Ocultar todo
-    document.querySelectorAll('.page-spread').forEach(s => {
-      s.classList.remove('active', 'page-turn-next', 'page-turn-prev');
-      s.querySelectorAll('.reader-page').forEach(p => { p.style.display = 'none'; });
-      const g = s.querySelector('.book-gutter');
-      if (g) g.style.display = 'none';
-    });
-
-    currentPage = index;
-    const pageInfo = ALL_PAGES[currentPage];
-    const spread   = document.getElementById('spread-' + pageInfo.spreadId);
-
-    // Mostrar solo la página correcta dentro del spread
-    spread.querySelectorAll('.reader-page').forEach(p => {
-      if (p.dataset.side === pageInfo.side) {
-        p.style.display = 'flex';
-      } else {
-        p.style.display = 'none';
+      if (currentSpread > 0 || direction === 'prev') {
+          next.classList.add(direction === 'next' ? 'page-turn-next' : 'page-turn-prev');
       }
-    });
-
-    spread.classList.remove('page-turn-next', 'page-turn-prev');
-    void spread.offsetWidth;
-    spread.classList.add('active');
-    if (direction === 'next' && currentPage > 0) spread.classList.add('page-turn-next');
-    if (direction === 'prev') spread.classList.add('page-turn-prev');
-
-    // Indicador
-    const ind = document.getElementById('mobile-page-indicator');
-    if (ind) ind.textContent = 'PÁG. ' + (currentPage + 1) + ' / ' + TOTAL_PAGES;
-
-    playPageSound();
-    updateNav();
-  }
-
-  /* ════════════════════════════════════════════
-     NAVEGACIÓN UNIFICADA
-  ════════════════════════════════════════════ */
-  function nextPage() {
-    if (isMobile()) {
-      if (currentPage < TOTAL_PAGES - 1) showMobilePage(currentPage + 1, 'next');
-    } else {
-      if (currentSpread < TOTAL_SPREADS - 1) showSpread(currentSpread + 1, 'next');
     }
-  }
 
-  function prevPage() {
-    if (isMobile()) {
-      if (currentPage > 0) showMobilePage(currentPage - 1, 'prev');
-    } else {
-      if (currentSpread > 0) showSpread(currentSpread - 1, 'prev');
-    }
-  }
-
-  /* Alias para los botones HTML */
-  function nextSpread() { nextPage(); }
-  function prevSpread() { prevPage(); }
-
-  function updateNav() {
-    const mobile = isMobile();
-    const atStart = mobile ? currentPage === 0 : currentSpread === 0;
-    const atEnd   = mobile ? currentPage === TOTAL_PAGES - 1 : currentSpread === TOTAL_SPREADS - 1;
-    const current = mobile ? currentPage : currentSpread;
-    const total   = mobile ? TOTAL_PAGES : TOTAL_SPREADS;
-
-    document.getElementById('btnPrev').disabled = atStart;
-    document.getElementById('btnNext').disabled = atEnd;
-    document.getElementById('pageCounter').textContent = (current + 1) + ' / ' + total;
-  }
-
-  /* ════════════════════════════════════════════
-     SONIDO
-  ════════════════════════════════════════════ */
-  function playPageSound() {
+    // Sonido de página
     try {
       const snd = document.getElementById('pageSound');
       snd.currentTime = 0;
       snd.volume = 0.3;
       snd.play().catch(() => {});
     } catch(e) {}
+
+    updateNav();
   }
 
+  function nextSpread() {
+    if (currentSpread < TOTAL_SPREADS - 1) {
+      showSpread(currentSpread + 1, 'next');
+    }
+  }
+
+  function prevSpread() {
+    if (currentSpread > 0) {
+      showSpread(currentSpread - 1, 'prev');
+    }
+  }
+
+  function updateNav() {
+    document.getElementById('btnPrev').disabled = currentSpread === 0;
+    document.getElementById('btnNext').disabled = currentSpread === TOTAL_SPREADS - 1;
+    document.getElementById('pageCounter').textContent =
+      (currentSpread + 1) + ' / ' + TOTAL_SPREADS;
+  }
+
+  /* Navegación con teclas */
+  document.addEventListener('keydown', (e) => {
+    if (!document.getElementById('comic-reader').classList.contains('active')) return;
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSpread(); }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); prevSpread(); }
+  });
+
   /* ════════════════════════════════════════════
-     EFECTO 3D EN DESKTOP
+     4. EFECTO 3D AL MOVER EL MOUSE (lector)
   ════════════════════════════════════════════ */
   const spreadContainer = document.getElementById('spread-container');
-  const viewport        = document.getElementById('readerViewport');
+  const viewport = document.getElementById('readerViewport');
 
   viewport.addEventListener('mousemove', (e) => {
-    if (isMobile() || window.matchMedia('print').matches) return;
+    if (window.matchMedia('print').matches) return;
     const rect = viewport.getBoundingClientRect();
-    const cx = rect.width / 2, cy = rect.height / 2;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
     const x = e.clientX - rect.left - cx;
-    const y = e.clientY - rect.top  - cy;
+    const y = e.clientY - rect.top - cy;
+    const rotX = (y / cy) * -4;
+    const rotY = (x / cx) * 5;
     spreadContainer.style.transform =
-      `perspective(2000px) rotateX(${(y/cy)*-4}deg) rotateY(${(x/cx)*5}deg)`;
+      `perspective(2000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
   });
 
   viewport.addEventListener('mouseleave', () => {
     spreadContainer.style.transition = 'transform 0.6s ease-out';
-    spreadContainer.style.transform  = 'perspective(2000px) rotateX(0deg) rotateY(0deg)';
+    spreadContainer.style.transform = 'perspective(2000px) rotateX(0deg) rotateY(0deg)';
     setTimeout(() => { spreadContainer.style.transition = ''; }, 600);
   });
 
-  /* ════════════════════════════════════════════
-     TECLADO
-  ════════════════════════════════════════════ */
-  document.addEventListener('keydown', (e) => {
-    if (!document.getElementById('comic-reader').classList.contains('active')) return;
-    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextPage(); }
-    if (e.key === 'ArrowLeft')  { e.preventDefault(); prevPage(); }
-  });
-
-  /* ════════════════════════════════════════════
-     SWIPE TÁCTIL
-  ════════════════════════════════════════════ */
+  /* Swipe táctil */
   let touchStartX = 0;
-  let touchStartY = 0;
-
-  document.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-  }, { passive: true });
-
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
   document.addEventListener('touchend', (e) => {
-    if (!document.getElementById('comic-reader').classList.contains('active')) return;
     const dx = e.changedTouches[0].clientX - touchStartX;
-    const dy = e.changedTouches[0].clientY - touchStartY;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
-      if (dx < 0) nextPage();
-      else         prevPage();
-    }
-  }, { passive: true });
-
-  /* ════════════════════════════════════════════
-     RESIZE — CAMBIO DE MODO
-  ════════════════════════════════════════════ */
-  let lastMobile = isMobile();
-  window.addEventListener('resize', () => {
-    const nowMobile = isMobile();
-    if (nowMobile === lastMobile) return;
-    lastMobile = nowMobile;
-
-    // Si el lector está activo, resetear a la primera página/spread
-    if (!document.getElementById('comic-reader').classList.contains('active')) return;
-
-    // Limpiar todo
-    document.querySelectorAll('.page-spread').forEach(s => {
-      s.classList.remove('active', 'page-turn-next', 'page-turn-prev');
-      s.querySelectorAll('.reader-page').forEach(p => { p.style.display = ''; });
-      const g = s.querySelector('.book-gutter');
-      if (g) g.style.display = '';
-    });
-
-    currentSpread = 0;
-    currentPage   = 0;
-
-    if (nowMobile) {
-      showMobilePage(0, 'next');
-    } else {
-      showSpread(0, 'next');
+    if (Math.abs(dx) > 60) {
+      if (dx < 0) nextSpread();
+      else prevSpread();
     }
   });
 </script>
