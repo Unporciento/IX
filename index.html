@@ -1,1774 +1,745 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cómic — Proyecto Hídrico Playa La Virgen</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maqueta 3D — Autonomía Hídrica</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,200;0,400;1,200&display=swap" rel="stylesheet">
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --yellow: #FFD700;
-      --red: #E31B23;
-      --blue: #0057A8;
-      --black: #0A0A0A;
-      --white: #FAFAFA;
-      --green: #2E8B57;
-      --panel-border: 4px solid var(--black);
-      --wood: #5C3A1E;
-      --wood-light: #8B5E3C;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --cream: #f0ece3;
+      --dark: #0d0f12;
+      --panel-bg: rgba(10,12,16,0.82);
+      --border: rgba(201,168,76,0.25);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      overflow: hidden;
+      background: var(--dark);
+      font-family: 'DM Mono', monospace;
+      cursor: crosshair;
+      touch-action: none; /* Previene comportamientos extraños en táctil */
+    }
 
-    /* ════════════════════════════════════════════
-       PANTALLA INTRO — LA MESA
-    ════════════════════════════════════════════ */
-    #intro-screen {
+    canvas { display: block; }
+
+    /* ─── CLASES PARA OCULTAR UI ─── */
+    .ui-element {
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .ui-element.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ─── BOTÓN TOGGLE UI ─── */
+    #btn-toggle-ui {
       position: fixed;
-      inset: 0;
-      z-index: 9999;
+      top: 22px;
+      right: 32px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      color: var(--gold);
+      font-size: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      gap: 30px;
-      background: 
-        radial-gradient(ellipse at 50% 100%, #3d1e08 0%, #1a0a02 60%, #000 100%);
       cursor: pointer;
-      overflow: hidden;
+      z-index: 300;
+      backdrop-filter: blur(12px);
+      transition: background 0.3s ease, opacity 0.3s ease;
     }
+    #btn-toggle-ui:hover { background: rgba(201,168,76,0.15); }
+    #btn-toggle-ui.dimmed { opacity: 0.4; }
 
-    /* Textura madera */
-    #intro-screen::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: 
-        repeating-linear-gradient(
-          90deg,
-          transparent,
-          transparent 2px,
-          rgba(0,0,0,0.08) 2px,
-          rgba(0,0,0,0.08) 4px
-        ),
-        repeating-linear-gradient(
-          180deg,
-          transparent,
-          transparent 8px,
-          rgba(255,255,255,0.02) 8px,
-          rgba(255,255,255,0.02) 9px
-        );
+    /* ─── HUD HEADER ─── */
+    #header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 22px 90px 18px 32px; /* Espacio extra a la derecha para el botón */
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(13,15,18,0.95) 0%, transparent 100%);
       pointer-events: none;
+      z-index: 200;
     }
-
-    /* Luz de lámpara en la mesa */
-    #intro-screen::after {
-      content: '';
-      position: absolute;
-      top: -20%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(ellipse, rgba(255,220,120,0.18) 0%, transparent 70%);
-      pointer-events: none;
+    #header h1 {
+      font-family: 'Fraunces', serif;
+      font-weight: 200;
+      font-size: 28px;
+      letter-spacing: 0.04em;
+      color: var(--cream);
+      line-height: 1;
     }
-
-    .intro-hint {
-      font-family: 'Bangers', cursive;
-      font-size: 1.3rem;
-      letter-spacing: 4px;
-      color: rgba(255,220,120,0.7);
+    #header h1 em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+    #header .subtitle {
+      font-size: 10px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      animation: blink 2s ease-in-out infinite;
-      position: relative;
-      z-index: 2;
+      color: var(--gold);
+      margin-top: 5px;
+    }
+    #header .badge {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(240,236,227,0.45);
+      text-align: right;
+      line-height: 1.7;
+    }
+    #header .badge strong {
+      color: var(--gold);
+      font-weight: 500;
     }
 
+    /* ─── SIDE LEGEND ─── */
+    #legend {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px 18px;
+      z-index: 200;
+      pointer-events: none;
+      backdrop-filter: blur(12px);
+      min-width: 210px;
+    }
+    #legend.hidden { transform: translate(20px, -50%); }
+    #header.hidden { transform: translateY(-20px); }
+    #bottombar.hidden { transform: translateY(20px); }
+
+    #legend .leg-title {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .leg-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 11px;
+      color: rgba(240,236,227,0.7);
+      line-height: 1.3;
+    }
+    .leg-item:last-child { margin-bottom: 0; }
+    .leg-dot {
+      width: 10px; height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .leg-dot.pulse {
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px currentColor; }
+      50% { opacity: 0.3; box-shadow: none; }
+    }
+
+    /* ─── BOTTOM BAR ─── */
+    #bottombar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(to top, rgba(13,15,18,0.9) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 200;
+    }
+    .hint {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(240,236,227,0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hint span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hint .kbd {
+      background: rgba(240,236,227,0.08);
+      border: 1px solid rgba(240,236,227,0.12);
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-size: 9px;
+    }
+    #status {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #status::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: #4caf50;
+      border-radius: 50%;
+      animation: blink 2s ease-in-out infinite;
+    }
     @keyframes blink {
-      0%, 100% { opacity: 0.7; }
+      0%, 100% { opacity: 1; }
       50% { opacity: 0.2; }
     }
 
-    /* ════════════════════════════════════════════
-       COMIC EN LA MESA (intro)
-    ════════════════════════════════════════════ */
-    #comic-on-table {
-      position: relative;
-      z-index: 2;
-      width: 280px;
-      height: 370px;
-      perspective: 1200px;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-
-    .table-comic-inner {
-      width: 100%;
-      height: 100%;
-      transform-style: preserve-3d;
-      transition: transform 0.15s ease-out;
-      border-radius: 4px;
-    }
-
-    .table-cover {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(145deg, #FFD700 0%, #FFA500 40%, #FF8C00 100%);
-      border-radius: 4px 12px 12px 4px;
-      border: 3px solid #0A0A0A;
-      box-shadow:
-        -8px 0 0 #8B6914,
-        -12px 4px 20px rgba(0,0,0,0.6),
-        0 0 40px rgba(255,200,50,0.15),
-        inset -3px 0 15px rgba(0,0,0,0.2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 20px 15px;
-      overflow: hidden;
-    }
-
-    /* Lomo del cómic */
-    .table-cover::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 16px;
-      height: 100%;
-      background: linear-gradient(180deg, #8B6914, #5C4A0E, #8B6914);
-      border-right: 2px solid rgba(0,0,0,0.4);
-    }
-
-    /* Brillo portada */
-    .table-cover::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 40%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06));
-      pointer-events: none;
-    }
-
-    .table-comic-title {
-      font-family: 'Bangers', cursive;
-      font-size: 1.7rem;
-      color: #0A0A0A;
-      text-align: center;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      line-height: 1;
-      text-shadow: 2px 2px 0 rgba(255,255,255,0.3);
-      padding-left: 10px;
-    }
-
-    .table-comic-subtitle {
-      font-family: 'Permanent Marker', cursive;
-      font-size: 0.7rem;
-      color: #0057A8;
-      text-align: center;
-      padding-left: 10px;
-      background: white;
-      padding: 3px 8px 3px 14px;
-      border: 2px solid #0A0A0A;
-    }
-
-    .table-comic-img-placeholder {
-      width: 85%;
-      height: 150px;
-      background: linear-gradient(135deg, #1a3a6e 0%, #0a1f3e 100%);
-      border: 3px solid #0A0A0A;
-      margin-left: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .table-comic-img-placeholder img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      position: absolute; /* Asegura que la imagen cubra todo */
-      top: 0;
-      left: 0;
-      z-index: 10; /* Asegura que la imagen esté por encima de cualquier otro elemento */
-    }
-
-    .table-comic-badge {
-      font-family: 'Bangers', cursive;
-      background: var(--red);
-      color: white;
-      font-size: 0.9rem;
-      padding: 3px 10px;
-      border: 2px solid #0A0A0A;
-      letter-spacing: 2px;
-      margin-left: 10px;
-    }
-
-    /* Páginas apiladas debajo de la portada */
-    .table-pages-stack {
-      position: absolute;
-      right: -6px;
-      top: 3px;
-      width: 12px;
-      height: calc(100% - 6px);
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-
-    .stack-page {
-      flex: 1;
-      border-radius: 0 2px 2px 0;
-    }
-
-    /* Sombra bajo el cómic */
-    .table-shadow {
-      position: absolute;
-      bottom: -20px;
-      left: 10%;
-      width: 80%;
-      height: 30px;
-      background: radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%);
-      filter: blur(8px);
-      pointer-events: none;
-    }
-
-    /* Objetos decorativos en la mesa */
-    .desk-objects {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .desk-pencil {
-      position: absolute;
-      bottom: 15%;
-      right: 20%;
-      width: 120px;
-      height: 12px;
-      background: linear-gradient(90deg, #FFD700 80%, #F4A460 80%, #8B4513 90%, #C0C0C0 95%);
-      border: 1px solid rgba(0,0,0,0.4);
-      border-radius: 0 0 0 2px;
-      transform: rotate(-25deg);
-      box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
-    }
-
-    .desk-pencil::before {
-      content: '';
-      position: absolute;
-      right: -8px;
-      top: -4px;
-      width: 0;
-      height: 0;
-      border-left: 10px solid #F4A460;
-      border-top: 10px solid transparent;
-      border-bottom: 10px solid transparent;
-    }
-
-    .desk-coffee {
-      position: absolute;
-      bottom: 18%;
-      left: 12%;
-      width: 45px;
-      height: 50px;
-      background: radial-gradient(ellipse at 50% 40%, #8B4513 0%, #4a2208 100%);
-      border-radius: 0 0 12px 12px;
-      border: 2px solid rgba(0,0,0,0.5);
-      box-shadow: 3px 3px 10px rgba(0,0,0,0.4);
-    }
-
-    .desk-coffee::before {
-      content: '☕';
-      font-size: 1.8rem;
-      position: absolute;
-      top: -20px;
-      left: -2px;
-    }
-
-    .desk-notes {
-      position: absolute;
-      top: 20%;
-      left: 8%;
-      width: 80px;
-      height: 90px;
-      background: #FFFDE7;
-      border: 1px solid rgba(0,0,0,0.3);
-      transform: rotate(8deg);
-      box-shadow: 2px 2px 8px rgba(0,0,0,0.35);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 8px 6px;
-      gap: 6px;
-    }
-
-    .desk-notes span {
-      display: block;
-      height: 2px;
-      background: rgba(0,0,0,0.2);
-      border-radius: 1px;
-    }
-
-    /* ════════════════════════════════════════════
-       ANIMACIÓN DE APERTURA DEL CÓMIC
-    ════════════════════════════════════════════ */
-    #book-open-overlay {
+    /* ─── LOADING ─── */
+    #loading {
       position: fixed;
       inset: 0;
-      z-index: 8888;
-      perspective: 2000px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: #1a0a02;
-    }
-
-    #book-open-overlay.active {
-      display: flex;
-    }
-
-    .book-3d {
-      width: 560px;
-      height: 400px;
-      position: relative;
-      transform-style: preserve-3d;
-      transform: rotateX(25deg) rotateY(-30deg);
-      animation: bookAppear 0.5s ease-out forwards;
-    }
-
-    @keyframes bookAppear {
-      from { transform: rotateX(45deg) rotateY(-60deg) scale(0.6); opacity: 0; }
-      to   { transform: rotateX(25deg) rotateY(-30deg) scale(1); opacity: 1; }
-    }
-
-    .book-right-page, .book-left-page, .book-cover-front, .book-cover-back, .book-spine {
-      position: absolute;
-      border: 2px solid rgba(0,0,0,0.7);
-    }
-
-    /* Página derecha (siempre visible — contenido) */
-    .book-right-page {
-      width: 280px;
-      height: 400px;
-      left: 280px;
-      top: 0;
-      background: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Bangers', cursive;
-      font-size: 1.4rem;
-      color: #0A0A0A;
-      letter-spacing: 3px;
-      flex-direction: column;
-      gap: 10px;
-      border-left: none;
-    }
-
-    /* Portada delantera — ESTA gira */
-    .book-cover-front {
-      width: 280px;
-      height: 400px;
-      left: 0;
-      top: 0;
-      background: linear-gradient(145deg, #FFD700, #FFA500);
-      transform-origin: right center;
-      transform-style: preserve-3d;
+      background: var(--dark);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 20px;
-      overflow: hidden;
+      z-index: 9999;
+      transition: opacity 0.6s ease;
     }
-
-    .book-cover-front::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 20px;
-      height: 100%;
-      background: linear-gradient(90deg, rgba(0,0,0,0.3), transparent);
+    #loading.hide { opacity: 0; pointer-events: none; }
+    #loading .load-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 200;
+      font-size: 22px;
+      color: var(--cream);
+      margin-bottom: 24px;
     }
-
-    .bcf-title {
-      font-family: 'Bangers', cursive;
-      font-size: 2rem;
-      color: #0A0A0A;
-      text-align: center;
-      letter-spacing: 2px;
-      line-height: 1;
-    }
-
-    .bcf-img {
-      width: 90%;
-      height: 140px;
-      background: linear-gradient(135deg, #1a3a6e, #0a1f3e);
-      border: 3px solid #0A0A0A;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
+    .load-bar-wrap {
+      width: 200px;
+      height: 1px;
+      background: rgba(240,236,227,0.1);
       position: relative;
     }
-
-    .bcf-img img { 
-      width: 100%; 
-      height: 100%; 
-      object-fit: cover; 
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 10;
+    .load-bar-fill {
+      height: 1px;
+      background: var(--gold);
+      width: 0%;
+      transition: width 1.2s ease;
     }
 
-    .bcf-sub {
-      font-family: 'Permanent Marker', cursive;
-      font-size: 0.65rem;
-      background: white;
-      color: #0057A8;
-      border: 2px solid #0A0A0A;
-      padding: 2px 8px;
-      text-align: center;
-    }
-
-    /* Lomo */
-    .book-spine {
-      width: 20px;
-      height: 400px;
-      left: 274px;
-      top: 0;
-      background: linear-gradient(180deg, #8B6914, #5C4A0E, #8B6914);
-      transform: rotateY(90deg);
-      transform-origin: left center;
-      border-left: none;
-      border-right: none;
-    }
-
-    /* Animación de apertura de la portada */
-    .book-cover-front.opening {
-      animation: openCover 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
-    @keyframes openCover {
-      0%   { transform: rotateY(0deg); }
-      100% { transform: rotateY(-175deg); }
-    }
-
-    /* El interior de la portada (reverso) */
-    .book-cover-back-face {
-      position: absolute;
-      inset: 0;
-      background: white;
-      backface-visibility: hidden;
-      transform: rotateY(180deg);
-    }
-
-    /* Página izquierda interior */
-    .book-left-page {
-      width: 280px;
-      height: 400px;
-      left: 0;
-      top: 0;
-      background: #FFFDF7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 15px;
-      padding: 20px;
-      border-right: none;
-    }
-
-    .blp-logo {
-      font-family: 'Bangers', cursive;
-      font-size: 1.2rem;
-      letter-spacing: 4px;
-      color: var(--red);
-      border-bottom: 3px solid var(--black);
-      padding-bottom: 8px;
-      text-align: center;
-    }
-
-    .blp-info {
-      font-family: 'Comic Neue', cursive;
-      font-size: 0.8rem;
-      color: #333;
-      text-align: center;
-      line-height: 1.6;
-    }
-
-    .blp-divider {
-      width: 80%;
-      height: 2px;
-      background: repeating-linear-gradient(90deg, var(--black) 0, var(--black) 5px, transparent 5px, transparent 10px);
-    }
-
-    .page-zoom-out {
-      animation: zoomToReader 1s ease-in forwards;
-    }
-
-    @keyframes zoomToReader {
-      0%   { transform: rotateX(25deg) rotateY(-30deg) scale(1); opacity: 1; }
-      100% { transform: rotateX(0deg) rotateY(0deg) scale(8); opacity: 0; }
-    }
-
-    /* ════════════════════════════════════════════
-       LECTOR DE PÁGINAS (Comic Reader)
-    ════════════════════════════════════════════ */
-    #comic-reader {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 7777;
-      background: #1a1a1a;
-      overflow: hidden;
-      flex-direction: column;
-    }
-
-    #comic-reader.active {
-      display: flex;
-    }
-
-    /* Barra superior */
-    .reader-topbar {
-      height: 50px;
-      background: #0A0A0A;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      border-bottom: 3px solid var(--yellow);
-      flex-shrink: 0;
-      z-index: 10;
-    }
-
-    .topbar-title {
-      font-family: 'Bangers', cursive;
-      font-size: 1.3rem;
-      color: var(--yellow);
-      letter-spacing: 3px;
-    }
-
-    .topbar-nav {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .nav-btn {
-      font-family: 'Bangers', cursive;
-      font-size: 1.1rem;
-      letter-spacing: 1px;
-      padding: 6px 16px;
-      background: var(--red);
-      color: white;
-      border: 2px solid var(--yellow);
-      cursor: pointer;
-      transition: transform 0.1s, background 0.1s;
-    }
-
-    .nav-btn:hover { background: #c01018; }
-    .nav-btn:active { transform: scale(0.95); }
-    .nav-btn:disabled { background: #444; border-color: #555; color: #888; cursor: default; }
-
-    .page-counter {
-      font-family: 'Bangers', cursive;
-      color: white;
-      font-size: 1.1rem;
-      letter-spacing: 2px;
-      min-width: 80px;
-      text-align: center;
-    }
-
-    .btn-print {
-      background: var(--blue);
-      font-size: 0.9rem;
-      padding: 5px 12px;
-    }
-
-    /* Área de páginas */
-    .reader-viewport {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    /* Partícula de polvo */
-    .dust {
-      position: absolute;
-      width: 3px;
-      height: 3px;
-      border-radius: 50%;
-      background: rgba(255,220,120,0.4);
-      animation: dustFloat linear infinite;
-      pointer-events: none;
-    }
-
-    @keyframes dustFloat {
-      from { transform: translateY(100vh) translateX(0); opacity: 0; }
-      10%  { opacity: 1; }
-      90%  { opacity: 0.5; }
-      to   { transform: translateY(-100px) translateX(30px); opacity: 0; }
-    }
-
-    /* Spread de 2 páginas */
-    .page-spread {
-      width: 100%;
-      max-width: 1100px;
-      height: 100%;
-      max-height: 720px;
-      display: none;
-      gap: 0;
-      position: relative;
-      perspective: 2500px; /* Perspectiva alta para el 3D */
-    }
-
-    .page-spread.active {
-      display: flex;
-    }
-
-    /* Página individual en el lector */
-    .reader-page {
-      flex: 1;
-      background: var(--white);
-      border: 4px solid var(--black);
-      overflow-y: auto;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: box-shadow 0.15s ease-out;
-    }
-
-    .reader-page:first-child {
-      border-right: 2px solid var(--black);
-      box-shadow: -8px 0 20px rgba(0,0,0,0.5), inset -5px 0 15px rgba(0,0,0,0.08);
-    }
-
-    .reader-page:last-child {
-      border-left: 2px solid var(--black);
-      box-shadow: 8px 0 20px rgba(0,0,0,0.5), inset 5px 0 15px rgba(0,0,0,0.08);
-    }
-
-    /* Lomo central del libro abierto */
-    .book-gutter {
-      width: 24px;
-      background: linear-gradient(90deg, 
-        rgba(0,0,0,0.4) 0%, 
-        rgba(0,0,0,0.05) 40%, 
-        rgba(0,0,0,0.05) 60%, 
-        rgba(0,0,0,0.4) 100%
-      );
-      flex-shrink: 0;
-      position: relative;
-      z-index: 2;
-    }
-
-    .book-gutter::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 2px;
-      height: 100%;
-      background: rgba(0,0,0,0.3);
-    }
-
-    /* ════════════════════════════════════════════
-       NUEVAS ANIMACIONES 3D PARA PASAR PÁGINA
-    ════════════════════════════════════════════ */
-    
-    /* Avanzar a la siguiente página (La hoja derecha cae) */
-    .page-turn-next { display: flex; }
-    .page-turn-next .reader-page:last-child {
-      animation: flipDownRight 0.6s cubic-bezier(0.3, 0.1, 0.2, 1) forwards;
-      transform-origin: left center;
-    }
-    @keyframes flipDownRight {
-      0% { 
-        transform: rotateY(90deg); 
-        filter: brightness(0.6) drop-shadow(-15px 0px 20px rgba(0,0,0,0.5)); 
-        opacity: 0; 
+    /* ─── MEDIA QUERIES (TELÉFONOS MÓVILES) ─── */
+    @media (max-width: 768px) {
+      #btn-toggle-ui {
+        top: 15px;
+        right: 15px;
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
       }
-      20% { opacity: 1; }
-      100% { 
-        transform: rotateY(0deg); 
-        filter: brightness(1) drop-shadow(0px 0px 0px rgba(0,0,0,0)); 
-        opacity: 1; 
+      #header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 65px 15px 20px;
+        gap: 12px;
       }
-    }
-
-    /* Retroceder a la página anterior (La hoja izquierda cae) */
-    .page-turn-prev { display: flex; }
-    .page-turn-prev .reader-page:first-child {
-      animation: flipDownLeft 0.6s cubic-bezier(0.3, 0.1, 0.2, 1) forwards;
-      transform-origin: right center;
-    }
-    @keyframes flipDownLeft {
-      0% { 
-        transform: rotateY(-90deg); 
-        filter: brightness(0.6) drop-shadow(15px 0px 20px rgba(0,0,0,0.5)); 
-        opacity: 0; 
+      #header h1 { font-size: 22px; }
+      #header .badge { text-align: left; line-height: 1.5; }
+      
+      #legend {
+        top: auto;
+        bottom: 50px;
+        right: 15px;
+        left: 15px;
+        transform: none;
+        min-width: 0;
+        padding: 15px;
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Leyenda en dos columnas para ahorrar espacio */
+        column-gap: 10px;
       }
-      20% { opacity: 1; }
-      100% { 
-        transform: rotateY(0deg); 
-        filter: brightness(1) drop-shadow(0px 0px 0px rgba(0,0,0,0)); 
-        opacity: 1; 
+      #legend.hidden { transform: translateY(20px); }
+      #legend .leg-title { grid-column: 1 / -1; margin-bottom: 10px; padding-bottom: 6px; }
+      .leg-item { font-size: 9px; margin-bottom: 6px; }
+      
+      #bottombar {
+        padding: 12px 15px;
+        justify-content: center;
       }
-    }
-
-    /* ════════════════════════════════════════════
-       CONTENIDO DE LAS PÁGINAS DEL LECTOR
-    ════════════════════════════════════════════ */
-    .page-content {
-      padding: 16px 14px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .scene-label {
-      font-family: 'Bangers', cursive;
-      font-size: 0.95rem;
-      letter-spacing: 3px;
-      color: var(--white);
-      background: var(--black);
-      text-align: center;
-      padding: 5px;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-      flex-shrink: 0;
-    }
-
-    .panel {
-      border: var(--panel-border);
-      background: #f0f0f0;
-      overflow: hidden;
-      flex-shrink: 0;
-      position: relative;
-    }
-
-    .panel img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .panel-tall { height: 240px; }
-    .panel-medium { height: 180px; }
-
-    .speech-bubble {
-      background: white;
-      border: 3px solid var(--black);
-      border-radius: 16px;
-      padding: 7px 12px;
-      font-family: 'Comic Neue', cursive;
-      font-size: 0.82rem;
-      font-weight: 700;
-      line-height: 1.35;
-      color: var(--black);
-      margin-top: 8px;
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    .speech-bubble::before {
-      content: '';
-      position: absolute;
-      top: -14px;
-      left: 24px;
-      width: 0;
-      height: 0;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-bottom: 14px solid var(--black);
-    }
-
-    .speech-bubble::after {
-      content: '';
-      position: absolute;
-      top: -10px;
-      left: 26px;
-      width: 0;
-      height: 0;
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      border-bottom: 12px solid white;
-    }
-
-    .speech-bubble.caption {
-      background: var(--blue);
-      color: white;
-      border-radius: 4px;
-    }
-
-    .speech-bubble.caption::before, .speech-bubble.caption::after { display: none; }
-
-    .speech-bubble.think {
-      border-style: dashed;
-      border-radius: 50%;
-      text-align: center;
-    }
-
-    .speech-bubble.shout {
-      background: var(--yellow);
-      border-radius: 4px;
-      clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%);
-    }
-
-    .sfx {
-      font-family: 'Bangers', cursive;
-      font-size: 2rem;
-      color: var(--red);
-      text-shadow: 3px 3px 0 var(--black);
-      letter-spacing: 4px;
-      text-align: center;
-      margin: 8px 0 4px;
-      flex-shrink: 0;
-    }
-
-    .page-num-display {
-      position: absolute;
-      bottom: 8px;
-      right: 12px;
-      font-family: 'Bangers', cursive;
-      font-size: 0.85rem;
-      color: #999;
-      letter-spacing: 2px;
-    }
-
-    /* ════════════════════════════════════════════
-       PORTADA (spread 0 — solo página derecha)
-    ════════════════════════════════════════════ */
-    .cover-spread-right {
-      background: linear-gradient(145deg, #FFD700 0%, #FFA500 100%);
-    }
-
-    .cover-page-content {
-      padding: 0;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .cover-header-bar {
-      background: var(--red);
-      padding: 8px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 4px solid var(--black);
-      flex-shrink: 0;
-    }
-
-    .cover-header-bar span {
-      font-family: 'Bangers', cursive;
-      color: white;
-      font-size: 0.95rem;
-      letter-spacing: 2px;
-    }
-
-    .cover-issue {
-      background: var(--blue);
-      border: 2px solid white;
-      padding: 2px 8px;
-    }
-
-    .cover-main-title {
-      font-family: 'Bangers', cursive;
-      font-size: clamp(2.2rem, 5vw, 3.5rem);
-      color: var(--black);
-      text-shadow: 3px 3px 0 rgba(255,255,255,0.4);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      line-height: 0.95;
-      padding: 14px 16px 4px;
-      flex-shrink: 0;
-    }
-
-    .cover-main-subtitle {
-      font-family: 'Permanent Marker', cursive;
-      font-size: 0.85rem;
-      color: var(--blue);
-      padding: 0 16px 10px;
-      text-shadow: 1px 1px 0 white;
-      flex-shrink: 0;
-    }
-
-    .cover-main-img {
-      flex: 1;
-      margin: 0 12px 10px;
-      border: 4px solid var(--black);
-      overflow: hidden;
-      min-height: 0;
-      background: #1a3a6e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      position: relative;
-    }
-
-    .cover-main-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      position: absolute;
-    }
-
-    .cover-footer-bar {
-      background: var(--blue);
-      border-top: 4px solid var(--black);
-      padding: 6px 16px;
-      display: flex;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-
-    .cover-footer-bar span {
-      font-family: 'Bangers', cursive;
-      color: white;
-      font-size: 0.8rem;
-      letter-spacing: 1px;
-    }
-
-    /* Página izquierda de la portada (tapa interna) */
-    .inner-cover-left {
-      background: #FFFDF7;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      gap: 16px;
-    }
-
-    .icl-logo {
-      font-family: 'Bangers', cursive;
-      font-size: 1.5rem;
-      letter-spacing: 4px;
-      color: var(--red);
-      border-bottom: 3px solid var(--black);
-      padding-bottom: 8px;
-    }
-
-    .icl-text {
-      font-family: 'Comic Neue', cursive;
-      font-size: 0.78rem;
-      color: #555;
-      text-align: center;
-      line-height: 1.7;
-    }
-
-    .icl-divider {
-      width: 80%;
-      border-top: 2px dashed #ccc;
-    }
-
-    .icl-seal {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 4px solid var(--black);
-      background: var(--yellow);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      font-family: 'Bangers', cursive;
-      font-size: 0.6rem;
-      letter-spacing: 1px;
-      text-align: center;
-      color: var(--black);
-      line-height: 1.3;
-    }
-
-    /* ════════════════════════════════════════════
-       PÁGINA DE CRÉDITOS (ESTILO CÓMIC REAL)
-    ════════════════════════════════════════════ */
-    .credits-page {
-      background: #0A0A0A !important;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .credits-content {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      height: 100%;
-    }
-
-    .credits-masthead {
-      text-align: center;
-      border-bottom: 3px solid var(--yellow);
-      padding-bottom: 8px;
-    }
-
-    .credits-title {
-      font-family: 'Bangers', cursive;
-      font-size: 1.8rem;
-      color: var(--yellow);
-      letter-spacing: 5px;
-      text-transform: uppercase;
-    }
-
-    .credits-subtitle {
-      font-family: 'Permanent Marker', cursive;
-      font-size: 0.7rem;
-      color: rgba(255,255,255,0.5);
-      letter-spacing: 2px;
-    }
-
-    .credits-box {
-      border: 2px solid var(--yellow);
-      padding: 8px 12px;
-      position: relative;
-    }
-
-    .credits-box-label {
-      position: absolute;
-      top: -10px;
-      left: 12px;
-      background: #0A0A0A;
-      font-family: 'Bangers', cursive;
-      font-size: 0.75rem;
-      color: var(--yellow);
-      letter-spacing: 3px;
-      padding: 0 6px;
-    }
-
-    .credits-member {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 0;
-      border-bottom: 1px solid rgba(255,215,0,0.15);
-    }
-
-    .credits-member:last-child { border-bottom: none; }
-
-    .member-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--blue);
-      border: 2px solid var(--yellow);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      flex-shrink: 0;
-    }
-
-    .member-info {
-      flex: 1;
-    }
-
-    .member-name {
-      font-family: 'Bangers', cursive;
-      font-size: 0.95rem;
-      color: white;
-      letter-spacing: 1px;
-    }
-
-    .member-role {
-      font-family: 'Comic Neue', cursive;
-      font-size: 0.65rem;
-      color: rgba(255,255,255,0.45);
-    }
-
-    .credits-quote {
-      background: rgba(255,215,0,0.06);
-      border-left: 4px solid var(--yellow);
-      padding: 8px 10px;
-      font-family: 'Permanent Marker', cursive;
-      font-size: 0.68rem;
-      color: rgba(255,255,255,0.65);
-      line-height: 1.5;
-      font-style: italic;
-    }
-
-    .credits-inacap {
-      text-align: center;
-      font-family: 'Bangers', cursive;
-      font-size: 0.85rem;
-      letter-spacing: 3px;
-      color: rgba(255,255,255,0.3);
-      margin-top: auto;
-      padding-top: 4px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-    }
-
-    /* Columna del docente */
-    .credits-docente {
-      border: 2px solid var(--red);
-      padding: 6px 10px;
-      position: relative;
-    }
-
-    .credits-docente .credits-box-label {
-      color: var(--red);
-    }
-
-    .docente-name {
-      font-family: 'Bangers', cursive;
-      font-size: 1rem;
-      color: white;
-      letter-spacing: 1px;
-    }
-
-    .docente-role {
-      font-family: 'Comic Neue', cursive;
-      font-size: 0.65rem;
-      color: rgba(255,255,255,0.4);
-    }
-
-    /* ════════════════════════════════════════════
-       DASHBOARD (Pág 6)
-    ════════════════════════════════════════════ */
-    .dash-page-content {
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      height: 100%;
-    }
-
-    .dash-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 6px;
-      flex: 1;
-    }
-
-    .dash-card {
-      background: white;
-      border: 3px solid var(--black);
-      border-radius: 6px;
-      padding: 8px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .dash-card h3 {
-      font-family: 'Bangers', cursive;
-      font-size: 1rem;
-      letter-spacing: 1px;
-      border-bottom: 2px dashed #ccc;
-      padding-bottom: 3px;
-    }
-
-    .dash-card ul {
-      list-style: none;
-      font-family: 'Comic Neue', cursive;
-      font-weight: bold;
-      font-size: 0.72rem;
-      line-height: 1.4;
-    }
-
-    .dash-card ul li {
-      padding-left: 14px;
-      position: relative;
-      margin-bottom: 3px;
-    }
-
-    .dash-card ul li::before {
-      content: "►";
-      position: absolute;
-      left: 0;
-      font-size: 0.6rem;
-      top: 2px;
-    }
-
-    .card-green h3 { color: var(--green); } .card-green { border-top: 6px solid var(--green); }
-    .card-red h3 { color: var(--red); } .card-red { border-top: 6px solid var(--red); }
-    .card-blue h3 { color: var(--blue); } .card-blue { border-top: 6px solid var(--blue); }
-
-    /* ════════════════════════════════════════════
-       EFECTO HOVER 3D EN EL SPREAD
-    ════════════════════════════════════════════ */
-    #spread-container {
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.1s ease-out;
-      width: 100%;
-      max-width: 1100px;
-      height: 100%;
-      max-height: 720px;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.7);
-    }
-
-    /* ════════════════════════════════════════════
-       PRINT
-    ════════════════════════════════════════════ */
-    @media print {
-      #intro-screen, #book-open-overlay, .reader-topbar { display: none !important; }
-      #comic-reader {
-        display: block !important;
-        position: static;
-        overflow: visible;
-      }
-      .reader-viewport {
-        display: block;
-        overflow: visible;
-        padding: 0;
-      }
-      .page-spread {
-        display: flex !important;
-        page-break-after: always;
-        box-shadow: none;
-        max-height: none;
-        height: 500px;
-        animation: none !important;
-      }
-      .reader-page {
-        animation: none !important;
-        transform: none !important;
-      }
-      #spread-container {
-        box-shadow: none;
-        transform: none !important;
-      }
+      .hint { display: none; /* Oculta atajos de teclado en móviles */ }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 
-<audio id="pageSound" preload="auto">
-  <source src="https://actions.google.com/sounds/v1/foley/page_turning.ogg" type="audio/ogg">
-</audio>
+  <button id="btn-toggle-ui" title="Alternar Interfaz">👁️</button>
 
-<div id="intro-screen" onclick="openComic()">
+  <div id="loading">
+    <div class="load-title"><em>Cargando Maqueta</em></div>
+    <div class="load-bar-wrap"><div class="load-bar-fill" id="loadBar"></div></div>
+  </div>
 
-  <div class="desk-objects">
-    <div class="desk-pencil"></div>
-    <div class="desk-coffee"></div>
-    <div class="desk-notes">
-      <span></span><span></span><span></span><span></span><span></span>
+  <div id="header" class="ui-element">
+    <div>
+      <h1>Autonomía <em>Hídrica</em></h1>
+      <div class="subtitle">Prototipo Playa La Virgen · Render 3D</div>
+    </div>
+    <div class="badge">
+      <div><strong>Escala</strong> 1:1 Funcional</div>
+      <div><strong>Sistema</strong> Bajo Costo / Reciclado</div>
+      <div><strong>Sensor</strong> Arduino IoT</div>
     </div>
   </div>
 
-  <div id="comic-on-table">
-    <div class="table-shadow"></div>
-    <div class="table-comic-inner" id="tableComicInner">
-      <div class="table-cover">
-        <div class="cover-header-bar" style="width:100%;padding:5px 10px;margin-bottom:4px;">
-          <span style="font-size:0.7rem;letter-spacing:1px;">📚 Innovación Vol. 2</span>
-          <span class="cover-issue" style="font-size:0.8rem;">#01</span>
-        </div>
-        <div class="table-comic-title">Playa<br>La Virgen</div>
-        <div class="table-comic-img-placeholder">
-          <img src="0.jpg" alt="Portada" onerror="this.style.display='none'">
-          </div>
-        <div class="table-comic-subtitle">Agua Inteligente para el Desierto</div>
-        <div class="table-comic-badge">INACAP · 2026</div>
-      </div>
-    </div>
+  <div id="legend" class="ui-element">
+    <div class="leg-title">Componentes</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#a8d8f0;color:#a8d8f0"></div><div>Contenedor<br><span style="color:rgba(240,236,227,0.4);font-size:10px">Tupperware</span></div></div>
+    <div class="leg-item"><div class="leg-dot" style="background:#c9a26e"></div><div>Sustrato<br><span style="color:rgba(240,236,227,0.4);font-size:10px">Arena de playa</span></div></div>
+    <div class="leg-item"><div class="leg-dot" style="background:#8eaab8"></div><div>Red HDPE<br><span style="color:rgba(240,236,227,0.4);font-size:10px">Tubería PVC</span></div></div>
+    <div class="leg-item"><div class="leg-dot" style="background:#4a9edd"></div><div>Fuga Oculta<br><span style="color:rgba(240,236,227,0.4);font-size:10px">Humedad activa</span></div></div>
+    <div class="leg-item"><div class="leg-dot" style="background:#2471a3"></div><div>Estanque<br><span style="color:rgba(240,236,227,0.4);font-size:10px">Botella reciclada</span></div></div>
+    <div class="leg-item"><div class="leg-dot pulse" style="background:#e74c3c;color:#e74c3c"></div><div>Sensor IoT<br><span style="color:rgba(240,236,227,0.4);font-size:10px">Arduino — activo</span></div></div>
   </div>
 
-  <div class="intro-hint">✦ Haz clic para abrir el cómic ✦</div>
-</div>
-
-<div id="book-open-overlay">
-  <div class="book-3d" id="book3d">
-
-    <div class="book-left-page">
-      <div class="blp-logo">PROYECTO HÍDRICO</div>
-      <div class="icl-seal">
-        <div>💧</div>
-        <div>INACAP</div>
-        <div>2026</div>
-      </div>
-      <div class="blp-info">
-        Innovación y Emprendimiento<br>
-        Playa La Virgen · Atacama<br>
-        <br>
-        <em>Primera Edición</em>
-      </div>
-      <div class="blp-divider"></div>
-      <div class="blp-info" style="font-size:0.65rem;">
-        Todos los derechos del proyecto<br>
-        reservados al equipo creador.
-      </div>
+  <div id="bottombar" class="ui-element">
+    <div class="hint">
+      <span><span class="kbd">Drag</span> Orbitar</span>
+      <span><span class="kbd">Scroll</span> Zoom</span>
+      <span><span class="kbd">Click D.</span> Reset</span>
     </div>
-
-    <div class="book-right-page">
-      <div style="font-size:3rem;">📖</div>
-      <div style="font-family:'Bangers',cursive;font-size:1.2rem;letter-spacing:3px;color:#666;">CARGANDO...</div>
-    </div>
-
-    <div class="book-spine"></div>
-
-    <div class="book-cover-front" id="bookCoverFront">
-      <div class="cover-header-bar" style="width:calc(100% + 40px);margin:-20px -20px 8px;padding:6px 16px;">
-        <span style="font-size:0.7rem;letter-spacing:1px;">📚 Innovación Vol. 2</span>
-        <span class="cover-issue" style="font-size:0.75rem;">#01</span>
-      </div>
-      <div class="bcf-title">Playa<br>La Virgen</div>
-      <div class="bcf-img">
-        <img src="0.jpg" alt="Portada" onerror="this.style.display='none'">
-        </div>
-      <div class="bcf-sub">Agua Inteligente para el Desierto</div>
-    </div>
-
-  </div>
-</div>
-
-<div id="comic-reader">
-  <div class="reader-topbar">
-    <div class="topbar-title">🗺️ Playa La Virgen — Cómic</div>
-    <div class="topbar-nav">
-      <button class="nav-btn" id="btnPrev" onclick="prevSpread()" disabled>◀ ANTERIOR</button>
-      <div class="page-counter" id="pageCounter">1 / 5</div>
-      <button class="nav-btn" id="btnNext" onclick="nextSpread()">SIGUIENTE ▶</button>
-      <button class="nav-btn btn-print" onclick="window.print()">🖨️ PDF</button>
-    </div>
+    <div id="status">Sistema activo — monitoreando</div>
   </div>
 
-  <div class="reader-viewport" id="readerViewport">
+  <script>
+    // ── LÓGICA DEL BOTÓN TOGGLE UI ────────────────────────────────────
+    const btnToggle = document.getElementById('btn-toggle-ui');
+    const uiElements = document.querySelectorAll('.ui-element');
+    let uiVisible = true;
 
-    <div class="dust" style="left:10%;animation-duration:8s;animation-delay:0s;"></div>
-    <div class="dust" style="left:30%;animation-duration:12s;animation-delay:2s;"></div>
-    <div class="dust" style="left:55%;animation-duration:9s;animation-delay:4s;"></div>
-    <div class="dust" style="left:75%;animation-duration:11s;animation-delay:1s;"></div>
-    <div class="dust" style="left:90%;animation-duration:7s;animation-delay:3s;"></div>
-
-    <div id="spread-container">
-
-      <div class="page-spread active" id="spread-0">
-        <div class="reader-page inner-cover-left">
-          <div class="icl-logo">PROYECTO HÍDRICO</div>
-          <div class="icl-seal" style="width:90px;height:90px;font-size:0.65rem;">
-            <div style="font-size:1.5rem;">💧</div>
-            <div>INACAP</div>
-            <div>2026</div>
-          </div>
-          <div class="icl-divider"></div>
-          <div class="icl-text">
-            <strong>Innovación y Emprendimiento</strong><br>
-            Playa La Virgen · Desierto de Atacama<br><br>
-            Primera Edición · 2026<br><br>
-            <em>Todos los derechos del proyecto<br>
-            reservados al equipo creador.</em>
-          </div>
-          <div class="icl-divider"></div>
-          <div class="icl-text" style="font-size:0.68rem;color:#888;">
-            Cómic educativo — Uso académico.
-          </div>
-        </div>
-
-        <div class="book-gutter"></div>
-
-        <div class="reader-page cover-spread-right">
-          <div class="cover-page-content">
-            <div class="cover-header-bar">
-              <span>📚 Innovación Vol. 2</span>
-              <span class="cover-issue">#01</span>
-            </div>
-            <div class="cover-main-title" contenteditable="true">Playa<br>La Virgen</div>
-            <div class="cover-main-subtitle" contenteditable="true">Proyecto: Agua Inteligente para el Desierto</div>
-            <div class="cover-main-img">
-              <img src="0.jpg" alt="Portada" onerror="this.style.display='none'">
-              </div>
-            <div class="cover-footer-bar">
-              <span contenteditable="true">Simón · Renato · Wiljer · Julio · Millaray</span>
-              <span>INACAP · 2026</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="page-spread" id="spread-1">
-        <div class="reader-page">
-          <div class="page-content">
-            <div class="scene-label">Cap. 1: El Oasis que se seca</div>
-            <div class="panel panel-tall">
-              <img src="1.jpg" alt="Pág 1" onerror="this.style.background='#1a3a6e'">
-            </div>
-            <div class="speech-bubble" contenteditable="true">
-              "Tener turismo en pleno Atacama es genial, ¡pero la logística del agua es una pesadilla! Y encima estamos perdiendo plata bajo la arena..."
-            </div>
-          </div>
-          <div class="page-num-display">PÁG. 1</div>
-        </div>
-
-        <div class="book-gutter"></div>
-
-        <div class="reader-page">
-          <div class="page-content">
-            <div class="scene-label">Cap. 2: El Terreno Habla</div>
-            <div class="panel panel-tall">
-              <img src="2.jpg" alt="Pág 2" onerror="this.style.background='#1a3a6e'">
-            </div>
-            <div class="speech-bubble think" contenteditable="true">
-              Hallazgo crítico: el mantenimiento es reactivo — arreglamos solo cuando ya falló. Detectamos consumos extraños de madrugada...
-            </div>
-            <div class="sfx">¡IDEA!</div>
-            <div class="speech-bubble caption" contenteditable="true">
-              ¿Y si usamos sensores ultrasónicos e IoT para visibilizar las fugas ocultas?
-            </div>
-          </div>
-          <div class="page-num-display">PÁG. 2</div>
-        </div>
-      </div>
-
-      <div class="page-spread" id="spread-2">
-        <div class="reader-page">
-          <div class="page-content">
-            <div class="scene-label">Cap. 3: Sistema Sustentable</div>
-            <div class="panel panel-tall">
-              <img src="3.jpg" alt="Pág 3" onerror="this.style.background='#1a3a6e'">
-            </div>
-            <div class="speech-bubble shout" contenteditable="true">
-              ¡Osmosis inversa + IoT en tiempo real! ¡Detectamos micro-fugas antes de que exploten los costos!
-            </div>
-          </div>
-          <div class="page-num-display">PÁG. 3</div>
-        </div>
-
-        <div class="book-gutter"></div>
-
-        <div class="reader-page">
-          <div class="page-content">
-            <div class="scene-label">Cap. 4: Prototipo y Ajustes</div>
-            <div class="panel panel-tall">
-              <img src="4.jpg" alt="Pág 4" onerror="this.style.background='#1a3a6e'">
-            </div>
-            <div class="speech-bubble caption" contenteditable="true">
-              Simulamos tuberías bajo arena y validamos la detección de presión. ¡Tras el feedback, agregamos reutilización de aguas grises!
-            </div>
-          </div>
-          <div class="page-num-display">PÁG. 4</div>
-        </div>
-      </div>
-
-      <div class="page-spread" id="spread-3">
-        <div class="reader-page">
-          <div class="page-content">
-            <div class="scene-label">Cap. 5: El Nuevo Escenario</div>
-            <div class="panel panel-tall">
-              <img src="5.jpg" alt="Pág 5" onerror="this.style.background='#1a3a6e'">
-            </div>
-            <div class="speech-bubble shout" contenteditable="true">
-              ¡Control total y mayor autonomía hídrica! Transformamos un gasto reactivo en inversión inteligente. ¡Temporada alta garantizada!
-            </div>
-          </div>
-          <div class="page-num-display">PÁG. 5</div>
-        </div>
-
-        <div class="book-gutter"></div>
-
-        <div class="reader-page">
-          <div class="page-content">
-            <div class="scene-label">Cap. 6: Matriz CDM (Cualidades, Debilidades y Mejoras)</div>
-            <div class="dash-page-content" style="padding:8px;">
-              <div class="dash-grid">
-                <div class="dash-card card-green">
-                  <h3>✅ Logros</h3>
-                  <ul>
-                    <li contenteditable="true">Reduce dependencia de camiones externos.</li>
-                    <li contenteditable="true">Datos en tiempo real (IoT).</li>
-                    <li contenteditable="true">Garantiza turismo en verano.</li>
-                  </ul>
-                </div>
-                <div class="dash-card card-red">
-                  <h3>⚠️ Puntos Críticos</h3>
-                  <ul>
-                    <li contenteditable="true">Alta inversión inicial (CAPEX).</li>
-                    <li contenteditable="true">Mantenimiento delicado de membranas.</li>
-                  </ul>
-                </div>
-                <div class="dash-card card-blue">
-                  <h3>🚀 Visión Futura</h3>
-                  <ul>
-                    <li contenteditable="true">Integración total de aguas grises.</li>
-                    <li contenteditable="true">Soterramiento profundo con protección UV.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="page-num-display">PÁG. 6</div>
-        </div>
-      </div>
-
-      <div class="page-spread" id="spread-4">
-
-        <div class="reader-page" style="background:#111;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;overflow:hidden;padding:0;">
-          <div style="width:100%;height:100%;background:linear-gradient(160deg,#0a1628 0%,#0d2240 50%,#071018 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;position:relative;">
-            <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
-              <div style="position:absolute;top:12%;left:20%;width:2px;height:2px;background:rgba(255,255,255,0.7);border-radius:50%;box-shadow:40px 20px 0 rgba(255,255,255,0.4),80px -10px 0 rgba(255,255,255,0.6),120px 40px 0 rgba(255,255,255,0.3),160px 10px 0 rgba(255,255,255,0.5),20px 80px 0 rgba(255,255,255,0.4),60px 100px 0 rgba(255,255,255,0.6),100px 60px 0 rgba(255,255,255,0.3),140px 90px 0 rgba(255,255,255,0.5),30px 140px 0 rgba(255,255,255,0.4),70px 170px 0 rgba(255,255,255,0.3);"></div>
-            </div>
-            <div style="font-size:3rem;">🏜️</div>
-            <div style="font-family:'Bangers',cursive;font-size:1.3rem;color:rgba(255,215,0,0.8);letter-spacing:3px;text-align:center;">PLAYA LA VIRGEN</div>
-            <div style="width:60%;border-top:1px solid rgba(255,215,0,0.3);"></div>
-            <div style="font-family:'Permanent Marker',cursive;font-size:0.7rem;color:rgba(255,255,255,0.4);text-align:center;line-height:1.7;">
-              "La innovación hídrica es<br>el primer paso hacia un<br>turismo sustentable<br>en el desierto."
-            </div>
-            <div style="width:60%;border-top:1px solid rgba(255,215,0,0.3);"></div>
-            <div style="font-family:'Comic Neue',cursive;font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;letter-spacing:2px;">FIN · THE END · FIN</div>
-          </div>
-        </div>
-
-        <div class="book-gutter" style="background:linear-gradient(90deg,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 50%,rgba(0,0,0,0.6) 100%);"></div>
-
-        <div class="reader-page credits-page">
-          <div class="credits-content">
-
-            <div class="credits-masthead">
-              <div class="credits-title">⚡ CRÉDITOS ⚡</div>
-              <div class="credits-subtitle">STAFF CREATIVO · PRIMERA EDICIÓN 2026</div>
-            </div>
-
-            <div class="credits-box">
-              <div class="credits-box-label">EQUIPO DE PROYECTO</div>
-              <div style="height:6px;"></div>
-
-              <div class="credits-member">
-                <div class="member-icon">🧑</div>
-                <div class="member-info">
-                  <div class="member-name" contenteditable="true">Simón Olivares</div>
-                  <div class="member-role">Investigación · Prototipo</div>
-                </div>
-              </div>
-
-              <div class="credits-member">
-                <div class="member-icon">👦</div>
-                <div class="member-info">
-                  <div class="member-name" contenteditable="true">Renato Bórquez</div>
-                  <div class="member-role">Desarrollo · IoT</div>
-                </div>
-              </div>
-
-              <div class="credits-member">
-                <div class="member-icon">🧑</div>
-                <div class="member-info">
-                  <div class="member-name" contenteditable="true">Wiljer Mamani</div>
-                  <div class="member-role">Diseño · Análisis</div>
-                </div>
-              </div>
-
-              <div class="credits-member">
-                <div class="member-icon">👦</div>
-                <div class="member-info">
-                  <div class="member-name" contenteditable="true">Julio Sinisterra</div>
-                  <div class="member-role">Validación · Datos</div>
-                </div>
-              </div>
-
-              <div class="credits-member">
-                <div class="member-icon">👩</div>
-                <div class="member-info">
-                  <div class="member-name" contenteditable="true">Millaray Aguirre</div>
-                  <div class="member-role">Investigación · Presentación</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="credits-docente credits-box">
-              <div class="credits-box-label" style="color:var(--red);">DOCENTE GUÍA</div>
-              <div style="height:6px;"></div>
-              <div class="docente-name" contenteditable="true">Raúl Alberto Araya Zepeda</div>
-              <div class="docente-role">Innovación y Emprendimiento · INACAP</div>
-            </div>
-
-            <div class="credits-quote" contenteditable="true">
-              "La innovación hídrica es el primer paso hacia un turismo sustentable en el desierto de Atacama."
-            </div>
-
-            <div class="credits-inacap">INACAP · 2026 · TODOS LOS DERECHOS RESERVADOS</div>
-
-          </div>
-        </div>
-
-      </div>
-
-    </div></div></div><script>
-  /* ════════════════════════════════════════════
-     VARIABLES DE ESTADO
-  ════════════════════════════════════════════ */
-  const TOTAL_SPREADS = 5; // 0..4
-  let currentSpread = 0;
-
-  /* ════════════════════════════════════════════
-     1. EFECTO 3D EN LA MESA (intro)
-  ════════════════════════════════════════════ */
-  const tableInner = document.getElementById('tableComicInner');
-  const introScreen = document.getElementById('intro-screen');
-
-  introScreen.addEventListener('mousemove', (e) => {
-    const rect = introScreen.getBoundingClientRect();
-    const cx = rect.width / 2;
-    const cy = rect.height / 2;
-    const x = e.clientX - rect.left - cx;
-    const y = e.clientY - rect.top - cy;
-    const rotX = (y / cy) * -12;
-    const rotY = (x / cx) * 14;
-    tableInner.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-  });
-
-  introScreen.addEventListener('mouseleave', () => {
-    tableInner.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg)';
-  });
-
-  /* ════════════════════════════════════════════
-     2. ABRIR EL CÓMIC
-  ════════════════════════════════════════════ */
-  function openComic() {
-    // Ocultar intro
-    introScreen.style.transition = 'opacity 0.5s ease';
-    introScreen.style.opacity = '0';
-    setTimeout(() => { introScreen.style.display = 'none'; }, 500);
-
-    // Mostrar overlay de apertura
-    const overlay = document.getElementById('book-open-overlay');
-    overlay.classList.add('active');
-
-    // Animar apertura de portada después de 600ms
-    setTimeout(() => {
-      const coverFront = document.getElementById('bookCoverFront');
-      coverFront.classList.add('opening');
-
-      // Después de que termina la animación de giro, hacer zoom
-      setTimeout(() => {
-        const book = document.getElementById('book3d');
-        book.classList.add('page-zoom-out');
-
-        setTimeout(() => {
-          overlay.classList.remove('active');
-          overlay.style.display = 'none';
-
-          // Mostrar lector
-          const reader = document.getElementById('comic-reader');
-          reader.classList.add('active');
-          showSpread(0);
-        }, 1000);
-      }, 1400);
-    }, 600);
-  }
-
-  /* ════════════════════════════════════════════
-     3. NAVEGACIÓN DE PÁGINAS (CON FÍSICAS DE HOJA 3D)
-  ════════════════════════════════════════════ */
-  function showSpread(index, direction = 'next') {
-    // Ocultar el spread actual quitándole las clases
-    const current = document.getElementById('spread-' + currentSpread);
-    if (current) {
-        current.classList.remove('active', 'page-turn-next', 'page-turn-prev');
-    }
-
-    currentSpread = index;
-    const next = document.getElementById('spread-' + currentSpread);
-    
-    if (next) {
-      // Remover clases de animación previas por si acaso
-      next.classList.remove('page-turn-next', 'page-turn-prev');
-      
-      // Forzar un reflow para reiniciar la animación CSS
-      void next.offsetWidth; 
-      
-      // Añadir las clases para mostrarlo con el efecto 3D correcto
-      next.classList.add('active');
-      if (currentSpread > 0 || direction === 'prev') {
-          next.classList.add(direction === 'next' ? 'page-turn-next' : 'page-turn-prev');
+    btnToggle.addEventListener('click', () => {
+      uiVisible = !uiVisible;
+      uiElements.forEach(el => {
+        if (uiVisible) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+      // Cambia la apariencia del botón al estar inactivo
+      if(uiVisible) {
+        btnToggle.innerHTML = '👁️';
+        btnToggle.classList.remove('dimmed');
+      } else {
+        btnToggle.innerHTML = '🙈';
+        btnToggle.classList.add('dimmed');
       }
+    });
+
+    // ── SCENE SETUP ──────────────────────────────────────────────────
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0c0f);
+    scene.fog = new THREE.FogExp2(0x0a0c0f, 0.022);
+
+    const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 500);
+    camera.position.set(16, 14, 20);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.physicallyCorrectLights = true;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    document.body.appendChild(renderer.domElement);
+
+    // ── CONTROLS ──────────────────────────────────────────────────────
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.7;
+    controls.minDistance = 8;
+    controls.maxDistance = 50;
+    controls.maxPolarAngle = Math.PI / 2 + 0.05;
+    controls.target.set(0, 1, 0);
+
+    renderer.domElement.addEventListener('dblclick', () => {
+      camera.position.set(16, 14, 20);
+      controls.target.set(0, 1, 0);
+    });
+
+    // ── LIGHTING ──────────────────────────────────────────────────────
+    scene.add(new THREE.AmbientLight(0x8ab4cc, 0.6));
+
+    const sunLight = new THREE.DirectionalLight(0xfff5e0, 3.5);
+    sunLight.position.set(15, 25, 20);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 100;
+    sunLight.shadow.camera.left = -20;
+    sunLight.shadow.camera.right = 20;
+    sunLight.shadow.camera.top = 20;
+    sunLight.shadow.camera.bottom = -20;
+    sunLight.shadow.bias = -0.0005;
+    scene.add(sunLight);
+
+    const fillLight = new THREE.DirectionalLight(0x4a80c4, 1.2);
+    fillLight.position.set(-12, 8, -10);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xc9a84c, 0.8);
+    rimLight.position.set(0, 5, -18);
+    scene.add(rimLight);
+
+    const ptBlue = new THREE.PointLight(0x2471a3, 4, 8);
+    ptBlue.position.set(-3.5, 5, -2);
+    scene.add(ptBlue);
+
+    const ptRed = new THREE.PointLight(0xe74c3c, 2, 4);
+    ptRed.position.set(-3.5, 5.5, -2);
+    scene.add(ptRed);
+
+    // ── MATERIALS ─────────────────────────────────────────────────────
+    const mat = {};
+
+    mat.ground = new THREE.MeshStandardMaterial({
+      color: 0x0d0f14, roughness: 0.9, metalness: 0.1
+    });
+
+    mat.tupper = new THREE.MeshPhysicalMaterial({
+      color: 0xadd8f0, transparent: true, opacity: 0.18, roughness: 0.05,
+      metalness: 0.0, transmission: 0.92, ior: 1.45, thickness: 0.3,
+      side: THREE.DoubleSide, depthWrite: false
+    });
+
+    mat.sand = new THREE.MeshStandardMaterial({
+      color: 0xc9a26e, roughness: 0.92, metalness: 0.0
+    });
+
+    mat.pipe = new THREE.MeshStandardMaterial({
+      color: 0x7a9aaa, roughness: 0.55, metalness: 0.15
+    });
+
+    mat.leak = new THREE.MeshPhysicalMaterial({
+      color: 0x3a9fd6, transparent: true, opacity: 0.65, roughness: 0.0,
+      metalness: 0.0, transmission: 0.6, ior: 1.33, depthWrite: false
+    });
+
+    mat.tank = new THREE.MeshPhysicalMaterial({
+      color: 0x2471a3, transparent: true, opacity: 0.75, roughness: 0.1,
+      metalness: 0.0, transmission: 0.55, ior: 1.4, side: THREE.DoubleSide,
+      depthWrite: false
+    });
+
+    mat.water = new THREE.MeshPhysicalMaterial({
+      color: 0x5dade2, transparent: true, opacity: 0.55, roughness: 0.0,
+      transmission: 0.5, depthWrite: false
+    });
+
+    mat.sensor = new THREE.MeshStandardMaterial({
+      color: 0xe74c3c, roughness: 0.3, metalness: 0.5,
+      emissive: new THREE.Color(0xe74c3c), emissiveIntensity: 0.8
+    });
+
+    mat.board = new THREE.MeshStandardMaterial({
+      color: 0x1a5c2e, roughness: 0.6, metalness: 0.3
+    });
+
+    mat.metal = new THREE.MeshStandardMaterial({
+      color: 0x8a9bad, roughness: 0.2, metalness: 0.9
+    });
+
+    // ── GEOMETRY ──────────────────────────────────────────────────────
+    const groundGeo = new THREE.PlaneGeometry(80, 80, 40, 40);
+    const ground = new THREE.Mesh(groundGeo, mat.ground);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -2.3;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    const grid = new THREE.GridHelper(60, 40, 0xc9a84c, 0x1a1e25);
+    grid.position.y = -2.28;
+    scene.add(grid);
+
+    const baseGeo = new THREE.BoxGeometry(14, 0.15, 12);
+    const baseMat = new THREE.MeshStandardMaterial({ color: 0x1a1e25, roughness: 0.8, metalness: 0.2 });
+    const base = new THREE.Mesh(baseGeo, baseMat);
+    base.position.y = -2.22;
+    base.receiveShadow = true;
+    scene.add(base);
+
+    const tupW = 13, tupH = 4.5, tupD = 10.5;
+    addBox(tupW, 0.12, tupD, 0xadd8f0, 0, -2.14, 0, mat.sand);
+    const walls = [
+      [tupW, tupH, 0.12, 0, tupH/2 - 2.2, tupD/2],
+      [tupW, tupH, 0.12, 0, tupH/2 - 2.2, -tupD/2],
+      [0.12, tupH, tupD, tupW/2, tupH/2 - 2.2, 0],
+      [0.12, tupH, tupD, -tupW/2, tupH/2 - 2.2, 0],
+    ];
+    walls.forEach(([w,h,d,x,y,z]) => {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat.tupper);
+      m.position.set(x,y,z);
+      scene.add(m);
+    });
+
+    addRim(tupW + 0.3, 0.2, tupD + 0.3, 0x8ab0c8, 0, tupH/2 - 2.2 + tupH/2, 0);
+    function addRim(w,h,d,col,x,y,z) {
+      const rm = new THREE.MeshStandardMaterial({color:col,roughness:0.3,metalness:0.6});
+      [
+        [w, h, 0.25, 0, 0, d/2],
+        [w, h, 0.25, 0, 0, -d/2],
+        [0.25, h, d, w/2, 0, 0],
+        [0.25, h, d, -w/2, 0, 0],
+      ].forEach(([bw,bh,bd,bx,by,bz]) => {
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(bw,bh,bd), rm);
+        mesh.position.set(x+bx,y+by,z+bz);
+        mesh.castShadow = true;
+        scene.add(mesh);
+      });
     }
 
-    // Sonido de página
-    try {
-      const snd = document.getElementById('pageSound');
-      snd.currentTime = 0;
-      snd.volume = 0.3;
-      snd.play().catch(() => {});
-    } catch(e) {}
+    const sandGeo = new THREE.BoxGeometry(12.7, 2.8, 10.2);
+    const sand = new THREE.Mesh(sandGeo, mat.sand);
+    sand.position.set(0, -1.5, 0);
+    sand.receiveShadow = true;
+    sand.castShadow = true;
+    scene.add(sand);
 
-    updateNav();
-  }
-
-  function nextSpread() {
-    if (currentSpread < TOTAL_SPREADS - 1) {
-      showSpread(currentSpread + 1, 'next');
+    for (let i = 0; i < 60; i++) {
+      const r = Math.random() * 0.12 + 0.04;
+      const sg = new THREE.SphereGeometry(r, 6, 6);
+      const sm = new THREE.MeshStandardMaterial({
+        color: new THREE.Color().setHSL(0.09, 0.45, 0.55 + Math.random() * 0.15), roughness: 1.0
+      });
+      const sp = new THREE.Mesh(sg, sm);
+      sp.position.set((Math.random() - 0.5) * 11, -0.05, (Math.random() - 0.5) * 9);
+      sp.castShadow = true;
+      scene.add(sp);
     }
-  }
 
-  function prevSpread() {
-    if (currentSpread > 0) {
-      showSpread(currentSpread - 1, 'prev');
+    const mainPipe = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 11, 24), mat.pipe);
+    mainPipe.rotation.z = Math.PI / 2;
+    mainPipe.position.set(0, 0.15, 1.5);
+    mainPipe.castShadow = true;
+    scene.add(mainPipe);
+
+    const pipe2 = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 8.5, 24), mat.pipe);
+    pipe2.rotation.x = Math.PI / 2;
+    pipe2.position.set(1.5, 0.15, 0);
+    pipe2.castShadow = true;
+    scene.add(pipe2);
+
+    [-4.5, -1.5, 1.5, 4.5].forEach(x => {
+      const joint = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.55, 16), mat.metal);
+      joint.rotation.z = Math.PI / 2;
+      joint.position.set(x, 0.15, 1.5);
+      joint.castShadow = true;
+      scene.add(joint);
+    });
+
+    const tJoint = new THREE.Mesh(new THREE.SphereGeometry(0.52, 16, 16), mat.metal);
+    tJoint.position.set(1.5, 0.15, 1.5);
+    tJoint.castShadow = true;
+    scene.add(tJoint);
+
+    [[-2, 1.8], [0, -0.5], [3, 2.5], [-4, -1.5]].forEach(([x, z]) => {
+      const drip = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.5, 8), mat.pipe);
+      drip.position.set(x, -0.15, z);
+      scene.add(drip);
+    });
+
+    const leakPositions = [
+      { x: 2.2, y: -0.25, z: 1.5, r: 0.75 },
+      { x: -1.2, y: -0.2, z: 0.8, r: 0.5 },
+      { x: 3.5, y: -0.3, z: -0.5, r: 0.6 },
+    ];
+    const leakMeshes = leakPositions.map(p => {
+      const lg = new THREE.SphereGeometry(p.r, 20, 20);
+      lg.scale(1, 0.35, 1);
+      const lm = new THREE.Mesh(lg, mat.leak);
+      lm.position.set(p.x, p.y, p.z);
+      scene.add(lm);
+      return lm;
+    });
+
+    const droplets = [];
+    for (let i = 0; i < 24; i++) {
+      const dg = new THREE.SphereGeometry(0.06 + Math.random() * 0.06, 6, 6);
+      const dm = new THREE.MeshPhysicalMaterial({ color: 0x5dade2, transparent: true, opacity: 0.7, transmission: 0.4, roughness: 0 });
+      const drop = new THREE.Mesh(dg, dm);
+      const lp = leakPositions[Math.floor(Math.random() * leakPositions.length)];
+      drop.position.set(lp.x + (Math.random() - 0.5) * 1.5, lp.y + Math.random() * 0.8, lp.z + (Math.random() - 0.5) * 1.5);
+      drop.userData.originY = drop.position.y;
+      drop.userData.speed = 0.008 + Math.random() * 0.012;
+      drop.userData.offset = Math.random() * Math.PI * 2;
+      scene.add(drop);
+      droplets.push(drop);
     }
-  }
 
-  function updateNav() {
-    document.getElementById('btnPrev').disabled = currentSpread === 0;
-    document.getElementById('btnNext').disabled = currentSpread === TOTAL_SPREADS - 1;
-    document.getElementById('pageCounter').textContent =
-      (currentSpread + 1) + ' / ' + TOTAL_SPREADS;
-  }
+    const tankX = -4, tankY = 2.15, tankZ = -2.5;
+    const tankR = 1.9, tankH2 = 5.2;
 
-  /* Navegación con teclas */
-  document.addEventListener('keydown', (e) => {
-    if (!document.getElementById('comic-reader').classList.contains('active')) return;
-    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSpread(); }
-    if (e.key === 'ArrowLeft')  { e.preventDefault(); prevSpread(); }
-  });
+    const tankOut = new THREE.Mesh(new THREE.CylinderGeometry(tankR, tankR * 0.9, tankH2, 32), mat.tank);
+    tankOut.position.set(tankX, tankY, tankZ);
+    tankOut.castShadow = true;
+    scene.add(tankOut);
 
-  /* ════════════════════════════════════════════
-     4. EFECTO 3D AL MOVER EL MOUSE (lector)
-  ════════════════════════════════════════════ */
-  const spreadContainer = document.getElementById('spread-container');
-  const viewport = document.getElementById('readerViewport');
+    const waterFill = new THREE.Mesh(new THREE.CylinderGeometry(tankR * 0.85, tankR * 0.82, tankH2 * 0.62, 32), mat.water);
+    waterFill.position.set(tankX, tankY - tankH2 * 0.19, tankZ);
+    scene.add(waterFill);
 
-  viewport.addEventListener('mousemove', (e) => {
-    if (window.matchMedia('print').matches) return;
-    const rect = viewport.getBoundingClientRect();
-    const cx = rect.width / 2;
-    const cy = rect.height / 2;
-    const x = e.clientX - rect.left - cx;
-    const y = e.clientY - rect.top - cy;
-    const rotX = (y / cy) * -4;
-    const rotY = (x / cx) * 5;
-    spreadContainer.style.transform =
-      `perspective(2000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-  });
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.55, tankR, 0.8, 24), mat.tank);
+    neck.position.set(tankX, tankY + tankH2/2 + 0.38, tankZ);
+    scene.add(neck);
 
-  viewport.addEventListener('mouseleave', () => {
-    spreadContainer.style.transition = 'transform 0.6s ease-out';
-    spreadContainer.style.transform = 'perspective(2000px) rotateX(0deg) rotateY(0deg)';
-    setTimeout(() => { spreadContainer.style.transition = ''; }, 600);
-  });
+    const neckTop = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.9, 24), mat.tank);
+    neckTop.position.set(tankX, tankY + tankH2/2 + 1.23, tankZ);
+    scene.add(neckTop);
 
-  /* Swipe táctil */
-  let touchStartX = 0;
-  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
-  document.addEventListener('touchend', (e) => {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 60) {
-      if (dx < 0) nextSpread();
-      else prevSpread();
+    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.4, 24), mat.metal);
+    cap.position.set(tankX, tankY + tankH2/2 + 1.88, tankZ);
+    scene.add(cap);
+
+    const connPipe = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 6, 12), mat.pipe);
+    connPipe.rotation.z = Math.PI / 2;
+    connPipe.position.set(-1.3, 0.0, -1.5);
+    scene.add(connPipe);
+
+    [0.3, 0.6, 0.85].forEach(pct => {
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(tankR + 0.02, 0.03, 8, 32),
+        new THREE.MeshStandardMaterial({
+          color: pct <= 0.62 ? 0x5dade2 : 0x8ab0c8, roughness: 0.4,
+          emissive: pct <= 0.62 ? new THREE.Color(0x1a5a8e) : new THREE.Color(0x0), emissiveIntensity: 0.3
+        })
+      );
+      ring.position.set(tankX, tankY - tankH2/2 + tankH2 * pct, tankZ);
+      scene.add(ring);
+    });
+
+    const sensorX = tankX, sensorY = tankY + tankH2/2 + 2.3, sensorZ = tankZ;
+
+    const board = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.12, 0.9), mat.board);
+    board.position.set(sensorX, sensorY, sensorZ);
+    board.castShadow = true;
+    scene.add(board);
+
+    const chip = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.18, 0.4), mat.sensor);
+    chip.position.set(sensorX, sensorY + 0.15, sensorZ);
+    chip.castShadow = true;
+    scene.add(chip);
+
+    const led = new THREE.Mesh(
+      new THREE.SphereGeometry(0.08, 8, 8),
+      new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: new THREE.Color(0xff0000), emissiveIntensity: 2, roughness: 0.1 })
+    );
+    led.position.set(sensorX + 0.35, sensorY + 0.18, sensorZ - 0.2);
+    scene.add(led);
+
+    const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.8, 8), mat.metal);
+    antenna.position.set(sensorX - 0.4, sensorY + 0.55, sensorZ + 0.2);
+    scene.add(antenna);
+    const antTip = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), mat.metal);
+    antTip.position.set(sensorX - 0.4, sensorY + 0.98, sensorZ + 0.2);
+    scene.add(antTip);
+
+    const signalRings = [];
+    for (let i = 0; i < 3; i++) {
+      const sr = new THREE.Mesh(
+        new THREE.TorusGeometry(0.3 + i * 0.25, 0.025, 8, 32),
+        new THREE.MeshStandardMaterial({
+          color: 0xe74c3c, emissive: new THREE.Color(0xe74c3c), emissiveIntensity: 1.2, transparent: true, opacity: 0.0
+        })
+      );
+      sr.position.set(sensorX - 0.4, sensorY + 0.7, sensorZ + 0.2);
+      sr.rotation.x = Math.PI / 2;
+      scene.add(sr);
+      signalRings.push({ mesh: sr, delay: i * 0.4 });
     }
-  });
-</script>
+
+    function addBox(w, h, d, color, x, y, z, material) {
+      const m = material || new THREE.MeshStandardMaterial({ color, roughness: 0.6 });
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      scene.add(mesh);
+      return mesh;
+    }
+
+    const particleCount = 120;
+    const pGeo = new THREE.BufferGeometry();
+    const pPositions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      pPositions[i*3]   = (Math.random() - 0.5) * 20;
+      pPositions[i*3+1] = Math.random() * 10 - 1;
+      pPositions[i*3+2] = (Math.random() - 0.5) * 16;
+    }
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+    const pMat = new THREE.PointsMaterial({ color: 0x8ab4cc, size: 0.045, transparent: true, opacity: 0.35, sizeAttenuation: true });
+    scene.add(new THREE.Points(pGeo, pMat));
+
+    const loadBar = document.getElementById('loadBar');
+    loadBar.style.width = '100%';
+    setTimeout(() => { document.getElementById('loading').classList.add('hide'); }, 1400);
+
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+      controls.update();
+
+      const ledIntensity = (Math.sin(t * 4) + 1) / 2;
+      led.material.emissiveIntensity = 1.2 + ledIntensity * 2.5;
+      chip.material.emissiveIntensity = 0.3 + ledIntensity * 0.6;
+      ptRed.intensity = 0.5 + ledIntensity * 3;
+
+      signalRings.forEach(({ mesh, delay }) => {
+        const phase = ((t * 0.6 + delay) % 1.5) / 1.5;
+        mesh.scale.set(1 + phase * 1.2, 1, 1 + phase * 1.2);
+        mesh.material.opacity = (1 - phase) * 0.7;
+      });
+
+      leakMeshes.forEach((m, i) => {
+        m.material.opacity = 0.45 + Math.sin(t * 1.5 + i * 1.2) * 0.2;
+        m.scale.y = 0.35 + Math.sin(t * 0.8 + i) * 0.05;
+      });
+
+      droplets.forEach(d => {
+        d.position.y = d.userData.originY + Math.sin(t * d.userData.speed * 60 + d.userData.offset) * 0.12;
+        d.material.opacity = 0.4 + Math.sin(t * 1.2 + d.userData.offset) * 0.3;
+      });
+
+      waterFill.material.opacity = 0.38 + Math.sin(t * 1.1) * 0.08;
+      ptBlue.intensity = 3 + Math.sin(t * 0.7) * 1.2;
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
+  </script>
 </body>
 </html>
