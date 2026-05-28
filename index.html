@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Playa La Virgen — Innovación Hídrica</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@700&family=Rajdhani:wght@300;400;600;700&family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@700&family=Rajdhani:wght@300;400;600;700&family=Bangers&family=Comic+Neue:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
   <style>
     /* ============================
@@ -18,14 +19,18 @@
     :root {
       --ocean-deep:    #020d18;
       --ocean-mid:     #04243d;
-      --cyan-glow:     #00e5ff;
+      --cyan-glow:     #00f5ff;
       --cyan-dim:      #0097b2;
       --gold:          #ffd700;
-      --coral:         #ff4f5e;
+      --coral:         #ff3a3a;
       --white:         #f0f4f8;
+      --dark:          #050810;
+      --panel:         rgba(0,20,35,0.82);
+      --border:        rgba(0,245,255,0.18);
+      
       --font-title:    'Bebas Neue', sans-serif;
       --font-body:     'Rajdhani', sans-serif;
-      --font-mono:     'Space Mono', monospace;
+      --font-mono:     'Share Tech Mono', monospace;
       --font-comic:    'Comic Neue', cursive;
       --font-bangers:  'Bangers', cursive;
     }
@@ -33,60 +38,40 @@
     html, body {
       width: 100%; height: 100%;
       overflow: hidden;
-      background: var(--ocean-deep);
+      background: var(--dark);
       color: var(--white);
       font-family: var(--font-body);
     }
 
     /* ============================
-       VIEW SYSTEM — ROUTING FIX
+       VIEW SYSTEM — ROUTING
     ============================ */
     .view-section {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      visibility: hidden;
-      opacity: 0;
-      pointer-events: none;
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      visibility: hidden; opacity: 0; pointer-events: none;
       transition: opacity 0.5s ease, visibility 0.5s ease;
       z-index: 1;
     }
     .view-section.active {
-      visibility: visible;
-      opacity: 1;
-      pointer-events: all;
-      z-index: 2;
+      visibility: visible; opacity: 1; pointer-events: all; z-index: 2;
     }
 
-    /* ============================
-       BACK BUTTON
-    ============================ */
+    /* BOTÓN VOLVER */
     #btn-back {
-      position: fixed;
-      top: 22px;
-      left: 22px;
-      z-index: 9999;
-      background: rgba(0,0,0,0.5);
-      color: var(--cyan-glow);
-      border: 1.5px solid var(--cyan-glow);
-      padding: 9px 22px;
-      cursor: pointer;
-      border-radius: 3px;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      display: none;
-      align-items: center;
-      transition: background 0.2s, box-shadow 0.2s;
+      position: fixed; top: 22px; left: 22px; z-index: 9999;
+      background: rgba(0,0,0,0.6); color: var(--cyan-glow);
+      border: 1.5px solid var(--cyan-glow); padding: 9px 22px;
+      cursor: pointer; border-radius: 3px; font-family: var(--font-mono);
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em;
+      display: none; transition: all 0.3s;
+      box-shadow: 0 0 12px rgba(0,245,255,0.2); backdrop-filter: blur(5px);
     }
-    #btn-back:hover { background: var(--cyan-glow); color: var(--ocean-deep); box-shadow: 0 0 24px rgba(0,229,255,0.6); }
-    #btn-back.visible { display: flex; }
+    #btn-back:hover { background: var(--cyan-glow); color: var(--dark); box-shadow: 0 0 24px rgba(0,245,255,0.6); }
+    #btn-back.visible { display: block; }
 
     /* ============================
-       MENU VIEW
+       1. MENU VIEW
     ============================ */
     #menu-view {
       background: radial-gradient(ellipse at center, #0a2540 0%, #020d18 100%);
@@ -95,43 +80,38 @@
     .menu-title {
       font-family: var(--font-title); font-size: clamp(3rem, 6vw, 5rem);
       color: var(--white); line-height: 1.1; letter-spacing: 2px;
-      text-shadow: 0 0 30px rgba(0,229,255,0.4); text-align: center;
+      text-shadow: 0 0 30px rgba(0,245,255,0.4); text-align: center;
     }
     .menu-title span { color: var(--gold); }
     .menu-subtitle {
       font-family: var(--font-mono); font-size: 0.9rem; color: var(--cyan-dim);
       margin: 10px 0 40px; letter-spacing: 0.2em; text-transform: uppercase;
     }
-    .menu-cards { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; }
+    .menu-cards { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; z-index: 5;}
     .menu-card {
-      width: 280px; background: rgba(4, 36, 61, 0.6); border: 1px solid rgba(0,229,255,0.2);
+      width: 280px; background: rgba(4, 36, 61, 0.6); border: 1px solid var(--border);
       border-radius: 8px; padding: 30px 20px; cursor: pointer; text-align: center;
       backdrop-filter: blur(10px); transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
     }
     .menu-card:hover {
       transform: translateY(-8px); border-color: var(--cyan-glow);
-      box-shadow: 0 15px 40px rgba(0,229,255,0.2);
+      box-shadow: 0 15px 40px rgba(0,245,255,0.2); background: rgba(4, 36, 61, 0.9);
     }
     .card-icon { font-size: 3.5rem; margin-bottom: 15px; display: block; }
     .card-title { font-family: var(--font-title); font-size: 2rem; color: var(--white); margin-bottom: 10px; letter-spacing: 1px;}
-    .card-desc { font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.5; }
+    .card-desc { font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.5; font-family: sans-serif;}
 
     /* ============================
-       COMIC VIEW
+       2. COMIC VIEW
     ============================ */
-    #comic-view {
-      background: #0a0c0f; overflow-y: auto; overflow-x: hidden;
-    }
+    #comic-view { background: #0a0c0f; overflow-y: auto; overflow-x: hidden; }
     .comic-scroll-area { min-height: 100%; width: 100%; padding-bottom: 50px;}
     
     .comic-header { text-align: center; padding: 50px 20px 20px; }
     .comic-header h2 { font-family: var(--font-bangers); font-size: 3.5rem; letter-spacing: 2px; color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.4); }
     .comic-header p { font-family: var(--font-mono); font-size: 0.8rem; color: var(--cyan-dim); letter-spacing: 0.2em; }
 
-    .comic-spread {
-      max-width: 900px; margin: 0 auto; padding: 0 20px 40px;
-      display: grid; gap: 10px;
-    }
+    .comic-spread { max-width: 900px; margin: 0 auto; padding: 0 20px 40px; display: grid; gap: 10px; }
     .layout-halves { grid-template-columns: 1fr 1fr; }
     .layout-hero { grid-template-columns: 1fr; }
 
@@ -140,15 +120,11 @@
       display: flex; flex-direction: column; transition: border-color 0.3s, box-shadow 0.3s;
     }
     .panel:hover { border-color: var(--gold); box-shadow: 0 0 20px rgba(255,215,0,0.3); z-index: 10; }
-    
     .panel img { width: 100%; height: 260px; object-fit: cover; border-bottom: 3px solid #111; }
     .panel.tall img { height: 350px; }
     
     .panel-content { padding: 15px; background: #f5f5f5; flex: 1; display: flex; flex-direction: column;}
-    .scene-label {
-      font-family: var(--font-bangers); font-size: 1.1rem; letter-spacing: 2px;
-      color: white; background: #111; text-align: center; padding: 5px; margin-bottom: 10px;
-    }
+    .scene-label { font-family: var(--font-bangers); font-size: 1.1rem; letter-spacing: 2px; color: white; background: #111; text-align: center; padding: 5px; margin-bottom: 10px; }
     .speech-bubble {
       background: white; border: 3px solid #111; border-radius: 12px; padding: 10px;
       font-family: var(--font-comic); font-size: 0.95rem; font-weight: bold; color: #111;
@@ -158,60 +134,91 @@
     .speech-bubble.think { border-style: dashed; border-radius: 30px; text-align: center; }
     .sfx { font-family: var(--font-bangers); font-size: 2.2rem; color: var(--coral); text-align: center; letter-spacing: 2px; text-shadow: 2px 2px 0 #111;}
 
-    /* Dashboard Matrices en el cómic */
     .dash-card { background: white; border: 3px solid #111; border-radius: 6px; padding: 15px; margin-bottom: 10px; }
     .dash-card h3 { font-family: var(--font-bangers); font-size: 1.3rem; letter-spacing: 1px; border-bottom: 2px dashed #ccc; padding-bottom: 5px; margin-bottom: 10px; color: #111;}
     .dash-card ul { font-family: var(--font-comic); font-size: 0.85rem; font-weight: bold; padding-left: 20px; color: #333;}
     .dash-card ul li { margin-bottom: 5px; }
 
     /* ============================
-       3D MOCKUP VIEW
+       3. MOCK-UP 3D VIEW (CLAUDE'S PREMIUM HUD)
     ============================ */
-    #mockup-view { background: #000; overflow: hidden; }
+    #mockup-view { background: var(--dark); overflow: hidden; position: relative; }
     #three-canvas-container { position: absolute; inset: 0; width: 100%; height: 100%; }
     
-    .hud-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
-    
-    .hud-top {
-      position: absolute; top: 0; left: 0; right: 0; display: flex;
-      justify-content: space-between; padding: 24px 24px 0;
-    }
-    .hud-eyebrow { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.2em; color: var(--cyan-dim); text-transform: uppercase; margin-bottom: 4px; }
-    .hud-title { font-family: var(--font-title); font-size: 2.2rem; letter-spacing: 0.05em; color: var(--white); text-shadow: 0 0 20px rgba(0,229,255,0.5); }
-    
-    .hud-part-selector {
-      position: absolute; top: 50%; right: 24px; transform: translateY(-50%);
-      display: flex; flex-direction: column; gap: 8px; pointer-events: all;
-    }
-    .part-btn {
-      background: rgba(4,36,61,0.8); border: 1px solid rgba(0,229,255,0.2);
-      color: rgba(240,244,248,0.6); padding: 10px 16px; font-family: var(--font-mono);
-      font-size: 0.65rem; letter-spacing: 0.1em; cursor: pointer; border-radius: 4px;
-      text-align: left; min-width: 200px; transition: all 0.3s;
-    }
-    .part-btn:hover, .part-btn.active-part {
-      background: rgba(0,229,255,0.15); border-color: var(--cyan-glow); color: var(--cyan-glow);
-      box-shadow: 0 0 12px rgba(0,229,255,0.2);
-    }
+    #hud { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
 
-    .hud-info-panel {
-      position: absolute; bottom: 30px; right: 24px; width: 280px;
-      background: rgba(4,36,61,0.9); border: 1px solid rgba(0,229,255,0.3); border-radius: 6px;
-      padding: 20px; backdrop-filter: blur(10px); transform: translateX(350px);
-      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); pointer-events: none;
+    .corner { position: absolute; width: 48px; height: 48px; border-color: var(--cyan-glow); border-style: solid; opacity: .55; }
+    .corner.tl { top: 18px; left: 18px; border-width: 2px 0 0 2px; }
+    .corner.tr { top: 18px; right: 18px; border-width: 2px 2px 0 0; }
+    .corner.bl { bottom: 18px; left: 18px; border-width: 0 0 2px 2px; }
+    .corner.br { bottom: 18px; right: 18px; border-width: 0 2px 2px 0; }
+
+    #topbar {
+      position: absolute; top: 0; left: 0; right: 0; height: 52px;
+      background: linear-gradient(180deg,rgba(0,10,20,.95) 0%,transparent 100%);
+      display: flex; align-items: center; justify-content: flex-end; padding: 0 28px;
     }
-    .hud-info-panel.visible { transform: translateX(0); }
-    .info-title { font-family: var(--font-title); font-size: 1.4rem; color: var(--gold); margin-bottom: 8px; }
-    .info-body { font-family: var(--font-body); font-size: 0.9rem; color: rgba(240,244,248,0.8); line-height: 1.5; margin-bottom: 15px;}
-    .spec-row { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.65rem; color: var(--cyan-dim); margin-bottom: 4px; border-bottom: 1px dashed rgba(0,229,255,0.1); padding-bottom: 4px;}
-    .spec-row span:last-child { color: var(--white); font-weight: bold;}
+    .status-row { display: flex; gap: 20px; align-items: center; }
+    .status-pill {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 1.5px;
+      padding: 3px 10px; border-radius: 2px; border: 1px solid;
+    }
+    .status-pill.online { border-color:#00ff88; color:#00ff88; background:rgba(0,255,136,.07); }
+    .status-pill.warn { border-color:var(--coral); color:var(--coral); background:rgba(255,58,58,.07); animation: blink 1.2s step-end infinite; }
+    @keyframes blink { 50%{opacity:0} }
+
+    #panel-left {
+      position: absolute; top: 80px; left: 18px; width: 240px;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 3px;
+      padding: 16px; backdrop-filter: blur(12px); pointer-events: none;
+    }
+    .panel-title { font-size: 10px; letter-spacing: 3px; font-weight: 600; color: rgba(0,245,255,.5); margin-bottom: 14px; text-transform: uppercase; font-family: var(--font-mono);}
+    .metric-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(0,245,255,.08); }
+    .metric-label { font-size: 10px; letter-spacing:1px; color:rgba(255,255,255,.45); }
+    .metric-value { font-family: var(--font-mono); font-size: 15px; }
+    .metric-value.ok { color:#00ff88; }
+    .metric-value.warn { color:var(--coral); }
+    .metric-value.info { color:var(--cyan-glow); }
+    .metric-value.gold { color:var(--gold); }
+    .bar-wrap { width: 100%; height: 4px; background: rgba(255,255,255,.06); border-radius: 2px; margin-top: 3px; }
+    .bar-fill { height: 100%; border-radius: 2px; transition: width .6s ease; }
+
+    #legend {
+      position: absolute; bottom: 50px; left: 18px; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 3px; padding: 12px 16px;
+      backdrop-filter: blur(12px); pointer-events: none;
+    }
+    .leg-row { display:flex; align-items:center; gap:10px; margin-bottom:7px; }
+    .leg-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .leg-label { font-family: var(--font-mono); font-size:9px; letter-spacing:1px; color:rgba(255,255,255,.5); }
+
+    #alerts { position:absolute; bottom:50px; right:18px; width:220px; pointer-events:none; }
+    .alert-line {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing:1px;
+      padding: 4px 8px; margin-bottom: 4px; border-left: 2px solid; background: rgba(0,0,0,.45);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .alert-line.c { border-color:var(--cyan-glow); color:rgba(0,245,255,.7); }
+    .alert-line.w { border-color:var(--coral);  color:rgba(255,58,58,.8); }
+
+    #bottombar {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 38px;
+      background: linear-gradient(0deg,rgba(0,10,20,.9) 0%,transparent 100%);
+      display: flex; align-items: center; justify-content: center; gap: 40px; border-top: 1px solid var(--border);
+    }
+    .hint { font-family: var(--font-mono); font-size: 9px; letter-spacing: 1.5px; color: rgba(0,245,255,.35); }
+
+    #scanlines { position:absolute; inset:0; pointer-events:none; z-index:5; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.04) 2px, rgba(0,0,0,.04) 4px); }
+    #vignette { position:absolute; inset:0; pointer-events:none; z-index:4; background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 50%, rgba(0,3,10,.85) 100%); }
 
     @media (max-width: 768px) {
       .layout-halves { grid-template-columns: 1fr; }
-      .hud-part-selector { top: auto; bottom: 20px; right: 50%; transform: translateX(50%); flex-direction: row; flex-wrap: wrap; justify-content: center; width: 90%;}
-      .part-btn { min-width: auto; padding: 6px 10px; font-size: 0.55rem; }
-      .hud-info-panel { top: 80px; right: 50%; transform: translateX(50%) scale(0.9); bottom: auto; width: 90%; }
-      .hud-info-panel.visible { transform: translateX(50%) scale(1); }
+      #panel-left { display: none; }
+      #legend { bottom: 60px; right: 18px; left: auto;}
+      #alerts { display: none; }
+      .hint { display: none; }
+      #topbar { padding: 0 10px; }
+      .status-row { transform: scale(0.8); }
     }
   </style>
 </head>
@@ -234,7 +241,7 @@
         <div class="menu-card" onclick="openView('mockup-view')">
           <span class="card-icon">🏗️</span>
           <h3 class="card-title">MOCK-UP 3D</h3>
-          <p class="card-desc">Representación tridimensional de nuestra maqueta física de bajo costo (Tupperware, Sensores IoT, Arena).</p>
+          <p class="card-desc">Representación tridimensional de nuestro Prototipo Funcional. Renderizado industrial y materiales premium.</p>
         </div>
       </div>
     </div>
@@ -252,7 +259,7 @@
           <img src="0.jpg" alt="Portada de Playa La Virgen" onerror="this.src='https://via.placeholder.com/800x400/111/ffd700?text=IMAGEN+0.JPG'">
           <div class="panel-content" style="align-items: center; justify-content: center; background: var(--gold);">
             <h1 style="font-family: var(--font-bangers); font-size: 3rem; color: #111;">PROYECTO: AGUA INTELIGENTE</h1>
-            <p style="font-family: var(--font-mono); font-weight: bold; color: #111;">Equipo: Simón, Renato, Wiljer, Julio, Millaray</p>
+            <p style="font-family: var(--font-mono); font-weight: bold; color: #111; font-size: 1.2rem;">Equipo: Simón, Renato, Wiljer, Julio, Millaray</p>
           </div>
         </div>
       </div>
@@ -306,7 +313,7 @@
           </div>
         </div>
         <div class="panel tall" style="background: #e8e8e8;">
-          <div class="scene-label" style="background: var(--blue);">VALIDACIÓN: MATRIZ C.D.M.</div>
+          <div class="scene-label" style="background: #0057A8;">VALIDACIÓN: MATRIZ C.D.M.</div>
           <div class="panel-content">
             <div class="dash-card" style="border-left: 8px solid var(--green);">
               <h3 style="color: var(--green);">🌟 CUALIDADES</h3>
@@ -316,15 +323,15 @@
                 <li>Asegura continuidad en temporada alta.</li>
               </ul>
             </div>
-            <div class="dash-card" style="border-left: 8px solid var(--red);">
-              <h3 style="color: var(--red);">⚠️ DEBILIDADES</h3>
+            <div class="dash-card" style="border-left: 8px solid var(--coral);">
+              <h3 style="color: var(--coral);">⚠️ DEBILIDADES</h3>
               <ul>
                 <li>Alta inversión inicial (CAPEX).</li>
                 <li>Capacitación estricta para mantenimiento de membranas.</li>
               </ul>
             </div>
-            <div class="dash-card" style="border-left: 8px solid var(--blue);">
-              <h3 style="color: var(--blue);">🚀 MEJORAS</h3>
+            <div class="dash-card" style="border-left: 8px solid #0057A8;">
+              <h3 style="color: #0057A8;">🚀 MEJORAS</h3>
               <ul>
                 <li>Integrar reuso de aguas grises 100%.</li>
                 <li>Soterramiento profundo de tuberías HDPE.</li>
@@ -343,66 +350,87 @@
 
   <div id="mockup-view" class="view-section">
     <div id="three-canvas-container"></div>
+    
+    <div id="scanlines"></div>
+    <div id="vignette"></div>
 
-    <div class="hud-overlay">
-      <div class="hud-top">
-        <div class="hud-title-block">
-          <p class="hud-eyebrow">Validación de Funcionamiento</p>
-          <h2 class="hud-title">MAQUETA INTERACTIVA</h2>
+    <div id="hud">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+
+      <div id="topbar">
+        <div class="status-row">
+          <div class="status-pill online">SENSOR ACTIVO</div>
+          <div class="status-pill warn">FUGA DETECTADA</div>
+          <div class="status-pill online">IoT ONLINE</div>
         </div>
       </div>
 
-      <div class="hud-part-selector">
-        <button class="part-btn active-part" onclick="focusPart('all')">00 SISTEMA COMPLETO</button>
-        <button class="part-btn" onclick="focusPart('base')">01 TUPPERWARE & ARENA</button>
-        <button class="part-btn" onclick="focusPart('pipe')">02 RED HDPE & FUGA</button>
-        <button class="part-btn" onclick="focusPart('tank')">03 ESTANQUE (BOTELLA)</button>
-        <button class="part-btn" onclick="focusPart('sensor')">04 SENSOR IoT (ARDUINO)</button>
+      <div id="panel-left">
+        <div class="panel-title">// Telemetría Hídrica</div>
+        <div class="metric-row">
+          <div><div class="metric-label">PRESIÓN RED HDPE</div><div class="bar-wrap"><div class="bar-fill" style="width:72%;background:var(--cyan-glow)"></div></div></div>
+          <div class="metric-value warn">3.2 bar</div>
+        </div>
+        <div class="metric-row">
+          <div><div class="metric-label">SALINIDAD SUELO</div><div class="bar-wrap"><div class="bar-fill" style="width:88%;background:var(--gold)"></div></div></div>
+          <div class="metric-value gold">88 ppm</div>
+        </div>
+        <div class="metric-row">
+          <div><div class="metric-label">CALIDAD AGUA TANK</div><div class="bar-wrap"><div class="bar-fill" style="width:94%;background:#00ff88"></div></div></div>
+          <div class="metric-value ok">94.2%</div>
+        </div>
+        <div class="metric-row">
+          <div><div class="metric-label">HUMEDAD SUBSUELO</div><div class="bar-wrap"><div class="bar-fill" style="width:61%;background:var(--coral)"></div></div></div>
+          <div class="metric-value warn">61% ↑</div>
+        </div>
       </div>
 
-      <div class="hud-info-panel" id="hud-info-panel">
-        <p class="info-title" id="info-title">SISTEMA COMPLETO</p>
-        <p class="info-body" id="info-body">Simulación a escala del prototipo físico utilizando materiales reciclados para validar el funcionamiento del sensor de presión.</p>
-        <div style="margin-top: 15px;">
-          <div class="spec-row"><span>ESTADO</span><span style="color:#00ff00;">MONITOREANDO</span></div>
-          <div class="spec-row"><span>MATERIALES</span><span id="spec-mat">Mixtos / Reciclados</span></div>
-          <div class="spec-row"><span>OBJETIVO</span><span id="spec-obj">Validar Detección</span></div>
-        </div>
+      <div id="legend">
+        <div class="leg-row"><div class="leg-dot" style="background:#555a66"></div><div class="leg-label">Corte Terreno: Arena</div></div>
+        <div class="leg-row"><div class="leg-dot" style="background:#1a2a3a"></div><div class="leg-label">Tubería HDPE Ø110mm</div></div>
+        <div class="leg-row"><div class="leg-dot" style="background:#00f5ff"></div><div class="leg-label">Fuga Detectada</div></div>
+        <div class="leg-row"><div class="leg-dot" style="background:#c0c8d0"></div><div class="leg-label">Módulo de Purificación</div></div>
+        <div class="leg-row"><div class="leg-dot" style="background:var(--gold)"></div><div class="leg-label">Sensor IoT Arduino</div></div>
+        <div class="leg-row"><div class="leg-dot" style="background:rgba(0,245,255,0.3)"></div><div class="leg-label">Haz de Escaneo</div></div>
+      </div>
+
+      <div id="alerts">
+        <div class="alert-line w">[WARN] Anomalía hídrica detectada en tubería</div>
+        <div class="alert-line c">[SCAN] Haz holográfico activo · 97.3% conf.</div>
+        <div class="alert-line c">[DATA] IoT heartbeat · Arduino OK</div>
+      </div>
+
+      <div id="bottombar">
+        <div class="hint">⟲ ARRASTRAR — ROTAR</div>
+        <div class="hint">⊕ SCROLL — ZOOM</div>
+        <div class="hint">SHIPA © 2026 — PLAYA LA VIRGEN</div>
       </div>
     </div>
   </div>
 
   <script>
-    /* ============================================================
-       1. SISTEMA DE RUTAS (ROUTING) - CORREGIDO
-    ============================================================ */
+    /* ── 1. ROUTING ── */
     let is3DInitialized = false;
 
     function openView(viewId) {
-      // Ocultar todas las vistas
-      document.querySelectorAll('.view-section').forEach(el => {
-        el.classList.remove('active');
-      });
-      
-      // Mostrar vista seleccionada y botón de volver
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       const target = document.getElementById(viewId);
       target.classList.add('active');
       document.getElementById('btn-back').classList.add('visible');
 
-      // Resetear scroll si es el cómic
-      if (viewId === 'comic-view') {
-        target.scrollTop = 0;
-      }
+      if (viewId === 'comic-view') target.scrollTop = 0;
 
-      // Iniciar 3D DESPUÉS de que termine la transición CSS para que el contenedor tenga medidas reales
       if (viewId === 'mockup-view') {
         if (!is3DInitialized) {
-          setTimeout(() => {
-            init3D();
-            is3DInitialized = true;
-          }, 520);
+          setTimeout(() => { init3D(); is3DInitialized = true; }, 520);
         } else {
-          setTimeout(() => resize3D(), 50);
+          setTimeout(() => {
+            const container = document.getElementById('three-canvas-container');
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+          }, 50);
         }
       }
     }
@@ -413,193 +441,176 @@
       document.getElementById('btn-back').classList.remove('visible');
     }
 
-    /* ============================================================
-       2. LÓGICA THREE.JS - MAQUETA TUPPERWARE (BAJO COSTO)
-    ============================================================ */
+    /* ── 2. THREE.JS (MOCK-UP PREMIUM) ── */
     let renderer, camera, scene, controls;
-    let baseGroup, pipeGroup, tankGroup, sensorGroup;
-    let leakMesh, scannerMesh, arduinoLed;
-    let clock;
-
-    // Posiciones de cámara para el enfoque
-    const cameraPositions = {
-      all:    { pos: [0, 10, 15],  target: [0, 0, 0] },
-      base:   { pos: [0, 8, 12],   target: [0, -1, 0] },
-      pipe:   { pos: [0, 4, 6],    target: [2, -0.2, 1.5] },
-      tank:   { pos: [-8, 4, 0],   target: [-4, 2, -2] },
-      sensor: { pos: [-6, 6, 2],   target: [-4, 4.3, -2] }
-    };
-
-    // Información del panel HUD
-    const partInfo = {
-      all:    { title: 'MAQUETA FÍSICA', body: 'Representación del prototipo a escala construido con elementos cotidianos para la asignatura.', mat: 'Plástico, arena, PVC', obj: 'Validación Integral' },
-      base:   { title: 'TERRENO SIMULADO', body: 'Contenedor transparente que permite visualizar la estratigrafía del suelo y cómo se comporta el agua bajo la superficie.', mat: 'Caja plástica y Arena local', obj: 'Simular Filtración' },
-      pipe:   { title: 'RED HDPE & FUGA', body: 'Tubo ranurado que simula una matriz rota. La humedad se expande silenciosamente en la arena sin ser visible desde la superficie.', mat: 'Tubo PVC Eléctrico', obj: 'Simular Fuga Fantasma' },
-      tank:   { title: 'ESTANQUE DE ACUMULACIÓN', body: 'Reserva de agua del complejo turístico. Está conectado a la matriz principal para simular el abastecimiento.', mat: 'Botella PET Reciclada', obj: 'Almacenamiento' },
-      sensor: { title: 'MÓDULO IoT SMART WATER', body: 'Microcontrolador que mide la pérdida de presión/volumen y envía una alerta visual (LED) al detectar anomalías.', mat: 'Placa Arduino + Ultrasonido', obj: 'Alertas Tempranas' }
-    };
+    let leakHalo, leakMain, wfSphere, scanCone, innerCone, originDisc, sensorGroup, ripple, waterInside, sensorLight, scanGroup, sensorPos, leakPos;
+    let clock = new THREE.Clock();
 
     function init3D() {
       const container = document.getElementById('three-canvas-container');
       const w = container.clientWidth;
       const h = container.clientHeight;
 
-      clock = new THREE.Clock();
-
-      // Escena y Cámara
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x020d18);
-      
-      camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 500);
-      camera.position.set(0, 10, 15);
-      camera.lookAt(0, 0, 0);
-
-      // Renderizador
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-      renderer.setSize(w, h);
+      // Renderer
+      renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(w, h);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.1;
+      renderer.setClearColor(0x020509, 1);
       container.appendChild(renderer.domElement);
 
-      // Controles orbitales
+      // Scene & Camera
+      scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x020509, 0.038);
+      camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 200);
+      camera.position.set(8, 6, 11);
+
+      // Controles (Nativos de CDN para evitar conflictos)
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
-      controls.dampingFactor = 0.05;
+      controls.dampingFactor = 0.06;
       controls.autoRotate = true;
-      controls.autoRotateSpeed = 1.0;
-      controls.maxPolarAngle = Math.PI / 2 + 0.1;
-      controls.target.set(0, 0, 0);
+      controls.autoRotateSpeed = 0.5;
+      controls.maxPolarAngle = Math.PI * 0.78;
+      controls.minDistance = 4;
+      controls.maxDistance = 28;
+      controls.target.set(0,0,0);
 
-      // Luces
-      scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-      const dirLight = new THREE.DirectionalLight(0xfff5e0, 1.2);
-      dirLight.position.set(10, 20, 10);
-      scene.add(dirLight);
+      // Iluminación Premium
+      scene.add(new THREE.AmbientLight(0x0a1520, 0.6));
+      const keyLight = new THREE.DirectionalLight(0xdce8ff, 1.8);
+      keyLight.position.set(6, 12, 8);
+      keyLight.castShadow = true;
+      scene.add(keyLight);
+      
+      const fillLight = new THREE.DirectionalLight(0x0050a0, 0.5);
+      fillLight.position.set(-8, 4, -6);
+      scene.add(fillLight);
 
-      // Construcción de la Maqueta
-      buildTupperwareMockup();
+      const leakLight = new THREE.PointLight(0x00f5ff, 3.5, 6, 2);
+      leakLight.position.set(1.2, -1.6, 0.4);
+      scene.add(leakLight);
 
-      animate3D();
-    }
+      sensorLight = new THREE.PointLight(0x00f5ff, 2.5, 3.5, 2);
+      sensorLight.position.set(-2, 2.1, -1);
+      scene.add(sensorLight);
 
-    function buildTupperwareMockup() {
-      // 1. BASE: Tupperware y Arena
-      baseGroup = new THREE.Group();
-      scene.add(baseGroup);
+      // Grid Base
+      const gridHelper = new THREE.GridHelper(28, 28, 0x0d2030, 0x081520);
+      gridHelper.position.y = 1.51;
+      scene.add(gridHelper);
 
-      // Tupperware (Caja transparente)
-      const tupperGeo = new THREE.BoxGeometry(12, 4, 10);
-      const tupperMat = new THREE.MeshPhysicalMaterial({
-        color: 0x88ccff, transparent: true, opacity: 0.25, side: THREE.DoubleSide
-      });
-      const tupper = new THREE.Mesh(tupperGeo, tupperMat);
-      baseGroup.add(tupper);
+      // 1. TERRENO (Arquitectónico)
+      const soilMat = new THREE.MeshPhysicalMaterial({ color: 0x4a3e2e, roughness: 0.92 });
+      const soilBlock = new THREE.Mesh(new THREE.BoxGeometry(12, 4, 6), soilMat);
+      soilBlock.position.set(0, -0.5, 0);
+      soilBlock.receiveShadow = true;
+      scene.add(soilBlock);
 
-      // Arena (Bloque sólido interior)
-      const sandGeo = new THREE.BoxGeometry(11.8, 2.5, 9.8);
-      const sandMat = new THREE.MeshLambertMaterial({ color: 0xd4a373 });
-      const sand = new THREE.Mesh(sandGeo, sandMat);
-      sand.position.y = -0.7; // Enterrado
-      baseGroup.add(sand);
+      // 2. TUBERÍA HDPE
+      const pipeMat = new THREE.MeshPhysicalMaterial({ color: 0x1a2530, roughness: 0.45, metalness: 0.25, clearcoat: 0.6 });
+      const pipeBody = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 14, 32), pipeMat);
+      pipeBody.position.set(0, -0.9, 0);
+      pipeBody.rotation.z = Math.PI/2;
+      pipeBody.castShadow = true;
+      scene.add(pipeBody);
 
-      // 2. PIPE: Tubo PVC y Fuga de agua
-      pipeGroup = new THREE.Group();
-      scene.add(pipeGroup);
+      // 3. FUGA SUBTERRÁNEA
+      leakPos = new THREE.Vector3(1.2, -1.55, 0.4);
+      const leakMat = new THREE.MeshPhysicalMaterial({ color: 0x00d8f0, emissive: 0x00c8e8, emissiveIntensity: 1.8, transmission: 0.75, transparent: true, opacity: 0.85 });
+      leakMain = new THREE.Mesh(new THREE.SphereGeometry(0.55, 32, 32), leakMat);
+      leakMain.position.copy(leakPos);
+      scene.add(leakMain);
 
-      const pipeGeo = new THREE.CylinderGeometry(0.3, 0.3, 10, 16);
-      const pipeMat = new THREE.MeshLambertMaterial({ color: 0xbdc3c7 });
-      const pipe = new THREE.Mesh(pipeGeo, pipeMat);
-      pipe.rotation.z = Math.PI / 2;
-      pipe.position.set(0, 0.6, 1.5);
-      pipeGroup.add(pipe);
+      const haloMat = new THREE.MeshPhysicalMaterial({ color:0x00f5ff, emissive:0x00e0ff, emissiveIntensity:0.9, transparent:true, opacity:0.18, side: THREE.BackSide });
+      leakHalo = new THREE.Mesh(new THREE.SphereGeometry(0.85, 24, 24), haloMat);
+      leakHalo.position.copy(leakPos);
+      scene.add(leakHalo);
 
-      // Fuga de agua (Esfera azul aplastada simulando humedad)
-      const leakGeo = new THREE.SphereGeometry(1.2, 16, 16);
-      const leakMat = new THREE.MeshPhysicalMaterial({ color: 0x3498db, transparent: true, opacity: 0.8 });
-      leakMesh = new THREE.Mesh(leakGeo, leakMat);
-      leakMesh.position.set(2, 0.6, 1.5);
-      leakMesh.scale.y = 0.4; // Aplastado en la arena
-      pipeGroup.add(leakMesh);
+      wfSphere = new THREE.Mesh(new THREE.SphereGeometry(1.1, 12, 8), new THREE.MeshBasicMaterial({ color:0x00f5ff, wireframe:true, transparent:true, opacity:0.09 }));
+      wfSphere.position.copy(leakPos);
+      scene.add(wfSphere);
 
-      // 3. TANK: Botella invertida
-      tankGroup = new THREE.Group();
-      scene.add(tankGroup);
+      // 4. MÓDULO PURIFICACIÓN (Tanque Inox/Cristal)
+      const TX = -2, TY = 1.5, TZ = -1;
+      
+      const metalMat = new THREE.MeshPhysicalMaterial({ color: 0xb8c4cc, roughness: 0.28, metalness: 0.95, clearcoat: 0.7 });
+      const tankMetal = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.72, 1.0, 40), metalMat);
+      tankMetal.position.set(TX, TY - 0.5, TZ);
+      tankMetal.castShadow = true;
+      scene.add(tankMetal);
 
-      const tankGeo = new THREE.CylinderGeometry(1.5, 1.5, 4, 32);
-      const tankMat = new THREE.MeshPhysicalMaterial({ color: 0x2980b9, transparent: true, opacity: 0.7 });
-      const tank = new THREE.Mesh(tankGeo, tankMat);
-      tank.position.set(-4, 2, -2);
-      tankGroup.add(tank);
+      const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x88c8e8, transmission: 0.88, transparent: true, opacity: 0.55, ior: 1.5, side: THREE.DoubleSide });
+      const tankGlass = new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.70, 1.0, 40), glassMat);
+      tankGlass.position.set(TX, TY + 0.5, TZ);
+      scene.add(tankGlass);
 
-      // 4. SENSOR: Placa Arduino y Cono de escaneo
+      waterMat = new THREE.MeshPhysicalMaterial({ color: 0x0088bb, emissive: 0x003860, emissiveIntensity: 0.7, transmission: 0.82, transparent: true, opacity: 0.7 });
+      waterInside = new THREE.Mesh(new THREE.CylinderGeometry(0.60, 0.62, 0.85, 36), waterMat);
+      waterInside.position.set(TX, TY + 0.5, TZ);
+      scene.add(waterInside);
+
+      ripple = new THREE.Mesh(new THREE.CircleGeometry(0.60, 36), new THREE.MeshPhysicalMaterial({ color:0x40d0ff, emissive:0x1080a0, emissiveIntensity:0.5, transparent:true, opacity:0.6, side:THREE.DoubleSide }));
+      ripple.position.set(TX, TY+0.9, TZ);
+      ripple.rotation.x = -Math.PI/2;
+      scene.add(ripple);
+
+      // 5. SENSOR IoT SMART WATER
       sensorGroup = new THREE.Group();
+      sensorPos = new THREE.Vector3(TX, TY + 1.55, TZ);
+      
+      const sensorBody = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.45, 24), new THREE.MeshPhysicalMaterial({ color: 0x1c2535, metalness: 0.65, clearcoat: 0.9 }));
+      sensorBody.position.copy(sensorPos);
+      sensorGroup.add(sensorBody);
+      
+      // Anillo LED
+      const ledRing = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.018, 12, 36), new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00e8ff, emissiveIntensity: 2.5 }));
+      ledRing.position.set(TX, TY + 1.6, TZ);
+      ledRing.rotation.x = Math.PI/2;
+      ledRing.userData.isLed = true;
+      sensorGroup.add(ledRing);
       scene.add(sensorGroup);
 
-      // Arduino Board
-      const arduinoGeo = new THREE.BoxGeometry(1.0, 0.2, 0.8);
-      const arduinoMat = new THREE.MeshLambertMaterial({ color: 0x27ae60 });
-      const arduino = new THREE.Mesh(arduinoGeo, arduinoMat);
-      arduino.position.set(-4, 4.3, -2);
-      sensorGroup.add(arduino);
+      // 6. HAZ ESCÁNER HOLOGRÁFICO
+      scanGroup = new THREE.Group();
+      const coneDir = leakPos.clone().sub(sensorPos);
+      const coneLen = coneDir.length();
+      const midPt = sensorPos.clone().lerp(leakPos, 0.5);
 
-      // LED Titilante (Alerta)
-      arduinoLed = new THREE.Mesh(
-        new THREE.SphereGeometry(0.15, 8, 8),
-        new THREE.MeshStandardMaterial({ color: 0xe74c3c, emissive: 0xe74c3c })
-      );
-      arduinoLed.position.set(-3.7, 4.5, -1.8);
-      sensorGroup.add(arduinoLed);
+      const scanMat = new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00d8f0, emissiveIntensity: 0.7, transparent:true, opacity: 0.08, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false });
+      scanCone = new THREE.Mesh(new THREE.ConeGeometry(0.80, coneLen, 32, 1, true), scanMat);
+      scanCone.position.copy(midPt);
+      scanCone.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), coneDir.clone().normalize());
+      scanGroup.add(scanCone);
 
-      // Cono de escaneo (Para que el profe entienda cómo "lee" los datos)
-      const scanGeo = new THREE.ConeGeometry(2, 3.5, 16, 1, true);
-      const scanMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.2, side: THREE.DoubleSide, blending: THREE.AdditiveBlending });
-      scannerMesh = new THREE.Mesh(scanGeo, scanMat);
-      scannerMesh.position.set(-4, 2.5, -2); // Apuntando hacia el tanque
-      sensorGroup.add(scannerMesh);
-    }
+      const innerMat = new THREE.MeshPhysicalMaterial({ color:0x00f5ff, emissive:0x00e8ff, emissiveIntensity:1.2, transparent:true, opacity:0.12, side:THREE.DoubleSide, blending:THREE.AdditiveBlending, depthWrite:false });
+      innerCone = new THREE.Mesh(new THREE.ConeGeometry(0.28, coneLen, 24, 1, true), innerMat);
+      innerCone.position.copy(midPt);
+      innerCone.quaternion.copy(scanCone.quaternion);
+      scanGroup.add(innerCone);
 
-    let targetCameraPos = null;
-    let targetLookAt = null;
+      originDisc = new THREE.Mesh(new THREE.CircleGeometry(0.35, 24), new THREE.MeshPhysicalMaterial({ color:0x00f5ff, emissive:0x00d8ff, emissiveIntensity:1.5, transparent:true, opacity:0.35, side:THREE.DoubleSide, blending:THREE.AdditiveBlending }));
+      originDisc.position.set(TX, TY + 1.33, TZ);
+      originDisc.rotation.x = -Math.PI/2;
+      scene.add(originDisc);
+      scene.add(scanGroup);
 
-    // Función para manejar el HUD de los botones
-    function focusPart(part) {
-      // 1. Activar Botón
-      document.querySelectorAll('.part-btn').forEach(b => b.classList.remove('active-part'));
-      event.currentTarget.classList.add('active-part');
+      // Estrellas
+      const starGeo = new THREE.BufferGeometry();
+      const starPos = new Float32Array(900 * 3);
+      for (let i=0; i<900*3; i++) starPos[i] = (Math.random() - 0.5) * 160;
+      starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+      scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color:0x88aacc, size:0.04, transparent:true, opacity:0.35 })));
 
-      // 2. Actualizar Textos del Panel
-      const info = partInfo[part];
-      document.getElementById('info-title').textContent = info.title;
-      document.getElementById('info-body').textContent = info.body;
-      document.getElementById('spec-mat').textContent = info.mat;
-      document.getElementById('spec-obj').textContent = info.obj;
-
-      // 3. Mostrar Panel
-      const panel = document.getElementById('hud-info-panel');
-      panel.classList.remove('visible');
-      setTimeout(() => panel.classList.add('visible'), 50);
-
-      // 4. Cambiar Cámara Suavemente
-      const cp = cameraPositions[part];
-      targetCameraPos = new THREE.Vector3(...cp.pos);
-      targetLookAt    = new THREE.Vector3(...cp.target);
-
-      // 5. Opacidad Dinámica para destacar (Opcional)
-      const allGroups = [baseGroup, pipeGroup, tankGroup, sensorGroup];
-      const groupMap = { base: baseGroup, pipe: pipeGroup, tank: tankGroup, sensor: sensorGroup };
-
-      if (part === 'all') {
-        allGroups.forEach(g => setGroupOpacity(g, 1.0));
-      } else {
-        allGroups.forEach(g => setGroupOpacity(g, 0.2));
-        setGroupOpacity(groupMap[part], 1.0);
-      }
-    }
-
-    function setGroupOpacity(group, opacity) {
-      group.traverse(child => {
-        if (child.isMesh && child.material) {
-          child.material.transparent = opacity < 1.0 || child.material.opacity !== 1.0;
-          child.material.opacity = opacity;
+      animate3D();
+      
+      window.addEventListener('resize', () => {
+        if(document.getElementById('mockup-view').classList.contains('active')){
+          const w = container.clientWidth; const h = container.clientHeight;
+          camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h);
         }
       });
     }
@@ -608,40 +619,34 @@
       requestAnimationFrame(animate3D);
       const t = clock.getElapsedTime();
 
-      // Animaciones constantes de los elementos de la maqueta
-      if (leakMesh) {
-        // La fuga palpita simulando el agua saliendo
-        leakMesh.scale.x = 1 + Math.sin(t * 2) * 0.05;
-        leakMesh.scale.z = 1 + Math.sin(t * 2) * 0.05;
-      }
-      if (arduinoLed) {
-        // LED parpadea en rojo (alerta de caída de presión)
-        const pulse = (Math.sin(t * 6) + 1) / 2;
-        arduinoLed.material.emissiveIntensity = 0.5 + pulse;
-      }
-      if (scannerMesh) {
-        // El escáner pulsa sutilmente
-        scannerMesh.material.opacity = 0.15 + (Math.sin(t * 4) * 0.05);
-      }
-
-      // Transición suave de la cámara si se hizo click en un botón
-      if (targetCameraPos) {
-        camera.position.lerp(targetCameraPos, 0.05);
-        controls.target.lerp(targetLookAt, 0.05);
-      }
+      // Animaciones Materiales Premium
+      const ledPulse = 0.5 + 0.5 * Math.sin(t * 4.5);
       
+      sensorGroup.children.forEach(c => {
+        if(c.userData.isLed && c.material) {
+          c.material.emissiveIntensity = 1.5 + ledPulse * 2.0;
+        }
+      });
+
+      sensorLight.intensity = 1.5 + 2.0 * ledPulse;
+      
+      const leakPulse = 0.4 + 0.6 * Math.sin(t * 2.8 + 1.2);
+      leakMain.material.emissiveIntensity = 1.2 + leakPulse * 1.5;
+      leakHalo.scale.setScalar(1.0 + 0.12 * Math.sin(t * 2.0));
+      wfSphere.rotation.y += 0.003; wfSphere.rotation.x += 0.001;
+
+      const scanPulse = 0.5 + 0.5 * Math.sin(t * 3.0);
+      scanCone.material.opacity = 0.05 + scanPulse * 0.07;
+      innerCone.material.opacity = 0.08 + scanPulse * 0.10;
+      originDisc.material.opacity = 0.2 + 0.2 * scanPulse;
+      originDisc.scale.setScalar(1 + 0.15 * Math.sin(t * 3.5));
+
+      ripple.rotation.z += 0.008;
+      ripple.scale.setScalar(1 + 0.04 * Math.sin(t * 1.8));
+      waterMat.emissiveIntensity = 0.5 + 0.3 * Math.sin(t * 2.2);
+
       controls.update();
       renderer.render(scene, camera);
-    }
-
-    function resize3D() {
-      const container = document.getElementById('three-canvas-container');
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      if (w === 0 || h === 0) return;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
     }
   </script>
 </body>
