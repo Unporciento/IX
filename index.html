@@ -6,127 +6,193 @@
 <title>SHIPA · Sistema Hídrico Inteligente · Playa La Virgen</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap');
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --c:#00f5ff;--c2:#00a8b8;--r:#ff2a2a;--g:#00ff88;--go:#e8c44a;
-  --bg:#020609;--panel:rgba(2,12,22,0.88);--bdr:rgba(0,245,255,0.15);
-  --mono:'Share Tech Mono',monospace;--ui:'Rajdhani',sans-serif;--title:'Orbitron',sans-serif
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --c: #00f5ff;
+  --c2: #00a8b8;
+  --r: #ff2a2a;
+  --g: #00ff88;
+  --go: #e8c44a;
+  --bg: #020609;
+  --panel: rgba(2, 12, 22, 0.88);
+  --bdr: rgba(0, 245, 255, 0.15);
+  --mono: 'Share Tech Mono', monospace;
+  --ui: 'Rajdhani', sans-serif;
+  --title: 'Orbitron', sans-serif;
 }
-html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-family:var(--ui);color:var(--c)}
-canvas{display:block;position:fixed;top:0;left:0;z-index:1; outline: none;}
 
-/* HUD GENERAL */
-#hud{position:fixed;inset:0;z-index:10;pointer-events:none}
-#hud::before{content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.055) 3px,rgba(0,0,0,0.055) 4px);
-  pointer-events:none;z-index:1}
-#hud::after{content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 75% 75% at 50% 50%,transparent 40%,rgba(1,4,10,0.92) 100%);
-  pointer-events:none}
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+  font-family: var(--ui);
+  color: var(--c);
+}
 
-/* Esquinas (Corner Brackets) */
-.brk{position:absolute;width:52px;height:52px;border-color:var(--c);border-style:solid;opacity:.6;
-  animation:brk-pulse 3s ease-in-out infinite}
-.brk.tl{top:14px;left:14px;border-width:2px 0 0 2px}
-.brk.tr{top:14px;right:14px;border-width:2px 2px 0 0}
-.brk.bl{bottom:14px;left:14px;border-width:0 0 2px 2px}
-.brk.br{bottom:14px;right:14px;border-width:0 2px 2px 0}
-@keyframes brk-pulse{0%,100%{opacity:.55}50%{opacity:.9}}
+canvas {
+  display: block; position: fixed; top: 0; left: 0; z-index: 1; outline: none;
+}
 
-/* Barra Superior */
-#topbar{position:absolute;top:0;left:0;right:0;height:56px;
-  background:linear-gradient(180deg,rgba(1,8,18,0.97) 0%,transparent 100%);
-  display:flex;align-items:center;justify-content:space-between;padding:0 22px;
-  border-bottom:1px solid var(--bdr);z-index:5}
-.logo-wrap{display:flex;align-items:baseline;gap:12px}
-.logo{font-family:var(--title);font-size:22px;font-weight:900;letter-spacing:6px;color:#fff;
-  text-shadow:0 0 24px var(--c),0 0 48px rgba(0,245,255,.3)}
-.logo em{color:var(--c);font-style:normal}
-.sub{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(0,245,255,.45);line-height:1.4}
-.pills{display:flex;gap:10px;align-items:center}
-.pill{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;padding:3px 11px;border-radius:2px;border:1px solid}
-.pill.ok{border-color:var(--g);color:var(--g);background:rgba(0,255,136,.06)}
-.pill.warn{border-color:var(--r);color:var(--r);background:rgba(255,42,42,.06);animation:blink 1s step-end infinite}
-.pill.info{border-color:var(--c);color:var(--c);background:rgba(0,245,255,.06)}
-@keyframes blink{50%{opacity:0}}
+/* ── HUD PRINCIPAL ───────────────────────────────────────────────────────── */
+#hud {
+  position: fixed; inset: 0; z-index: 10; pointer-events: none;
+}
+#hud::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.055) 3px, rgba(0,0,0,0.055) 4px);
+  pointer-events: none; z-index: 1;
+}
+#hud::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 75% 75% at 50% 50%, transparent 40%, rgba(1,4,10,0.92) 100%);
+  pointer-events: none;
+}
 
-/* Barra Inferior */
-#botbar{position:absolute;bottom:0;left:0;right:0;height:38px;
-  background:linear-gradient(0deg,rgba(1,8,18,0.95) 0%,transparent 100%);
-  display:flex;align-items:center;justify-content:center;gap:40px;
-  border-top:1px solid var(--bdr);z-index:5}
-.hint{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:rgba(0,245,255,.3)}
-.hint b{color:rgba(0,245,255,.6)}
+/* Esquinas de mira (Brackets) */
+.brk {
+  position: absolute; width: 52px; height: 52px; border-color: var(--c); border-style: solid; opacity: .6;
+  animation: brk-pulse 3s ease-in-out infinite;
+}
+.brk.tl { top: 14px; left: 14px; border-width: 2px 0 0 2px; }
+.brk.tr { top: 14px; right: 14px; border-width: 2px 2px 0 0; }
+.brk.bl { bottom: 14px; left: 14px; border-width: 0 0 2px 2px; }
+.brk.br { bottom: 14px; right: 14px; border-width: 0 2px 2px 0; }
+@keyframes brk-pulse { 0%, 100% { opacity: .55; } 50% { opacity: .9; } }
 
-/* Paneles Laterales */
-#panel-l{position:absolute;top:70px;left:14px;width:252px;
-  background:var(--panel);border:1px solid var(--bdr);border-radius:3px;
-  padding:16px 18px;backdrop-filter:blur(14px);z-index:5}
-#panel-r{position:absolute;top:70px;right:14px;width:236px;
-  background:var(--panel);border:1px solid var(--bdr);border-radius:3px;
-  padding:16px 18px;backdrop-filter:blur(14px);z-index:5}
-.p-title{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:rgba(0,245,255,.45);
-  text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.p-title::before{content:'';display:inline-block;width:3px;height:12px;background:var(--c);
-  box-shadow:0 0 8px var(--c)}
+/* ── BARRA SUPERIOR ──────────────────────────────────────────────────────── */
+#topbar {
+  position: absolute; top: 0; left: 0; right: 0; height: 56px;
+  background: linear-gradient(180deg, rgba(1,8,18,0.97) 0%, transparent 100%);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 22px;
+  border-bottom: 1px solid var(--bdr); z-index: 5;
+}
+.logo-wrap { display: flex; align-items: baseline; gap: 12px; }
+.logo {
+  font-family: var(--title); font-size: 22px; font-weight: 900; letter-spacing: 6px; color: #fff;
+  text-shadow: 0 0 24px var(--c), 0 0 48px rgba(0,245,255,.3);
+}
+.logo em { color: var(--c); font-style: normal; }
+.sub { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: rgba(0,245,255,.45); line-height: 1.4; }
 
-/* Filas de Datos */
-.row{display:flex;justify-content:space-between;align-items:flex-end;
-  margin-bottom:9px;padding-bottom:8px;border-bottom:1px solid rgba(0,245,255,.07)}
-.row:last-child{border-bottom:none;margin-bottom:0}
-.lbl{font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.38);font-family:var(--mono);line-height:1.6}
-.val{font-family:var(--mono);font-size:14px;font-weight:700}
-.val.ok{color:var(--g)}.val.warn{color:var(--r)}.val.info{color:var(--c)}.val.gold{color:var(--go)}.val.pur{color:#b080ff}
-
-/* Barras de Medición */
-.bar{width:100%;height:3px;background:rgba(255,255,255,.05);border-radius:2px;margin-top:4px}
-.bar-f{height:100%;border-radius:2px}
-
-/* Leyenda */
-#legend{position:absolute;bottom:50px;left:14px;
-  background:var(--panel);border:1px solid var(--bdr);border-radius:3px;
-  padding:12px 16px;backdrop-filter:blur(14px);z-index:5}
-.leg{display:flex;align-items:center;gap:9px;margin-bottom:6px}
-.leg:last-child{margin-bottom:0}
-.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.leg-txt{font-family:var(--mono);font-size:8.5px;letter-spacing:1px;color:rgba(255,255,255,.45)}
-
-/* Consola de Alertas */
-#alerts{position:absolute;bottom:50px;right:14px;width:236px;z-index:5}
-.al{font-family:var(--mono);font-size:8.5px;letter-spacing:.8px;
-  padding:4px 9px;margin-bottom:3px;border-left:2px solid;
-  background:rgba(0,0,0,.5);animation:alin .35s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-@keyframes alin{from{opacity:0;transform:translateX(6px)}to{opacity:1;transform:none}}
-.al.c{border-color:var(--c);color:rgba(0,245,255,.7)}
-.al.w{border-color:var(--r);color:rgba(255,42,42,.8)}
-.al.g{border-color:var(--g);color:rgba(0,255,136,.7)}
-.al.o{border-color:var(--go);color:rgba(232,196,74,.75)}
-
-/* Coordenadas Centrales */
-#coord{position:absolute;bottom:50px;left:50%;transform:translateX(-50%);
-  font-family:var(--mono);font-size:9px;letter-spacing:1.5px;
-  color:rgba(0,245,255,.28);z-index:5}
+.pills { display: flex; gap: 10px; align-items: center; }
+.pill { font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; padding: 3px 11px; border-radius: 2px; border: 1px solid; }
+.pill.ok { border-color: var(--g); color: var(--g); background: rgba(0,255,136,.06); }
+.pill.warn { border-color: var(--r); color: var(--r); background: rgba(255,42,42,.06); animation: blink 1s step-end infinite; }
+.pill.info { border-color: var(--c); color: var(--c); background: rgba(0,245,255,.06); }
+@keyframes blink { 50% { opacity: 0; } }
 
 /* Anillo de Estado (Status Ring) */
-#status-ring{position:absolute;top:68px;left:50%;transform:translateX(-50%);
-  display:flex;gap:6px;z-index:5;align-items:center}
-.sring{width:6px;height:6px;border-radius:50%;background:var(--g);
-  box-shadow:0 0 6px var(--g);animation:sring 2s ease-in-out infinite}
-.sring:nth-child(2){animation-delay:.3s;background:var(--c);box-shadow:0 0 6px var(--c)}
-.sring:nth-child(3){animation-delay:.6s}
-.sring:nth-child(4){animation-delay:.9s;background:var(--r);box-shadow:0 0 6px var(--r)}
-.sring:nth-child(5){animation-delay:1.2s;background:var(--go);box-shadow:0 0 6px var(--go)}
-@keyframes sring{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
-.sring-label{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:rgba(0,245,255,.3);margin:0 6px}
+#status-ring {
+  position: absolute; top: 68px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 6px; z-index: 5; align-items: center;
+}
+.sring { width: 6px; height: 6px; border-radius: 50%; background: var(--g); box-shadow: 0 0 6px var(--g); animation: sring 2s ease-in-out infinite; }
+.sring:nth-child(2) { animation-delay: .3s; background: var(--c); box-shadow: 0 0 6px var(--c); }
+.sring:nth-child(3) { animation-delay: .6s; }
+.sring:nth-child(4) { animation-delay: .9s; background: var(--r); box-shadow: 0 0 6px var(--r); }
+.sring:nth-child(5) { animation-delay: 1.2s; background: var(--go); box-shadow: 0 0 6px var(--go); }
+@keyframes sring { 0%, 100% { opacity: .3; transform: scale(.8); } 50% { opacity: 1; transform: scale(1); } }
+.sring-label { font-family: var(--mono); font-size: 8px; letter-spacing: 2px; color: rgba(0,245,255,.3); margin: 0 6px; }
 
-/* Display 3D Flotante */
-#depth-display{position:absolute;top:50%;right:265px;transform:translateY(-50%);text-align:right;z-index:5}
-#depth-num{font-family:var(--title);font-size:38px;font-weight:700;
-  color:var(--c);text-shadow:0 0 30px var(--c),0 0 60px rgba(0,245,255,.4);line-height:1}
-#depth-lbl{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(0,245,255,.45)}
+/* ── PANELES LATERALES ───────────────────────────────────────────────────── */
+.panel-side {
+  position: absolute; top: 70px; background: var(--panel); border: 1px solid var(--bdr);
+  border-radius: 3px; padding: 16px 18px; backdrop-filter: blur(14px); z-index: 5;
+}
+#panel-l { left: 14px; width: 252px; }
+#panel-r { right: 14px; width: 236px; }
+
+.p-title {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 3px; color: rgba(0,245,255,.45);
+  text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.p-title::before { content: ''; display: inline-block; width: 3px; height: 12px; background: var(--c); box-shadow: 0 0 8px var(--c); }
+
+.row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 9px; padding-bottom: 8px; border-bottom: 1px solid rgba(0,245,255,.07); }
+.row:last-child { border-bottom: none; margin-bottom: 0; }
+.lbl { font-size: 9px; letter-spacing: 1px; color: rgba(255,255,255,.38); font-family: var(--mono); line-height: 1.6; }
+.val { font-family: var(--mono); font-size: 14px; font-weight: 700; }
+.val.ok { color: var(--g); } .val.warn { color: var(--r); } .val.info { color: var(--c); } .val.gold { color: var(--go); } .val.pur { color: #b080ff; }
+
+.bar { width: 100%; height: 3px; background: rgba(255,255,255,.05); border-radius: 2px; margin-top: 4px; }
+.bar-f { height: 100%; border-radius: 2px; }
+
+/* ── ELEMENTOS INFERIORES ────────────────────────────────────────────────── */
+#depth-display {
+  position: absolute; top: 50%; right: 265px; transform: translateY(-50%); text-align: right; z-index: 5;
+}
+#depth-num {
+  font-family: var(--title); font-size: 38px; font-weight: 700; color: var(--c);
+  text-shadow: 0 0 30px var(--c), 0 0 60px rgba(0,245,255,.4); line-height: 1;
+}
+#depth-lbl { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: rgba(0,245,255,.45); }
+
+#legend {
+  position: absolute; bottom: 50px; left: 14px; background: var(--panel); border: 1px solid var(--bdr);
+  border-radius: 3px; padding: 12px 16px; backdrop-filter: blur(14px); z-index: 5;
+}
+.leg { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
+.leg:last-child { margin-bottom: 0; }
+.leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.leg-txt { font-family: var(--mono); font-size: 8.5px; letter-spacing: 1px; color: rgba(255,255,255,.45); }
+
+#alerts { position: absolute; bottom: 50px; right: 14px; width: 236px; z-index: 5; }
+.al {
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: .8px; padding: 4px 9px; margin-bottom: 3px;
+  border-left: 2px solid; background: rgba(0,0,0,.5); animation: alin .35s ease;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+@keyframes alin { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: none; } }
+.al.c { border-color: var(--c); color: rgba(0,245,255,.7); }
+.al.w { border-color: var(--r); color: rgba(255,42,42,.8); }
+.al.g { border-color: var(--g); color: rgba(0,255,136,.7); }
+.al.o { border-color: var(--go); color: rgba(232,196,74,.75); }
+
+#coord {
+  position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+  font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; color: rgba(0,245,255,.28); z-index: 5;
+}
+
+#botbar {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 38px;
+  background: linear-gradient(0deg, rgba(1,8,18,0.95) 0%, transparent 100%);
+  display: flex; align-items: center; justify-content: center; gap: 40px;
+  border-top: 1px solid var(--bdr); z-index: 5;
+}
+.hint { font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; color: rgba(0,245,255,.3); }
+.hint b { color: rgba(0,245,255,.6); }
+
+/* Crosshair Decorativo */
+#crosshair {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 200px; height: 200px; pointer-events: none; opacity: 0.08;
+  background: 
+    linear-gradient(to right, transparent 49%, var(--c) 49%, var(--c) 51%, transparent 51%),
+    linear-gradient(to bottom, transparent 49%, var(--c) 49%, var(--c) 51%, transparent 51%);
+  border-radius: 50%; border: 1px solid var(--c); z-index: 2;
+}
+#crosshair::after {
+  content: ''; position: absolute; inset: 20px; border-radius: 50%; border: 1px dashed var(--c);
+}
+
+@media (max-width: 768px) {
+  #panel-l, #panel-r, #legend, #alerts, #status-ring { display: none; }
+  .logo-wrap { flex-direction: column; gap: 2px; }
+  .sub { font-size: 7px; }
+  .pills { transform: scale(0.8); transform-origin: right center; }
+  #botbar { gap: 15px; }
+  .hint { font-size: 7px; }
+}
 </style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
+
+<div id="crosshair"></div>
 
 <div id="hud">
   <div class="brk tl"></div><div class="brk tr"></div>
@@ -135,7 +201,7 @@ canvas{display:block;position:fixed;top:0;left:0;z-index:1; outline: none;}
   <div id="topbar">
     <div class="logo-wrap">
       <div class="logo">S<em>H</em>IPA</div>
-      <div class="sub">SISTEMA HÍDRICO INTELIGENTE<br>PLAYA LA VIRGEN · REV 2.4.1</div>
+      <div class="sub">SISTEMA HÍDRICO INTELIGENTE<br>PLAYA LA VIRGEN · MOCK-UP 3D</div>
     </div>
     <div class="pills">
       <div class="pill ok">● SENSOR ACTIVO</div>
@@ -152,7 +218,7 @@ canvas{display:block;position:fixed;top:0;left:0;z-index:1; outline: none;}
     <span class="sring-label">SHIPA</span>
   </div>
 
-  <div id="panel-l">
+  <div id="panel-l" class="panel-side">
     <div class="p-title">Telemetría Hídrica</div>
     <div class="row">
       <div class="lbl">PRESIÓN RED HDPE<div class="bar"><div class="bar-f" style="width:72%;background:var(--r)"></div></div></div>
@@ -178,9 +244,13 @@ canvas{display:block;position:fixed;top:0;left:0;z-index:1; outline: none;}
       <div class="lbl">FLUJO NETO<div class="bar"><div class="bar-f" style="width:55%;background:#b080ff"></div></div></div>
       <div class="val pur">320 L/h</div>
     </div>
+    <div class="row">
+      <div class="lbl">CONDUCTIVIDAD<div class="bar"><div class="bar-f" style="width:78%;background:var(--c)"></div></div></div>
+      <div class="val info">1840 µS</div>
+    </div>
   </div>
 
-  <div id="panel-r">
+  <div id="panel-r" class="panel-side">
     <div class="p-title">Escáner Holográfico</div>
     <div class="row"><div class="lbl">PROFUNDIDAD SCAN</div><div class="val info" id="scan-d">-2.40 m</div></div>
     <div class="row"><div class="lbl">ANOMALÍA Δσ</div><div class="val warn">+18.7 mS/cm</div></div>
@@ -198,19 +268,19 @@ canvas{display:block;position:fixed;top:0;left:0;z-index:1; outline: none;}
   </div>
 
   <div id="legend">
-    <div class="leg"><div class="leg-dot" style="background:#5a4e3c"></div><div class="leg-txt">CORTE TERRENO · Arena Salina Costera</div></div>
-    <div class="leg"><div class="leg-dot" style="background:#223040"></div><div class="leg-txt">TUBERÍA HDPE Ø110mm PE100 PN16</div></div>
-    <div class="leg"><div class="leg-dot" style="background:#00f5ff; box-shadow: 0 0 8px #00f5ff;"></div><div class="leg-txt">FUGA SUBTERRÁNEA · Anomalía Detectada</div></div>
-    <div class="leg"><div class="leg-dot" style="background:#b8c4cc"></div><div class="leg-txt">MÓDULO PURIFICACIÓN · Acero AISI 316</div></div>
-    <div class="leg"><div class="leg-dot" style="background:#e8c44a"></div><div class="leg-txt">SENSOR IoT SMART WATER · 2.4GHz</div></div>
-    <div class="leg"><div class="leg-dot" style="background:rgba(0,245,255,0.35)"></div><div class="leg-txt">HAZ ESCÁNER HOLOGRÁFICO · ERT</div></div>
+    <div class="leg"><div class="leg-dot" style="background:#4a3e2e"></div><div class="leg-txt">CORTE TERRENO · Arena Costera</div></div>
+    <div class="leg"><div class="leg-dot" style="background:#1a2530"></div><div class="leg-txt">TUBERÍA HDPE Ø110mm PE100</div></div>
+    <div class="leg"><div class="leg-dot" style="background:#00f5ff; box-shadow:0 0 5px #00f5ff"></div><div class="leg-txt">FUGA SUBTERRÁNEA DETECTADA</div></div>
+    <div class="leg"><div class="leg-dot" style="background:#b8c4cc"></div><div class="leg-txt">MÓDULO PURIFICACIÓN · AISI 316</div></div>
+    <div class="leg"><div class="leg-dot" style="background:#1c2535; border:1px solid #00f5ff"></div><div class="leg-txt">SENSOR IoT SMART WATER</div></div>
+    <div class="leg"><div class="leg-dot" style="background:rgba(0,245,255,0.35)"></div><div class="leg-txt">HAZ ESCÁNER HOLOGRÁFICO</div></div>
   </div>
 
   <div id="alerts">
     <div class="al w">[WARN] Anomalía hídrica Z=-2.4m · HDPE-03</div>
     <div class="al c">[SCAN] Haz holográfico activo · 97.3% conf</div>
     <div class="al g">[OK]   Módulo purif · Q=320L/h · activo</div>
-    <div class="al o">[DATA] GPS sync · -29.9S 71.2W · OK</div>
+    <div class="al o">[DATA] GPS sync · 29.9S 71.2W · OK</div>
     <div class="al c">[IoT]  Heartbeat 2.4GHz · latencia 12ms</div>
   </div>
 
@@ -219,82 +289,87 @@ canvas{display:block;position:fixed;top:0;left:0;z-index:1; outline: none;}
   <div id="botbar">
     <div class="hint"><b>DRAG</b> Rotar</div>
     <div class="hint"><b>SCROLL</b> Zoom</div>
-    <div class="hint"><b>RIGHT DRAG</b> Pan</div>
-    <div class="hint"><b>SPACE</b> Auto-Rotate</div>
-    <div class="hint">SHIPA 2026 · Innovación Hídrica</div>
+    <div class="hint"><b>RIGHT DRAG</b> Panear</div>
+    <div class="hint"><b>SPACE</b> Auto-Rotación</div>
   </div>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
 <script>
 (function(){
 'use strict';
 
-// ─── RENDERER Y SETUP ──────────────────────────────────────────
-const renderer = new THREE.WebGLRenderer({antialias:true, powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+// ── SETUP INICIAL ──────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance', alpha: false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.15;
-renderer.setClearColor(0x020508,1);
+renderer.setClearColor(0x020509, 1);
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x020509, 0.025);
+scene.fog = new THREE.FogExp2(0x020509, 0.038);
 
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 200);
-camera.position.set(10, 8, 12);
-camera.lookAt(0,0,0);
+const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 500);
+camera.position.set(10, 8, 14);
+camera.lookAt(0, 0, 0);
 
-// Controles nativos
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.maxPolarAngle = Math.PI * 0.78;
+controls.dampingFactor = 0.06;
 controls.minDistance = 4;
-controls.maxDistance = 28;
-controls.autoRotate = false; // Empezamos en falso para controlarlo luego
+controls.maxDistance = 35;
+controls.maxPolarAngle = Math.PI * 0.75; // Permitir ver un poco por debajo del suelo
+controls.autoRotate = false; // Empezamos sin auto-rotate para control manual
+controls.autoRotateSpeed = 0.8;
 
-// ─── ILUMINACIÓN GLOBAL ────────────────────────────────────────
+// ── ILUMINACIÓN PREMIUM ────────────────────────────────────────────────────
 scene.add(new THREE.AmbientLight(0x0a1520, 0.8));
 
+// Luz principal cálida (Sol)
 const keyLight = new THREE.DirectionalLight(0xdce8ff, 1.8);
-keyLight.position.set(8, 14, 8);
+keyLight.position.set(6, 15, 8);
 keyLight.castShadow = true;
 keyLight.shadow.mapSize.width = 2048;
 keyLight.shadow.mapSize.height = 2048;
+keyLight.shadow.camera.near = 0.5;
+keyLight.shadow.camera.far = 50;
+keyLight.shadow.camera.left = -12;
+keyLight.shadow.camera.right = 12;
+keyLight.shadow.camera.top = 12;
+keyLight.shadow.camera.bottom = -12;
 keyLight.shadow.bias = -0.001;
 scene.add(keyLight);
 
-const fillLight = new THREE.DirectionalLight(0x0050a0, 0.6);
+// Luz de relleno azulada
+const fillLight = new THREE.DirectionalLight(0x0050a0, 0.7);
 fillLight.position.set(-8, 4, -6);
 scene.add(fillLight);
 
+// Luz de recorte cyan
 const rimLight = new THREE.DirectionalLight(0x00f5ff, 0.4);
 rimLight.position.set(0, 2, -10);
 scene.add(rimLight);
 
-const leakLight = new THREE.PointLight(0x00f5ff, 3.5, 8, 2);
-leakLight.position.set(1.5, -1.5, 0.4);
+// Luces puntuales
+const leakLight = new THREE.PointLight(0x00f5ff, 3.5, 7, 2);
+leakLight.position.set(1.2, -1.6, 0.4);
 scene.add(leakLight);
 
-const tankLight = new THREE.PointLight(0x40c8ff, 2.8, 4, 2);
-tankLight.position.set(-2.5, 0.8, -1);
+const tankLight = new THREE.PointLight(0x40c8ff, 2.5, 5, 2);
+tankLight.position.set(-2, 0.8, -1);
 scene.add(tankLight);
 
-// ─── GRIDS DE FONDO ──────────────────────────────────────────
-const gridHelper = new THREE.GridHelper(30, 30, 0x0d2030, 0x081520);
-gridHelper.position.y = 1.51;
-scene.add(gridHelper);
+const sensorLight = new THREE.PointLight(0x00f5ff, 2.0, 4, 2);
+sensorLight.position.set(-2, 2.3, -1);
+scene.add(sensorLight);
 
-// Helper para instanciar rápido
-function mesh(geo, mat, options = {}) {
-  const m = new THREE.Mesh(geo, mat);
+// ── UTILIDADES DE GEOMETRÍA ────────────────────────────────────────────────
+function mesh(geometry, material, options = {}) {
+  const m = new THREE.Mesh(geometry, material);
   m.castShadow = options.cast !== false;
   m.receiveShadow = options.receive !== false;
   if (options.pos) m.position.set(...options.pos);
@@ -302,206 +377,164 @@ function mesh(geo, mat, options = {}) {
   return m;
 }
 
-// ══════════════════════════════════════════════════════════════
-//  1. CORTE DE TERRENO (ARQUITECTURA)
-// ══════════════════════════════════════════════════════════════
+// ── CONSTRUCCIÓN DE LA MAQUETA 3D ──────────────────────────────────────────
+
+// 1. CORTE DE TERRENO (Arquitectónico)
 const groundGroup = new THREE.Group();
 
-const soilMat = new THREE.MeshPhysicalMaterial({ color: 0x4a3e2e, roughness: 0.92 });
-const soilBlock = mesh(new THREE.BoxGeometry(14, 4, 7), soilMat, { pos:[0, -0.5, 0] });
+const soilMat = new THREE.MeshPhysicalMaterial({ color: 0x4a3e2e, roughness: 0.95, metalness: 0.0 });
+const soilBlock = mesh(new THREE.BoxGeometry(12, 4, 6), soilMat, { pos: [0, -0.5, 0] });
 groundGroup.add(soilBlock);
 
-const surfaceMat = new THREE.MeshPhysicalMaterial({ color: 0x8a7a62, roughness: 0.88 });
-const surface = mesh(new THREE.BoxGeometry(14, 0.35, 7), surfaceMat, { pos:[0, 1.52, 0] });
+const surfaceMat = new THREE.MeshPhysicalMaterial({ color: 0x8a7a62, roughness: 0.9, metalness: 0.05 });
+const surface = mesh(new THREE.BoxGeometry(12, 0.35, 6), surfaceMat, { pos: [0, 1.52, 0] });
 groundGroup.add(surface);
 
-// Caras cortadas elegantes
+// Caras de corte limpias
 const cutFaceMat = new THREE.MeshPhysicalMaterial({ color: 0x5e5040, roughness: 0.85 });
-const cutEdgeMat = new THREE.MeshPhysicalMaterial({ color: 0xc8b090, emissive: 0x201810, emissiveIntensity: 0.3 });
+const cutFace = mesh(new THREE.BoxGeometry(0.05, 4, 6), cutFaceMat, { pos: [6.02, -0.5, 0] });
+groundGroup.add(cutFace);
 
-const cutFace1 = mesh(new THREE.BoxGeometry(0.05, 4, 7), cutFaceMat, { pos:[7.02, -0.5, 0] });
-groundGroup.add(cutFace1);
-const cutEdge1 = mesh(new THREE.BoxGeometry(0.08, 4.08, 0.08), cutEdgeMat, { pos:[7.03, -0.5, 3.52] });
-groundGroup.add(cutEdge1);
-const cutEdge2 = mesh(new THREE.BoxGeometry(0.08, 4.08, 0.08), cutEdgeMat, { pos:[7.03, -0.5, -3.52] });
-groundGroup.add(cutEdge2);
+const cutEdgeMat = new THREE.MeshPhysicalMaterial({ color: 0xc8b090, roughness: 0.7, emissive: 0x201810, emissiveIntensity: 0.3 });
+groundGroup.add(mesh(new THREE.BoxGeometry(0.08, 4.08, 0.08), cutEdgeMat, { pos: [6.03, -0.5, 3.02] }));
+groundGroup.add(mesh(new THREE.BoxGeometry(0.08, 4.08, 0.08), cutEdgeMat, { pos: [6.03, -0.5, -3.02] }));
 
 scene.add(groundGroup);
 
-// ══════════════════════════════════════════════════════════════
-//  2. TUBERÍA HDPE
-// ══════════════════════════════════════════════════════════════
+// 2. TUBERÍA INDUSTRIAL HDPE
 const pipeGroup = new THREE.Group();
+
 const pipeMat = new THREE.MeshPhysicalMaterial({ color: 0x1a2530, roughness: 0.45, metalness: 0.25, clearcoat: 0.6 });
-const pipeBody = mesh(new THREE.CylinderGeometry(0.42, 0.42, 15, 32), pipeMat, { pos:[0, -0.9, 0], rot:[0, 0, Math.PI/2] });
-pipeGroup.add(pipeBody);
+const pipeInnerMat = new THREE.MeshPhysicalMaterial({ color: 0x0a1520, roughness: 0.6, metalness: 0.1 });
 
-const innerMat = new THREE.MeshPhysicalMaterial({ color: 0x0a1520, roughness: 0.6 });
-const pipeInner = mesh(new THREE.CylinderGeometry(0.34, 0.34, 15.2, 32), innerMat, { pos:[0, -0.9, 0], rot:[0, 0, Math.PI/2] });
-pipeGroup.add(pipeInner);
+groundGroup.add(mesh(new THREE.CylinderGeometry(0.38, 0.38, 14, 32), pipeMat, { pos: [0, -0.9, 0], rot: [0, 0, Math.PI/2] }));
+groundGroup.add(mesh(new THREE.CylinderGeometry(0.30, 0.30, 14.2, 32), pipeInnerMat, { pos: [0, -0.9, 0], rot: [0, 0, Math.PI/2], cast: false }));
 
-const bandMat = new THREE.MeshPhysicalMaterial({ color: 0x00a0b0, emissive: 0x003840, emissiveIntensity: 0.4 });
-for (let x of [-5, -2, 1.5, 4.5]) {
-  const band = mesh(new THREE.CylinderGeometry(0.43, 0.43, 0.1, 32), bandMat, { pos:[x, -0.9, 0], rot:[0, 0, Math.PI/2] });
-  pipeGroup.add(band);
-}
-scene.add(pipeGroup);
+const bandMat = new THREE.MeshPhysicalMaterial({ color: 0x00a0b0, roughness: 0.5, emissive: 0x003840, emissiveIntensity: 0.4 });
+[-4, -1.5, 1, 3.5].forEach(x => {
+  groundGroup.add(mesh(new THREE.CylinderGeometry(0.395, 0.395, 0.09, 32), bandMat, { pos: [x, -0.9, 0], rot: [0, 0, Math.PI/2] }));
+});
 
-// ══════════════════════════════════════════════════════════════
-//  3. FUGA SUBTERRÁNEA Y GOTAS
-// ══════════════════════════════════════════════════════════════
+// 3. FUGA SUBTERRÁNEA HOLOGRÁFICA
 const leakGroup = new THREE.Group();
+const leakPos = new THREE.Vector3(1.2, -1.55, 0.4);
 
 const leakMat = new THREE.MeshPhysicalMaterial({
   color: 0x00d8f0, emissive: 0x00c8e8, emissiveIntensity: 1.8,
   transmission: 0.75, transparent: true, opacity: 0.85, roughness: 0.05, ior: 1.4
 });
-const leakMain = mesh(new THREE.SphereGeometry(0.65, 32, 32), leakMat, { pos:[1.5, -1.55, 0.4] });
+const leakMain = mesh(new THREE.SphereGeometry(0.55, 32, 32), leakMat, { pos: [leakPos.x, leakPos.y, leakPos.z] });
 leakGroup.add(leakMain);
 
 const haloMat = new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00e0ff, emissiveIntensity: 0.9, transparent: true, opacity: 0.18, side: THREE.BackSide });
-const leakHalo = mesh(new THREE.SphereGeometry(0.95, 24, 24), haloMat, { pos:[1.5, -1.55, 0.4] });
+const leakHalo = mesh(new THREE.SphereGeometry(0.85, 24, 24), haloMat, { pos: [leakPos.x, leakPos.y, leakPos.z], cast: false });
 leakGroup.add(leakHalo);
 
 const fissureMat = new THREE.MeshPhysicalMaterial({ color: 0x00c8e0, emissive: 0x009ab0, emissiveIntensity: 0.6, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
-const fissure = mesh(new THREE.PlaneGeometry(1.5, 0.1), fissureMat, { pos:[1.3,-1.3,0.4], rot:[0.2, 0.3, 0.5] });
-leakGroup.add(fissure);
+leakGroup.add(mesh(new THREE.PlaneGeometry(1.2, 0.08), fissureMat, { pos: [1.0, -1.3, 0.4], rot: [0.2, 0.3, 0.5] }));
 
+const wfSphere = mesh(new THREE.SphereGeometry(1.1, 12, 8), new THREE.MeshBasicMaterial({ color: 0x00f5ff, wireframe: true, transparent: true, opacity: 0.09 }), { pos: [leakPos.x, leakPos.y, leakPos.z] });
+scene.add(wfSphere);
 scene.add(leakGroup);
 
-// ══════════════════════════════════════════════════════════════
-//  4. MÓDULO DE PURIFICACIÓN (Tanque)
-// ══════════════════════════════════════════════════════════════
+// 4. MÓDULO DE PURIFICACIÓN (Tanque)
 const tankGroup = new THREE.Group();
-const TX = -3, TY = 1.5, TZ = -1.5;
+const TX = -2, TY = 1.5, TZ = -1;
 
 const metalMat = new THREE.MeshPhysicalMaterial({ color: 0xb8c4cc, roughness: 0.28, metalness: 0.95, clearcoat: 0.7 });
-const tankMetal = mesh(new THREE.CylinderGeometry(0.8, 0.82, 1.2, 40), metalMat, { pos:[TX, TY - 0.5, TZ] });
-tankGroup.add(tankMetal);
+tankGroup.add(mesh(new THREE.CylinderGeometry(0.7, 0.72, 1.0, 40), metalMat, { pos: [TX, TY - 0.5, TZ] }));
 
-const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x88c8e8, transmission: 0.88, transparent: true, opacity: 0.55, ior: 1.5, side: THREE.DoubleSide });
-const tankGlass = mesh(new THREE.CylinderGeometry(0.78, 0.80, 1.2, 40), glassMat, { pos:[TX, TY + 0.7, TZ] });
-tankGroup.add(tankGlass);
+const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x88c8e8, transmission: 0.88, thickness: 0.5, transparent: true, opacity: 0.55, ior: 1.5, side: THREE.DoubleSide });
+tankGroup.add(mesh(new THREE.CylinderGeometry(0.68, 0.70, 1.0, 40), glassMat, { pos: [TX, TY + 0.5, TZ] }));
 
 const waterMat = new THREE.MeshPhysicalMaterial({ color: 0x0088bb, emissive: 0x003860, emissiveIntensity: 0.7, transmission: 0.82, transparent: true, opacity: 0.7, ior: 1.33 });
-const waterInside = mesh(new THREE.CylinderGeometry(0.70, 0.72, 1.0, 36), waterMat, { pos:[TX, TY + 0.6, TZ] });
+const waterInside = mesh(new THREE.CylinderGeometry(0.60, 0.62, 0.85, 36), waterMat, { pos: [TX, TY + 0.5, TZ] });
 tankGroup.add(waterInside);
 
-const rippleMat = new THREE.MeshPhysicalMaterial({ color:0x40d0ff, emissive:0x1080a0, emissiveIntensity:0.5, transparent:true, opacity:0.6, side:THREE.DoubleSide });
-const ripple = mesh(new THREE.CircleGeometry(0.70, 36), rippleMat, { pos:[TX, TY+1.1, TZ], rot:[-Math.PI/2, 0, 0] });
+const rippleMat = new THREE.MeshPhysicalMaterial({ color: 0x40d0ff, emissive: 0x1080a0, emissiveIntensity: 0.5, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
+const ripple = mesh(new THREE.CircleGeometry(0.60, 36), rippleMat, { pos: [TX, TY + 0.9, TZ], rot: [-Math.PI/2, 0, 0] });
 tankGroup.add(ripple);
 
-const joinRingMat = new THREE.MeshPhysicalMaterial({ color:0x80909a, roughness:0.35, metalness:0.9 });
-const joinRing = mesh(new THREE.TorusGeometry(0.80, 0.04, 16, 48), joinRingMat, { pos:[TX, TY+0.1, TZ], rot:[Math.PI/2, 0, 0] });
-tankGroup.add(joinRing);
+tankGroup.add(mesh(new THREE.TorusGeometry(0.70, 0.035, 16, 48), new THREE.MeshPhysicalMaterial({ color: 0x80909a, roughness: 0.35, metalness: 0.9 }), { pos: [TX, TY, TZ], rot: [Math.PI/2, 0, 0] }));
+tankGroup.add(mesh(new THREE.SphereGeometry(0.68, 32, 16, 0, Math.PI*2, 0, Math.PI/2), new THREE.MeshPhysicalMaterial({ color: 0xa0b0be, roughness: 0.2, metalness: 0.92 }), { pos: [TX, TY + 1.0, TZ] }));
 
-const topCap = mesh(new THREE.SphereGeometry(0.78, 32, 16, 0, Math.PI*2, 0, Math.PI/2), metalMat, { pos:[TX, TY+1.3, TZ] });
-tankGroup.add(topCap);
-
-// Conexión Tanque a Tubería
-const connectPipe = mesh(new THREE.CylinderGeometry(0.08, 0.08, 3.0, 12), pipeMat, { pos:[TX, TY - 2.4, TZ] });
-tankGroup.add(connectPipe);
+// Tubo conector Tanque -> HDPE
+tankGroup.add(mesh(new THREE.CylinderGeometry(0.07, 0.07, 2.8, 12), new THREE.MeshPhysicalMaterial({ color: 0x1a2530, roughness: 0.45, metalness: 0.25 }), { pos: [TX, TY - 2.4, TZ] }));
 
 scene.add(tankGroup);
 
-// ══════════════════════════════════════════════════════════════
-//  5. SENSOR IoT SMART WATER (Con detalles)
-// ══════════════════════════════════════════════════════════════
+// 5. SENSOR IoT SMART WATER
 const sensorGroup = new THREE.Group();
-const SX = TX, SY = TY + 2.0, SZ = TZ;
+const SX = TX, SY = TY + 1.55, SZ = TZ;
 
-const sensorBodyMat = new THREE.MeshPhysicalMaterial({ color: 0x1c2535, roughness: 0.25, metalness: 0.65, clearcoat: 0.9 });
-const sensorBody = mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 24), sensorBodyMat, { pos:[SX, SY, SZ] });
-sensorGroup.add(sensorBody);
+sensorGroup.add(mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.45, 24), new THREE.MeshPhysicalMaterial({ color: 0x1c2535, roughness: 0.25, metalness: 0.65, clearcoat: 0.9 }), { pos: [SX, SY, SZ] }));
 
-const ledRingMat = new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00e8ff, emissiveIntensity: 2.5 });
-const ledRing = mesh(new THREE.TorusGeometry(0.25, 0.02, 12, 36), ledRingMat, { pos:[SX, SY + 0.1, SZ], rot:[Math.PI/2, 0, 0] });
+const ledRing = mesh(new THREE.TorusGeometry(0.22, 0.018, 12, 36), new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00e8ff, emissiveIntensity: 2.5 }), { pos: [SX, SY + 0.05, SZ], rot: [Math.PI/2, 0, 0] });
 sensorGroup.add(ledRing);
 
-const faceMat = new THREE.MeshPhysicalMaterial({ color:0x002840, transmission:0.6, transparent:true, opacity:0.8, emissive:0x001820, emissiveIntensity:0.5 });
-const facePanel = mesh(new THREE.CircleGeometry(0.22, 24), faceMat, { pos:[SX, SY+0.26, SZ], rot:[-Math.PI/2, 0, 0] });
-sensorGroup.add(facePanel);
-
-// LED de alerta (Rojo)
-const warnLedMat = new THREE.MeshPhysicalMaterial({ color:0xff2020, emissive:0xff0000, emissiveIntensity:3.5 });
-const warnLed = mesh(new THREE.SphereGeometry(0.03, 8, 8), warnLedMat, { pos:[SX+0.12, SY+0.26, SZ] });
+const warnLed = mesh(new THREE.SphereGeometry(0.025, 8, 8), new THREE.MeshPhysicalMaterial({ color: 0xff2020, emissive: 0xff0000, emissiveIntensity: 3.5 }), { pos: [SX + 0.18, SY + 0.18, SZ] });
 sensorGroup.add(warnLed);
 
-// Antena
-const antenna = mesh(new THREE.CylinderGeometry(0.015, 0.01, 0.5, 8), metalMat, { pos:[SX+0.18, SY+0.45, SZ], rot:[0, 0, 0.2] });
-sensorGroup.add(antenna);
+const antennaMat = new THREE.MeshPhysicalMaterial({ color: 0x3050a0, roughness: 0.3, metalness: 0.9 });
+sensorGroup.add(mesh(new THREE.CylinderGeometry(0.012, 0.008, 0.38, 8), antennaMat, { pos: [SX + 0.12, SY + 0.42, SZ], rot: [0, 0, 0.22] }));
 
 scene.add(sensorGroup);
 
-// ══════════════════════════════════════════════════════════════
-//  6. HAZ ESCÁNER HOLOGRÁFICO
-// ══════════════════════════════════════════════════════════════
+// 6. HAZ DE ESCANEO HOLOGRÁFICO
 const scanGroup = new THREE.Group();
-const leakVec = new THREE.Vector3(1.5, -1.55, 0.4);
 const sensorVec = new THREE.Vector3(SX, SY, SZ);
-const coneDir = leakVec.clone().sub(sensorVec);
+const coneDir = leakPos.clone().sub(sensorVec);
 const coneLen = coneDir.length();
-const midPt = sensorVec.clone().lerp(leakVec, 0.5);
+const midPt = sensorVec.clone().lerp(leakPos, 0.5);
 
-const scanConeMat = new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00d8f0, emissiveIntensity: 0.7, transparent: true, opacity: 0.08, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false });
-const scanCone = mesh(new THREE.ConeGeometry(1.0, coneLen, 32, 1, true), scanConeMat, { cast: false, receive: false });
+const scanConeMat = new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00d8f0, emissiveIntensity: 0.7, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending });
+const scanCone = mesh(new THREE.ConeGeometry(0.80, coneLen, 32, 1, true), scanConeMat, { cast: false, receive: false });
 scanCone.position.copy(midPt);
-
-const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), coneDir.clone().normalize());
-scanCone.quaternion.copy(q);
+const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), coneDir.clone().normalize().negate());
+scanCone.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), coneDir.clone().normalize()));
 scanGroup.add(scanCone);
 
-const innerConeMat = new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00e8ff, emissiveIntensity: 1.2, transparent: true, opacity: 0.12, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false });
-const innerCone = mesh(new THREE.ConeGeometry(0.4, coneLen, 24, 1, true), innerConeMat, { cast: false, receive: false });
+const innerCone = mesh(new THREE.ConeGeometry(0.28, coneLen, 24, 1, true), new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00e8ff, emissiveIntensity: 1.2, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }), { cast: false, receive: false });
 innerCone.position.copy(midPt);
-innerCone.quaternion.copy(q);
+innerCone.quaternion.copy(scanCone.quaternion);
 scanGroup.add(innerCone);
 
-// Anillos del holograma
+// Anillos del holograma moviéndose
 const scanRings = [];
-for (let t = 0.2; t < 0.9; t += 0.2) {
-  const ring = mesh(new THREE.TorusGeometry(1.0 * t, 0.015, 8, 36), new THREE.MeshPhysicalMaterial({ color:0x00f5ff, emissive:0x00d8ff, emissiveIntensity:2.0, transparent:true, opacity:0.3, blending:THREE.AdditiveBlending }), { cast: false, receive: false });
-  ring.userData.baseT = t;
+for (let t = 0.15; t < 0.95; t += 0.22) {
+  const ring = mesh(new THREE.TorusGeometry(1, 0.012, 8, 36), new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00d8ff, emissiveIntensity: 1.5, transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }), { cast: false, receive: false });
+  ring.userData.scanT = t;
+  ring.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1), coneDir.clone().normalize()));
   scanGroup.add(ring);
   scanRings.push(ring);
 }
 
-const originDisc = mesh(new THREE.CircleGeometry(0.45, 24), new THREE.MeshPhysicalMaterial({ color:0x00f5ff, emissive:0x00d8ff, emissiveIntensity:1.5, transparent:true, opacity:0.35, side:THREE.DoubleSide, blending:THREE.AdditiveBlending }), { pos:[SX, SY-0.2, SZ], rot:[-Math.PI/2, 0, 0] });
+const originDisc = mesh(new THREE.CircleGeometry(0.35, 24), new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00d8ff, emissiveIntensity: 1.5, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }), { pos: [SX, SY - 0.22, SZ], rot: [-Math.PI/2, 0, 0] });
 scene.add(originDisc);
 scene.add(scanGroup);
 
-// ══════════════════════════════════════════════════════════════
-//  EXTRAS: Rocas y Estrellas
-// ══════════════════════════════════════════════════════════════
-const rockMat = new THREE.MeshPhysicalMaterial({ color:0x5a5045, roughness:0.9 });
-[[3.5, 1.6, -1.5], [-2.8, 1.6, 2.2], [4.2, 1.6, 1.8], [-4.5, 1.6, -2.0]].forEach(([rx,ry,rz]) => {
-  scene.add(mesh(new THREE.DodecahedronGeometry(0.1 + Math.random()*0.1, 0), rockMat, { pos:[rx, ry, rz] }));
-});
-
+// 7. PARTICULAS (Fondo de Estrellas)
 const starGeo = new THREE.BufferGeometry();
-const starPos = new Float32Array(800 * 3);
-for (let i=0; i<800*3; i++) starPos[i] = (Math.random() - 0.5) * 160;
+const starPos = new Float32Array(900 * 3);
+for (let i = 0; i < 900 * 3; i++) starPos[i] = (Math.random() - 0.5) * 160;
 starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color:0x88aacc, size:0.04, transparent:true, opacity:0.35 })));
+scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0x88aacc, size: 0.04, transparent: true, opacity: 0.35 })));
 
-// ══════════════════════════════════════════════════════════════
-//  ANIMACIÓN (LOOP)
-// ══════════════════════════════════════════════════════════════
+// ── LÓGICA DE ACTUALIZACIÓN (HUD Y ANIMACIÓN) ──────────────────────────────
 const clock = new THREE.Clock();
-let autoRotate = true;
 
-// Actualizar Mensajes de Alerta
+// Alertas del HUD
 const alertMessages = [
   {cls:'w', txt:'[WARN] Anomalía hídrica Z=-2.4m · HDPE-03'},
   {cls:'c', txt:'[SCAN] Haz holográfico activo · 97.3% conf'},
   {cls:'g', txt:'[OK]   Módulo purif · Q=320L/h · activo'},
-  {cls:'o', txt:'[DATA] GPS sync · 29.9S 71.2W · OK'},
+  {cls:'o', txt:'[DATA] GPS sync · -29.9S 71.2W · OK'},
   {cls:'c', txt:'[IoT]  Heartbeat 2.4GHz · latencia 12ms'}
 ];
 let alertIdx = 0; let lastAlert = 0;
 
 function updateAlerts(t) {
-  if (t - lastAlert > 3.0) {
+  if (t - lastAlert > 3.2) {
     lastAlert = t;
     const lines = document.querySelectorAll('.al');
     for(let i=0; i<lines.length-1; i++){
@@ -510,82 +543,100 @@ function updateAlerts(t) {
     }
     const msg = alertMessages[alertIdx % alertMessages.length];
     alertIdx++;
-    lines[lines.length-1].className = 'al ' + msg.cls;
-    lines[lines.length-1].textContent = msg.txt;
+    const last = lines[lines.length-1];
+    last.className = 'al ' + msg.cls;
+    last.textContent = msg.txt;
+    last.style.animation = 'none';
+    void last.offsetWidth;
+    last.style.animation = 'alin .35s ease';
   }
 }
+
+let autoAngle = 0;
 
 function animate() {
   requestAnimationFrame(animate);
   const t = clock.getElapsedTime();
 
-  // Animaciones de luces
+  // Animaciones Luces / Materiales
   const ledPulse = 0.5 + 0.5 * Math.sin(t * 4.5);
+  const ledWarn  = 0.5 + 0.5 * Math.sin(t * 2.2);
+
   ledRing.material.emissiveIntensity = 1.5 + ledPulse * 2.0;
-  warnLed.material.emissiveIntensity = Math.sin(t * 6) > 0 ? 3.5 : 0.2;
+  warnLed.material.emissiveIntensity = ledWarn > 0.5 ? 4.0 : 0.2;
   sensorLight.intensity = 1.5 + 2.0 * ledPulse;
 
-  const leakPulse = 0.4 + 0.6 * Math.sin(t * 2.8);
-  leakMain.material.emissiveIntensity = 1.2 + leakPulse * 1.5;
+  const leakPulse = 0.4 + 0.6 * Math.sin(t * 2.8 + 1.2);
+  leakMat.emissiveIntensity = 1.2 + leakPulse * 1.5;
   leakLight.intensity = 2.5 + leakPulse * 2.5;
   leakHalo.scale.setScalar(1.0 + 0.12 * Math.sin(t * 2.0));
+  wfSphere.rotation.y += 0.003; wfSphere.rotation.x += 0.001;
 
-  // Animación del escáner
-  scanCone.material.opacity = 0.05 + ledPulse * 0.05;
-  innerCone.material.opacity = 0.08 + ledPulse * 0.06;
+  scanConeMat.opacity = 0.05 + scanPulse(t) * 0.07;
+  innerCone.material.opacity = 0.08 + scanPulse(t) * 0.10;
   originDisc.scale.setScalar(1 + 0.15 * Math.sin(t * 3.5));
 
-  // Anillos del escáner viajando hacia abajo
+  // Animación anillos escáner
   scanRings.forEach(ring => {
-    const travel = (ring.userData.baseT + t * 0.3) % 1.0;
-    const rPos = sensorVec.clone().lerp(leakVec, travel);
+    const base = ring.userData.scanT;
+    const travelT = ((base + t * 0.28) % 1.0);
+    const rPos = sensorVec.clone().lerp(leakPos, travelT);
     ring.position.copy(rPos);
-    ring.quaternion.copy(q);
-    const rScale = travel;
-    ring.scale.set(rScale, 1, rScale);
-    ring.material.opacity = 0.4 * (1 - travel);
+    const rRadius = 0.80 * travelT;
+    ring.scale.set(rRadius / (0.80 * base + 0.001), 1, rRadius / (0.80 * base + 0.001));
+    ring.material.opacity = 0.30 * (1 - travelT * 0.6) * (0.5 + 0.5*Math.sin(t*4+base*10));
   });
 
-  // Animación del agua
+  // Animación Agua
   ripple.rotation.z += 0.008;
   ripple.scale.setScalar(1 + 0.04 * Math.sin(t * 1.8));
+  waterMat.emissiveIntensity = 0.5 + 0.3 * Math.sin(t * 2.2);
 
-  // UI Updates
-  document.getElementById('scan-cycle').textContent = Math.floor(t * 10).toString().padStart(4, '0');
-  const d = -(2.1 + 0.35 * Math.sin(t * 0.8));
-  document.getElementById('scan-d').textContent = d.toFixed(2) + ' m';
-  document.getElementById('depth-num').textContent = d.toFixed(2);
-  updateAlerts(t);
-
-  // Auto Rotación con controles
-  if(autoRotate) {
-    camera.position.x = Math.sin(t * 0.1) * 18;
-    camera.position.z = Math.cos(t * 0.1) * 18;
-    camera.lookAt(0,0,0);
+  // Auto Rotate manual si los controles están en reposo
+  if(window.autoRotate) {
+    autoAngle += 0.0025;
+    camera.position.x = Math.sin(autoAngle) * 12.5;
+    camera.position.z = Math.cos(autoAngle) * 12.5;
+    camera.position.y = 5.5 + 0.8 * Math.sin(autoAngle * 0.3);
+    camera.lookAt(0, 0, 0);
   } else {
     controls.update();
   }
 
-  // Update Coords
-  document.getElementById('coord').textContent = `CAM x=${camera.position.x.toFixed(1)} y=${camera.position.y.toFixed(1)} z=${camera.position.z.toFixed(1)}`;
-
+  // Update HUD values
+  const d = -(2.1 + 0.35 * Math.sin(t * 0.8));
+  document.getElementById('scan-d').textContent = d.toFixed(2) + ' m';
+  document.getElementById('depth-num').textContent = d.toFixed(2);
+  document.getElementById('scan-cycle').textContent = Math.floor(t * 10).toString().padStart(4, '0');
+  
+  const camPos = camera.position;
+  document.getElementById('coord').textContent = `CAM x=${camPos.x.toFixed(1)} y=${camPos.y.toFixed(1)} z=${camPos.z.toFixed(1)}`;
+  
+  updateAlerts(t);
   renderer.render(scene, camera);
 }
 
-// Interaction
+function scanPulse(t) { return 0.5 + 0.5 * Math.sin(t * 3.0); }
+
+// ── EVENTOS DOM ────────────────────────────────────────────────────────────
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-window.addEventListener('keydown', e => { if(e.code === 'Space') autoRotate = !autoRotate; });
-renderer.domElement.addEventListener('mousedown', () => autoRotate = false);
-renderer.domElement.addEventListener('touchstart', () => autoRotate = false);
+window.autoRotate = true;
+window.addEventListener('keydown', e => { if (e.code === 'Space') window.autoRotate = !window.autoRotate; });
+renderer.domElement.addEventListener('mousedown', () => { 
+  window.autoRotate = false; 
+  autoAngle = Math.atan2(camera.position.x, camera.position.z);
+});
+renderer.domElement.addEventListener('touchstart', () => window.autoRotate = false);
 
+// Iniciar
 animate();
 
-})(); // end IIFE
+})();
 </script>
 </body>
 </html>
