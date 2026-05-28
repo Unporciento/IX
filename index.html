@@ -709,14 +709,30 @@ footer strong { color: var(--accent-light); font-style: normal; }
     /* Init Three.js only once, on first open */
     if (name === '3d' && !window._threeReady) {
       window._threeReady = true;
-      initThree();
+      // Pequeña corrección por si el 3D tarda un milisegundo en cargar
+      if (typeof window.initThree === 'function') {
+        window.initThree();
+      } else {
+        setTimeout(() => {
+          if (typeof window.initThree === 'function') window.initThree();
+        }, 300);
+      }
+    }
+  }
+</script>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
     }
   }
 </script>
 
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 /* ════════════════════════════════════════════════════════
    THREE.JS SCENE — Maqueta Complejo Playa La Virgen
