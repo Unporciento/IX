@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optimización Hídrica · Complejo Turístico Playa La Virgen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+</head>
+<body>
+
+<header>
+  <div class="header-institution">Equipo de Ingeniería &nbsp;·&nbsp; Proyecto de Innovación</div>
+  <h1>Optimización Hídrica <em>Complejo Turístico Playa La Virgen</em></h1>
+  <p class="header-subtitle">Planta Desalinizadora · Red HDPE Sectorizada · Macromedidores Inteligentes</p>
+  <div class="header-rule"><span></span><i>◆</i><span></span></div>
+</header>
+
+<nav class="nav-tabs">
+  <button class="nav-tab active" id="tab-comic"><span class="tab-num">I.</span>Contexto e Implementación</button>
+  <button class="nav-tab" id="tab-3d"><span class="tab-num">II.</span>Maqueta 3D Interactiva</button>
+  <button class="nav-tab" id="tab-cdm"><span class="tab-num">III.</span>Matriz de Análisis (CDM)</button>
+</nav>
+
+<!-- ═══════════════════════════ SECCIÓN 1: CÓMIC ═══════════════════════════ -->
+<section id="section-comic" class="section active">
+  <div class="sec-header">
+    <span class="sec-eyebrow">Narrativa del Proyecto · 5 Escenas</span>
+    <h2 class="sec-title">Del Problema a la Solución Hídrica</h2>
+    <div class="sec-rule"></div>
+  </div>
+
+  <div class="inner">
+    <div class="comic-grid">
+      <article class="comic-card">
+        <div class="comic-tag"><span class="scene-num">00</span><span>El Problema</span></div>
+        <div class="comic-img-wrap"><img src="assets/images/0.jpg" alt="Problema hídrico en el complejo"></div>
+        <div class="comic-body">
+          <h3 class="comic-scene-title">Escasez y Fugas Invisibles</h3>
+          <p>Dependencia extrema de camiones aljibe y graves fugas no visibles. El terreno salino agrava el problema estructural en el complejo.</p>
+        </div>
+      </article>
+
+      <article class="comic-card">
+        <div class="comic-tag"><span class="scene-num">01</span><span>Desarrollo</span></div>
+        <div class="comic-img-wrap"><img src="assets/images/1.jpg" alt="Despliegue de tuberías HDPE"></div>
+        <div class="comic-body">
+          <h3 class="comic-scene-title">Despliegue de Red HDPE</h3>
+          <p>Los equipos renuevan la matriz subterránea utilizando tuberías de Polietileno de Alta Densidad, altamente resistentes a la corrosión.</p>
+        </div>
+      </article>
+
+      <article class="comic-card">
+        <div class="comic-tag"><span class="scene-num">02</span><span>Implementación</span></div>
+        <div class="comic-img-wrap"><img src="assets/images/2.jpg" alt="Planta desalinizadora instalada"></div>
+        <div class="comic-body">
+          <h3 class="comic-scene-title">Autonomía Hídrica</h3>
+          <p>Se instala la planta desalinizadora de osmosis inversa capaz de generar 35 m³ diarios, eliminando la necesidad de camiones externos.</p>
+        </div>
+      </article>
+
+      <article class="comic-card">
+        <div class="comic-tag"><span class="scene-num">03</span><span>Tecnología</span></div>
+        <div class="comic-img-wrap"><img src="assets/images/3.jpg" alt="Sistema de monitoreo smart water"></div>
+        <div class="comic-body">
+          <h3 class="comic-scene-title">Monitoreo Smart Water</h3>
+          <p>Implementación de macromedidores digitales y sensores en la red. Todo el complejo se monitorea desde una plataforma centralizada.</p>
+        </div>
+      </article>
+
+      <article class="comic-card">
+        <div class="comic-tag"><span class="scene-num">04</span><span>La Solución</span></div>
+        <div class="comic-img-wrap"><img src="assets/images/4.jpg" alt="Logo oficial del proyecto finalizado"></div>
+        <div class="comic-body">
+          <h3 class="comic-scene-title">Sistema Final y Oficial</h3>
+          <p>El sistema cerrado y finalizado. En la pared de la planta luce el logo oficial del proyecto, garantizando agua limpia y sustentable.</p>
+        </div>
+      </article>
+
+      <article class="comic-card">
+        <div class="comic-tag"><span class="scene-num">05</span><span>Proyecto Terminado</span></div>
+        <div class="comic-img-wrap"><img src="assets/images/5.jpg" alt="Logo y Sistema Encerrado"></div>
+        <div class="comic-body">
+          <h3 class="comic-scene-title">Protección y Sello de Calidad</h3>
+          <p>El sistema operativo se encuentra completamente cerrado y asegurado. En sus muros destaca el logo del proyecto, marcando un hito en la sustentabilidad de Playa La Virgen.</p>
+        </div>
+      </article>
+      
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ SECCIÓN 2: 3D ══════════════════════════════ -->
+<section id="section-3d" class="section">
+  <div class="viewer-topbar">
+    <div>
+      <h2>Maqueta 3D del Sistema Hídrico</h2>
+      <p>Representación interactiva · Arrastra para rotar · Scroll para zoom</p>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-swatch" style="background:#4a7c6f"></div>Estanques (Cerro)</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#ddd8ce; border:1px solid #aaa"></div>Planta Desalinizadora</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#b8903a"></div>Red HDPE</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#f0ead8; border:1px solid #c85a3a"></div>Cabañas con ventanas</div>
+    </div>
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="three-canvas"></canvas>
+
+    <!-- ── Alerta de fuga ── -->
+    <div id="alerta-fuga">
+      <div class="alert-icon">⚠️</div>
+      <h3>¡ALERTA DE FUGA!</h3>
+      <p>Pérdida de presión detectada.</p>
+      <p class="alert-severity">Gravedad: <span id="tipo-fuga"></span></p>
+      <div class="alert-progress">
+        <div class="alert-progress-bar"></div>
+      </div>
+    </div>
+
+    <!-- ── Controles de cámara ── -->
+    <div class="cam-panel">
+      <button class="cam-btn active" id="btn-general">
+        <span class="cam-icon">⊞</span> Vista General
+      </button>
+      <button class="cam-btn" id="btn-plant">
+        <span class="cam-icon">◧</span> Planta Desalinizadora
+      </button>
+      <button class="cam-btn" id="btn-network">
+        <span class="cam-icon">⛰</span> Cerro y Estanque
+      </button>
+      <button class="cam-btn btn-fuga" id="btn-fuga">
+        <span class="cam-icon">🚨</span> Simular Fuga
+      </button>
+    </div>
+
+    <!-- ── Tooltip de ayuda al hover sobre el canvas ── -->
+    <div id="canvas-tooltip">Click para inspeccionar</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ SECCIÓN 3: CDM ══════════════════════════════ -->
+<section id="section-cdm" class="section">
+  <div class="sec-header">
+    <span class="sec-eyebrow">Análisis Estratégico · Proyecto Playa La Virgen</span>
+    <h2 class="sec-title">Matriz de Cualidades, Debilidades y Mejoras</h2>
+    <div class="sec-rule"></div>
+  </div>
+
+  <div class="inner" style="max-width:1200px; margin:0 auto; padding:0 2rem 5rem;">
+    <div class="cdm-grid">
+
+      <!-- ── Cualidades ── -->
+      <div class="cdm-card cdm-card--cualidades">
+        <div class="cdm-header">
+          <div class="cdm-icon">✦</div>
+          <h3>Cualidades</h3>
+          <p>Aspectos positivos y fortalezas</p>
+        </div>
+        <ul class="cdm-list">
+          <li>
+            <strong>Autonomía Hídrica</strong>
+            La planta de osmosis inversa elimina al 100% la dependencia histórica de camiones aljibe, generando 35 m³ diarios.
+          </li>
+          <li>
+            <strong>Durabilidad Estructural</strong>
+            El uso de tuberías HDPE sectorizadas garantiza resistencia a la corrosión del terreno salino por décadas.
+          </li>
+          <li>
+            <strong>Control en Tiempo Real</strong>
+            Los macromedidores digitales (Smart Water) permiten detectar caídas de presión y fugas al instante desde una plataforma centralizada.
+          </li>
+        </ul>
+      </div>
+
+      <!-- ── Debilidades ── -->
+      <div class="cdm-card cdm-card--debilidades">
+        <div class="cdm-header">
+          <div class="cdm-icon">◈</div>
+          <h3>Debilidades</h3>
+          <p>Puntos a considerar y mitigar</p>
+        </div>
+        <ul class="cdm-list">
+          <li>
+            <strong>Dependencia Eléctrica</strong>
+            La planta desalinizadora y los sensores requieren un flujo eléctrico continuo para operar correctamente.
+          </li>
+          <li>
+            <strong>Mantenimiento Especializado</strong>
+            El sistema de osmosis inversa exige cambio periódico de filtros y personal técnico capacitado en terreno.
+          </li>
+          <li>
+            <strong>Inversión Inicial Elevada</strong>
+            El costo de implementación de la infraestructura completa y sensores inteligentes es alto en su etapa inicial.
+          </li>
+        </ul>
+      </div>
+
+      <!-- ── Mejoras ── -->
+      <div class="cdm-card cdm-card--mejoras">
+        <div class="cdm-header">
+          <div class="cdm-icon">◎</div>
+          <h3>Mejoras</h3>
+          <p>Evolución futura del proyecto</p>
+        </div>
+        <ul class="cdm-list">
+          <li>
+            <strong>Energías Renovables</strong>
+            Integrar paneles solares para alimentar la planta desalinizadora y hacer el sistema energéticamente autónomo y 100% ecológico.
+          </li>
+          <li>
+            <strong>App para Huéspedes</strong>
+            Desarrollar una aplicación móvil para que los turistas visualicen su consumo de agua y fomenten la concientización hídrica.
+          </li>
+          <li>
+            <strong>Reutilización de Aguas Grises</strong>
+            Implementar un sistema paralelo de recolección de aguas grises para el riego de las áreas verdes del complejo.
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-top">
+
+    <!-- Marca del proyecto -->
+    <div class="footer-brand">
+      <strong>Optimización Hídrica</strong>
+      <span>Complejo Turístico Playa La Virgen</span>
+      <span style="margin-top:.4rem; font-style:normal; font-size:.72rem; opacity:.5;">
+        Planta Desalinizadora · Red HDPE · Macromedidores
+      </span>
+    </div>
+
+    <!-- Integrantes -->
+    <div class="footer-credits">
+      <div class="footer-credits-label">Integrantes</div>
+      <div class="footer-names">
+        Simón Olivares<br>
+        Julio Sinisterra<br>
+        Millaray Aguirre<br>
+        Renato Borquez<br>
+        Wiljer Mamani
+      </div>
+    </div>
+
+    <!-- Docente y asignatura -->
+    <div class="footer-professor">
+      <div class="footer-credits-label">Docente</div>
+      <div class="footer-professor-name">Raul Alberto Araya Zepeda</div>
+      <div class="footer-professor-course">Innovación y Emprendimiento</div>
+      <div class="footer-credits-label" style="margin-top:.8rem;">Institución</div>
+      <div class="footer-professor-name" style="font-size:.82rem;">INACAP</div>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <span>Proyecto de Innovación · Ingeniería</span>
+    <span>
+      Complejo Turístico Playa La Virgen
+      <span class="footer-bottom-rule"></span>
+      Maqueta Interactiva 3D
+    </span>
+  </div>
+</footer>
+
+<!-- Audio de alarma (loop) -->
+<audio id="sonido-alerta" loop preload="none">
+  <source src="https://www.soundjay.com/misc/sounds/fail-buzzer-03.mp3" type="audio/mpeg">
+  <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+</audio>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
