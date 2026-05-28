@@ -3,743 +3,521 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maqueta 3D — Autonomía Hídrica</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,200;0,400;1,200&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --gold: #c9a84c;
-      --gold-light: #e8c97a;
-      --cream: #f0ece3;
-      --dark: #0d0f12;
-      --panel-bg: rgba(10,12,16,0.82);
-      --border: rgba(201,168,76,0.25);
-    }
-
-    body {
-      overflow: hidden;
-      background: var(--dark);
-      font-family: 'DM Mono', monospace;
-      cursor: crosshair;
-      touch-action: none; /* Previene comportamientos extraños en táctil */
-    }
-
-    canvas { display: block; }
-
-    /* ─── CLASES PARA OCULTAR UI ─── */
-    .ui-element {
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-    .ui-element.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    /* ─── BOTÓN TOGGLE UI ─── */
-    #btn-toggle-ui {
-      position: fixed;
-      top: 22px;
-      right: 32px;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--panel-bg);
-      border: 1px solid var(--border);
-      color: var(--gold);
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 300;
-      backdrop-filter: blur(12px);
-      transition: background 0.3s ease, opacity 0.3s ease;
-    }
-    #btn-toggle-ui:hover { background: rgba(201,168,76,0.15); }
-    #btn-toggle-ui.dimmed { opacity: 0.4; }
-
-    /* ─── HUD HEADER ─── */
-    #header {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      padding: 22px 90px 18px 32px; /* Espacio extra a la derecha para el botón */
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      background: linear-gradient(to bottom, rgba(13,15,18,0.95) 0%, transparent 100%);
-      pointer-events: none;
-      z-index: 200;
-    }
-    #header h1 {
-      font-family: 'Fraunces', serif;
-      font-weight: 200;
-      font-size: 28px;
-      letter-spacing: 0.04em;
-      color: var(--cream);
-      line-height: 1;
-    }
-    #header h1 em {
-      font-style: italic;
-      color: var(--gold-light);
-    }
-    #header .subtitle {
-      font-size: 10px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-top: 5px;
-    }
-    #header .badge {
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(240,236,227,0.45);
-      text-align: right;
-      line-height: 1.7;
-    }
-    #header .badge strong {
-      color: var(--gold);
-      font-weight: 500;
-    }
-
-    /* ─── SIDE LEGEND ─── */
-    #legend {
-      position: fixed;
-      right: 24px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: var(--panel-bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 20px 18px;
-      z-index: 200;
-      pointer-events: none;
-      backdrop-filter: blur(12px);
-      min-width: 210px;
-    }
-    #legend.hidden { transform: translate(20px, -50%); }
-    #header.hidden { transform: translateY(-20px); }
-    #bottombar.hidden { transform: translateY(20px); }
-
-    #legend .leg-title {
-      font-size: 9px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 16px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
-    }
-    .leg-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-      font-size: 11px;
-      color: rgba(240,236,227,0.7);
-      line-height: 1.3;
-    }
-    .leg-item:last-child { margin-bottom: 0; }
-    .leg-dot {
-      width: 10px; height: 10px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-    .leg-dot.pulse {
-      animation: pulse 1.2s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; box-shadow: 0 0 6px currentColor; }
-      50% { opacity: 0.3; box-shadow: none; }
-    }
-
-    /* ─── BOTTOM BAR ─── */
-    #bottombar {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      padding: 14px 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: linear-gradient(to top, rgba(13,15,18,0.9) 0%, transparent 100%);
-      pointer-events: none;
-      z-index: 200;
-    }
-    .hint {
-      font-size: 10px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: rgba(240,236,227,0.3);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .hint span {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .hint .kbd {
-      background: rgba(240,236,227,0.08);
-      border: 1px solid rgba(240,236,227,0.12);
-      border-radius: 3px;
-      padding: 2px 6px;
-      font-size: 9px;
-    }
-    #status {
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      color: var(--gold);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    #status::before {
-      content: '';
-      width: 6px; height: 6px;
-      background: #4caf50;
-      border-radius: 50%;
-      animation: blink 2s ease-in-out infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.2; }
-    }
-
-    /* ─── LOADING ─── */
-    #loading {
-      position: fixed;
-      inset: 0;
-      background: var(--dark);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      transition: opacity 0.6s ease;
-    }
-    #loading.hide { opacity: 0; pointer-events: none; }
-    #loading .load-title {
-      font-family: 'Fraunces', serif;
-      font-weight: 200;
-      font-size: 22px;
-      color: var(--cream);
-      margin-bottom: 24px;
-    }
-    .load-bar-wrap {
-      width: 200px;
-      height: 1px;
-      background: rgba(240,236,227,0.1);
-      position: relative;
-    }
-    .load-bar-fill {
-      height: 1px;
-      background: var(--gold);
-      width: 0%;
-      transition: width 1.2s ease;
-    }
-
-    /* ─── MEDIA QUERIES (TELÉFONOS MÓVILES) ─── */
-    @media (max-width: 768px) {
-      #btn-toggle-ui {
-        top: 15px;
-        right: 15px;
-        width: 38px;
-        height: 38px;
-        font-size: 16px;
-      }
-      #header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 15px 65px 15px 20px;
-        gap: 12px;
-      }
-      #header h1 { font-size: 22px; }
-      #header .badge { text-align: left; line-height: 1.5; }
-      
-      #legend {
-        top: auto;
-        bottom: 50px;
-        right: 15px;
-        left: 15px;
-        transform: none;
-        min-width: 0;
-        padding: 15px;
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* Leyenda en dos columnas para ahorrar espacio */
-        column-gap: 10px;
-      }
-      #legend.hidden { transform: translateY(20px); }
-      #legend .leg-title { grid-column: 1 / -1; margin-bottom: 10px; padding-bottom: 6px; }
-      .leg-item { font-size: 9px; margin-bottom: 6px; }
-      
-      #bottombar {
-        padding: 12px 15px;
-        justify-content: center;
-      }
-      .hint { display: none; /* Oculta atajos de teclado en móviles */ }
-    }
-  </style>
+  <title>MinePredict / Playa La Virgen - Prototipos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Comic+Neue:wght@400;700&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,200;0,400;1,200&display=swap" rel="stylesheet">
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    /* ════════════════════════════════════════════
+       VARIABLES GLOBALES Y RESET
+    ════════════════════════════════════════════ */
+    :root {
+      --yellow: #FFD700; --red: #E31B23; --blue: #0057A8;
+      --black: #0A0A0A; --white: #FAFAFA; --green: #2E8B57;
+      --gold: #c9a84c; --gold-light: #e8c97a; --dark: #0d0f12;
+      --panel-border: 4px solid var(--black);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--dark); overflow: hidden; font-family: 'DM Mono', monospace; }
+
+    /* ════════════════════════════════════════════
+       MENÚ PRINCIPAL (HUB)
+    ════════════════════════════════════════════ */
+    #main-menu {
+      position: fixed; inset: 0; z-index: 10000;
+      background: radial-gradient(circle at center, #1a2a3a 0%, #0d0f12 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: white; text-align: center;
+      transition: opacity 0.5s ease;
+    }
+    #main-menu::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 20px 20px; pointer-events: none;
+    }
+    .menu-header h1 {
+      font-family: 'Fraunces', serif; font-size: 4rem; font-weight: 200;
+      color: var(--cream); margin-bottom: 10px;
+    }
+    .menu-header h1 em { color: var(--gold-light); font-style: italic; }
+    .menu-header p {
+      font-family: 'DM Mono', monospace; color: var(--gold);
+      letter-spacing: 4px; text-transform: uppercase; font-size: 1.2rem;
+      margin-bottom: 40px;
+    }
+    .menu-cards { display: flex; gap: 30px; z-index: 2; flex-wrap: wrap; justify-content: center;}
+    .menu-card {
+      background: rgba(10,12,16,0.8); border: 2px solid var(--gold);
+      border-radius: 12px; padding: 30px; width: 280px; cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+      backdrop-filter: blur(10px);
+    }
+    .menu-card:hover {
+      transform: translateY(-10px); box-shadow: 0 15px 30px rgba(201,168,76,0.2);
+      background: rgba(20,25,30,0.9);
+    }
+    .menu-card .icon { font-size: 4rem; margin-bottom: 20px; }
+    .menu-card h3 { font-family: 'Bangers', cursive; font-size: 2rem; color: var(--yellow); letter-spacing: 2px;}
+    .menu-card p { font-size: 0.85rem; color: #aaa; margin-top: 10px; line-height: 1.5; }
+    
+    .inacap-badge {
+      position: absolute; bottom: 30px; font-family: 'Bangers', cursive;
+      font-size: 1.5rem; color: var(--red); letter-spacing: 2px;
+    }
+
+    /* BOTÓN VOLVER GENERAL */
+    .btn-back {
+      position: fixed; top: 20px; left: 20px; z-index: 10001;
+      background: var(--red); color: white; border: 2px solid var(--yellow);
+      font-family: 'Bangers', cursive; font-size: 1.2rem; padding: 8px 16px;
+      cursor: pointer; letter-spacing: 2px; border-radius: 6px;
+      box-shadow: 3px 3px 0 var(--black); transition: transform 0.1s;
+      display: none;
+    }
+    .btn-back:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--black); }
+
+    /* ════════════════════════════════════════════
+       CONTENEDORES DE SECCIÓN
+    ════════════════════════════════════════════ */
+    .app-section {
+      position: fixed; inset: 0; display: none; width: 100%; height: 100%;
+    }
+    .app-section.active { display: block; }
+
+    /* ════════════════════════════════════════════
+       ESTILOS DEL CÓMIC (Storyboard)
+    ════════════════════════════════════════════ */
+    #comic-container { background: #1a1a2e; overflow-y: auto; overflow-x: hidden; }
+    
+    #comic-reader {
+      display: flex; flex-direction: column; width: 100%; height: 100%;
+    }
+    .reader-topbar {
+      height: 60px; background: #0A0A0A; display: flex; align-items: center; justify-content: center;
+      border-bottom: 3px solid var(--yellow); padding: 0 20px; gap: 20px;
+    }
+    .nav-btn {
+      font-family: 'Bangers', cursive; font-size: 1.1rem; letter-spacing: 1px;
+      padding: 6px 16px; background: var(--blue); color: white; border: 2px solid var(--yellow);
+      cursor: pointer; transition: background 0.1s;
+    }
+    .nav-btn:hover { background: #004488; }
+    .nav-btn:disabled { background: #444; border-color: #555; color: #888; cursor: default; }
+    .page-counter { font-family: 'Bangers', cursive; color: white; font-size: 1.2rem; letter-spacing: 2px; }
+
+    .reader-viewport {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 20px; position: relative; perspective: 2500px;
+    }
+    .page-spread {
+      width: 100%; max-width: 1000px; height: 100%; max-height: 650px;
+      display: none; position: relative;
+    }
+    .page-spread.active { display: flex; }
+    .reader-page {
+      flex: 1; background: var(--white); border: 4px solid var(--black);
+      overflow: hidden; position: relative; transform-style: preserve-3d;
+      display: flex; flex-direction: column;
+    }
+    .reader-page:first-child { border-right: 2px solid var(--black); box-shadow: -8px 0 20px rgba(0,0,0,0.5); }
+    .reader-page:last-child { border-left: 2px solid var(--black); box-shadow: 8px 0 20px rgba(0,0,0,0.5); }
+    .book-gutter { width: 24px; background: linear-gradient(90deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0.4) 100%); flex-shrink: 0; z-index: 2;}
+
+    /* Contenido Cómic */
+    .page-content { padding: 16px 14px; height: 100%; display: flex; flex-direction: column; }
+    .scene-label { font-family: 'Bangers', cursive; font-size: 1rem; letter-spacing: 2px; color: var(--white); background: var(--black); text-align: center; padding: 4px; text-transform: uppercase; margin-bottom: 8px; flex-shrink: 0; }
+    .panel { border: var(--panel-border); background: #f0f0f0; overflow: hidden; flex-shrink: 0; position: relative; }
+    .panel img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .panel-tall { flex: 1; min-height: 200px; }
+    .speech-bubble {
+      background: white; border: 3px solid var(--black); border-radius: 12px; padding: 8px 12px;
+      font-family: 'Comic Neue', cursive; font-size: 0.85rem; font-weight: 700; line-height: 1.3; color: var(--black); margin-top: 8px; flex-shrink: 0;
+    }
+    .speech-bubble.shout { background: var(--yellow); clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%); }
+    .speech-bubble.think { border-style: dashed; border-radius: 50%; text-align: center; }
+
+    /* Animaciones pasar página */
+    .page-turn-next .reader-page:last-child { animation: flipDownRight 0.6s cubic-bezier(0.3, 0.1, 0.2, 1) forwards; transform-origin: left center; }
+    @keyframes flipDownRight {
+      0% { transform: rotateY(90deg); filter: brightness(0.6); opacity: 0; }
+      100% { transform: rotateY(0deg); filter: brightness(1); opacity: 1; }
+    }
+    .page-turn-prev .reader-page:first-child { animation: flipDownLeft 0.6s cubic-bezier(0.3, 0.1, 0.2, 1) forwards; transform-origin: right center; }
+    @keyframes flipDownLeft {
+      0% { transform: rotateY(-90deg); filter: brightness(0.6); opacity: 0; }
+      100% { transform: rotateY(0deg); filter: brightness(1); opacity: 1; }
+    }
+
+    /* ════════════════════════════════════════════
+       ESTILOS DE LA MAQUETA 3D (Mock-up)
+    ════════════════════════════════════════════ */
+    #mockup-container { background: var(--dark); overflow: hidden; }
+    canvas { display: block; }
+    #mockup-ui { position: absolute; inset: 0; pointer-events: none; z-index: 100; }
+    
+    .hud-header {
+      position: absolute; top: 0; right: 0; padding: 20px;
+      text-align: right; background: linear-gradient(to bottom, rgba(13,15,18,0.9), transparent);
+    }
+    .hud-header h2 { font-family: 'Fraunces', serif; font-weight: 200; font-size: 24px; color: var(--cream); }
+    .hud-header .badge { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px;}
+
+    /* Etiquetas Flotantes en 3D (HTML superpuesto) */
+    .floating-label {
+      position: absolute;
+      background: rgba(10, 12, 16, 0.85);
+      border: 1px solid var(--gold);
+      color: var(--cream);
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      transition: opacity 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .floating-label::after {
+      content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      border-width: 6px; border-style: solid;
+      border-color: var(--gold) transparent transparent transparent;
+    }
+    .floating-label span { color: var(--gold); display: block; font-size: 9px; margin-top: 2px; opacity: 0.7;}
+
+    @media (max-width: 768px) {
+      .menu-cards { flex-direction: column; align-items: center; }
+      .reader-topbar { justify-content: space-between; padding: 0 10px; padding-left: 120px; }
+      .floating-label { font-size: 9px; padding: 4px 8px; }
+    }
+  </style>
 </head>
 <body>
 
-  <button id="btn-toggle-ui" title="Alternar Interfaz">👁️</button>
+  <button id="btn-back" class="btn-back" onclick="goToMenu()">◀ MENÚ</button>
 
-  <div id="loading">
-    <div class="load-title"><em>Cargando Maqueta</em></div>
-    <div class="load-bar-wrap"><div class="load-bar-fill" id="loadBar"></div></div>
-  </div>
-
-  <div id="header" class="ui-element">
-    <div>
-      <h1>Autonomía <em>Hídrica</em></h1>
-      <div class="subtitle">Prototipo Playa La Virgen · Render 3D</div>
+  <div id="main-menu" class="app-section active">
+    <div class="menu-header">
+      <h1>Playa La <em>Virgen</em></h1>
+      <p>Validación de Prototipos</p>
     </div>
-    <div class="badge">
-      <div><strong>Escala</strong> 1:1 Funcional</div>
-      <div><strong>Sistema</strong> Bajo Costo / Reciclado</div>
-      <div><strong>Sensor</strong> Arduino IoT</div>
+    <div class="menu-cards">
+      
+      <div class="menu-card" onclick="openSection('comic-container')">
+        <div class="icon">📖</div>
+        <h3>Storyboard</h3>
+        <p>Cómic interactivo que valida la experiencia del usuario, problema y solución (Matriz CDM).</p>
+      </div>
+
+      <div class="menu-card" onclick="openSection('mockup-container')">
+        <div class="icon">🏗️</div>
+        <h3>Mock-up 3D</h3>
+        <p>Maqueta digital volumétrica. Diseño de componentes reciclados con sensores IoT funcionales.</p>
+      </div>
+
+    </div>
+    <div class="inacap-badge">INACAP · 2026</div>
+  </div>
+
+
+  <div id="comic-container" class="app-section">
+    <div id="comic-reader">
+      <div class="reader-topbar">
+        <button class="nav-btn" id="btnPrev" onclick="prevSpread()">◀ ANT</button>
+        <div class="page-counter" id="pageCounter">1 / 3</div>
+        <button class="nav-btn" id="btnNext" onclick="nextSpread()">SIG ▶</button>
+      </div>
+
+      <div class="reader-viewport">
+        <div class="page-spread active" id="spread-0">
+          <div class="reader-page" style="background:#FFFDF7; align-items:center; justify-content:center; padding:20px; text-align:center;">
+            <h2 style="font-family:'Bangers'; color:#E31B23; font-size:2rem; letter-spacing:2px;">INACAP 2026</h2>
+            <p style="font-family:'Comic Neue'; font-size:0.9rem; margin-top:20px; color:#555;">Storyboard Educativo<br>Innovación y Emprendimiento</p>
+          </div>
+          <div class="book-gutter"></div>
+          <div class="reader-page" style="background:linear-gradient(145deg, #FFD700, #FFA500); padding:20px; display:flex; flex-direction:column;">
+            <div style="background:#E31B23; color:white; padding:5px 10px; font-family:'Bangers'; letter-spacing:2px; display:flex; justify-content:space-between;">
+              <span>VOL 2</span> <span style="background:#0057A8; padding:2px 8px;">#01</span>
+            </div>
+            <h1 style="font-family:'Bangers'; font-size:3rem; text-align:center; line-height:1; margin:15px 0;">Playa<br>La Virgen</h1>
+            <div class="panel panel-tall" style="border:4px solid #0A0A0A; flex:1;">
+              <img src="0.jpg" alt="Portada" onerror="this.style.display='none'">
+            </div>
+            <p style="text-align:center; font-family:'Bangers'; margin-top:10px;">Simón · Renato · Wiljer · Julio · Millaray</p>
+          </div>
+        </div>
+
+        <div class="page-spread" id="spread-1">
+          <div class="reader-page">
+            <div class="page-content">
+              <div class="scene-label">Cap 1: El Oasis que se seca</div>
+              <div class="panel panel-tall"><img src="1.jpg" onerror="this.style.background='#1a3a6e'"></div>
+              <div class="speech-bubble">"¡La logística del agua es una pesadilla! Y perdemos dinero bajo la arena..."</div>
+            </div>
+          </div>
+          <div class="book-gutter"></div>
+          <div class="reader-page">
+            <div class="page-content">
+              <div class="scene-label">Cap 2: El Terreno Habla</div>
+              <div class="panel panel-tall"><img src="2.jpg" onerror="this.style.background='#1a3a6e'"></div>
+              <div class="speech-bubble think">Hallazgo: mantenimiento reactivo. Hay fugas ocultas.</div>
+              <div class="speech-bubble shout" style="text-align:center; font-family:'Bangers'; font-size:1.5rem; background:#E31B23; color:white;">¡IDEA: SENSORES IoT!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="page-spread" id="spread-2">
+          <div class="reader-page">
+            <div class="page-content">
+              <div class="scene-label">Cap 3: Solución Sustentable</div>
+              <div class="panel panel-tall"><img src="3.jpg" onerror="this.style.background='#1a3a6e'"></div>
+              <div class="speech-bubble">¡Osmosis inversa monitoreada! Detectamos fugas antes del colapso.</div>
+            </div>
+          </div>
+          <div class="book-gutter"></div>
+          <div class="reader-page">
+            <div class="page-content">
+              <div class="scene-label">Cap 4: Prototipo (Mock-up)</div>
+              <div class="panel panel-tall"><img src="4.jpg" onerror="this.style.background='#1a3a6e'"></div>
+              <div class="speech-bubble">Simulamos la detección en arena. Validamos y añadimos reuso de aguas grises.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="page-spread" id="spread-3">
+          <div class="reader-page">
+            <div class="page-content">
+              <div class="scene-label">Cap 5: El Resultado</div>
+              <div class="panel panel-tall"><img src="5.jpg" onerror="this.style.background='#1a3a6e'"></div>
+              <div class="speech-bubble shout">¡Autonomía hídrica! Inversión inteligente y turismo garantizado.</div>
+            </div>
+          </div>
+          <div class="book-gutter"></div>
+          <div class="reader-page">
+            <div class="page-content">
+              <div class="scene-label" style="background:#0057A8;">Matriz CDM (Validación)</div>
+              <div style="flex:1; display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+                <div style="border-left:5px solid #2E8B57; padding-left:10px;">
+                  <h3 style="font-family:'Bangers'; color:#2E8B57;">Cualidades</h3>
+                  <ul style="font-size:0.8rem; font-family:'Comic Neue'; font-weight:bold; margin-left:15px;"><li>Menor dependencia externa.</li><li>Datos en tiempo real (IoT).</li></ul>
+                </div>
+                <div style="border-left:5px solid #E31B23; padding-left:10px;">
+                  <h3 style="font-family:'Bangers'; color:#E31B23;">Debilidades</h3>
+                  <ul style="font-size:0.8rem; font-family:'Comic Neue'; font-weight:bold; margin-left:15px;"><li>Alta inversión inicial.</li><li>Mantenimiento de membranas.</li></ul>
+                </div>
+                <div style="border-left:5px solid #0057A8; padding-left:10px;">
+                  <h3 style="font-family:'Bangers'; color:#0057A8;">Mejoras</h3>
+                  <ul style="font-size:0.8rem; font-family:'Comic Neue'; font-weight:bold; margin-left:15px;"><li>Integración aguas grises.</li><li>Soterramiento profundo.</li></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 
-  <div id="legend" class="ui-element">
-    <div class="leg-title">Componentes</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#a8d8f0;color:#a8d8f0"></div><div>Contenedor<br><span style="color:rgba(240,236,227,0.4);font-size:10px">Tupperware</span></div></div>
-    <div class="leg-item"><div class="leg-dot" style="background:#c9a26e"></div><div>Sustrato<br><span style="color:rgba(240,236,227,0.4);font-size:10px">Arena de playa</span></div></div>
-    <div class="leg-item"><div class="leg-dot" style="background:#8eaab8"></div><div>Red HDPE<br><span style="color:rgba(240,236,227,0.4);font-size:10px">Tubería PVC</span></div></div>
-    <div class="leg-item"><div class="leg-dot" style="background:#4a9edd"></div><div>Fuga Oculta<br><span style="color:rgba(240,236,227,0.4);font-size:10px">Humedad activa</span></div></div>
-    <div class="leg-item"><div class="leg-dot" style="background:#2471a3"></div><div>Estanque<br><span style="color:rgba(240,236,227,0.4);font-size:10px">Botella reciclada</span></div></div>
-    <div class="leg-item"><div class="leg-dot pulse" style="background:#e74c3c;color:#e74c3c"></div><div>Sensor IoT<br><span style="color:rgba(240,236,227,0.4);font-size:10px">Arduino — activo</span></div></div>
-  </div>
 
-  <div id="bottombar" class="ui-element">
-    <div class="hint">
-      <span><span class="kbd">Drag</span> Orbitar</span>
-      <span><span class="kbd">Scroll</span> Zoom</span>
-      <span><span class="kbd">Click D.</span> Reset</span>
+  <div id="mockup-container" class="app-section">
+    <div id="mockup-ui">
+      <div class="hud-header">
+        <h2>Mock-up 3D</h2>
+        <div class="badge">Visualización de Prototipo Físico</div>
+      </div>
+      <div id="lbl-sensor" class="floating-label">Sensor IoT Arduino<span>Detecta humedad/presión</span></div>
+      <div id="lbl-fuga" class="floating-label">Fuga Subterránea<span>Humedad en terreno salino</span></div>
+      <div id="lbl-tanque" class="floating-label">Estanque Reciclado<span>Simulación de Acumulación</span></div>
     </div>
-    <div id="status">Sistema activo — monitoreando</div>
-  </div>
+    </div>
 
   <script>
-    // ── LÓGICA DEL BOTÓN TOGGLE UI ────────────────────────────────────
-    const btnToggle = document.getElementById('btn-toggle-ui');
-    const uiElements = document.querySelectorAll('.ui-element');
-    let uiVisible = true;
+    /* ── NAVEGACIÓN PRINCIPAL ── */
+    let mockupInitialized = false;
 
-    btnToggle.addEventListener('click', () => {
-      uiVisible = !uiVisible;
-      uiElements.forEach(el => {
-        if (uiVisible) {
-          el.classList.remove('hidden');
-        } else {
-          el.classList.add('hidden');
-        }
-      });
-      // Cambia la apariencia del botón al estar inactivo
-      if(uiVisible) {
-        btnToggle.innerHTML = '👁️';
-        btnToggle.classList.remove('dimmed');
-      } else {
-        btnToggle.innerHTML = '🙈';
-        btnToggle.classList.add('dimmed');
+    function openSection(id) {
+      document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.getElementById('btn-back').style.display = 'block';
+
+      if (id === 'mockup-container' && !mockupInitialized) {
+        init3D();
+        mockupInitialized = true;
       }
-    });
-
-    // ── SCENE SETUP ──────────────────────────────────────────────────
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0c0f);
-    scene.fog = new THREE.FogExp2(0x0a0c0f, 0.022);
-
-    const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 500);
-    camera.position.set(16, 14, 20);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(innerWidth, innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.physicallyCorrectLights = true;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    document.body.appendChild(renderer.domElement);
-
-    // ── CONTROLS ──────────────────────────────────────────────────────
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.06;
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.7;
-    controls.minDistance = 8;
-    controls.maxDistance = 50;
-    controls.maxPolarAngle = Math.PI / 2 + 0.05;
-    controls.target.set(0, 1, 0);
-
-    renderer.domElement.addEventListener('dblclick', () => {
-      camera.position.set(16, 14, 20);
-      controls.target.set(0, 1, 0);
-    });
-
-    // ── LIGHTING ──────────────────────────────────────────────────────
-    scene.add(new THREE.AmbientLight(0x8ab4cc, 0.6));
-
-    const sunLight = new THREE.DirectionalLight(0xfff5e0, 3.5);
-    sunLight.position.set(15, 25, 20);
-    sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 2048;
-    sunLight.shadow.mapSize.height = 2048;
-    sunLight.shadow.camera.near = 0.5;
-    sunLight.shadow.camera.far = 100;
-    sunLight.shadow.camera.left = -20;
-    sunLight.shadow.camera.right = 20;
-    sunLight.shadow.camera.top = 20;
-    sunLight.shadow.camera.bottom = -20;
-    sunLight.shadow.bias = -0.0005;
-    scene.add(sunLight);
-
-    const fillLight = new THREE.DirectionalLight(0x4a80c4, 1.2);
-    fillLight.position.set(-12, 8, -10);
-    scene.add(fillLight);
-
-    const rimLight = new THREE.DirectionalLight(0xc9a84c, 0.8);
-    rimLight.position.set(0, 5, -18);
-    scene.add(rimLight);
-
-    const ptBlue = new THREE.PointLight(0x2471a3, 4, 8);
-    ptBlue.position.set(-3.5, 5, -2);
-    scene.add(ptBlue);
-
-    const ptRed = new THREE.PointLight(0xe74c3c, 2, 4);
-    ptRed.position.set(-3.5, 5.5, -2);
-    scene.add(ptRed);
-
-    // ── MATERIALS ─────────────────────────────────────────────────────
-    const mat = {};
-
-    mat.ground = new THREE.MeshStandardMaterial({
-      color: 0x0d0f14, roughness: 0.9, metalness: 0.1
-    });
-
-    mat.tupper = new THREE.MeshPhysicalMaterial({
-      color: 0xadd8f0, transparent: true, opacity: 0.18, roughness: 0.05,
-      metalness: 0.0, transmission: 0.92, ior: 1.45, thickness: 0.3,
-      side: THREE.DoubleSide, depthWrite: false
-    });
-
-    mat.sand = new THREE.MeshStandardMaterial({
-      color: 0xc9a26e, roughness: 0.92, metalness: 0.0
-    });
-
-    mat.pipe = new THREE.MeshStandardMaterial({
-      color: 0x7a9aaa, roughness: 0.55, metalness: 0.15
-    });
-
-    mat.leak = new THREE.MeshPhysicalMaterial({
-      color: 0x3a9fd6, transparent: true, opacity: 0.65, roughness: 0.0,
-      metalness: 0.0, transmission: 0.6, ior: 1.33, depthWrite: false
-    });
-
-    mat.tank = new THREE.MeshPhysicalMaterial({
-      color: 0x2471a3, transparent: true, opacity: 0.75, roughness: 0.1,
-      metalness: 0.0, transmission: 0.55, ior: 1.4, side: THREE.DoubleSide,
-      depthWrite: false
-    });
-
-    mat.water = new THREE.MeshPhysicalMaterial({
-      color: 0x5dade2, transparent: true, opacity: 0.55, roughness: 0.0,
-      transmission: 0.5, depthWrite: false
-    });
-
-    mat.sensor = new THREE.MeshStandardMaterial({
-      color: 0xe74c3c, roughness: 0.3, metalness: 0.5,
-      emissive: new THREE.Color(0xe74c3c), emissiveIntensity: 0.8
-    });
-
-    mat.board = new THREE.MeshStandardMaterial({
-      color: 0x1a5c2e, roughness: 0.6, metalness: 0.3
-    });
-
-    mat.metal = new THREE.MeshStandardMaterial({
-      color: 0x8a9bad, roughness: 0.2, metalness: 0.9
-    });
-
-    // ── GEOMETRY ──────────────────────────────────────────────────────
-    const groundGeo = new THREE.PlaneGeometry(80, 80, 40, 40);
-    const ground = new THREE.Mesh(groundGeo, mat.ground);
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -2.3;
-    ground.receiveShadow = true;
-    scene.add(ground);
-
-    const grid = new THREE.GridHelper(60, 40, 0xc9a84c, 0x1a1e25);
-    grid.position.y = -2.28;
-    scene.add(grid);
-
-    const baseGeo = new THREE.BoxGeometry(14, 0.15, 12);
-    const baseMat = new THREE.MeshStandardMaterial({ color: 0x1a1e25, roughness: 0.8, metalness: 0.2 });
-    const base = new THREE.Mesh(baseGeo, baseMat);
-    base.position.y = -2.22;
-    base.receiveShadow = true;
-    scene.add(base);
-
-    const tupW = 13, tupH = 4.5, tupD = 10.5;
-    addBox(tupW, 0.12, tupD, 0xadd8f0, 0, -2.14, 0, mat.sand);
-    const walls = [
-      [tupW, tupH, 0.12, 0, tupH/2 - 2.2, tupD/2],
-      [tupW, tupH, 0.12, 0, tupH/2 - 2.2, -tupD/2],
-      [0.12, tupH, tupD, tupW/2, tupH/2 - 2.2, 0],
-      [0.12, tupH, tupD, -tupW/2, tupH/2 - 2.2, 0],
-    ];
-    walls.forEach(([w,h,d,x,y,z]) => {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat.tupper);
-      m.position.set(x,y,z);
-      scene.add(m);
-    });
-
-    addRim(tupW + 0.3, 0.2, tupD + 0.3, 0x8ab0c8, 0, tupH/2 - 2.2 + tupH/2, 0);
-    function addRim(w,h,d,col,x,y,z) {
-      const rm = new THREE.MeshStandardMaterial({color:col,roughness:0.3,metalness:0.6});
-      [
-        [w, h, 0.25, 0, 0, d/2],
-        [w, h, 0.25, 0, 0, -d/2],
-        [0.25, h, d, w/2, 0, 0],
-        [0.25, h, d, -w/2, 0, 0],
-      ].forEach(([bw,bh,bd,bx,by,bz]) => {
-        const mesh = new THREE.Mesh(new THREE.BoxGeometry(bw,bh,bd), rm);
-        mesh.position.set(x+bx,y+by,z+bz);
-        mesh.castShadow = true;
-        scene.add(mesh);
-      });
     }
 
-    const sandGeo = new THREE.BoxGeometry(12.7, 2.8, 10.2);
-    const sand = new THREE.Mesh(sandGeo, mat.sand);
-    sand.position.set(0, -1.5, 0);
-    sand.receiveShadow = true;
-    sand.castShadow = true;
-    scene.add(sand);
-
-    for (let i = 0; i < 60; i++) {
-      const r = Math.random() * 0.12 + 0.04;
-      const sg = new THREE.SphereGeometry(r, 6, 6);
-      const sm = new THREE.MeshStandardMaterial({
-        color: new THREE.Color().setHSL(0.09, 0.45, 0.55 + Math.random() * 0.15), roughness: 1.0
-      });
-      const sp = new THREE.Mesh(sg, sm);
-      sp.position.set((Math.random() - 0.5) * 11, -0.05, (Math.random() - 0.5) * 9);
-      sp.castShadow = true;
-      scene.add(sp);
+    function goToMenu() {
+      document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById('main-menu').classList.add('active');
+      document.getElementById('btn-back').style.display = 'none';
     }
 
-    const mainPipe = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 11, 24), mat.pipe);
-    mainPipe.rotation.z = Math.PI / 2;
-    mainPipe.position.set(0, 0.15, 1.5);
-    mainPipe.castShadow = true;
-    scene.add(mainPipe);
+    /* ── LÓGICA DEL CÓMIC ── */
+    const TOTAL_SPREADS = 4;
+    let currentSpread = 0;
 
-    const pipe2 = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 8.5, 24), mat.pipe);
-    pipe2.rotation.x = Math.PI / 2;
-    pipe2.position.set(1.5, 0.15, 0);
-    pipe2.castShadow = true;
-    scene.add(pipe2);
-
-    [-4.5, -1.5, 1.5, 4.5].forEach(x => {
-      const joint = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.55, 16), mat.metal);
-      joint.rotation.z = Math.PI / 2;
-      joint.position.set(x, 0.15, 1.5);
-      joint.castShadow = true;
-      scene.add(joint);
-    });
-
-    const tJoint = new THREE.Mesh(new THREE.SphereGeometry(0.52, 16, 16), mat.metal);
-    tJoint.position.set(1.5, 0.15, 1.5);
-    tJoint.castShadow = true;
-    scene.add(tJoint);
-
-    [[-2, 1.8], [0, -0.5], [3, 2.5], [-4, -1.5]].forEach(([x, z]) => {
-      const drip = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.5, 8), mat.pipe);
-      drip.position.set(x, -0.15, z);
-      scene.add(drip);
-    });
-
-    const leakPositions = [
-      { x: 2.2, y: -0.25, z: 1.5, r: 0.75 },
-      { x: -1.2, y: -0.2, z: 0.8, r: 0.5 },
-      { x: 3.5, y: -0.3, z: -0.5, r: 0.6 },
-    ];
-    const leakMeshes = leakPositions.map(p => {
-      const lg = new THREE.SphereGeometry(p.r, 20, 20);
-      lg.scale(1, 0.35, 1);
-      const lm = new THREE.Mesh(lg, mat.leak);
-      lm.position.set(p.x, p.y, p.z);
-      scene.add(lm);
-      return lm;
-    });
-
-    const droplets = [];
-    for (let i = 0; i < 24; i++) {
-      const dg = new THREE.SphereGeometry(0.06 + Math.random() * 0.06, 6, 6);
-      const dm = new THREE.MeshPhysicalMaterial({ color: 0x5dade2, transparent: true, opacity: 0.7, transmission: 0.4, roughness: 0 });
-      const drop = new THREE.Mesh(dg, dm);
-      const lp = leakPositions[Math.floor(Math.random() * leakPositions.length)];
-      drop.position.set(lp.x + (Math.random() - 0.5) * 1.5, lp.y + Math.random() * 0.8, lp.z + (Math.random() - 0.5) * 1.5);
-      drop.userData.originY = drop.position.y;
-      drop.userData.speed = 0.008 + Math.random() * 0.012;
-      drop.userData.offset = Math.random() * Math.PI * 2;
-      scene.add(drop);
-      droplets.push(drop);
+    function showSpread(index, direction = 'next') {
+      const current = document.getElementById('spread-' + currentSpread);
+      if (current) current.classList.remove('active', 'page-turn-next', 'page-turn-prev');
+      
+      currentSpread = index;
+      const next = document.getElementById('spread-' + currentSpread);
+      if (next) {
+        next.classList.remove('page-turn-next', 'page-turn-prev');
+        void next.offsetWidth; 
+        next.classList.add('active');
+        if (currentSpread > 0 || direction === 'prev') {
+            next.classList.add(direction === 'next' ? 'page-turn-next' : 'page-turn-prev');
+        }
+      }
+      updateNav();
     }
 
-    const tankX = -4, tankY = 2.15, tankZ = -2.5;
-    const tankR = 1.9, tankH2 = 5.2;
-
-    const tankOut = new THREE.Mesh(new THREE.CylinderGeometry(tankR, tankR * 0.9, tankH2, 32), mat.tank);
-    tankOut.position.set(tankX, tankY, tankZ);
-    tankOut.castShadow = true;
-    scene.add(tankOut);
-
-    const waterFill = new THREE.Mesh(new THREE.CylinderGeometry(tankR * 0.85, tankR * 0.82, tankH2 * 0.62, 32), mat.water);
-    waterFill.position.set(tankX, tankY - tankH2 * 0.19, tankZ);
-    scene.add(waterFill);
-
-    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.55, tankR, 0.8, 24), mat.tank);
-    neck.position.set(tankX, tankY + tankH2/2 + 0.38, tankZ);
-    scene.add(neck);
-
-    const neckTop = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.9, 24), mat.tank);
-    neckTop.position.set(tankX, tankY + tankH2/2 + 1.23, tankZ);
-    scene.add(neckTop);
-
-    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.4, 24), mat.metal);
-    cap.position.set(tankX, tankY + tankH2/2 + 1.88, tankZ);
-    scene.add(cap);
-
-    const connPipe = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 6, 12), mat.pipe);
-    connPipe.rotation.z = Math.PI / 2;
-    connPipe.position.set(-1.3, 0.0, -1.5);
-    scene.add(connPipe);
-
-    [0.3, 0.6, 0.85].forEach(pct => {
-      const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(tankR + 0.02, 0.03, 8, 32),
-        new THREE.MeshStandardMaterial({
-          color: pct <= 0.62 ? 0x5dade2 : 0x8ab0c8, roughness: 0.4,
-          emissive: pct <= 0.62 ? new THREE.Color(0x1a5a8e) : new THREE.Color(0x0), emissiveIntensity: 0.3
-        })
-      );
-      ring.position.set(tankX, tankY - tankH2/2 + tankH2 * pct, tankZ);
-      scene.add(ring);
-    });
-
-    const sensorX = tankX, sensorY = tankY + tankH2/2 + 2.3, sensorZ = tankZ;
-
-    const board = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.12, 0.9), mat.board);
-    board.position.set(sensorX, sensorY, sensorZ);
-    board.castShadow = true;
-    scene.add(board);
-
-    const chip = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.18, 0.4), mat.sensor);
-    chip.position.set(sensorX, sensorY + 0.15, sensorZ);
-    chip.castShadow = true;
-    scene.add(chip);
-
-    const led = new THREE.Mesh(
-      new THREE.SphereGeometry(0.08, 8, 8),
-      new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: new THREE.Color(0xff0000), emissiveIntensity: 2, roughness: 0.1 })
-    );
-    led.position.set(sensorX + 0.35, sensorY + 0.18, sensorZ - 0.2);
-    scene.add(led);
-
-    const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.8, 8), mat.metal);
-    antenna.position.set(sensorX - 0.4, sensorY + 0.55, sensorZ + 0.2);
-    scene.add(antenna);
-    const antTip = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), mat.metal);
-    antTip.position.set(sensorX - 0.4, sensorY + 0.98, sensorZ + 0.2);
-    scene.add(antTip);
-
-    const signalRings = [];
-    for (let i = 0; i < 3; i++) {
-      const sr = new THREE.Mesh(
-        new THREE.TorusGeometry(0.3 + i * 0.25, 0.025, 8, 32),
-        new THREE.MeshStandardMaterial({
-          color: 0xe74c3c, emissive: new THREE.Color(0xe74c3c), emissiveIntensity: 1.2, transparent: true, opacity: 0.0
-        })
-      );
-      sr.position.set(sensorX - 0.4, sensorY + 0.7, sensorZ + 0.2);
-      sr.rotation.x = Math.PI / 2;
-      scene.add(sr);
-      signalRings.push({ mesh: sr, delay: i * 0.4 });
+    function nextSpread() { if (currentSpread < TOTAL_SPREADS - 1) showSpread(currentSpread + 1, 'next'); }
+    function prevSpread() { if (currentSpread > 0) showSpread(currentSpread - 1, 'prev'); }
+    
+    function updateNav() {
+      document.getElementById('btnPrev').disabled = currentSpread === 0;
+      document.getElementById('btnNext').disabled = currentSpread === TOTAL_SPREADS - 1;
+      document.getElementById('pageCounter').textContent = (currentSpread + 1) + ' / ' + TOTAL_SPREADS;
     }
 
-    function addBox(w, h, d, color, x, y, z, material) {
-      const m = material || new THREE.MeshStandardMaterial({ color, roughness: 0.6 });
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
-      mesh.position.set(x, y, z);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      scene.add(mesh);
-      return mesh;
-    }
 
-    const particleCount = 120;
-    const pGeo = new THREE.BufferGeometry();
-    const pPositions = new Float32Array(particleCount * 3);
-    for (let i = 0; i < particleCount; i++) {
-      pPositions[i*3]   = (Math.random() - 0.5) * 20;
-      pPositions[i*3+1] = Math.random() * 10 - 1;
-      pPositions[i*3+2] = (Math.random() - 0.5) * 16;
-    }
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
-    const pMat = new THREE.PointsMaterial({ color: 0x8ab4cc, size: 0.045, transparent: true, opacity: 0.35, sizeAttenuation: true });
-    scene.add(new THREE.Points(pGeo, pMat));
+    /* ── LÓGICA DE LA MAQUETA 3D (THREE.JS) ── */
+    function init3D() {
+      const container = document.getElementById('mockup-container');
+      
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0a0c0f);
+      scene.fog = new THREE.FogExp2(0x0a0c0f, 0.02);
 
-    const loadBar = document.getElementById('loadBar');
-    loadBar.style.width = '100%';
-    setTimeout(() => { document.getElementById('loading').classList.add('hide'); }, 1400);
+      const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 500);
+      camera.position.set(16, 12, 20);
 
-    const clock = new THREE.Clock();
-    function animate() {
-      requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-      controls.update();
-
-      const ledIntensity = (Math.sin(t * 4) + 1) / 2;
-      led.material.emissiveIntensity = 1.2 + ledIntensity * 2.5;
-      chip.material.emissiveIntensity = 0.3 + ledIntensity * 0.6;
-      ptRed.intensity = 0.5 + ledIntensity * 3;
-
-      signalRings.forEach(({ mesh, delay }) => {
-        const phase = ((t * 0.6 + delay) % 1.5) / 1.5;
-        mesh.scale.set(1 + phase * 1.2, 1, 1 + phase * 1.2);
-        mesh.material.opacity = (1 - phase) * 0.7;
-      });
-
-      leakMeshes.forEach((m, i) => {
-        m.material.opacity = 0.45 + Math.sin(t * 1.5 + i * 1.2) * 0.2;
-        m.scale.y = 0.35 + Math.sin(t * 0.8 + i) * 0.05;
-      });
-
-      droplets.forEach(d => {
-        d.position.y = d.userData.originY + Math.sin(t * d.userData.speed * 60 + d.userData.offset) * 0.12;
-        d.material.opacity = 0.4 + Math.sin(t * 1.2 + d.userData.offset) * 0.3;
-      });
-
-      waterFill.material.opacity = 0.38 + Math.sin(t * 1.1) * 0.08;
-      ptBlue.intensity = 3 + Math.sin(t * 0.7) * 1.2;
-
-      renderer.render(scene, camera);
-    }
-
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      container.appendChild(renderer.domElement);
 
-    animate();
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; controls.autoRotate = true; controls.autoRotateSpeed = 0.5;
+      controls.maxPolarAngle = Math.PI / 2 + 0.05;
+
+      // Luces
+      scene.add(new THREE.AmbientLight(0x8ab4cc, 0.6));
+      const sunLight = new THREE.DirectionalLight(0xfff5e0, 2);
+      sunLight.position.set(15, 25, 20); sunLight.castShadow = true;
+      scene.add(sunLight);
+      
+      const ptRed = new THREE.PointLight(0xe74c3c, 2, 4);
+      scene.add(ptRed); // Se posicionará junto al sensor
+
+      // Base / Arena / Tupper
+      const matSand = new THREE.MeshStandardMaterial({ color: 0xc9a26e, roughness: 0.9 });
+      const sand = new THREE.Mesh(new THREE.BoxGeometry(12, 2.5, 10), matSand);
+      sand.position.y = -1.5; scene.add(sand);
+
+      const matTupper = new THREE.MeshPhysicalMaterial({ color: 0xadd8f0, transparent: true, opacity: 0.2, side: THREE.DoubleSide });
+      const tupper = new THREE.Mesh(new THREE.BoxGeometry(12.5, 4, 10.5), matTupper);
+      tupper.position.y = -0.7; scene.add(tupper);
+
+      // Tubería
+      const matPipe = new THREE.MeshStandardMaterial({ color: 0x7a9aaa });
+      const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 11, 16), matPipe);
+      pipe.rotation.z = Math.PI / 2; pipe.position.set(0, 0, 1.5);
+      scene.add(pipe);
+
+      // Fuga
+      const leakPos = new THREE.Vector3(2.5, -0.2, 1.5);
+      const matLeak = new THREE.MeshPhysicalMaterial({ color: 0x3a9fd6, transparent: true, opacity: 0.7 });
+      const leak = new THREE.Mesh(new THREE.SphereGeometry(0.8, 16, 16), matLeak);
+      leak.position.copy(leakPos); leak.scale.y = 0.5;
+      scene.add(leak);
+
+      // Tanque
+      const tankPos = new THREE.Vector3(-4, 2, -2);
+      const matTank = new THREE.MeshPhysicalMaterial({ color: 0x2471a3, transparent: true, opacity: 0.7, side: THREE.DoubleSide });
+      const tank = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 4, 32), matTank);
+      tank.position.copy(tankPos); scene.add(tank);
+
+      // Sensor Arduino
+      const sensorPos = new THREE.Vector3(-4, 4.3, -2);
+      const matSensor = new THREE.MeshStandardMaterial({ color: 0xe74c3c, emissive: 0xe74c3c });
+      const sensor = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.6), matSensor);
+      sensor.position.copy(sensorPos); scene.add(sensor);
+      ptRed.position.copy(sensorPos); ptRed.position.y += 0.5;
+
+      // Ház de escaneo del sensor hacia la arena (Para hacerlo intuitivo)
+      const scanGeo = new THREE.ConeGeometry(2, 4, 16, 1, true);
+      const scanMat = new THREE.MeshBasicMaterial({ color: 0xe74c3c, transparent: true, opacity: 0.15, side: THREE.DoubleSide, blending: THREE.AdditiveBlending });
+      const scanner = new THREE.Mesh(scanGeo, scanMat);
+      scanner.position.set(-4, 2.3, -2); // Debajo del sensor
+      scene.add(scanner);
+
+      // ── REFERENCIAS HTML FLOTANTES ──
+      const lblSensor = document.getElementById('lbl-sensor');
+      const lblFuga = document.getElementById('lbl-fuga');
+      const lblTanque = document.getElementById('lbl-tanque');
+
+      function updateLabels() {
+        // Ocultar etiquetas si no estamos en la sección de maqueta
+        if (!document.getElementById('mockup-container').classList.contains('active')) return;
+
+        const hw = window.innerWidth / 2; const hh = window.innerHeight / 2;
+
+        // Proyección Sensor
+        const pSensor = sensorPos.clone().project(camera);
+        lblSensor.style.left = (pSensor.x * hw + hw) + 'px';
+        lblSensor.style.top = (-pSensor.y * hh + hh - 40) + 'px'; // -40 offset hacia arriba
+
+        // Proyección Fuga
+        const pFuga = leakPos.clone().project(camera);
+        lblFuga.style.left = (pFuga.x * hw + hw) + 'px';
+        lblFuga.style.top = (-pFuga.y * hh + hh - 30) + 'px';
+
+        // Proyección Tanque
+        const pTanque = tankPos.clone().project(camera);
+        lblTanque.style.left = (pTanque.x * hw + hw) + 'px';
+        lblTanque.style.top = (-pTanque.y * hh + hh) + 'px';
+      }
+
+      // Animación
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        
+        // Solo renderizar si la sección está activa (rendimiento)
+        if (document.getElementById('mockup-container').classList.contains('active')) {
+          controls.update();
+          const t = clock.getElapsedTime();
+          
+          // Pulsación del sensor y escáner
+          const pulse = (Math.sin(t * 5) + 1) / 2;
+          sensor.material.emissiveIntensity = 0.5 + pulse;
+          scanner.material.opacity = 0.1 + pulse * 0.15;
+          
+          // Fuga latiendo suavemente
+          leak.scale.setScalar(1 + Math.sin(t*2)*0.05);
+          leak.scale.y = 0.5; // Mantenerla achatada
+
+          renderer.render(scene, camera);
+          updateLabels();
+        }
+      }
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      animate();
+    }
   </script>
 </body>
 </html>
