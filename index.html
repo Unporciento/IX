@@ -3,640 +3,650 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SHIPA · Sistema Hídrico Inteligente · Playa La Virgen</title>
+<title>MOCKUP 3D INDUSTRIAL | SHIPA - Playa La Virgen</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syncopate:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
 
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #03070b;
+    --cyan: #00f0ff;
+    --cyan-dim: #008b99;
+    --blue: #0055ff;
+    --red: #ff2a2a;
+    --gold: #ffb700;
+    --panel: rgba(3, 10, 18, 0.85);
+    --bdr: rgba(0, 240, 255, 0.2);
+    --font-ui: 'Rajdhani', sans-serif;
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-head: 'Syncopate', sans-serif;
+  }
 
-:root {
-  --c: #00f5ff;
-  --c2: #00a8b8;
-  --r: #ff2a2a;
-  --g: #00ff88;
-  --go: #e8c44a;
-  --bg: #020609;
-  --panel: rgba(2, 12, 22, 0.88);
-  --bdr: rgba(0, 245, 255, 0.15);
-  --mono: 'Share Tech Mono', monospace;
-  --ui: 'Rajdhani', sans-serif;
-  --title: 'Orbitron', sans-serif;
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, body {
-  width: 100%; height: 100%;
-  background: var(--bg);
-  overflow: hidden;
-  font-family: var(--ui);
-  color: var(--c);
-}
+  body, html {
+    width: 100%; height: 100%;
+    background: var(--bg); color: var(--cyan);
+    font-family: var(--font-ui); overflow: hidden;
+    user-select: none;
+  }
 
-canvas {
-  display: block; position: fixed; top: 0; left: 0; z-index: 1; outline: none;
-}
+  canvas { position: absolute; top: 0; left: 0; z-index: 1; outline: none; display: block; }
 
-/* ── HUD PRINCIPAL ───────────────────────────────────────────────────────── */
-#hud {
-  position: fixed; inset: 0; z-index: 10; pointer-events: none;
-}
-#hud::before {
-  content: ''; position: absolute; inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.055) 3px, rgba(0,0,0,0.055) 4px);
-  pointer-events: none; z-index: 1;
-}
-#hud::after {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse 75% 75% at 50% 50%, transparent 40%, rgba(1,4,10,0.92) 100%);
-  pointer-events: none;
-}
+  /* HUD OVERLAY */
+  #hud-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
+  
+  /* SCANLINES & VIGNETTE */
+  #hud-layer::before {
+    content: ''; position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,240,255,0.03) 2px, rgba(0,240,255,0.03) 4px);
+    pointer-events: none; z-index: -1;
+  }
+  #hud-layer::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,5,10,0.9) 100%);
+    pointer-events: none; z-index: -1;
+  }
 
-/* Esquinas de mira (Brackets) */
-.brk {
-  position: absolute; width: 52px; height: 52px; border-color: var(--c); border-style: solid; opacity: .6;
-  animation: brk-pulse 3s ease-in-out infinite;
-}
-.brk.tl { top: 14px; left: 14px; border-width: 2px 0 0 2px; }
-.brk.tr { top: 14px; right: 14px; border-width: 2px 2px 0 0; }
-.brk.bl { bottom: 14px; left: 14px; border-width: 0 0 2px 2px; }
-.brk.br { bottom: 14px; right: 14px; border-width: 0 2px 2px 0; }
-@keyframes brk-pulse { 0%, 100% { opacity: .55; } 50% { opacity: .9; } }
+  /* BORDES TECNOLÓGICOS */
+  .frame-border {
+    position: absolute; width: 60px; height: 60px; border-color: var(--cyan); border-style: solid; opacity: 0.5;
+  }
+  .fb-tl { top: 20px; left: 20px; border-width: 2px 0 0 2px; }
+  .fb-tr { top: 20px; right: 20px; border-width: 2px 2px 0 0; }
+  .fb-bl { bottom: 20px; left: 20px; border-width: 0 0 2px 2px; }
+  .fb-br { bottom: 20px; right: 20px; border-width: 0 2px 2px 0; }
 
-/* ── BARRA SUPERIOR ──────────────────────────────────────────────────────── */
-#topbar {
-  position: absolute; top: 0; left: 0; right: 0; height: 56px;
-  background: linear-gradient(180deg, rgba(1,8,18,0.97) 0%, transparent 100%);
-  display: flex; align-items: center; justify-content: space-between; padding: 0 22px;
-  border-bottom: 1px solid var(--bdr); z-index: 5;
-}
-.logo-wrap { display: flex; align-items: baseline; gap: 12px; }
-.logo {
-  font-family: var(--title); font-size: 22px; font-weight: 900; letter-spacing: 6px; color: #fff;
-  text-shadow: 0 0 24px var(--c), 0 0 48px rgba(0,245,255,.3);
-}
-.logo em { color: var(--c); font-style: normal; }
-.sub { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: rgba(0,245,255,.45); line-height: 1.4; }
+  /* TOP HEADER */
+  header {
+    position: absolute; top: 0; left: 0; right: 0; height: 70px;
+    background: linear-gradient(180deg, rgba(2,8,15,0.95) 0%, transparent 100%);
+    border-bottom: 1px solid var(--bdr);
+    display: flex; justify-content: space-between; align-items: center; padding: 0 40px;
+    pointer-events: auto;
+  }
+  .logo-container { display: flex; flex-direction: column; }
+  .logo { font-family: var(--font-head); font-size: 24px; font-weight: 700; color: #fff; letter-spacing: 4px; text-shadow: 0 0 10px var(--cyan); }
+  .logo span { color: var(--cyan); }
+  .sub-logo { font-family: var(--font-mono); font-size: 10px; color: var(--cyan-dim); letter-spacing: 3px; margin-top: 2px; }
 
-.pills { display: flex; gap: 10px; align-items: center; }
-.pill { font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; padding: 3px 11px; border-radius: 2px; border: 1px solid; }
-.pill.ok { border-color: var(--g); color: var(--g); background: rgba(0,255,136,.06); }
-.pill.warn { border-color: var(--r); color: var(--r); background: rgba(255,42,42,.06); animation: blink 1s step-end infinite; }
-.pill.info { border-color: var(--c); color: var(--c); background: rgba(0,245,255,.06); }
-@keyframes blink { 50% { opacity: 0; } }
+  .nav-pills { display: flex; gap: 15px; }
+  .pill {
+    padding: 6px 12px; border: 1px solid var(--cyan-dim); border-radius: 2px;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px;
+    background: rgba(0,240,255,0.05); color: var(--cyan); text-transform: uppercase;
+  }
+  .pill.active { border-color: var(--g); color: #00ff88; background: rgba(0,255,136,0.1); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
+  .pill.alert { border-color: var(--r); color: var(--r); background: rgba(255,42,42,0.1); animation: flash 1s infinite; }
+  @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-/* Anillo de Estado (Status Ring) */
-#status-ring {
-  position: absolute; top: 68px; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 6px; z-index: 5; align-items: center;
-}
-.sring { width: 6px; height: 6px; border-radius: 50%; background: var(--g); box-shadow: 0 0 6px var(--g); animation: sring 2s ease-in-out infinite; }
-.sring:nth-child(2) { animation-delay: .3s; background: var(--c); box-shadow: 0 0 6px var(--c); }
-.sring:nth-child(3) { animation-delay: .6s; }
-.sring:nth-child(4) { animation-delay: .9s; background: var(--r); box-shadow: 0 0 6px var(--r); }
-.sring:nth-child(5) { animation-delay: 1.2s; background: var(--go); box-shadow: 0 0 6px var(--go); }
-@keyframes sring { 0%, 100% { opacity: .3; transform: scale(.8); } 50% { opacity: 1; transform: scale(1); } }
-.sring-label { font-family: var(--mono); font-size: 8px; letter-spacing: 2px; color: rgba(0,245,255,.3); margin: 0 6px; }
+  /* SIDE PANELS */
+  .panel {
+    position: absolute; top: 90px; width: 300px;
+    background: var(--panel); border: 1px solid var(--bdr); backdrop-filter: blur(10px);
+    padding: 20px; pointer-events: auto;
+  }
+  #panel-left { left: 20px; }
+  #panel-right { right: 20px; }
 
-/* ── PANELES LATERALES ───────────────────────────────────────────────────── */
-.panel-side {
-  position: absolute; top: 70px; background: var(--panel); border: 1px solid var(--bdr);
-  border-radius: 3px; padding: 16px 18px; backdrop-filter: blur(14px); z-index: 5;
-}
-#panel-l { left: 14px; width: 252px; }
-#panel-r { right: 14px; width: 236px; }
+  .panel-header {
+    font-family: var(--font-mono); font-size: 12px; color: var(--gold);
+    letter-spacing: 3px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,183,0,0.3);
+    padding-bottom: 8px; display: flex; justify-content: space-between;
+  }
 
-.p-title {
-  font-family: var(--mono); font-size: 9px; letter-spacing: 3px; color: rgba(0,245,255,.45);
-  text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
-}
-.p-title::before { content: ''; display: inline-block; width: 3px; height: 12px; background: var(--c); box-shadow: 0 0 8px var(--c); }
+  .data-row { margin-bottom: 15px; }
+  .data-row:last-child { margin-bottom: 0; }
+  .data-label { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.5); letter-spacing: 1px; display: flex; justify-content: space-between; }
+  .data-val { font-size: 14px; font-weight: 700; color: #fff; }
+  .data-val.red { color: var(--r); }
+  .data-val.green { color: #00ff88; }
+  .data-val.cyan { color: var(--cyan); }
+  
+  .progress-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); margin-top: 5px; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--cyan); width: 0%; transition: width 1s ease; }
+  .progress-fill.red { background: var(--r); }
+  .progress-fill.green { background: #00ff88; }
+  .progress-fill.gold { background: var(--gold); }
 
-.row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 9px; padding-bottom: 8px; border-bottom: 1px solid rgba(0,245,255,.07); }
-.row:last-child { border-bottom: none; margin-bottom: 0; }
-.lbl { font-size: 9px; letter-spacing: 1px; color: rgba(255,255,255,.38); font-family: var(--mono); line-height: 1.6; }
-.val { font-family: var(--mono); font-size: 14px; font-weight: 700; }
-.val.ok { color: var(--g); } .val.warn { color: var(--r); } .val.info { color: var(--c); } .val.gold { color: var(--go); } .val.pur { color: #b080ff; }
+  /* 3D FLOATING LABELS */
+  .floating-label {
+    position: absolute; transform: translate(-50%, -100%);
+    background: rgba(2, 8, 15, 0.9); border: 1px solid var(--cyan-dim);
+    padding: 8px 12px; border-radius: 4px; pointer-events: none;
+    display: flex; flex-direction: column; align-items: center;
+    opacity: 0; transition: opacity 0.3s; z-index: 20;
+    box-shadow: 0 4px 15px rgba(0,240,255,0.15);
+  }
+  .floating-label.visible { opacity: 1; }
+  .floating-label::after {
+    content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    border-width: 6px; border-style: solid; border-color: var(--cyan-dim) transparent transparent transparent;
+  }
+  .fl-title { font-family: var(--font-head); font-size: 10px; color: var(--white); letter-spacing: 1px; }
+  .fl-sub { font-family: var(--font-mono); font-size: 9px; color: var(--gold); margin-top: 4px; }
 
-.bar { width: 100%; height: 3px; background: rgba(255,255,255,.05); border-radius: 2px; margin-top: 4px; }
-.bar-f { height: 100%; border-radius: 2px; }
+  /* BOTTOM BAR */
+  footer {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 50px;
+    background: linear-gradient(0deg, rgba(2,8,15,0.95) 0%, transparent 100%);
+    border-top: 1px solid var(--bdr); display: flex; justify-content: center; align-items: center; gap: 40px;
+    pointer-events: auto;
+  }
+  .ctrl-hint { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 2px; }
+  .ctrl-hint span { color: var(--cyan); border: 1px solid var(--bdr); padding: 2px 6px; border-radius: 2px; margin-right: 5px;}
 
-/* ── ELEMENTOS INFERIORES ────────────────────────────────────────────────── */
-#depth-display {
-  position: absolute; top: 50%; right: 265px; transform: translateY(-50%); text-align: right; z-index: 5;
-}
-#depth-num {
-  font-family: var(--title); font-size: 38px; font-weight: 700; color: var(--c);
-  text-shadow: 0 0 30px var(--c), 0 0 60px rgba(0,245,255,.4); line-height: 1;
-}
-#depth-lbl { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: rgba(0,245,255,.45); }
+  /* CAMERA SELECTORS */
+  #cam-controls { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; pointer-events: auto; }
+  .cam-btn {
+    background: var(--panel); border: 1px solid var(--bdr); color: var(--cyan);
+    font-family: var(--font-mono); font-size: 10px; padding: 8px 15px; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 2px; transition: all 0.3s;
+  }
+  .cam-btn:hover, .cam-btn.active { background: rgba(0,240,255,0.15); box-shadow: 0 0 10px rgba(0,240,255,0.3); border-color: var(--cyan); color: #fff; }
 
-#legend {
-  position: absolute; bottom: 50px; left: 14px; background: var(--panel); border: 1px solid var(--bdr);
-  border-radius: 3px; padding: 12px 16px; backdrop-filter: blur(14px); z-index: 5;
-}
-.leg { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
-.leg:last-child { margin-bottom: 0; }
-.leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.leg-txt { font-family: var(--mono); font-size: 8.5px; letter-spacing: 1px; color: rgba(255,255,255,.45); }
+  /* DIAGNOSTIC CONSOLE */
+  #console {
+    position: absolute; bottom: 80px; left: 20px; width: 300px; height: 120px;
+    background: rgba(0,0,0,0.6); border: 1px solid rgba(255,42,42,0.3);
+    padding: 10px; overflow: hidden; font-family: var(--font-mono); font-size: 9px; color: #fff;
+  }
+  .log-line { margin-bottom: 4px; border-left: 2px solid; padding-left: 6px; opacity: 0; animation: fadeLog 0.3s forwards; }
+  .log-line.err { border-color: var(--r); color: #ff8888; }
+  .log-line.ok { border-color: #00ff88; color: #88ffbb; }
+  .log-line.sys { border-color: var(--cyan); color: #88eeff; }
+  @keyframes fadeLog { to { opacity: 1; } }
 
-#alerts { position: absolute; bottom: 50px; right: 14px; width: 236px; z-index: 5; }
-.al {
-  font-family: var(--mono); font-size: 8.5px; letter-spacing: .8px; padding: 4px 9px; margin-bottom: 3px;
-  border-left: 2px solid; background: rgba(0,0,0,.5); animation: alin .35s ease;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-@keyframes alin { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: none; } }
-.al.c { border-color: var(--c); color: rgba(0,245,255,.7); }
-.al.w { border-color: var(--r); color: rgba(255,42,42,.8); }
-.al.g { border-color: var(--g); color: rgba(0,255,136,.7); }
-.al.o { border-color: var(--go); color: rgba(232,196,74,.75); }
-
-#coord {
-  position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
-  font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; color: rgba(0,245,255,.28); z-index: 5;
-}
-
-#botbar {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 38px;
-  background: linear-gradient(0deg, rgba(1,8,18,0.95) 0%, transparent 100%);
-  display: flex; align-items: center; justify-content: center; gap: 40px;
-  border-top: 1px solid var(--bdr); z-index: 5;
-}
-.hint { font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; color: rgba(0,245,255,.3); }
-.hint b { color: rgba(0,245,255,.6); }
-
-/* Crosshair Decorativo */
-#crosshair {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: 200px; height: 200px; pointer-events: none; opacity: 0.08;
-  background: 
-    linear-gradient(to right, transparent 49%, var(--c) 49%, var(--c) 51%, transparent 51%),
-    linear-gradient(to bottom, transparent 49%, var(--c) 49%, var(--c) 51%, transparent 51%);
-  border-radius: 50%; border: 1px solid var(--c); z-index: 2;
-}
-#crosshair::after {
-  content: ''; position: absolute; inset: 20px; border-radius: 50%; border: 1px dashed var(--c);
-}
-
-@media (max-width: 768px) {
-  #panel-l, #panel-r, #legend, #alerts, #status-ring { display: none; }
-  .logo-wrap { flex-direction: column; gap: 2px; }
-  .sub { font-size: 7px; }
-  .pills { transform: scale(0.8); transform-origin: right center; }
-  #botbar { gap: 15px; }
-  .hint { font-size: 7px; }
-}
 </style>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 </head>
 <body>
 
-<div id="crosshair"></div>
+<div id="canvas-container"></div>
 
-<div id="hud">
-  <div class="brk tl"></div><div class="brk tr"></div>
-  <div class="brk bl"></div><div class="brk br"></div>
+<div id="hud-layer">
+  <div class="frame-border fb-tl"></div>
+  <div class="frame-border fb-tr"></div>
+  <div class="frame-border fb-bl"></div>
+  <div class="frame-border fb-br"></div>
 
-  <div id="topbar">
-    <div class="logo-wrap">
-      <div class="logo">S<em>H</em>IPA</div>
-      <div class="sub">SISTEMA HÍDRICO INTELIGENTE<br>PLAYA LA VIRGEN · MOCK-UP 3D</div>
+  <header>
+    <div class="logo-container">
+      <div class="logo">S<span>H</span>IPA</div>
+      <div class="sub-logo">SISTEMA HÍDRICO INTELIGENTE · V1.0</div>
     </div>
-    <div class="pills">
-      <div class="pill ok">● SENSOR ACTIVO</div>
-      <div class="pill warn">⚠ FUGA DETECTADA</div>
-      <div class="pill info">◈ IoT ONLINE</div>
-      <div class="pill ok">▲ PURIF OPERATIVO</div>
+    <div class="nav-pills">
+      <div class="pill active">MÓDULO PURIFICACIÓN</div>
+      <div class="pill active">IoT SENSOR</div>
+      <div class="pill alert">FUGA SUBTERRÁNEA</div>
     </div>
-  </div>
+  </header>
 
-  <div id="status-ring">
-    <span class="sring-label">SYS</span>
-    <div class="sring"></div><div class="sring"></div>
-    <div class="sring"></div><div class="sring"></div><div class="sring"></div>
-    <span class="sring-label">SHIPA</span>
-  </div>
-
-  <div id="panel-l" class="panel-side">
-    <div class="p-title">Telemetría Hídrica</div>
-    <div class="row">
-      <div class="lbl">PRESIÓN RED HDPE<div class="bar"><div class="bar-f" style="width:72%;background:var(--r)"></div></div></div>
-      <div class="val warn">3.2 bar</div>
+  <div id="panel-left" class="panel">
+    <div class="panel-header"><span>TELEMETRÍA EN TIEMPO REAL</span><span>[REC]</span></div>
+    
+    <div class="data-row">
+      <div class="data-label">CAÍDA DE PRESIÓN (HDPE) <span class="data-val red">3.2 BAR ⚠️</span></div>
+      <div class="progress-bar"><div class="progress-fill red" style="width: 75%;"></div></div>
     </div>
-    <div class="row">
-      <div class="lbl">SALINIDAD SUELO<div class="bar"><div class="bar-f" style="width:88%;background:var(--go)"></div></div></div>
-      <div class="val gold">88 ppm</div>
+    <div class="data-row">
+      <div class="data-label">PRODUCCIÓN OSMOSIS <span class="data-val green">200 L/DÍA</span></div>
+      <div class="progress-bar"><div class="progress-fill green" style="width: 100%;"></div></div>
     </div>
-    <div class="row">
-      <div class="lbl">EFIC. PURIFICACIÓN<div class="bar"><div class="bar-f" style="width:94%;background:var(--g)"></div></div></div>
-      <div class="val ok">94.2%</div>
+    <div class="data-row">
+      <div class="data-label">ENERGÍA SOLAR DISP. <span class="data-val gold">88%</span></div>
+      <div class="progress-bar"><div class="progress-fill gold" style="width: 88%;"></div></div>
     </div>
-    <div class="row">
-      <div class="lbl">HUMEDAD SUBSUELO<div class="bar"><div class="bar-f" style="width:61%;background:var(--r)"></div></div></div>
-      <div class="val warn">61% ↑</div>
-    </div>
-    <div class="row">
-      <div class="lbl">TEMP. MÓDULO<div class="bar"><div class="bar-f" style="width:42%;background:var(--c)"></div></div></div>
-      <div class="val info">22.4 °C</div>
-    </div>
-    <div class="row">
-      <div class="lbl">FLUJO NETO<div class="bar"><div class="bar-f" style="width:55%;background:#b080ff"></div></div></div>
-      <div class="val pur">320 L/h</div>
-    </div>
-    <div class="row">
-      <div class="lbl">CONDUCTIVIDAD<div class="bar"><div class="bar-f" style="width:78%;background:var(--c)"></div></div></div>
-      <div class="val info">1840 µS</div>
+    <div class="data-row">
+      <div class="data-label">SALINIDAD DE ENTRADA <span class="data-val cyan">35,000 PPM</span></div>
+      <div class="progress-bar"><div class="progress-fill cyan" style="width: 60%;"></div></div>
     </div>
   </div>
 
-  <div id="panel-r" class="panel-side">
-    <div class="p-title">Escáner Holográfico</div>
-    <div class="row"><div class="lbl">PROFUNDIDAD SCAN</div><div class="val info" id="scan-d">-2.40 m</div></div>
-    <div class="row"><div class="lbl">ANOMALÍA Δσ</div><div class="val warn">+18.7 mS/cm</div></div>
-    <div class="row"><div class="lbl">CONFIANZA DETEC.</div><div class="val ok">97.3%</div></div>
-    <div class="row"><div class="lbl">FRECUENCIA IoT</div><div class="val info">2.4 GHz</div></div>
-    <div class="row"><div class="lbl">LATENCIA RED</div><div class="val ok">12 ms</div></div>
-    <div class="row"><div class="lbl">UPTIME SISTEMA</div><div class="val ok">99.98%</div></div>
-    <div class="row"><div class="lbl">COORD. GPS</div><div class="val info" style="font-size:11px">29.9S 71.2W</div></div>
-    <div class="row"><div class="lbl">CICLOS SCAN</div><div class="val info" id="scan-cycle">0000</div></div>
+  <div id="panel-right" class="panel">
+    <div class="panel-header"><span>ANÁLISIS DE TERRENO</span><span>ERT</span></div>
+    
+    <div class="data-row">
+      <div class="data-label">PROFUNDIDAD DE FUGA <span class="data-val red">-2.45 MTS</span></div>
+    </div>
+    <div class="data-row">
+      <div class="data-label">VOLUMEN PERDIDO EST. <span class="data-val red">42%</span></div>
+    </div>
+    <div class="data-row">
+      <div class="data-label">ESTADO DE TERRENO <span class="data-val gold">ARENA SALINA</span></div>
+    </div>
+    <div class="data-row">
+      <div class="data-label">LATENCIA IoT (2.4GHz) <span class="data-val green">12ms</span></div>
+    </div>
+    <div style="margin-top: 20px; padding: 10px; border: 1px dashed var(--bdr); text-align: center;">
+      <span style="font-family: var(--font-mono); font-size: 24px; color: var(--cyan);">PLAYA LA VIRGEN</span>
+      <div style="font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 5px;">COORD: 27°19'S 70°56'W</div>
+    </div>
   </div>
 
-  <div id="depth-display">
-    <div id="depth-num">-2.40</div>
-    <div id="depth-lbl">METROS · PROFUNDIDAD</div>
+  <div id="console">
+    <div class="log-line sys">Iniciando protocolo SHIPA... OK</div>
+    <div class="log-line sys">Escaneando terreno salino... OK</div>
+    <div class="log-line err">ALERTA: Fuga detectada en matriz principal.</div>
+    <div class="log-line ok">Módulo Osmosis Inversa compensando flujo...</div>
   </div>
 
-  <div id="legend">
-    <div class="leg"><div class="leg-dot" style="background:#4a3e2e"></div><div class="leg-txt">CORTE TERRENO · Arena Costera</div></div>
-    <div class="leg"><div class="leg-dot" style="background:#1a2530"></div><div class="leg-txt">TUBERÍA HDPE Ø110mm PE100</div></div>
-    <div class="leg"><div class="leg-dot" style="background:#00f5ff; box-shadow:0 0 5px #00f5ff"></div><div class="leg-txt">FUGA SUBTERRÁNEA DETECTADA</div></div>
-    <div class="leg"><div class="leg-dot" style="background:#b8c4cc"></div><div class="leg-txt">MÓDULO PURIFICACIÓN · AISI 316</div></div>
-    <div class="leg"><div class="leg-dot" style="background:#1c2535; border:1px solid #00f5ff"></div><div class="leg-txt">SENSOR IoT SMART WATER</div></div>
-    <div class="leg"><div class="leg-dot" style="background:rgba(0,245,255,0.35)"></div><div class="leg-txt">HAZ ESCÁNER HOLOGRÁFICO</div></div>
+  <div id="cam-controls">
+    <button class="cam-btn active" onclick="moveCamera(10, 8, 14, 0, 0, 0)">VISTA GLOBAL</button>
+    <button class="cam-btn" onclick="moveCamera(-5, 6, -2, -3, 2, -1)">MÓDULO SHIPA</button>
+    <button class="cam-btn" onclick="moveCamera(4, -1, 4, 1.5, -1.5, 0.4)">ZONA DE FUGA</button>
+    <button class="cam-btn" onclick="moveCamera(-3, 8, -4, -3, 5.5, -1)">SENSOR IoT</button>
   </div>
 
-  <div id="alerts">
-    <div class="al w">[WARN] Anomalía hídrica Z=-2.4m · HDPE-03</div>
-    <div class="al c">[SCAN] Haz holográfico activo · 97.3% conf</div>
-    <div class="al g">[OK]   Módulo purif · Q=320L/h · activo</div>
-    <div class="al o">[DATA] GPS sync · 29.9S 71.2W · OK</div>
-    <div class="al c">[IoT]  Heartbeat 2.4GHz · latencia 12ms</div>
-  </div>
+  <footer>
+    <div class="ctrl-hint"><span>CLICK IZQ</span> ORBITAR</div>
+    <div class="ctrl-hint"><span>CLICK DER</span> PANEAR</div>
+    <div class="ctrl-hint"><span>SCROLL</span> ZOOM</div>
+    <div class="ctrl-hint" style="color:var(--gold)">MODELO INDUSTRIAL HD</div>
+  </footer>
 
-  <div id="coord">CAM 0.0  0.0  r=0.0m</div>
+  <div id="lbl-shipa" class="floating-label"><div class="fl-title">ESTANQUE SHIPA</div><div class="fl-sub">Acero Inox + Osmosis</div></div>
+  <div id="lbl-leak" class="floating-label"><div class="fl-title">ANOMALÍA DETECTADA</div><div class="fl-sub">Humedad Z=-2.45m</div></div>
+  <div id="lbl-sensor" class="floating-label"><div class="fl-title">SMART WATER IoT</div><div class="fl-sub">Transmisión Activa</div></div>
+  <div id="lbl-solar" class="floating-label"><div class="fl-title">ARREGLO SOLAR</div><div class="fl-sub">Autonomía 100%</div></div>
 
-  <div id="botbar">
-    <div class="hint"><b>DRAG</b> Rotar</div>
-    <div class="hint"><b>SCROLL</b> Zoom</div>
-    <div class="hint"><b>RIGHT DRAG</b> Panear</div>
-    <div class="hint"><b>SPACE</b> Auto-Rotación</div>
-  </div>
 </div>
 
 <script>
-(function(){
-'use strict';
+// ============================================================================
+// MOTOR 3D INDUSTRIAL - PLAYA LA VIRGEN
+// ============================================================================
+const container = document.getElementById('canvas-container');
+let scene, camera, renderer, controls;
+let clock = new THREE.Clock();
 
-// ── SETUP INICIAL ──────────────────────────────────────────────────────────
-const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance', alpha: false });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.outputEncoding = THREE.sRGBEncoding;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
-renderer.setClearColor(0x020509, 1);
-document.body.appendChild(renderer.domElement);
+// Grupos
+let terrainGroup, pipeGroup, leakGroup, shipaGroup, scanGroup;
 
-const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x020509, 0.038);
+// Referencias a mallas para animar
+let leakMesh, scanCone, ringArray = [], waterCylinder, ledBlink, hologramMesh;
 
-const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 500);
-camera.position.set(10, 8, 14);
-camera.lookAt(0, 0, 0);
+// Posiciones Clave
+const POS_LEAK = new THREE.Vector3(1.5, -1.5, 0.4);
+const POS_SHIPA = new THREE.Vector3(-3, 1.5, -1);
+const POS_SENSOR = new THREE.Vector3(-3, 5.5, -1);
 
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.06;
-controls.minDistance = 4;
-controls.maxDistance = 35;
-controls.maxPolarAngle = Math.PI * 0.75; // Permitir ver un poco por debajo del suelo
-controls.autoRotate = false; // Empezamos sin auto-rotate para control manual
-controls.autoRotateSpeed = 0.8;
+init();
+animate();
 
-// ── ILUMINACIÓN PREMIUM ────────────────────────────────────────────────────
-scene.add(new THREE.AmbientLight(0x0a1520, 0.8));
+function init() {
+  // 1. ESCENA Y CÁMARA
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x020509);
+  scene.fog = new THREE.FogExp2(0x020509, 0.025);
 
-// Luz principal cálida (Sol)
-const keyLight = new THREE.DirectionalLight(0xdce8ff, 1.8);
-keyLight.position.set(6, 15, 8);
-keyLight.castShadow = true;
-keyLight.shadow.mapSize.width = 2048;
-keyLight.shadow.mapSize.height = 2048;
-keyLight.shadow.camera.near = 0.5;
-keyLight.shadow.camera.far = 50;
-keyLight.shadow.camera.left = -12;
-keyLight.shadow.camera.right = 12;
-keyLight.shadow.camera.top = 12;
-keyLight.shadow.camera.bottom = -12;
-keyLight.shadow.bias = -0.001;
-scene.add(keyLight);
+  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(10, 8, 14);
 
-// Luz de relleno azulada
-const fillLight = new THREE.DirectionalLight(0x0050a0, 0.7);
-fillLight.position.set(-8, 4, -6);
-scene.add(fillLight);
+  // 2. RENDERIZADOR (Configuración Premium)
+  renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+  container.appendChild(renderer.domElement);
 
-// Luz de recorte cyan
-const rimLight = new THREE.DirectionalLight(0x00f5ff, 0.4);
-rimLight.position.set(0, 2, -10);
-scene.add(rimLight);
+  // 3. CONTROLES
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+  controls.maxPolarAngle = Math.PI / 2 + 0.2; // Permitir ver un poco el subsuelo
+  controls.minDistance = 3;
+  controls.maxDistance = 30;
 
-// Luces puntuales
-const leakLight = new THREE.PointLight(0x00f5ff, 3.5, 7, 2);
-leakLight.position.set(1.2, -1.6, 0.4);
-scene.add(leakLight);
+  // 4. ILUMINACIÓN (Estudio)
+  const ambient = new THREE.AmbientLight(0x0a1520, 1.5);
+  scene.add(ambient);
 
-const tankLight = new THREE.PointLight(0x40c8ff, 2.5, 5, 2);
-tankLight.position.set(-2, 0.8, -1);
-scene.add(tankLight);
+  const sun = new THREE.DirectionalLight(0xfff0dd, 2.5);
+  sun.position.set(10, 15, 10);
+  sun.castShadow = true;
+  sun.shadow.mapSize.width = 2048;
+  sun.shadow.mapSize.height = 2048;
+  sun.shadow.bias = -0.0005;
+  scene.add(sun);
 
-const sensorLight = new THREE.PointLight(0x00f5ff, 2.0, 4, 2);
-sensorLight.position.set(-2, 2.3, -1);
-scene.add(sensorLight);
+  const fill = new THREE.DirectionalLight(0x0055ff, 1.0);
+  fill.position.set(-10, 5, -10);
+  scene.add(fill);
 
-// ── UTILIDADES DE GEOMETRÍA ────────────────────────────────────────────────
-function mesh(geometry, material, options = {}) {
-  const m = new THREE.Mesh(geometry, material);
-  m.castShadow = options.cast !== false;
-  m.receiveShadow = options.receive !== false;
-  if (options.pos) m.position.set(...options.pos);
-  if (options.rot) m.rotation.set(...options.rot);
-  return m;
+  // Luces de acento (Fuga y Sensor)
+  const leakLight = new THREE.PointLight(0x00f0ff, 4.0, 8);
+  leakLight.position.copy(POS_LEAK);
+  scene.add(leakLight);
+
+  const sensorLight = new THREE.PointLight(0xff2a2a, 2.0, 5);
+  sensorLight.position.copy(POS_SENSOR);
+  scene.add(sensorLight);
+
+  // 5. CONSTRUCCIÓN DE GEOMETRÍAS
+  buildTerrain();
+  buildPipes();
+  buildLeak();
+  buildSHIPA();
+  buildScanner();
+  buildParticles();
+
+  // Resize
+  window.addEventListener('resize', onWindowResize);
 }
 
-// ── CONSTRUCCIÓN DE LA MAQUETA 3D ──────────────────────────────────────────
+// ---------------------------------------------------------
+// FUNCIONES DE CONSTRUCCIÓN DE MODELOS
+// ---------------------------------------------------------
 
-// 1. CORTE DE TERRENO (Arquitectónico)
-const groundGroup = new THREE.Group();
+function buildTerrain() {
+  terrainGroup = new THREE.Group();
+  
+  // Material de Tierra Oscura
+  const soilMat = new THREE.MeshPhysicalMaterial({ color: 0x1c1712, roughness: 0.9, metalness: 0.1 });
+  const soil = new THREE.Mesh(new THREE.BoxGeometry(14, 4, 8), soilMat);
+  soil.position.set(0, -2, 0);
+  soil.receiveShadow = true;
+  terrainGroup.add(soil);
 
-const soilMat = new THREE.MeshPhysicalMaterial({ color: 0x4a3e2e, roughness: 0.95, metalness: 0.0 });
-const soilBlock = mesh(new THREE.BoxGeometry(12, 4, 6), soilMat, { pos: [0, -0.5, 0] });
-groundGroup.add(soilBlock);
+  // Material de Arena Superficial
+  const sandMat = new THREE.MeshPhysicalMaterial({ color: 0x8c7853, roughness: 1.0, metalness: 0.0 });
+  const sand = new THREE.Mesh(new THREE.BoxGeometry(14, 0.4, 8), sandMat);
+  sand.position.set(0, 0.2, 0);
+  sand.receiveShadow = true;
+  sand.castShadow = true;
+  terrainGroup.add(sand);
 
-const surfaceMat = new THREE.MeshPhysicalMaterial({ color: 0x8a7a62, roughness: 0.9, metalness: 0.05 });
-const surface = mesh(new THREE.BoxGeometry(12, 0.35, 6), surfaceMat, { pos: [0, 1.52, 0] });
-groundGroup.add(surface);
+  // Grid perimetral tecnológico
+  const grid = new THREE.GridHelper(16, 16, 0x00f0ff, 0x003344);
+  grid.position.y = 0.41;
+  terrainGroup.add(grid);
 
-// Caras de corte limpias
-const cutFaceMat = new THREE.MeshPhysicalMaterial({ color: 0x5e5040, roughness: 0.85 });
-const cutFace = mesh(new THREE.BoxGeometry(0.05, 4, 6), cutFaceMat, { pos: [6.02, -0.5, 0] });
-groundGroup.add(cutFace);
-
-const cutEdgeMat = new THREE.MeshPhysicalMaterial({ color: 0xc8b090, roughness: 0.7, emissive: 0x201810, emissiveIntensity: 0.3 });
-groundGroup.add(mesh(new THREE.BoxGeometry(0.08, 4.08, 0.08), cutEdgeMat, { pos: [6.03, -0.5, 3.02] }));
-groundGroup.add(mesh(new THREE.BoxGeometry(0.08, 4.08, 0.08), cutEdgeMat, { pos: [6.03, -0.5, -3.02] }));
-
-scene.add(groundGroup);
-
-// 2. TUBERÍA INDUSTRIAL HDPE
-const pipeGroup = new THREE.Group();
-
-const pipeMat = new THREE.MeshPhysicalMaterial({ color: 0x1a2530, roughness: 0.45, metalness: 0.25, clearcoat: 0.6 });
-const pipeInnerMat = new THREE.MeshPhysicalMaterial({ color: 0x0a1520, roughness: 0.6, metalness: 0.1 });
-
-groundGroup.add(mesh(new THREE.CylinderGeometry(0.38, 0.38, 14, 32), pipeMat, { pos: [0, -0.9, 0], rot: [0, 0, Math.PI/2] }));
-groundGroup.add(mesh(new THREE.CylinderGeometry(0.30, 0.30, 14.2, 32), pipeInnerMat, { pos: [0, -0.9, 0], rot: [0, 0, Math.PI/2], cast: false }));
-
-const bandMat = new THREE.MeshPhysicalMaterial({ color: 0x00a0b0, roughness: 0.5, emissive: 0x003840, emissiveIntensity: 0.4 });
-[-4, -1.5, 1, 3.5].forEach(x => {
-  groundGroup.add(mesh(new THREE.CylinderGeometry(0.395, 0.395, 0.09, 32), bandMat, { pos: [x, -0.9, 0], rot: [0, 0, Math.PI/2] }));
-});
-
-// 3. FUGA SUBTERRÁNEA HOLOGRÁFICA
-const leakGroup = new THREE.Group();
-const leakPos = new THREE.Vector3(1.2, -1.55, 0.4);
-
-const leakMat = new THREE.MeshPhysicalMaterial({
-  color: 0x00d8f0, emissive: 0x00c8e8, emissiveIntensity: 1.8,
-  transmission: 0.75, transparent: true, opacity: 0.85, roughness: 0.05, ior: 1.4
-});
-const leakMain = mesh(new THREE.SphereGeometry(0.55, 32, 32), leakMat, { pos: [leakPos.x, leakPos.y, leakPos.z] });
-leakGroup.add(leakMain);
-
-const haloMat = new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00e0ff, emissiveIntensity: 0.9, transparent: true, opacity: 0.18, side: THREE.BackSide });
-const leakHalo = mesh(new THREE.SphereGeometry(0.85, 24, 24), haloMat, { pos: [leakPos.x, leakPos.y, leakPos.z], cast: false });
-leakGroup.add(leakHalo);
-
-const fissureMat = new THREE.MeshPhysicalMaterial({ color: 0x00c8e0, emissive: 0x009ab0, emissiveIntensity: 0.6, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
-leakGroup.add(mesh(new THREE.PlaneGeometry(1.2, 0.08), fissureMat, { pos: [1.0, -1.3, 0.4], rot: [0.2, 0.3, 0.5] }));
-
-const wfSphere = mesh(new THREE.SphereGeometry(1.1, 12, 8), new THREE.MeshBasicMaterial({ color: 0x00f5ff, wireframe: true, transparent: true, opacity: 0.09 }), { pos: [leakPos.x, leakPos.y, leakPos.z] });
-scene.add(wfSphere);
-scene.add(leakGroup);
-
-// 4. MÓDULO DE PURIFICACIÓN (Tanque)
-const tankGroup = new THREE.Group();
-const TX = -2, TY = 1.5, TZ = -1;
-
-const metalMat = new THREE.MeshPhysicalMaterial({ color: 0xb8c4cc, roughness: 0.28, metalness: 0.95, clearcoat: 0.7 });
-tankGroup.add(mesh(new THREE.CylinderGeometry(0.7, 0.72, 1.0, 40), metalMat, { pos: [TX, TY - 0.5, TZ] }));
-
-const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x88c8e8, transmission: 0.88, thickness: 0.5, transparent: true, opacity: 0.55, ior: 1.5, side: THREE.DoubleSide });
-tankGroup.add(mesh(new THREE.CylinderGeometry(0.68, 0.70, 1.0, 40), glassMat, { pos: [TX, TY + 0.5, TZ] }));
-
-const waterMat = new THREE.MeshPhysicalMaterial({ color: 0x0088bb, emissive: 0x003860, emissiveIntensity: 0.7, transmission: 0.82, transparent: true, opacity: 0.7, ior: 1.33 });
-const waterInside = mesh(new THREE.CylinderGeometry(0.60, 0.62, 0.85, 36), waterMat, { pos: [TX, TY + 0.5, TZ] });
-tankGroup.add(waterInside);
-
-const rippleMat = new THREE.MeshPhysicalMaterial({ color: 0x40d0ff, emissive: 0x1080a0, emissiveIntensity: 0.5, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
-const ripple = mesh(new THREE.CircleGeometry(0.60, 36), rippleMat, { pos: [TX, TY + 0.9, TZ], rot: [-Math.PI/2, 0, 0] });
-tankGroup.add(ripple);
-
-tankGroup.add(mesh(new THREE.TorusGeometry(0.70, 0.035, 16, 48), new THREE.MeshPhysicalMaterial({ color: 0x80909a, roughness: 0.35, metalness: 0.9 }), { pos: [TX, TY, TZ], rot: [Math.PI/2, 0, 0] }));
-tankGroup.add(mesh(new THREE.SphereGeometry(0.68, 32, 16, 0, Math.PI*2, 0, Math.PI/2), new THREE.MeshPhysicalMaterial({ color: 0xa0b0be, roughness: 0.2, metalness: 0.92 }), { pos: [TX, TY + 1.0, TZ] }));
-
-// Tubo conector Tanque -> HDPE
-tankGroup.add(mesh(new THREE.CylinderGeometry(0.07, 0.07, 2.8, 12), new THREE.MeshPhysicalMaterial({ color: 0x1a2530, roughness: 0.45, metalness: 0.25 }), { pos: [TX, TY - 2.4, TZ] }));
-
-scene.add(tankGroup);
-
-// 5. SENSOR IoT SMART WATER
-const sensorGroup = new THREE.Group();
-const SX = TX, SY = TY + 1.55, SZ = TZ;
-
-sensorGroup.add(mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.45, 24), new THREE.MeshPhysicalMaterial({ color: 0x1c2535, roughness: 0.25, metalness: 0.65, clearcoat: 0.9 }), { pos: [SX, SY, SZ] }));
-
-const ledRing = mesh(new THREE.TorusGeometry(0.22, 0.018, 12, 36), new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00e8ff, emissiveIntensity: 2.5 }), { pos: [SX, SY + 0.05, SZ], rot: [Math.PI/2, 0, 0] });
-sensorGroup.add(ledRing);
-
-const warnLed = mesh(new THREE.SphereGeometry(0.025, 8, 8), new THREE.MeshPhysicalMaterial({ color: 0xff2020, emissive: 0xff0000, emissiveIntensity: 3.5 }), { pos: [SX + 0.18, SY + 0.18, SZ] });
-sensorGroup.add(warnLed);
-
-const antennaMat = new THREE.MeshPhysicalMaterial({ color: 0x3050a0, roughness: 0.3, metalness: 0.9 });
-sensorGroup.add(mesh(new THREE.CylinderGeometry(0.012, 0.008, 0.38, 8), antennaMat, { pos: [SX + 0.12, SY + 0.42, SZ], rot: [0, 0, 0.22] }));
-
-scene.add(sensorGroup);
-
-// 6. HAZ DE ESCANEO HOLOGRÁFICO
-const scanGroup = new THREE.Group();
-const sensorVec = new THREE.Vector3(SX, SY, SZ);
-const coneDir = leakPos.clone().sub(sensorVec);
-const coneLen = coneDir.length();
-const midPt = sensorVec.clone().lerp(leakPos, 0.5);
-
-const scanConeMat = new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00d8f0, emissiveIntensity: 0.7, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending });
-const scanCone = mesh(new THREE.ConeGeometry(0.80, coneLen, 32, 1, true), scanConeMat, { cast: false, receive: false });
-scanCone.position.copy(midPt);
-const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), coneDir.clone().normalize().negate());
-scanCone.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), coneDir.clone().normalize()));
-scanGroup.add(scanCone);
-
-const innerCone = mesh(new THREE.ConeGeometry(0.28, coneLen, 24, 1, true), new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00e8ff, emissiveIntensity: 1.2, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }), { cast: false, receive: false });
-innerCone.position.copy(midPt);
-innerCone.quaternion.copy(scanCone.quaternion);
-scanGroup.add(innerCone);
-
-// Anillos del holograma moviéndose
-const scanRings = [];
-for (let t = 0.15; t < 0.95; t += 0.22) {
-  const ring = mesh(new THREE.TorusGeometry(1, 0.012, 8, 36), new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00d8ff, emissiveIntensity: 1.5, transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }), { cast: false, receive: false });
-  ring.userData.scanT = t;
-  ring.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1), coneDir.clone().normalize()));
-  scanGroup.add(ring);
-  scanRings.push(ring);
+  scene.add(terrainGroup);
 }
 
-const originDisc = mesh(new THREE.CircleGeometry(0.35, 24), new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, emissive: 0x00d8ff, emissiveIntensity: 1.5, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }), { pos: [SX, SY - 0.22, SZ], rot: [-Math.PI/2, 0, 0] });
-scene.add(originDisc);
-scene.add(scanGroup);
+function buildPipes() {
+  pipeGroup = new THREE.Group();
 
-// 7. PARTICULAS (Fondo de Estrellas)
-const starGeo = new THREE.BufferGeometry();
-const starPos = new Float32Array(900 * 3);
-for (let i = 0; i < 900 * 3; i++) starPos[i] = (Math.random() - 0.5) * 160;
-starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0x88aacc, size: 0.04, transparent: true, opacity: 0.35 })));
-
-// ── LÓGICA DE ACTUALIZACIÓN (HUD Y ANIMACIÓN) ──────────────────────────────
-const clock = new THREE.Clock();
-
-// Alertas del HUD
-const alertMessages = [
-  {cls:'w', txt:'[WARN] Anomalía hídrica Z=-2.4m · HDPE-03'},
-  {cls:'c', txt:'[SCAN] Haz holográfico activo · 97.3% conf'},
-  {cls:'g', txt:'[OK]   Módulo purif · Q=320L/h · activo'},
-  {cls:'o', txt:'[DATA] GPS sync · -29.9S 71.2W · OK'},
-  {cls:'c', txt:'[IoT]  Heartbeat 2.4GHz · latencia 12ms'}
-];
-let alertIdx = 0; let lastAlert = 0;
-
-function updateAlerts(t) {
-  if (t - lastAlert > 3.2) {
-    lastAlert = t;
-    const lines = document.querySelectorAll('.al');
-    for(let i=0; i<lines.length-1; i++){
-      lines[i].className = lines[i+1].className;
-      lines[i].textContent = lines[i+1].textContent;
-    }
-    const msg = alertMessages[alertIdx % alertMessages.length];
-    alertIdx++;
-    const last = lines[lines.length-1];
-    last.className = 'al ' + msg.cls;
-    last.textContent = msg.txt;
-    last.style.animation = 'none';
-    void last.offsetWidth;
-    last.style.animation = 'alin .35s ease';
-  }
-}
-
-let autoAngle = 0;
-
-function animate() {
-  requestAnimationFrame(animate);
-  const t = clock.getElapsedTime();
-
-  // Animaciones Luces / Materiales
-  const ledPulse = 0.5 + 0.5 * Math.sin(t * 4.5);
-  const ledWarn  = 0.5 + 0.5 * Math.sin(t * 2.2);
-
-  ledRing.material.emissiveIntensity = 1.5 + ledPulse * 2.0;
-  warnLed.material.emissiveIntensity = ledWarn > 0.5 ? 4.0 : 0.2;
-  sensorLight.intensity = 1.5 + 2.0 * ledPulse;
-
-  const leakPulse = 0.4 + 0.6 * Math.sin(t * 2.8 + 1.2);
-  leakMat.emissiveIntensity = 1.2 + leakPulse * 1.5;
-  leakLight.intensity = 2.5 + leakPulse * 2.5;
-  leakHalo.scale.setScalar(1.0 + 0.12 * Math.sin(t * 2.0));
-  wfSphere.rotation.y += 0.003; wfSphere.rotation.x += 0.001;
-
-  scanConeMat.opacity = 0.05 + scanPulse(t) * 0.07;
-  innerCone.material.opacity = 0.08 + scanPulse(t) * 0.10;
-  originDisc.scale.setScalar(1 + 0.15 * Math.sin(t * 3.5));
-
-  // Animación anillos escáner
-  scanRings.forEach(ring => {
-    const base = ring.userData.scanT;
-    const travelT = ((base + t * 0.28) % 1.0);
-    const rPos = sensorVec.clone().lerp(leakPos, travelT);
-    ring.position.copy(rPos);
-    const rRadius = 0.80 * travelT;
-    ring.scale.set(rRadius / (0.80 * base + 0.001), 1, rRadius / (0.80 * base + 0.001));
-    ring.material.opacity = 0.30 * (1 - travelT * 0.6) * (0.5 + 0.5*Math.sin(t*4+base*10));
+  // Material HDPE Industrial (Polímero Oscuro Reflectante)
+  const hdpeMat = new THREE.MeshPhysicalMaterial({
+    color: 0x11151a, roughness: 0.3, metalness: 0.4, clearcoat: 0.8, clearcoatRoughness: 0.2
   });
 
-  // Animación Agua
-  ripple.rotation.z += 0.008;
-  ripple.scale.setScalar(1 + 0.04 * Math.sin(t * 1.8));
-  waterMat.emissiveIntensity = 0.5 + 0.3 * Math.sin(t * 2.2);
+  // Tubo Principal
+  const pipeMain = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 15, 32), hdpeMat);
+  pipeMain.rotation.z = Math.PI / 2;
+  pipeMain.position.set(0, -1.5, 0.4);
+  pipeMain.castShadow = true;
+  pipeGroup.add(pipeMain);
 
-  // Auto Rotate manual si los controles están en reposo
-  if(window.autoRotate) {
-    autoAngle += 0.0025;
-    camera.position.x = Math.sin(autoAngle) * 12.5;
-    camera.position.z = Math.cos(autoAngle) * 12.5;
-    camera.position.y = 5.5 + 0.8 * Math.sin(autoAngle * 0.3);
-    camera.lookAt(0, 0, 0);
-  } else {
-    controls.update();
+  // Anillos de unión azules
+  const ringMat = new THREE.MeshPhysicalMaterial({ color: 0x0055ff, roughness: 0.2, metalness: 0.8 });
+  [-5, -1, 3, 6].forEach(x => {
+    const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.15, 32), ringMat);
+    ring.rotation.z = Math.PI / 2;
+    ring.position.set(x, -1.5, 0.4);
+    pipeGroup.add(ring);
+  });
+
+  scene.add(pipeGroup);
+}
+
+function buildLeak() {
+  leakGroup = new THREE.Group();
+
+  // Núcleo de la fuga (Brillante y Transparente)
+  const leakMat = new THREE.MeshPhysicalMaterial({
+    color: 0x00f0ff, emissive: 0x00aacc, emissiveIntensity: 2.0,
+    transmission: 0.9, opacity: 1, transparent: true, roughness: 0.1, ior: 1.5
+  });
+  leakMesh = new THREE.Mesh(new THREE.SphereGeometry(0.7, 32, 32), leakMat);
+  leakMesh.position.copy(POS_LEAK);
+  leakGroup.add(leakMesh);
+
+  // Esfera Wireframe holográfica
+  const wireMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.15 });
+  hologramMesh = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), wireMat);
+  hologramMesh.position.copy(POS_LEAK);
+  leakGroup.add(hologramMesh);
+
+  // Grieta en el suelo
+  const crackMat = new THREE.MeshPhysicalMaterial({ color: 0x00aacc, emissive: 0x0088aa, emissiveIntensity: 1, transparent: true, opacity: 0.5 });
+  const crack = new THREE.Mesh(new THREE.PlaneGeometry(2, 0.1), crackMat);
+  crack.position.set(1.5, -1.05, 0.4);
+  crack.rotation.set(0.1, 0.5, 0);
+  leakGroup.add(crack);
+
+  scene.add(leakGroup);
+}
+
+function buildSHIPA() {
+  shipaGroup = new THREE.Group();
+
+  // 1. BASE DE ACERO INOXIDABLE
+  const steelMat = new THREE.MeshPhysicalMaterial({
+    color: 0xaaaaaa, roughness: 0.2, metalness: 1.0, clearcoat: 0.5
+  });
+  const baseTank = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 1.5, 32), steelMat);
+  baseTank.position.set(POS_SHIPA.x, POS_SHIPA.y, POS_SHIPA.z);
+  baseTank.castShadow = true;
+  shipaGroup.add(baseTank);
+
+  // 2. CILINDRO DE CRISTAL (Para ver el agua)
+  const glassMat = new THREE.MeshPhysicalMaterial({
+    color: 0xffffff, transmission: 0.95, opacity: 1, transparent: true, roughness: 0.05, ior: 1.5, side: THREE.DoubleSide
+  });
+  const glassTank = new THREE.Mesh(new THREE.CylinderGeometry(1.18, 1.18, 2.0, 32), glassMat);
+  glassTank.position.set(POS_SHIPA.x, POS_SHIPA.y + 1.75, POS_SHIPA.z);
+  shipaGroup.add(glassTank);
+
+  // 3. AGUA PURIFICADA INTERIOR (Fluido cian)
+  const waterMat = new THREE.MeshPhysicalMaterial({
+    color: 0x00f0ff, emissive: 0x0055aa, emissiveIntensity: 0.5, transmission: 0.8, transparent: true, opacity: 0.8
+  });
+  waterCylinder = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 1.5, 32), waterMat);
+  waterCylinder.position.set(POS_SHIPA.x, POS_SHIPA.y + 1.5, POS_SHIPA.z);
+  shipaGroup.add(waterCylinder);
+
+  // Tapa superior
+  const topCap = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 0.2, 32), steelMat);
+  topCap.position.set(POS_SHIPA.x, POS_SHIPA.y + 2.85, POS_SHIPA.z);
+  shipaGroup.add(topCap);
+
+  // 4. MÓDULO SENSOR IoT (Arriba)
+  const darkPlastic = new THREE.MeshPhysicalMaterial({ color: 0x111111, roughness: 0.6, metalness: 0.5 });
+  const sensorBox = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.4, 0.8), darkPlastic);
+  sensorBox.position.copy(POS_SENSOR);
+  shipaGroup.add(sensorBox);
+
+  // Antena
+  const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.8), steelMat);
+  antenna.position.set(POS_SENSOR.x + 0.3, POS_SENSOR.y + 0.4, POS_SENSOR.z - 0.3);
+  shipaGroup.add(antenna);
+
+  // LED de estado
+  ledBlink = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 16), new THREE.MeshStandardMaterial({ color: 0xff2a2a, emissive: 0xff0000 }));
+  ledBlink.position.set(POS_SENSOR.x - 0.3, POS_SENSOR.y + 0.25, POS_SENSOR.z + 0.3);
+  shipaGroup.add(ledBlink);
+
+  // 5. PANELES SOLARES
+  const panelMat = new THREE.MeshPhysicalMaterial({ color: 0x001133, roughness: 0.1, metalness: 0.8, clearcoat: 1.0 });
+  const solarPanel1 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.05, 1.5), panelMat);
+  solarPanel1.position.set(POS_SHIPA.x - 2, POS_SHIPA.y + 3.5, POS_SHIPA.z);
+  solarPanel1.rotation.z = -0.3;
+  shipaGroup.add(solarPanel1);
+
+  // Soportes solares
+  const support = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.5), steelMat);
+  support.position.set(POS_SHIPA.x - 1, POS_SHIPA.y + 3.0, POS_SHIPA.z);
+  support.rotation.z = -Math.PI/4;
+  shipaGroup.add(support);
+
+  // Tubería de conexión suelo -> estanque
+  const connectPipe = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 3.5), steelMat);
+  connectPipe.position.set(POS_SHIPA.x, 0, POS_SHIPA.z);
+  shipaGroup.add(connectPipe);
+
+  scene.add(shipaGroup);
+}
+
+function buildScanner() {
+  scanGroup = new THREE.Group();
+
+  // Vector desde el Sensor hacia la Fuga
+  const dir = new THREE.Vector3().subVectors(POS_LEAK, POS_SENSOR);
+  const length = dir.length();
+  const midPoint = new THREE.Vector3().addVectors(POS_SENSOR, POS_LEAK).multiplyScalar(0.5);
+
+  // Cono holográfico principal
+  const coneGeo = new THREE.ConeGeometry(1.5, length, 32, 1, true);
+  const coneMat = new THREE.MeshBasicMaterial({
+    color: 0x00f0ff, transparent: true, opacity: 0.08, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false
+  });
+  scanCone = new THREE.Mesh(coneGeo, coneMat);
+  scanCone.position.copy(midPoint);
+  
+  // Orientar el cono
+  const axis = new THREE.Vector3(0, 1, 0);
+  scanCone.quaternion.setFromUnitVectors(axis, dir.clone().normalize().negate());
+  scanGroup.add(scanCone);
+
+  // Anillos de escaneo descendentes
+  const ringGeo = new THREE.TorusGeometry(1, 0.02, 16, 64);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending });
+  
+  for(let i=0; i<3; i++) {
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.quaternion.copy(scanCone.quaternion);
+    ring.userData.offset = i * 0.33; // Desfase para animación
+    scanGroup.add(ring);
+    ringArray.push(ring);
   }
 
-  // Update HUD values
-  const d = -(2.1 + 0.35 * Math.sin(t * 0.8));
-  document.getElementById('scan-d').textContent = d.toFixed(2) + ' m';
-  document.getElementById('depth-num').textContent = d.toFixed(2);
-  document.getElementById('scan-cycle').textContent = Math.floor(t * 10).toString().padStart(4, '0');
+  scene.add(scanGroup);
+}
+
+function buildParticles() {
+  // Polvo brillante / datos flotando
+  const geo = new THREE.BufferGeometry();
+  const pos = [];
+  for(let i=0; i<500; i++) {
+    pos.push((Math.random()-0.5)*20, (Math.random()-0.5)*15, (Math.random()-0.5)*20);
+  }
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  const mat = new THREE.PointsMaterial({ color: 0x00f0ff, size: 0.05, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending });
+  const points = new THREE.Points(geo, mat);
+  scene.add(points);
+}
+
+// ---------------------------------------------------------
+// UI & CONTROLES DE CÁMARA
+// ---------------------------------------------------------
+function moveCamera(cx, cy, cz, tx, ty, tz) {
+  // Actualizar botones UI
+  document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  // Tween Cámara Posición
+  new TWEEN.Tween(camera.position)
+    .to({ x: cx, y: cy, z: cz }, 1500)
+    .easing(TWEEN.Easing.Cubic.InOut)
+    .start();
+
+  // Tween Controles Target
+  new TWEEN.Tween(controls.target)
+    .to({ x: tx, y: ty, z: tz }, 1500)
+    .easing(TWEEN.Easing.Cubic.InOut)
+    .start();
+}
+
+function updateHTMLPositions() {
+  const widthHalf = window.innerWidth / 2;
+  const heightHalf = window.innerHeight / 2;
+
+  const updateLabel = (id, pos3D) => {
+    const el = document.getElementById(id);
+    const pos = pos3D.clone();
+    pos.project(camera);
+    
+    // Si está detrás de la cámara, ocultar
+    if(pos.z > 1) {
+      el.classList.remove('visible');
+      return;
+    }
+
+    el.style.left = (pos.x * widthHalf + widthHalf) + 'px';
+    el.style.top = (-(pos.y * heightHalf) + heightHalf - 30) + 'px';
+    el.classList.add('visible');
+  };
+
+  updateLabel('lbl-shipa', POS_SHIPA);
+  updateLabel('lbl-leak', POS_LEAK);
+  updateLabel('lbl-sensor', POS_SENSOR);
+  updateLabel('lbl-solar', new THREE.Vector3(POS_SHIPA.x - 2, POS_SHIPA.y + 3.5, POS_SHIPA.z));
+}
+
+// ---------------------------------------------------------
+// LOOP DE ANIMACIÓN
+// ---------------------------------------------------------
+function animate() {
+  requestAnimationFrame(animate);
+  TWEEN.update();
+  const t = clock.getElapsedTime();
+
+  // 1. Latido de la Fuga
+  const leakScale = 1 + Math.sin(t * 3) * 0.05;
+  leakMesh.scale.set(leakScale, leakScale, leakScale);
+  hologramMesh.rotation.y = t * 0.5;
+  hologramMesh.rotation.x = t * 0.2;
+
+  // 2. Nivel de agua animado (sutil)
+  waterCylinder.scale.y = 1 + Math.sin(t * 1.5) * 0.02;
+
+  // 3. LED Sensor parpadeando (Alerta)
+  ledBlink.material.emissiveIntensity = Math.sin(t * 10) > 0 ? 3 : 0.2;
+
+  // 4. Cono y Anillos del Escáner
+  scanCone.material.opacity = 0.05 + Math.sin(t * 5) * 0.03;
   
-  const camPos = camera.position;
-  document.getElementById('coord').textContent = `CAM x=${camPos.x.toFixed(1)} y=${camPos.y.toFixed(1)} z=${camPos.z.toFixed(1)}`;
-  
-  updateAlerts(t);
+  ringArray.forEach(ring => {
+    // Viaje de 0 a 1
+    let progress = (t * 0.4 + ring.userData.offset) % 1;
+    // Interpolar posición entre sensor y fuga
+    ring.position.lerpVectors(POS_SENSOR, POS_LEAK, progress);
+    // Escalar el anillo dependiendo de la apertura del cono
+    const scale = 0.1 + progress * 1.5; 
+    ring.scale.set(scale, scale, scale);
+    // Desvanecer al llegar al suelo
+    ring.material.opacity = (1 - progress) * 0.8;
+  });
+
+  // 5. Consola Fake Random Updates
+  if(Math.random() > 0.98) {
+    const consoleEl = document.getElementById('console');
+    const msgs = ["Optimizando flujo HDPE...", "Sync IoT: 12ms", "Presión: 3.2 BAR", "Calculando anomalía...", "Panel Solar: Rendimiento Óptimo"];
+    const msg = msgs[Math.floor(Math.random() * msgs.length)];
+    const div = document.createElement('div');
+    div.className = 'log-line sys';
+    div.innerText = "> " + msg;
+    consoleEl.appendChild(div);
+    if(consoleEl.children.length > 5) consoleEl.removeChild(consoleEl.firstChild);
+  }
+
+  controls.update();
+  updateHTMLPositions();
   renderer.render(scene, camera);
 }
 
-function scanPulse(t) { return 0.5 + 0.5 * Math.sin(t * 3.0); }
-
-// ── EVENTOS DOM ────────────────────────────────────────────────────────────
-window.addEventListener('resize', () => {
+function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-window.autoRotate = true;
-window.addEventListener('keydown', e => { if (e.code === 'Space') window.autoRotate = !window.autoRotate; });
-renderer.domElement.addEventListener('mousedown', () => { 
-  window.autoRotate = false; 
-  autoAngle = Math.atan2(camera.position.x, camera.position.z);
-});
-renderer.domElement.addEventListener('touchstart', () => window.autoRotate = false);
-
-// Iniciar
-animate();
-
-})();
+}
 </script>
 </body>
 </html>
