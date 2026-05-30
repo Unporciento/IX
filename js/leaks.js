@@ -804,3 +804,4 @@ function _stopTimer() {
   const badge = document.getElementById('leak-timer-badge');
   if (badge) badge.style.display = 'none';
 }
+
