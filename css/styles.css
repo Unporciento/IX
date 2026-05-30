@@ -736,3 +736,255 @@ footer {
   #leak-history-panel { display: none; } /* ocultar en móvil para no saturar */
   #alerta-fuga.esquina { right: 10px; top: 10px; transform: scale(0.8); }
 }
+/* ═══════════════════════════════════════════════════════════════════════════
+   NUEVAS SECCIONES — Cursor, Litros, Pantalla de carga, Tooltips avanzados
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Cursor del canvas: grab para rotar, grabbing al arrastrar ────────────── */
+#three-canvas          { cursor: grab; }
+#three-canvas:active   { cursor: grabbing; }
+
+/* ─── Contador de litros perdidos ─────────────────────────────────────────── */
+#liters-counter {
+  position: absolute;
+  top: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(10, 30, 60, 0.88);
+  border: 1px solid rgba(68, 170, 238, 0.5);
+  border-radius: 30px;
+  padding: 0.45rem 1.2rem;
+  font-family: 'Crimson Pro', monospace, serif;
+  color: #fff;
+  z-index: 50;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 18px rgba(68, 170, 238, 0.25);
+  animation: litersAppear 0.4s ease both;
+}
+
+@keyframes litersAppear {
+  from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.lc-label {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(68, 170, 238, 0.85);
+  white-space: nowrap;
+}
+
+#lc-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  min-width: 72px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  transition: color 0.3s;
+}
+
+/* Cuando lleva más de ~50L el número se pone rojo */
+#lc-value.critical { color: #ff6b6b; text-shadow: 0 0 8px rgba(255,80,80,0.5); }
+
+/* ─── Pantalla de carga (splash) al iniciar la maqueta 3D ─────────────────── */
+#scene-loading {
+  position: absolute;
+  inset: 0;
+  background: var(--primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4rem;
+  z-index: 200;
+  transition: opacity 0.6s ease;
+}
+#scene-loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.loading-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--accent-light);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.loading-spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(184, 144, 58, 0.25);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-subtitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* ─── Estadísticas de sesión (mini-panel sobre historial) ─────────────────── */
+#session-stats {
+  position: absolute;
+  bottom: calc(1.2rem + 230px); /* arriba del historial */
+  left: 1.2rem;
+  width: 260px;
+  background: rgba(10, 25, 45, 0.88);
+  border: 1px solid rgba(184, 144, 58, 0.25);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.9rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.75);
+  z-index: 10;
+  backdrop-filter: blur(4px);
+  box-shadow: var(--shadow-md);
+}
+#session-stats .ss-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+  margin-bottom: 0.55rem;
+  opacity: 0.8;
+}
+.ss-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ss-row:last-child { border-bottom: none; }
+.ss-label { opacity: 0.6; }
+.ss-val {
+  font-weight: 600;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Tooltip de coordenadas al hacer hover sobre el canvas ───────────────── */
+#coord-tooltip {
+  position: absolute;
+  background: rgba(27, 61, 45, 0.85);
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Crimson Pro', monospace, serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 3px;
+  pointer-events: none;
+  display: none;
+  z-index: 30;
+  border: 1px solid rgba(184,144,58,0.3);
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+
+/* ─── Indicador de modo día/noche en el canvas ────────────────────────────── */
+#day-night-indicator {
+  position: absolute;
+  top: 1.2rem;
+  left: 1.2rem;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  z-index: 10;
+  transition: background 0.8s ease, color 0.8s ease;
+  pointer-events: none;
+}
+#day-night-indicator.night {
+  background: rgba(10,14,26,0.75);
+  color: rgba(200,215,255,0.75);
+  border-color: rgba(180,200,255,0.2);
+}
+
+/* ─── Mejorar legibilidad del panel de historial con scroll suave ──────────── */
+#lh-list { scroll-behavior: smooth; }
+
+/* ─── Pulso del historial cuando llega un nuevo evento ────────────────────── */
+@keyframes newEvent {
+  0%   { background: rgba(184,144,58,0.18); }
+  100% { background: transparent; }
+}
+.lh-item:first-child { animation: fadeUp 0.3s ease both, newEvent 1.2s ease 0.3s both; }
+
+/* ─── Efecto hover mejorado en botones de cámara ──────────────────────────── */
+.cam-btn {
+  position: relative;
+  overflow: hidden;
+}
+.cam-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.cam-btn:hover::after { opacity: 0.07; }
+
+/* ─── Scrollbar global personalizada ──────────────────────────────────────── */
+::-webkit-scrollbar       { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+  border: 1px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ─── Selección de texto con colores del proyecto ─────────────────────────── */
+::selection { background: var(--accent); color: #fff; }
+
+/* ─── Animación de entrada para las tarjetas del cómic (stagger) ───────────── */
+.comic-card:nth-child(1) { animation-delay: 0.05s; }
+.comic-card:nth-child(2) { animation-delay: 0.12s; }
+.comic-card:nth-child(3) { animation-delay: 0.19s; }
+.comic-card:nth-child(4) { animation-delay: 0.26s; }
+.comic-card:nth-child(5) { animation-delay: 0.33s; }
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.comic-card { animation: cardIn 0.5s ease both; }
+
+/* ─── Modo oscuro del sistema (respeta preferencia del OS) ────────────────── */
+@media (prefers-color-scheme: dark) {
+  /* Solo aplicamos cambios sutiles para no romper el tema del proyecto */
+  :root {
+    --bg:       #1a1814;
+    --surface:  #231f1a;
+    --surface2: #2a2520;
+    --border:   #3a342c;
+    --text:     #ede8df;
+    --text-mid: #c8c0b0;
+    --text-muted: #8a8278;
+    --canvas-bg: #1e1b16;
+  }
+}
+
+/* ─── Print (para si alguien imprime la presentación) ─────────────────────── */
+@media print {
+  .nav-tabs, #section-3d, footer { display: none; }
+  #section-comic { display: block !important; }
+  .comic-card { break-inside: avoid; }
+}
