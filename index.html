@@ -3,870 +3,830 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulador de Examen — Materiales en Maquinaria Pesada</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<title>Simulador Examen | Ciencia de Materiales – Maquinaria Pesada</title>
 <style>
-  :root{
-    --bg-base:#0a0e17;
-    --bg-card:#141c2e;
-    --bg-option:#1b2540;
-    --bg-option-hover:#243156;
-    --border:#283655;
-    --border-light:#3a4d7a;
-    --text:#e8edf5;
-    --text-muted:#8b97b0;
-    --accent-amber:#ffb627;
-    --accent-green:#39ff8c;
-    --accent-red:#ff5470;
-    --tag-polimeros:#7fe0ff;
-    --tag-ceramicas:#ffab66;
-    --tag-compuestos:#c9a8ff;
-    --tag-cobre:#5cf2c8;
-    --radius:12px;
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg-deep:    #0d0f17;
+    --bg-card:    #141624;
+    --bg-panel:   #1a1d2e;
+    --border:     #252840;
+    --accent:     #f5a623;
+    --accent2:    #ff6b35;
+    --green:      #39d98a;
+    --red:        #ff4d6d;
+    --blue:       #4a9eff;
+    --text:       #e2e8f0;
+    --muted:      #8892a4;
+    --mono:       'Share Tech Mono', monospace;
+    --sans:       'Inter', sans-serif;
   }
 
-  *{ margin:0; padding:0; box-sizing:border-box; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html,body{ min-height:100%; }
-
-  body{
-    font-family:'Inter', sans-serif;
-    background-color:var(--bg-base);
+  body {
+    font-family: var(--sans);
+    background: var(--bg-deep);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
     background-image:
-      radial-gradient(circle at 15% -10%, rgba(255,182,39,0.06), transparent 42%),
-      radial-gradient(circle at 90% 5%, rgba(57,255,140,0.05), transparent 40%);
-    color:var(--text);
-    min-height:100vh;
-    padding:24px 16px 60px;
-    line-height:1.6;
+      radial-gradient(ellipse 80% 40% at 50% -10%, rgba(245,166,35,0.08) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.015) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.015) 40px);
   }
 
-  .app{ max-width:840px; margin:0 auto; }
-
-  /* ---------- HEADER / PROGRESS ---------- */
-  .topbar{
-    background:rgba(13,18,30,0.85);
-    backdrop-filter:blur(10px);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:18px 22px;
-    margin-bottom:24px;
-    position:sticky;
-    top:12px;
-    z-index:10;
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .header .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text);
+  }
+  .header h1 span { color: var(--accent); }
+  .header .subtitle {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
   }
 
-  .brand h1{
-    font-family:'Rajdhani', sans-serif;
-    font-weight:700;
-    font-size:1.35rem;
-    letter-spacing:0.05em;
-    text-transform:uppercase;
-    color:#fdfdfd;
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    max-width: 820px;
+    margin: 0 auto 28px;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .progress-meta .q-label { color: var(--accent); font-weight: 700; }
+  .progress-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 9px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 9px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
   }
 
-  .brand p{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.72rem;
-    color:var(--text-muted);
-    letter-spacing:0.03em;
-    margin-top:4px;
+  /* ── CONTAINER ── */
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
   }
 
-  .progress-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin:16px 0 8px;
-    gap:8px;
-    flex-wrap:wrap;
+  /* ── QUESTION CARD ── */
+  .question-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 30px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    display: none;
+    animation: slideIn .35s ease both;
+  }
+  .question-card.active { display: block; }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
   }
 
-  .mono-tag{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.74rem;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    color:var(--text-muted);
+  .q-number {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .q-category {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: rgba(245,166,35,0.12);
+    color: var(--accent);
+    border: 1px solid rgba(245,166,35,0.25);
+    margin-bottom: 14px;
+  }
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.65;
+    color: var(--text);
+    margin-bottom: 22px;
   }
 
-  .mono-tag.accent{ color:var(--accent-green); }
+  /* ── OPTIONS ── */
+  .options { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .option-item {
+    background: var(--bg-panel);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: border-color .2s, background .2s, transform .15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .option-item:hover:not(.disabled) {
+    border-color: var(--accent);
+    background: rgba(245,166,35,0.06);
+    transform: translateX(3px);
+  }
+  .option-item.disabled { cursor: default; }
+  .option-letter {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 22px;
+    padding-top: 1px;
+    transition: color .2s;
+  }
+  .option-item:hover:not(.disabled) .option-letter { color: var(--accent); }
+  .option-text { font-size: 14px; line-height: 1.55; }
+  .option-item.selected {
+    border-color: var(--blue);
+    background: rgba(74,158,255,0.08);
+  }
+  .option-item.selected .option-letter { color: var(--blue); }
+  .option-item.correct-ans {
+    border-color: var(--green) !important;
+    background: rgba(57,217,138,0.1) !important;
+  }
+  .option-item.correct-ans .option-letter { color: var(--green) !important; }
+  .option-item.wrong-ans {
+    border-color: var(--red) !important;
+    background: rgba(255,77,109,0.1) !important;
+  }
+  .option-item.wrong-ans .option-letter { color: var(--red) !important; }
 
-  .progress-track{
-    position:relative;
-    height:10px;
-    background:var(--bg-option);
-    border:1px solid var(--border);
-    border-radius:6px;
-    overflow:hidden;
+  /* ── FEEDBACK ── */
+  .feedback-box {
+    margin-top: 18px;
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    display: none;
+    animation: fadeUp .3s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.correct {
+    background: rgba(57,217,138,0.1);
+    border: 1px solid rgba(57,217,138,0.35);
+    color: #a7f3d0;
+  }
+  .feedback-box.incorrect {
+    background: rgba(255,77,109,0.1);
+    border: 1px solid rgba(255,77,109,0.35);
+    color: #fecdd3;
+  }
+  .feedback-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .feedback-box.correct .feedback-label { color: var(--green); }
+  .feedback-box.incorrect .feedback-label { color: var(--red); }
+
+  /* ── ACTIONS ── */
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 22px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 11px 22px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: opacity .15s, transform .15s, box-shadow .15s;
+    letter-spacing: .3px;
+  }
+  .btn:hover { opacity: .88; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #0d0f17;
+  }
+  .btn-ghost {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn:disabled { opacity: .35; cursor: default; transform: none; }
+
+  /* ── RESULTS SCREEN ── */
+  #results-screen {
+    display: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 36px;
+    text-align: center;
+    animation: slideIn .4s ease both;
+  }
+  .score-ring {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 28px;
+    position: relative;
+  }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .score-big {
+    font-family: var(--mono);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .score-denom {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .result-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .result-subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 420px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+  .result-breakdown {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+  .breakdown-item {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 22px;
+    min-width: 100px;
+  }
+  .breakdown-val {
+    font-family: var(--mono);
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .breakdown-val.g { color: var(--green); }
+  .breakdown-val.r { color: var(--red); }
+  .breakdown-val.b { color: var(--blue); }
+  .breakdown-label { font-size: 11px; color: var(--muted); margin-top: 3px; letter-spacing: 1px; }
+
+  /* ── INTRO SCREEN ── */
+  #intro-screen {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 32px;
+    text-align: center;
+  }
+  .intro-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin: 28px 0 36px;
+    text-align: left;
+  }
+  .intro-cell {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .intro-cell .ic-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .intro-cell .ic-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: var(--mono);
   }
 
-  .progress-fill{
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg, var(--accent-amber), #ffe08a);
-    box-shadow:0 0 14px rgba(255,182,39,0.55);
-    transition:width 0.45s ease;
-  }
-
-  .progress-track::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent calc(100%/15 - 2px),
-      var(--bg-base) calc(100%/15 - 2px),
-      var(--bg-base) calc(100%/15)
-    );
-    pointer-events:none;
-  }
-
-  /* ---------- CARD ---------- */
-  .quiz-card{
-    background:var(--bg-card);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:28px;
-  }
-
-  .fade-in{ animation:fadeSlide 0.45s ease; }
-
-  @keyframes fadeSlide{
-    from{ opacity:0; transform:translateY(14px); }
-    to{ opacity:1; transform:translateY(0); }
-  }
-
-  .meta-row{
-    display:flex;
-    gap:10px;
-    margin-bottom:18px;
-    flex-wrap:wrap;
-  }
-
-  .badge{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.68rem;
-    text-transform:uppercase;
-    letter-spacing:0.09em;
-    padding:6px 12px;
-    border-radius:999px;
-    border:1px solid var(--border-light);
-    color:var(--text-muted);
-    background:rgba(255,255,255,0.02);
-  }
-
-  .badge-type{ color:var(--accent-amber); border-color:var(--accent-amber); background:rgba(255,182,39,0.08); }
-  .tag-polimeros{ color:var(--tag-polimeros); border-color:var(--tag-polimeros); background:rgba(127,224,255,0.08); }
-  .tag-ceramicas{ color:var(--tag-ceramicas); border-color:var(--tag-ceramicas); background:rgba(255,171,102,0.08); }
-  .tag-compuestos{ color:var(--tag-compuestos); border-color:var(--tag-compuestos); background:rgba(201,168,255,0.08); }
-  .tag-cobre{ color:var(--tag-cobre); border-color:var(--tag-cobre); background:rgba(92,242,200,0.08); }
-
-  .question-text{
-    font-size:1.05rem;
-    font-weight:500;
-    color:#f5f8fc;
-    margin-bottom:22px;
-  }
-
-  /* ---------- OPTIONS ---------- */
-  #optionsList{
-    list-style:none;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    margin-bottom:20px;
-  }
-
-  .option{
-    display:flex;
-    align-items:flex-start;
-    gap:14px;
-    background:var(--bg-option);
-    border:1px solid var(--border);
-    border-left:4px solid transparent;
-    border-radius:10px;
-    padding:14px 16px;
-    cursor:pointer;
-    transition:transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .option:hover:not(.disabled){
-    background:var(--bg-option-hover);
-    border-color:var(--accent-amber);
-    border-left-color:var(--accent-amber);
-    transform:translateX(6px);
-    box-shadow:0 4px 18px -4px rgba(255,182,39,0.35);
-  }
-
-  .option:focus-visible{
-    outline:2px solid var(--accent-amber);
-    outline-offset:2px;
-  }
-
-  .option.selected{
-    border-color:var(--accent-amber);
-    border-left-color:var(--accent-amber);
-    background:rgba(255,182,39,0.07);
-  }
-
-  .option.disabled{ cursor:default; }
-  .option.disabled:hover{ transform:none; box-shadow:none; }
-
-  .option.correct-answer{
-    border-color:var(--accent-green);
-    border-left-color:var(--accent-green);
-    background:rgba(57,255,140,0.07);
-    box-shadow:0 4px 18px -4px rgba(57,255,140,0.3);
-  }
-
-  .option.incorrect-answer{
-    border-color:var(--accent-red);
-    border-left-color:var(--accent-red);
-    background:rgba(255,84,112,0.07);
-    box-shadow:0 4px 18px -4px rgba(255,84,112,0.3);
-  }
-
-  .option-letter{
-    font-family:'JetBrains Mono', monospace;
-    font-weight:700;
-    font-size:0.85rem;
-    width:28px; height:28px;
-    flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-    border:1px solid var(--border-light);
-    border-radius:6px;
-    color:var(--text-muted);
-    transition:color 0.2s ease, border-color 0.2s ease;
-  }
-
-  .option:hover:not(.disabled) .option-letter{ color:var(--accent-amber); border-color:var(--accent-amber); }
-  .option.selected .option-letter{ color:var(--accent-amber); border-color:var(--accent-amber); }
-  .option.correct-answer .option-letter{ color:var(--accent-green); border-color:var(--accent-green); }
-  .option.incorrect-answer .option-letter{ color:var(--accent-red); border-color:var(--accent-red); }
-
-  .option-text{ font-size:0.95rem; padding-top:2px; }
-
-  /* ---------- FEEDBACK ---------- */
-  .feedback-panel{
-    border-radius:10px;
-    padding:16px 18px;
-    margin-bottom:20px;
-    border-left:4px solid;
-  }
-
-  .feedback-correct{ background:rgba(57,255,140,0.06); border-color:var(--accent-green); }
-  .feedback-incorrect{ background:rgba(255,84,112,0.06); border-color:var(--accent-red); }
-
-  .feedback-label{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.68rem;
-    text-transform:uppercase;
-    letter-spacing:0.09em;
-    color:var(--text-muted);
-    display:block;
-    margin-bottom:6px;
-  }
-
-  .feedback-title{
-    font-family:'Rajdhani', sans-serif;
-    font-weight:700;
-    font-size:1.05rem;
-    letter-spacing:0.02em;
-    margin-bottom:8px;
-  }
-
-  .feedback-correct .feedback-title{ color:var(--accent-green); }
-  .feedback-incorrect .feedback-title{ color:var(--accent-red); }
-
-  .feedback-justification{
-    font-size:0.92rem;
-    color:var(--text);
-    opacity:0.92;
-  }
-
-  /* ---------- BUTTONS ---------- */
-  .primary-btn{
-    width:100%;
-    padding:16px;
-    border:none;
-    border-radius:10px;
-    background:var(--accent-amber);
-    color:#1a1300;
-    font-family:'Rajdhani', sans-serif;
-    font-weight:700;
-    font-size:1rem;
-    text-transform:uppercase;
-    letter-spacing:0.07em;
-    cursor:pointer;
-    transition:transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-  }
-
-  .primary-btn:hover:not(:disabled){
-    background:#ffc850;
-    box-shadow:0 0 24px rgba(255,182,39,0.45);
-    transform:translateY(-2px);
-  }
-
-  .primary-btn:disabled{
-    background:var(--bg-option);
-    color:var(--text-muted);
-    cursor:not-allowed;
-    box-shadow:none;
-  }
-
-  .secondary-btn{
-    padding:14px 34px;
-    border:1px solid var(--accent-amber);
-    background:transparent;
-    color:var(--accent-amber);
-    border-radius:10px;
-    font-family:'Rajdhani', sans-serif;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:0.07em;
-    font-size:0.95rem;
-    cursor:pointer;
-    transition:background-color 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .secondary-btn:hover{
-    background:rgba(255,182,39,0.1);
-    box-shadow:0 0 20px rgba(255,182,39,0.25);
-  }
-
-  /* ---------- RESULTS ---------- */
-  .results-screen{
-    background:var(--bg-card);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:40px 28px;
-    text-align:center;
-  }
-
-  .gauge-wrap{
-    position:relative;
-    width:200px; height:200px;
-    margin:18px auto 14px;
-  }
-
-  .gauge-wrap svg{ transform:rotate(-90deg); width:100%; height:100%; }
-
-  .gauge-track{ fill:none; stroke:var(--border); stroke-width:14; }
-
-  .gauge-fill{
-    fill:none;
-    stroke:var(--accent-amber);
-    stroke-width:14;
-    stroke-linecap:round;
-    stroke-dasharray:534;
-    stroke-dashoffset:534;
-    transition:stroke-dashoffset 1.1s ease, stroke 0.4s ease;
-  }
-
-  .gauge-text{
-    position:absolute; inset:0;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-  }
-
-  .gauge-score{
-    font-family:'Rajdhani', sans-serif;
-    font-weight:700;
-    font-size:2.4rem;
-    color:#fdfdfd;
-  }
-
-  .gauge-pct{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.85rem;
-    color:var(--text-muted);
-    letter-spacing:0.05em;
-  }
-
-  .result-message{
-    font-size:1rem;
-    max-width:480px;
-    margin:8px auto 28px;
-    color:var(--text);
-  }
-
-  .breakdown-grid{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:8px;
-    margin-bottom:30px;
-  }
-
-  .led{
-    width:34px; height:34px;
-    border-radius:7px;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.75rem; font-weight:700;
-    border:1px solid;
-  }
-
-  .led-correct{ background:rgba(57,255,140,0.1); border-color:var(--accent-green); color:var(--accent-green); }
-  .led-incorrect{ background:rgba(255,84,112,0.1); border-color:var(--accent-red); color:var(--accent-red); }
-
-  /* ---------- MISC ---------- */
-  [hidden]{ display:none !important; }
-
-  @media (max-width:560px){
-    .quiz-card{ padding:20px; }
-    .question-text{ font-size:1rem; }
-    .gauge-wrap{ width:170px; height:170px; }
-    .gauge-score{ font-size:2rem; }
-    .results-screen{ padding:30px 18px; }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    *{ animation:none !important; transition:none !important; }
-  }
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
 </head>
 <body>
-<div class="app">
 
-  <header class="topbar">
-    <div class="brand">
-      <h1>⚙ Diagnóstico de Materiales</h1>
-      <p>Simulador · Ciencia y Tecnología de Materiales aplicada a Maquinaria Pesada — Semanas 7 a 14</p>
-    </div>
-    <div class="progress-row">
-      <span id="qCounter" class="mono-tag">PREGUNTA 1 / 15</span>
-      <span id="scoreCounter" class="mono-tag accent">ACIERTOS 0/15</span>
+<div class="header">
+  <div class="eyebrow">Ciencia y Tecnología de Materiales</div>
+  <h1>Simulador de Examen <span>Semanas 7–14</span></h1>
+  <p class="subtitle">Maquinaria Pesada · Selección Múltiple · Nivel Técnico Alto</p>
+</div>
+
+<div class="container">
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progress-wrap" style="display:none">
+    <div class="progress-meta">
+      <span class="q-label" id="prog-label">PREGUNTA 1 / 15</span>
+      <span id="prog-score">0 correctas</span>
     </div>
     <div class="progress-track">
-      <div class="progress-fill" id="progressFill"></div>
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
     </div>
-  </header>
+  </div>
 
-  <main>
-    <section class="quiz-card fade-in" id="quizCard">
-      <div class="meta-row">
-        <span class="badge badge-type" id="typeBadge"></span>
-        <span class="badge" id="categoryBadge"></span>
-      </div>
-      <p class="question-text" id="questionText"></p>
-      <ul id="optionsList"></ul>
-      <div class="feedback-panel" id="feedbackPanel" hidden>
-        <span class="feedback-label">Análisis técnico</span>
-        <div class="feedback-title" id="feedbackTitle"></div>
-        <p class="feedback-justification" id="feedbackJustification"></p>
-      </div>
-      <button class="primary-btn" id="evalBtn" disabled>Evaluar Respuesta</button>
-    </section>
+  <!-- INTRO -->
+  <div id="intro-screen">
+    <div class="eyebrow" style="font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:14px;">Instrucciones</div>
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:12px;">¿Estás listo para el desafío?</h2>
+    <p style="font-size:14px;color:var(--muted);line-height:1.7;max-width:540px;margin:0 auto;">Este simulador reproduce el formato y dificultad del examen real. Incluye preguntas capciosas, tecnicismos, porcentajes críticos y casos prácticos de maquinaria. El profesor advirtió: <em style="color:var(--text);">los alumnos reprueban porque las alternativas parecen todas correctas.</em></p>
+    <div class="intro-grid">
+      <div class="intro-cell"><div class="ic-label">Preguntas</div><div class="ic-val">15</div></div>
+      <div class="intro-cell"><div class="ic-label">Semanas</div><div class="ic-val">7 – 14</div></div>
+      <div class="intro-cell"><div class="ic-label">Formato</div><div class="ic-val">S.M.</div></div>
+      <div class="intro-cell"><div class="ic-label">Dificultad</div><div class="ic-val" style="color:var(--red)">Alta</div></div>
+    </div>
+    <button class="btn btn-primary" style="font-size:15px;padding:14px 40px;" onclick="startExam()">Iniciar Simulador →</button>
+  </div>
 
-    <section class="results-screen" id="resultsScreen" hidden>
-      <span class="badge badge-type">Resultado Final</span>
-      <div class="gauge-wrap">
-        <svg viewBox="0 0 200 200">
-          <circle class="gauge-track" cx="100" cy="100" r="85"></circle>
-          <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="85"></circle>
-        </svg>
-        <div class="gauge-text">
-          <span class="gauge-score" id="resultScoreText">0/15</span>
-          <span class="gauge-pct" id="resultPct">0%</span>
-        </div>
+  <!-- QUESTIONS (generated by JS) -->
+  <div id="questions-container"></div>
+
+  <!-- RESULTS -->
+  <div id="results-screen">
+    <div class="score-ring">
+      <svg width="140" height="140" viewBox="0 0 140 140">
+        <circle cx="70" cy="70" r="60" fill="none" stroke="#1a1d2e" stroke-width="12"/>
+        <circle id="ring-circle" cx="70" cy="70" r="60" fill="none" stroke="url(#rg)" stroke-width="12"
+          stroke-linecap="round" stroke-dasharray="377" stroke-dashoffset="377"/>
+        <defs>
+          <linearGradient id="rg" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#f5a623"/>
+            <stop offset="100%" stop-color="#ff6b35"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="score-ring-text">
+        <div class="score-big" id="score-big">0</div>
+        <div class="score-denom">/15</div>
       </div>
-      <p class="result-message" id="resultMessage"></p>
-      <div class="breakdown-grid" id="breakdownGrid"></div>
-      <button class="secondary-btn" id="restartBtn">Reintentar Simulador</button>
-    </section>
-  </main>
+    </div>
+    <div class="result-title" id="result-title"></div>
+    <div class="result-subtitle" id="result-subtitle"></div>
+    <div class="result-breakdown">
+      <div class="breakdown-item">
+        <div class="breakdown-val g" id="bd-correct">0</div>
+        <div class="breakdown-label">CORRECTAS</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="breakdown-val r" id="bd-wrong">0</div>
+        <div class="breakdown-label">INCORRECTAS</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="breakdown-val b" id="bd-pct">0%</div>
+        <div class="breakdown-label">NOTA APROX.</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="font-size:14px;padding:13px 36px;margin-right:10px" onclick="restartExam()">Reiniciar Simulador</button>
+  </div>
 
 </div>
 
 <script>
-const questions = [
+const QUESTIONS = [
   {
-    category:"Polímeros · Elastómeros",
-    tagClass:"tag-polimeros",
-    type:"Caso Práctico",
-    question:"Un cilindro hidráulico de una excavadora opera con aceite mineral a temperaturas de hasta 90°C. Durante una mantención de emergencia, un técnico reemplaza los O-rings originales de Nitrilo (NBR) por unos de EPDM (Etileno-Propileno-Dieno) porque eran los únicos disponibles en bodega. ¿Qué consecuencia técnica es más probable en pocas horas de operación?",
-    options:[
-      "Ninguna; el EPDM es compatible con todos los fluidos industriales y reemplaza sin problemas al NBR.",
-      "El EPDM se hinchará (swelling) y perderá propiedades mecánicas, ya que tiene muy baja resistencia a hidrocarburos derivados del petróleo, provocando fugas en el sello.",
-      "El EPDM aumentará su dureza Shore, mejorando el sellado a alta presión sin efectos negativos.",
-      "El EPDM se sublimará por encima de 70°C, generando vacío dentro del circuito hidráulico."
+    cat: "Polímeros — Comportamiento Térmico",
+    text: "Durante la mantención de un cilindro hidráulico de excavadora, el técnico debe seleccionar un O-ring (junta tórica) que trabaje a 120 °C con presiones de hasta 350 bar. ¿Qué familia de polímero es técnicamente la correcta y por qué?",
+    options: [
+      "Termoplástico (PVC), porque resiste altas presiones mecánicas.",
+      "Elastómero (caucho de silicona o FKM), porque recupera su forma al 100% tras la deformación y mantiene el sellado dinámico.",
+      "Termoestable (resina epoxi), porque una vez fraguado no se deforma con el calor.",
+      "Policarbonato, porque tiene alta resistencia al impacto y no se rompe."
     ],
-    correct:1,
-    justification:"El Etileno-Propileno-Dieno (EPDM) tiene excelente resistencia a fluidos polares (agua, vapor, líquidos de freno base glicol) y a la intemperie (ozono, UV), pero una resistencia muy pobre a los aceites minerales e hidrocarburos derivados del petróleo: el aceite hidráulico penetra su estructura molecular, provoca hinchamiento (swelling), pérdida de propiedades mecánicas y fallas de sellado prematuras. Para sellos de sistemas hidráulicos con aceite mineral, el estándar de la industria es el Nitrilo (NBR) o, para temperaturas más altas, el Fluoroelastómero (FKM/Viton). Confundir EPDM con NBR es un error de compatibilidad química frecuente y costoso en mantención de maquinaria pesada."
+    answer: 1,
+    feedback: "Los O-rings deben ser elastómeros. Su propiedad clave es la recuperación elástica total (≈100%) tras la compresión, lo que garantiza el sello. Los termoplásticos fluirían a 120 °C (superan su Tg); los termoestables son rígidos y se quemarían; el policarbonato es un vidrio técnico, no un sello."
   },
   {
-    category:"Polímeros · Termoplásticos",
-    tagClass:"tag-polimeros",
-    type:"Caso Práctico",
-    question:"Se debe diseñar el visor protector de la cabina de un chancador (triturador de roca), expuesto a impactos de partículas proyectadas a alta velocidad. Se evalúan PVC rígido, Polietileno de Alta Densidad (HDPE) y Policarbonato (PC). ¿Cuál es la elección técnicamente correcta y por qué?",
-    options:[
-      "PVC rígido, porque es transparente, económico y de alta tenacidad al impacto.",
-      "HDPE, porque su alta resistencia química y transparencia lo hacen ideal para visores.",
-      "Policarbonato, por su excepcional tenacidad al impacto y transparencia óptica, propiedades por las que se usa en blindajes antibalas y visores de seguridad industrial.",
-      "Cualquiera de los tres es igualmente válido, ya que todos los termoplásticos tienen la misma resistencia al impacto."
+    cat: "Cerámicas Industriales",
+    text: "Un camión minero de gran tonelaje (Caterpillar 793) requiere reemplazar los discos de embrague del convertidor de torque. La temperatura de fricción supera los 800 °C y el desgaste abrasivo es extremo. ¿Qué material es el estándar de la industria para esta aplicación?",
+    options: [
+      "Acero bonificado templado y revenido, por su alta dureza superficial.",
+      "Compuesto de fibra de carbono con matriz polimérica (CFRP), por su bajo peso.",
+      "Cerámica industrial (carburo de silicio o alúmina), por su dureza extrema y estabilidad térmica superior a 1000 °C.",
+      "Elastómero reforzado con Kevlar, por su resistencia al desgaste."
     ],
-    correct:2,
-    justification:"El policarbonato combina una transparencia óptica cercana a la del vidrio con una tenacidad al impacto extraordinaria (su resistencia Izod supera ampliamente a la de otros termoplásticos transparentes), por lo que se utiliza en visores de seguridad, blindajes antibalas y cabinas expuestas a proyección de partículas. El PVC rígido es más frágil ante impactos y de baja transparencia en grados industriales, mientras que el HDPE es opaco y carece de la rigidez óptica necesaria para una ventana. Además, el PC mantiene buen desempeño mecánico hasta temperaturas cercanas a su Tg (~147°C), suficiente para ambientes industriales típicos."
+    answer: 2,
+    feedback: "Las cerámicas industriales (SiC, Al₂O₃) son el material correcto. Soportan más de 1000 °C sin fundirse, tienen coeficiente de dilatación bajo y dureza de 9–9.5 en escala Mohs. Los aceros pierden propiedades a 600–700 °C; los polímeros (CFRP, elastómeros) se degradan muy por debajo de 800 °C."
   },
   {
-    category:"Polímeros · Termoestables",
-    tagClass:"tag-polimeros",
-    type:"Caso Práctico",
-    question:"Un componente estructural de fibra de carbono con matriz de resina epoxi, usado en un brazo robótico de una línea de mantenimiento, queda expuesto a 300°C durante varios minutos tras un incendio en la planta. Comparado con un termoplástico equivalente sometido a la misma temperatura, ¿qué diferencia fundamental en el comportamiento se observa?",
-    options:[
-      "La resina epoxi se funde y puede ser remoldeada para reutilizarse, igual que un termoplástico.",
-      "La resina epoxi, al ser termoestable (red reticulada con enlaces covalentes cruzados), no funde: se degrada y carboniza de forma permanente e irreversible, perdiendo su estructura química.",
-      "Ambos materiales se comportan igual, ya que la presencia de fibra de carbono determina el comportamiento térmico, no la matriz.",
-      "La resina epoxi se evapora completamente sin dejar residuo alguno, a diferencia de los termoplásticos."
+    cat: "Metales y Aleaciones",
+    text: "El vástago de un cilindro hidráulico debe resistir corrosión por aceite contaminado con agua y sufrir mínima abrasión superficial por los sellos. ¿Qué elemento de aleación es el más crítico para lograr esto?",
+    options: [
+      "Carbono (C), porque aumenta la dureza y resistencia al desgaste.",
+      "Manganeso (Mn), porque aporta tenacidad frente a los impactos del pistón.",
+      "Cromo (Cr), porque forma una capa pasivante que resiste la corrosión y la fricción superficial.",
+      "Níquel (Ni), porque eleva el punto de fusión del acero."
     ],
-    correct:1,
-    justification:"Las resinas epoxi curadas forman una red tridimensional de enlaces covalentes cruzados (entrecruzamiento o curado), lo que las clasifica como termoestables. A diferencia de los termoplásticos, que se ablandan o funden de forma reversible al superar su Tg o Tm y pueden remoldearse, los termoestables no funden: al superar su temperatura de degradación sufren pirólisis y carbonización, un proceso químico irreversible que destruye permanentemente su estructura y propiedades. Por eso, tras un evento térmico severo, un componente de matriz epoxi debe descartarse y no puede 'repararse' por fusión."
+    answer: 2,
+    feedback: "El Cromo (Cr) es el elemento correcto. Forma óxido de cromo (Cr₂O₃), una capa pasivante que resiste la corrosión y reduce la fricción. Por eso todos los vástagos hidráulicos llevan recubrimiento de cromo duro (hard chrome plating). El carbono da dureza general, no pasivación; el manganeso es para impactos, no corrosión."
   },
   {
-    category:"Polímeros · Comportamiento Térmico",
-    tagClass:"tag-polimeros",
-    type:"Tecnicismo",
-    question:"Un ingeniero debe seleccionar el elastómero para una manguera hidráulica que operará en el Altiplano chileno, donde la temperatura nocturna desciende hasta -20°C. El elastómero candidato tiene una Temperatura de Transición Vítrea (Tg) de -10°C. ¿Qué ocurrirá durante la operación nocturna?",
-    options:[
-      "La manguera se fundirá parcialmente, ya que -20°C está por debajo de su Tg.",
-      "No habrá ningún cambio relevante, ya que la Tg solo aplica a materiales cerámicos.",
-      "Por debajo de su Tg, el elastómero pasará de un estado gomoso/flexible a un estado vítreo, rígido y frágil, aumentando drásticamente el riesgo de fractura frágil ante flexión o impacto.",
-      "La manguera se volverá más flexible, ya que el frío reduce la fricción intermolecular entre cadenas."
+    cat: "Pulvimetalurgia / Sintetizado",
+    text: "En el proceso de pulvimetalurgia, una pieza se prensa en frío formando la llamada 'pieza en verde'. Luego se introduce al horno de sinterizado. ¿A qué rango de temperatura, expresado en porcentaje de la temperatura de fusión del metal, opera correctamente el horno?",
+    options: [
+      "Entre el 20% y 40% de la temperatura de fusión.",
+      "Entre el 50% y 60% de la temperatura de fusión.",
+      "Entre el 70% y 90% de la temperatura de fusión.",
+      "Al 100% de la temperatura de fusión (el metal se funde completamente)."
     ],
-    correct:2,
-    justification:"La Temperatura de Transición Vítrea (Tg) marca el punto en que las regiones amorfas de un polímero pasan de un estado gomoso/flexible (por encima de Tg) a un estado vítreo, rígido y frágil (por debajo de Tg). Si la temperatura de servicio cae por debajo de la Tg del elastómero (-20°C versus una Tg de -10°C), el material pierde su capacidad de absorber deformación y se vuelve susceptible a fisuras y fracturas frágiles bajo flexión. La Temperatura de Fusión (Tm) corresponde a la fusión de las regiones cristalinas en polímeros semicristalinos y no es el parámetro relevante para la fragilización por frío. En climas extremos, la Tg del elastómero siempre debe quedar muy por debajo de la mínima temperatura de operación."
+    answer: 2,
+    feedback: "El sinterizado opera entre el 70% y 90% de la Tm del polvo metálico. Esto activa la difusión atómica en estado sólido (o con mínima fase líquida), uniendo las partículas sin que la pieza se funda y pierda forma. Si se llegara al 100% de Tm el material colapsaría; por debajo del 70% no hay difusión suficiente."
   },
   {
-    category:"Cerámicas Industriales",
-    tagClass:"tag-ceramicas",
-    type:"Tecnicismo",
-    question:"En sistemas de freno y embrague de maquinaria pesada de alto rendimiento se utilizan discos cerámicos (a base de carburo de silicio, SiC, o compuestos cerámicos) en lugar de discos metálicos convencionales. ¿Cuál es la principal ventaja técnica y cuál la principal desventaja inherente a su naturaleza cerámica?",
-    options:[
-      "Ventaja: alta conductividad eléctrica. Desventaja: bajo punto de fusión.",
-      "Ventaja: excelente resistencia al desgaste, dureza y estabilidad del coeficiente de fricción incluso por encima de 1000°C, sin 'fading'. Desventaja: baja tenacidad a la fractura, susceptibles a fallas catastróficas por impacto o choque térmico.",
-      "Ventaja: son más económicas de producir que el acero. Desventaja: se oxidan rápidamente en presencia de humedad ambiental.",
-      "Ventaja: alta ductilidad, permitiendo deformación plástica antes de la falla. Desventaja: peso excesivo frente al acero."
+    cat: "Materiales Compuestos",
+    text: "Para fabricar el boom (pluma) de una excavadora de nueva generación se propone usar un material compuesto. ¿Cuál es la combinación correcta de términos técnicos? La parte que da la FORMA y protege se llama _____, y la que aporta la RIGIDEZ es el _____.",
+    options: [
+      "Refuerzo — Matriz",
+      "Matriz — Refuerzo",
+      "Aglomerante — Árido",
+      "Fase dispersa — Fase continua"
     ],
-    correct:1,
-    justification:"Las cerámicas técnicas como el carburo de silicio (SiC) destacan en aplicaciones de fricción a alta temperatura porque mantienen su dureza, resistencia al desgaste y coeficiente de fricción estables incluso por encima de 1000°C, evitando el 'fading' (pérdida de eficacia de frenado por sobrecalentamiento) típico de materiales orgánicos o metálicos. Sin embargo, su naturaleza cerámica implica enlaces covalentes/iónicos muy rígidos y ausencia de mecanismos de deformación plástica, lo que se traduce en baja tenacidad a la fractura: pequeñas grietas pueden propagarse catastróficamente, y los choques térmicos (gradientes de temperatura abruptos) pueden fracturar el componente sin aviso previo. Este compromiso entre rendimiento extremo y fragilidad es central en el diseño con cerámicas industriales."
+    answer: 1,
+    feedback: "En materiales compuestos: la MATRIZ da forma, protege y transfiere cargas (ej. resina epoxi o aluminio); el REFUERZO aporta resistencia y rigidez (fibras de carbono, vidrio o Kevlar). 'Aglomerante y árido' son términos del hormigón. 'Fase dispersa y continua' corresponden a metalurgia de mezclas, no a compuestos estructurales."
   },
   {
-    category:"Cerámicas Industriales · Sensores",
-    tagClass:"tag-ceramicas",
-    type:"Tecnicismo",
-    question:"Una excavadora moderna utiliza sensores de vibración y presión en su sistema hidráulico basados en cerámicas como el Titanato Zirconato de Plomo (PZT). ¿Qué principio físico permite su funcionamiento como sensor?",
-    options:[
-      "Efecto piezoeléctrico: al deformarse mecánicamente, la estructura cristalina genera una diferencia de potencial eléctrico proporcional a la deformación o presión aplicada.",
-      "Efecto fotovoltaico: la cerámica convierte la luz incidente en una señal eléctrica medible.",
-      "Conductividad iónica: el PZT conduce electricidad como un electrolito líquido al calentarse por encima de los 50°C.",
-      "Magnetismo remanente: el PZT genera un campo magnético detectable proporcional a su vibración."
+    cat: "Fundiciones de Cobre — Chile",
+    text: "Respecto a la situación actual de las fundiciones de cobre en Chile, ¿cuál es el principal riesgo de mercado que enfrenta el país si no moderniza sus plantas en los próximos 5–10 años?",
+    options: [
+      "Que el precio del cobre caiga por mayor oferta de Indonesia.",
+      "Que el cobre chileno sea rechazado en mercados internacionales por no cumplir estándares de 'Minería Verde' y de captura de gases (arsénico/azufre).",
+      "Que China supere a Chile en reservas de mineral de cobre.",
+      "Que las 7 fundiciones colapsen por falta de energía eléctrica."
     ],
-    correct:0,
-    justification:"El efecto piezoeléctrico, presente en cerámicas con estructura cristalina no centrosimétrica como el PZT, permite que una deformación mecánica (compresión, vibración o flexión) reordene los dipolos eléctricos internos del cristal, generando una diferencia de potencial medible y proporcional a la fuerza aplicada. Este principio es la base de sensores de presión, vibración, golpeteo (knock sensors) y acelerómetros utilizados en el monitoreo de maquinaria pesada. El mismo efecto, en sentido inverso, permite además usar estas cerámicas como actuadores de precisión."
+    answer: 1,
+    feedback: "El riesgo clave es el rechazo comercial. Las 7 fundiciones chilenas procesan minerales con alto contenido de arsénico y azufre y no cumplen las normas ambientales internacionales. Si el mercado global adopta requisitos de 'Minería Verde', el cobre chileno podría quedar fuera de la cadena de valor de Europa y Asia en 5–10 años. Chile perdió competitividad frente a China por falta de inversión tecnológica, no por reservas."
   },
   {
-    category:"Cerámicas Industriales · Aislantes",
-    tagClass:"tag-ceramicas",
-    type:"Caso Práctico",
-    question:"En el sistema eléctrico de un generador diésel de respaldo de una planta minera se requiere un material aislante que soporte temperaturas superiores a 1000°C, alta resistencia dieléctrica y estabilidad química. ¿Cuál es la opción correcta y por qué se descarta un termoestable como la resina epoxi para esta aplicación específica?",
-    options:[
-      "Alúmina (Al2O3): cerámica con excelente resistencia dieléctrica y estabilidad térmica hasta cerca de 2000°C; la resina epoxi se degrada y carboniza muy por debajo de 1000°C, perdiendo sus propiedades aislantes.",
-      "Resina epoxi, porque es más económica y soporta sin problemas temperaturas de 1000°C de forma continua.",
-      "Caucho de silicona, porque su flexibilidad lo hace ideal para temperaturas superiores a 1000°C en servicio continuo.",
-      "Policarbonato, por su alta resistencia dieléctrica a temperaturas criogénicas, extensible a altas temperaturas."
+    cat: "Polímeros — Termoplásticos vs Termoestables",
+    text: "Un operador encuentra una manguera rota hecha de resina epoxi curada. Decide calentarla para reblandecerla y darle nueva forma. ¿Qué ocurrirá realmente?",
+    options: [
+      "La manguera se ablandará y podrá moldearse, igual que el PVC.",
+      "La manguera recuperará su forma original por memoria de forma.",
+      "La manguera se quemará y degradará irreversiblemente, sin poder moldearse de nuevo.",
+      "La manguera se cristalizará y ganará más rigidez."
     ],
-    correct:0,
-    justification:"La alúmina (Al2O3) es una cerámica óxida con un punto de fusión cercano a los 2050°C, excelente resistencia dieléctrica y estabilidad química, lo que la convierte en el estándar para aislantes eléctricos de alta temperatura (bujías, pasamuros, soportes de bobinas). En contraste, las resinas termoestables como la epoxi tienen temperaturas de servicio continuo típicamente entre 120°C y 200°C; por encima de ese rango comienzan a degradarse térmicamente (carbonización), perdiendo su capacidad aislante mucho antes de acercarse a los 1000°C. En ambientes de muy alta temperatura, los polímeros quedan descartados frente a las cerámicas técnicas."
+    answer: 2,
+    feedback: "Las resinas epoxi son termoestables. Su curado forma enlaces cruzados covalentes permanentes (reticulación). Al recalentar NO fluyen ni se moldean: se degradan y queman. Es su diferencia fundamental con los termoplásticos (PVC, policarbonato) que sí reblandecen con calor y son reciclables. Los termoestables tienen proceso de moldeo irreversible: una sola vez."
   },
   {
-    category:"Compuestos · MMC",
-    tagClass:"tag-compuestos",
-    type:"Caso Práctico",
-    question:"Un fabricante de motores diésel de alto desempeño utiliza pistones fabricados con una matriz de aluminio reforzada con partículas de carburo de silicio (Al/SiC), un Material Compuesto de Matriz Metálica (MMC). ¿Cuál es el objetivo principal de este diseño?",
-    options:[
-      "Reducir el costo de producción frente al aluminio puro.",
-      "Combinar la baja densidad y buena conductividad térmica del aluminio con el aumento de dureza, resistencia al desgaste y estabilidad dimensional a alta temperatura que aportan las partículas cerámicas de SiC.",
-      "Eliminar por completo la necesidad de lubricación en el cilindro del motor.",
-      "Aumentar la conductividad eléctrica del pistón para fines de sensado remoto."
+    cat: "Cerámicas — Sensores",
+    text: "Los sensores de oxígeno (sonda lambda) y de temperatura del motor de un camión minero son de material cerámico. ¿Cuál propiedad cerámica es la razón técnica principal para esta elección?",
+    options: [
+      "Alta ductilidad, que permite deformarse sin romperse en vibraciones.",
+      "Alta conductividad eléctrica, que mejora la señal del sensor.",
+      "Estabilidad química y dimensional a temperaturas extremas (>600 °C) y resistencia a gases corrosivos del escape.",
+      "Bajo costo de fabricación respecto al acero inoxidable."
     ],
-    correct:1,
-    justification:"Los Materiales Compuestos de Matriz Metálica (MMC), como el aluminio reforzado con partículas de carburo de silicio (Al/SiC), buscan aprovechar lo mejor de ambos mundos: la baja densidad, buena conductividad térmica y maquinabilidad del aluminio, junto con la altísima dureza, resistencia al desgaste y estabilidad dimensional a alta temperatura que aporta la fase cerámica dispersa. En pistones de motores diésel de alto desempeño, esto permite reducir peso —disminuyendo la inercia y aumentando la eficiencia— sin sacrificar la resistencia al desgaste en zonas críticas, como la canaleta del primer anillo, que operan a temperaturas elevadas."
+    answer: 2,
+    feedback: "Las cerámicas (ZrO₂ en sensores lambda, Al₂O₃ en vainas de temperatura) se usan porque son estables química y dimensionalmente a >600 °C, resistentes a gases sulfurosos y de combustión. Las cerámicas son frágiles (no dúctiles) y son aislantes eléctricos (baja conductividad). Son más costosas que el acero; se usan por rendimiento, no por precio."
   },
   {
-    category:"Compuestos · CMC",
-    tagClass:"tag-compuestos",
-    type:"Tecnicismo",
-    question:"Los discos de freno carbono-carbono (C/C) o de carburo de silicio reforzado con fibra de carbono (C/SiC), usados en frenos de muy alto desempeño, son Materiales Compuestos de Matriz Cerámica (CMC). ¿Qué problema fundamental de las cerámicas monolíticas (sin refuerzo) buscan resolver las fibras incorporadas?",
-    options:[
-      "Aumentar el punto de fusión de la cerámica por encima de los 3000°C.",
-      "Incrementar la tenacidad a la fractura: las fibras desvían, frenan o absorben energía de las grietas, evitando la falla catastrófica y frágil típica de las cerámicas monolíticas.",
-      "Reducir el coeficiente de fricción para minimizar el desgaste del disco.",
-      "Convertir la cerámica en un material conductor de electricidad para aplicaciones de sensado."
+    cat: "Tratamientos Térmicos",
+    text: "Un pasador de articulación de cuchara de excavadora requiere resistir el roce constante en su superficie sin quebrarse al recibir golpes. ¿Cuál tratamiento térmico y/o proceso de superficie es el más adecuado técnicamente?",
+    options: [
+      "Templado completo, para lograr máxima dureza en toda la sección.",
+      "Revenido profundo, para máxima tenacidad en toda la pieza.",
+      "Cementado (endurecimiento superficial), que endurece solo la capa exterior dejando el núcleo tenaz.",
+      "Normalizado, para homogeneizar la microestructura."
     ],
-    correct:1,
-    justification:"Las cerámicas monolíticas son extremadamente duras pero frágiles: una grieta microscópica puede propagarse sin obstáculos y provocar una falla catastrófica instantánea. Al incorporar fibras (de carbono, SiC, etc.) dentro de una matriz cerámica para formar un CMC, se introducen mecanismos de tenacificación: las fibras pueden desviar la grieta, puentear sus caras (crack bridging) o desprenderse de la matriz (debonding), absorbiendo energía y deteniendo la propagación. El resultado conserva la resistencia al desgaste y la estabilidad térmica de la cerámica, pero con una tenacidad a la fractura órdenes de magnitud mayor, ideal para frenos de alto rendimiento y componentes de turbinas."
+    answer: 2,
+    feedback: "El cementado es el proceso correcto para pasadores y bujes. Endurece la 'cáscara' superficial (1–3 mm) por difusión de carbono, logrando alta dureza superficial para resistir el desgaste/roce. El núcleo permanece blando y tenaz para absorber impactos sin partirse. El templado total dejaría la pieza completa dura pero frágil, y el revenido solo devuelve tenacidad, no da dureza superficial selectiva."
   },
   {
-    category:"Compuestos · PMC",
-    tagClass:"tag-compuestos",
-    type:"Caso Práctico",
-    question:"Se diseña el capó de un camión minero ultra-pesado, buscando reducir peso sin sacrificar rigidez estructural, mientras que para los paneles de protección contra impactos de rocas se evalúa un refuerzo distinto. ¿Qué combinación de refuerzos en una matriz polimérica (PMC) es más adecuada para cada caso?",
-    options:[
-      "Fibra de vidrio para ambos casos, ya que es la más rígida y resistente al impacto de todos los refuerzos disponibles.",
-      "Fibra de carbono para el capó, por su altísima relación rigidez/peso (aunque relativamente frágil ante impactos puntuales), y fibra de Kevlar (aramida) para los paneles de protección, por su excepcional capacidad de absorber energía de impacto sin fractura catastrófica.",
-      "Kevlar para el capó por su bajo costo, y fibra de carbono para los paneles de impacto por su alta flexibilidad.",
-      "Ninguno de estos refuerzos es compatible con matrices poliméricas; se requeriría siempre una matriz cerámica."
+    cat: "Polímeros — Propiedades",
+    text: "El tablero de la cabina de un bulldozer está fabricado en policarbonato en lugar de vidrio. ¿Cuál es la principal ventaja técnica del policarbonato en esta aplicación?",
+    options: [
+      "Mayor transparencia óptica que el vidrio templado.",
+      "Resistencia al impacto sin astillarse (no produce fragmentos cortantes) y menor peso específico.",
+      "Mayor resistencia a disolventes hidrocarbonados (aceites, gasolina).",
+      "Mayor resistencia a temperaturas superiores a 300 °C."
     ],
-    correct:1,
-    justification:"La fibra de carbono ofrece la mayor relación rigidez/peso entre los refuerzos comunes para PMC, ideal para paneles estructurales como capós, donde se busca minimizar peso sin perder rigidez flexional; sin embargo, frente a impactos puntuales tiende a fallar de forma frágil (delaminación, astillamiento). La fibra de Kevlar (aramida), en cambio, tiene una capacidad sobresaliente para absorber energía de impacto mediante deformación de sus cadenas moleculares sin fracturarse catastróficamente, por lo que se reserva para zonas expuestas a impactos de rocas o proyectiles. La fibra de vidrio queda como alternativa de menor costo y desempeño intermedio."
+    answer: 1,
+    feedback: "El policarbonato supera al vidrio en resistencia al impacto: absorbe golpes sin astillarse ni generar fragmentos peligrosos, crítico en ambiente de obra. Además es ≈50% más liviano. Sin embargo, el policarbonato es termoplástico y tiene baja resistencia a disolventes (aceites y gasolina lo atacan), y su Tg está ≈147 °C, no aguanta 300 °C. En transparencia, el vidrio sigue siendo superior óptico."
   },
   {
-    category:"Pulvimetalurgia · Sinterizado",
-    tagClass:"tag-compuestos",
-    type:"Tecnicismo",
-    question:"En el proceso de pulvimetalurgia para fabricar un engranaje de transmisión, después de la compactación de los polvos metálicos en una matriz se obtiene la 'pieza en verde' (green part). ¿Qué característica define correctamente a esta pieza en esta etapa del proceso?",
-    options:[
-      "Ya posee sus propiedades mecánicas finales y puede entrar directamente en servicio.",
-      "Tiene la forma geométrica deseada y cierta cohesión por entrelazamiento mecánico entre partículas, pero es porosa, frágil y de baja resistencia; requiere la etapa de sinterizado para alcanzar sus propiedades finales.",
-      "Es un líquido viscoso que debe verterse en un molde de arena para solidificar.",
-      "Ha sido sometida a temperaturas cercanas al punto de fusión del metal base, alcanzando ya su densidad teórica máxima."
+    cat: "Compuestos — Tipos de Matriz",
+    text: "Se necesita fabricar una pieza estructural para un brazo de manipulación que trabaja a 450 °C (cerca del sistema de escape) y debe soportar cargas mecánicas altas. Un compuesto PMC (Matriz Polimérica) queda descartado. ¿Qué tipo de compuesto es el correcto y por qué?",
+    options: [
+      "PMC con fibra de vidrio, porque la fibra soporta esas temperaturas.",
+      "MMC (Matriz Metálica, ej. aluminio + fibra de carbono), porque combina resistencia mecánica con mayor tolerancia térmica que los polímeros.",
+      "CMC (Matriz Cerámica), pero solo si la pieza es decorativa.",
+      "Elastómero reforzado, por su flexibilidad en altas temperaturas."
     ],
-    correct:1,
-    justification:"En pulvimetalurgia, la etapa de compactación une mecánicamente las partículas de polvo mediante presión, generando cohesión por entrelazamiento y deformación plástica superficial. El resultado, la 'pieza en verde', ya tiene la geometría final y suficiente resistencia para ser manipulada, pero conserva un nivel de porosidad considerable y propiedades mecánicas muy por debajo de las requeridas en servicio. Solo después del sinterizado —donde la difusión atómica a alta temperatura une las partículas, reduce la porosidad y aumenta la densidad— la pieza adquiere su resistencia, dureza y tolerancia dimensional finales."
+    answer: 1,
+    feedback: "Para 450 °C un PMC es inviable (los polímeros se degradan entre 150–350 °C). La solución es un MMC (Metal Matrix Composite): la matriz de aluminio o titanio soporta temperaturas de servicio de 300–500 °C; el refuerzo (fibra de carbono o SiC) aporta rigidez. Los CMC son para temperaturas aún más extremas (>800 °C). Los elastómeros son incompatibles con esa temperatura."
   },
   {
-    category:"Pulvimetalurgia · Sinterizado",
-    tagClass:"tag-compuestos",
-    type:"Tecnicismo",
-    question:"Para controlar adecuadamente la porosidad final y evitar la fusión prematura de las partículas durante el sinterizado de una pieza de acero, la temperatura del horno se fija, como regla general, en relación al punto de fusión absoluto (en Kelvin) del metal base. ¿Cuál es el rango aproximado correcto?",
-    options:[
-      "Entre el 30% y el 40% de la temperatura de fusión absoluta.",
-      "Aproximadamente entre el 70% y el 90% de la temperatura de fusión absoluta (en Kelvin) del metal base, suficiente para activar la difusión atómica en estado sólido sin alcanzar la fusión.",
-      "Exactamente el 100% de la temperatura de fusión, ya que el sinterizado requiere fusión completa de las partículas.",
-      "Entre el 150% y el 200% de la temperatura de fusión, sobrecalentando el material para garantizar la unión."
+    cat: "Fundiciones — Tecnicismo",
+    text: "¿Cuál es el principal problema TÉCNICO que impide a las fundiciones chilenas competir con las chinas en la exportación de cobre refinado, más allá del precio?",
+    options: [
+      "Las fundiciones chilenas usan hornos de mayor antigüedad que ya no existen en el mercado.",
+      "Chile no tiene tecnología para capturar los gases de arsénico y azufre generados en el proceso, incumpliendo normas ambientales internacionales.",
+      "El mineral chileno tiene ley de cobre inferior al 0.1%, haciéndolo no rentable de fundir.",
+      "La energía eléctrica en Chile es 10 veces más cara que en China."
     ],
-    correct:1,
-    justification:"Una regla general ampliamente aceptada en pulvimetalurgia es que la temperatura de sinterizado se ubica entre el 70% y el 90% de la temperatura de fusión absoluta (en Kelvin) del metal base. En ese rango, la energía térmica activa mecanismos de difusión en estado sólido (a través de la red cristalina, los límites de grano y la superficie de las partículas), permitiendo la unión, densificación y reducción controlada de la porosidad sin que el material llegue a fundirse. Superar este rango generaría pérdida de control dimensional o colapso de la pieza; trabajar muy por debajo no activaría suficiente difusión para una densificación adecuada."
+    answer: 1,
+    feedback: "El problema técnico central es la captura de gases. Los minerales chilenos tienen alta concentración de arsénico (As) y azufre (S). Las fundiciones actuales no tienen sistemas de captura eficiente, emitiendo gases tóxicos que violan normas de emisión internacionales. Esto bloquea la certificación de 'Minería Verde'. La ley promedio del cobre chileno (~0.5–0.6%) sigue siendo comercialmente viable."
   },
   {
-    category:"Industria del Cobre en Chile",
-    tagClass:"tag-cobre",
-    type:"Contexto Sectorial",
-    question:"Chile, históricamente uno de los principales productores de cobre del mundo, ha visto disminuir su participación en la capacidad mundial de fundición (smelting) de concentrados, mientras China ha incrementado drásticamente la suya. ¿Cuál es una de las principales razones técnico-económicas de esta pérdida de competitividad de las fundiciones chilenas?",
-    options:[
-      "Chile dejó de producir cobre, por lo que ya no necesita fundiciones propias.",
-      "Las fundiciones chinas, más nuevas y de mayor escala, operan con cargos de tratamiento y refinación (TC/RC) más bajos y mayores economías de escala, mientras Chile exporta una proporción creciente de concentrado sin procesar en lugar de cátodos refinados, perdiendo valor agregado.",
-      "El cobre chileno cambió su composición química y ya no puede ser fundido a alta temperatura.",
-      "China prohibió por completo la importación de concentrado de cobre proveniente de Chile."
+    cat: "Metales — Aleaciones (Tecnicismo)",
+    text: "Una zapata de oruga de excavadora trabaja en suelo rocoso con altísimo desgaste abrasivo. El jefe de mantención debe elegir entre un acero al carbono medio (0.35% C) y un acero de alto carbono (0.85% C). ¿Cuál elige y qué propiedad lo justifica?",
+    options: [
+      "El de 0.35% C, porque tiene mayor tenacidad y no se parte con los impactos de las rocas.",
+      "El de 0.85% C, porque el mayor contenido de carbono da mayor dureza y resistencia al desgaste abrasivo.",
+      "Ambos son equivalentes para esta aplicación.",
+      "El de 0.35% C, porque el alto carbono genera corrosión galvánica con el suelo."
     ],
-    correct:1,
-    justification:"Las fundiciones chilenas, en general más antiguas y de menor escala que las grandes fundiciones chinas construidas en las últimas dos décadas, enfrentan mayores costos relativos de energía, mano de obra y cumplimiento ambiental. Las fundiciones chinas, al operar con mayor escala y tecnología más reciente, pueden ofrecer cargos de tratamiento y refinación (TC/RC) más bajos a las mineras, lo que ha incentivado a productores chilenos a exportar una proporción creciente de concentrado de cobre sin procesar, en lugar de convertirlo localmente en cátodos refinados. Esto representa una pérdida de valor agregado para la cadena productiva nacional y es uno de los ejes del debate sobre modernizar la capacidad de fundición en Chile."
+    answer: 1,
+    feedback: "El acero de alto carbono (0.85% C) es correcto para este uso. El Carbono es el 'rey de la dureza': a mayor %C, mayor dureza Vickers/Brinell y resistencia al desgaste abrasivo (por formación de carburos de hierro en la microestructura). Zapatas de orugas y cucharas de excavadora son aplicaciones clásicas de aceros de alto carbono o aceros Hadfield (Mn + alto C). La tenacidad es secundaria aquí; prima el antidesgaste."
   },
   {
-    category:"Industria del Cobre · Medio Ambiente",
-    tagClass:"tag-cobre",
-    type:"Tecnicismo",
-    question:"Los concentrados de cobre del norte de Chile suelen contener niveles significativos de impurezas como arsénico y azufre. La normativa de emisiones para fundiciones exige altos porcentajes de captura de estos contaminantes. ¿Cuál de las siguientes afirmaciones describe correctamente el desafío técnico-ambiental?",
-    options:[
-      "El arsénico y el azufre no representan riesgo alguno y no están regulados en Chile.",
-      "Las fundiciones deben capturar más del 95% del azufre (como SO2, derivándolo a plantas de ácido sulfúrico) y cumplir límites estrictos de emisión de arsénico, lo que exige tecnologías de captura costosas; el incumplimiento ha derivado en el cierre de fundiciones antiguas, como la de Ventanas.",
-      "El arsénico se elimina simplemente ventilando los gases a la atmósfera a gran altura mediante chimeneas elevadas.",
-      "La normativa chilena solo regula las emisiones de CO2, no las de SO2 ni de arsénico."
+    cat: "Pulvimetalurgia — Porosidad",
+    text: "Una ventaja singular de la pulvimetalurgia frente a la fundición convencional es el control preciso de la porosidad de la pieza final. ¿En qué aplicación específica de maquinaria pesada es esto una ventaja decisiva?",
+    options: [
+      "En la fabricación de zapatas de oruga, donde la porosidad aumenta la dureza.",
+      "En bujes y cojinetes autolubricantes, donde la porosidad controlada retiene aceite lubricante en la pieza.",
+      "En pistones de motor, donde la porosidad reduce el peso del componente.",
+      "En cables de acero, donde la porosidad mejora la flexibilidad."
     ],
-    correct:1,
-    justification:"Los concentrados de cobre del norte de Chile suelen contener arsénico (As) como impureza asociada a la mineralogía local, además de azufre en forma de sulfuros que se libera como SO2 durante la fusión y conversión. La normativa chilena de emisiones para fundiciones exige altas tasas de captura de SO2 (típicamente derivado a plantas de ácido sulfúrico, con metas de captura superiores al 95%) y límites estrictos para las emisiones de arsénico, dado su alto riesgo para la salud humana al ser un elemento cancerígeno. El incumplimiento de estos estándares —y episodios de contaminación asociados, como los ocurridos en la zona de Quintero-Puchuncaví— ha derivado en mayor fiscalización e incluso en el cierre de fundiciones antiguas que no podían cumplir, como la Fundición Ventanas de Codelco."
+    answer: 1,
+    feedback: "Los bujes y cojinetes autolubricantes ('self-lubricating bearings') son la aplicación estrella de la pulvimetalurgia. La porosidad controlada (10–30% de volumen de vacíos) actúa como esponja: se impregna de aceite durante el montaje y lo libera gradualmente durante el funcionamiento. Esto elimina la necesidad de lubricación externa. En zapatas se necesita densidad máxima, no porosidad; en pistones la hermeticidad es obligatoria."
   },
   {
-    category:"Industria del Cobre · Minería Verde",
-    tagClass:"tag-cobre",
-    type:"Caso Práctico",
-    question:"Frente a la pérdida de competitividad y los problemas ambientales, se ha planteado la necesidad de desarrollar 'Minería Verde' y nuevas fundiciones de cobre en Chile. ¿Cuál de las siguientes opciones describe mejor un componente técnico real de esta estrategia?",
-    options:[
-      "Eliminar por completo el uso de energía en los procesos de fundición y conversión.",
-      "Incorporar fuentes de energía renovable (solar, eólica, hidrógeno verde) en los hornos de fusión/conversión, instalar sistemas modernos de captura de gases para SO2 y arsénico, y usar agua de mar desalada para reducir la presión sobre las cuencas hídricas continentales.",
-      "Trasladar todas las fundiciones a otros países para evitar por completo la regulación ambiental chilena.",
-      "Reemplazar el cobre por aluminio en toda la matriz productiva minera nacional."
+    cat: "Polímeros — Temperatura Crítica (Trampa)",
+    text: "Un ingeniero afirma que un sello de PVC puede usarse en una línea hidráulica que trabaja a 90 °C de forma continua. El otro ingeniero lo rechaza. ¿Cuál es el argumento técnico correcto del rechazo?",
+    options: [
+      "El PVC es conductor eléctrico y puede generar cortocircuitos en el sistema.",
+      "El PVC es un termoplástico cuya Tg está aproximadamente entre 75–85 °C; a 90 °C supera esa temperatura, pierde rigidez estructural y fluye bajo presión, fallando como sello.",
+      "El PVC es incompatible con el aceite hidráulico a cualquier temperatura.",
+      "El PVC tiene una Tm de 90 °C exactamente, por lo que se funde en servicio."
     ],
-    correct:1,
-    justification:"El concepto de 'Minería Verde' aplicado a la fundición de cobre busca reducir simultáneamente la huella de carbono y el impacto ambiental local del proceso. Esto incluye electrificar e incorporar energías renovables (solar, eólica, hidrógeno verde) para los hornos de fusión y conversión —procesos intensivos en energía—, instalar sistemas modernos de captura de gases que cumplan o superen los estándares de SO2 y arsénico, y reemplazar el uso de agua continental por agua de mar desalada para aliviar la presión sobre cuencas hídricas, especialmente críticas en el norte de Chile. Estos elementos son considerados claves para que nuevas fundiciones chilenas sean ambientalmente viables y recuperen competitividad internacional."
+    answer: 1,
+    feedback: "Esta es la pregunta trampa clásica. La Tg del PVC rígido es ≈75–85 °C. Al superar la Tg el polímero pasa de estado vítreo (rígido) a estado gomoso (blando, deformable). A 90 °C de servicio continuo, el PVC fluiría bajo la presión hidráulica y el sello fallaría. La Tm del PVC es ≈160–210 °C (no 90 °C). El PVC es aislante eléctrico, no conductor. Para esta aplicación se necesita un elastómero (FKM o EPDM) con Tg muy baja."
   }
 ];
 
-let currentIndex = 0;
+let currentQ = 0;
 let score = 0;
-let selectedIndex = null;
-let answered = false;
-let userAnswers = new Array(questions.length).fill(null);
+let answered = [];
+let selectedOptions = {}; // per-question selections
 
-const quizCard = document.getElementById('quizCard');
-const optionsList = document.getElementById('optionsList');
-const evalBtn = document.getElementById('evalBtn');
-const feedbackPanel = document.getElementById('feedbackPanel');
-const feedbackTitle = document.getElementById('feedbackTitle');
-const feedbackJustification = document.getElementById('feedbackJustification');
-const progressFill = document.getElementById('progressFill');
-const qCounter = document.getElementById('qCounter');
-const scoreCounter = document.getElementById('scoreCounter');
-const resultsScreen = document.getElementById('resultsScreen');
-
-function triggerAnim(el){
-  el.classList.remove('fade-in');
-  void el.offsetWidth;
-  el.classList.add('fade-in');
+function startExam() {
+  document.getElementById('intro-screen').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'block';
+  renderQuestions();
+  showQuestion(0);
 }
 
-function renderQuestion(){
-  const q = questions[currentIndex];
+function renderQuestions() {
+  const container = document.getElementById('questions-container');
+  container.innerHTML = '';
+  selectedOptions = {};
+  QUESTIONS.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `q-${i}`;
 
-  qCounter.textContent = `PREGUNTA ${currentIndex + 1} / ${questions.length}`;
-  scoreCounter.textContent = `ACIERTOS ${score}/${questions.length}`;
-  progressFill.style.width = (currentIndex / questions.length * 100) + '%';
+    const letters = ['A', 'B', 'C', 'D'];
+    const optionsHTML = q.options.map((opt, oi) => `
+      <li class="option-item" id="opt-${i}-${oi}" onclick="selectOption(${i}, ${oi})">
+        <span class="option-letter">${letters[oi]}</span>
+        <span class="option-text">${opt}</span>
+      </li>
+    `).join('');
 
-  document.getElementById('typeBadge').textContent = q.type;
-  const catBadge = document.getElementById('categoryBadge');
-  catBadge.textContent = q.category;
-  catBadge.className = 'badge ' + q.tagClass;
-
-  document.getElementById('questionText').textContent = q.question;
-
-  optionsList.innerHTML = '';
-  q.options.forEach((opt, i) => {
-    const li = document.createElement('li');
-    li.className = 'option';
-    li.tabIndex = 0;
-    li.setAttribute('role', 'button');
-    li.innerHTML = `<span class="option-letter">${String.fromCharCode(65 + i)}</span><span class="option-text"></span>`;
-    li.querySelector('.option-text').textContent = opt;
-    li.addEventListener('click', () => selectOption(i));
-    li.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectOption(i); }
-    });
-    optionsList.appendChild(li);
+    card.innerHTML = `
+      <div class="q-number">PREGUNTA ${i + 1} DE ${QUESTIONS.length}</div>
+      <div class="q-category">${q.cat}</div>
+      <div class="q-text">${q.text}</div>
+      <ul class="options">${optionsHTML}</ul>
+      <div class="feedback-box" id="feedback-${i}">
+        <div class="feedback-label" id="feedback-label-${i}"></div>
+        <div id="feedback-text-${i}"></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="eval-btn-${i}" onclick="evaluate(${i})" disabled>Evaluar Respuesta</button>
+        <button class="btn btn-ghost" id="next-btn-${i}" onclick="nextQuestion(${i})" style="display:none">
+          ${i < QUESTIONS.length - 1 ? 'Siguiente →' : 'Ver Resultados →'}
+        </button>
+      </div>
+    `;
+    container.appendChild(card);
   });
-
-  selectedIndex = null;
-  answered = false;
-  feedbackPanel.hidden = true;
-  feedbackPanel.className = 'feedback-panel';
-
-  evalBtn.textContent = 'Evaluar Respuesta';
-  evalBtn.disabled = true;
-  evalBtn.onclick = evaluateAnswer;
-
-  triggerAnim(quizCard);
+  answered = new Array(QUESTIONS.length).fill(false);
 }
 
-function selectOption(i){
-  if (answered) return;
-  selectedIndex = i;
-  const opts = optionsList.querySelectorAll('.option');
-  opts.forEach((el, idx) => el.classList.toggle('selected', idx === i));
-  evalBtn.disabled = false;
-}
-
-function evaluateAnswer(){
-  if (selectedIndex === null || answered) return;
-  answered = true;
-
-  const q = questions[currentIndex];
-  const opts = optionsList.querySelectorAll('.option');
-  opts.forEach((el, idx) => {
-    el.classList.add('disabled');
-    el.tabIndex = -1;
-    if (idx === q.correct) el.classList.add('correct-answer');
-    if (idx === selectedIndex && idx !== q.correct) el.classList.add('incorrect-answer');
-  });
-
-  const isCorrect = selectedIndex === q.correct;
-  userAnswers[currentIndex] = isCorrect;
-  if (isCorrect) score++;
-  scoreCounter.textContent = `ACIERTOS ${score}/${questions.length}`;
-  progressFill.style.width = ((currentIndex + 1) / questions.length * 100) + '%';
-
-  feedbackPanel.hidden = false;
-  feedbackPanel.className = 'feedback-panel ' + (isCorrect ? 'feedback-correct' : 'feedback-incorrect');
-  feedbackTitle.textContent = isCorrect ? '✅ Respuesta Correcta' : '❌ Respuesta Incorrecta';
-  feedbackJustification.textContent = q.justification;
-
-  evalBtn.disabled = false;
-  evalBtn.textContent = (currentIndex === questions.length - 1) ? 'Ver Resultados' : 'Siguiente Pregunta';
-  evalBtn.onclick = () => {
-    if (currentIndex === questions.length - 1) {
-      showResults();
-    } else {
-      currentIndex++;
-      renderQuestion();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-}
-
-function showResults(){
-  quizCard.hidden = true;
-  resultsScreen.hidden = false;
-  triggerAnim(resultsScreen);
-
-  const pct = Math.round((score / questions.length) * 100);
-  document.getElementById('resultScoreText').textContent = `${score}/${questions.length}`;
-  document.getElementById('resultPct').textContent = `${pct}%`;
-
-  let msg, color;
-  if (pct >= 90){
-    msg = '¡Dominio total! Estás más que listo para enfrentar el examen.';
-    color = 'var(--accent-green)';
-  } else if (pct >= 70){
-    msg = 'Buen manejo del contenido. Repasa los conceptos marcados en rojo antes del examen.';
-    color = 'var(--accent-green)';
-  } else if (pct >= 50){
-    msg = 'Nivel intermedio. Refuerza los conceptos de Cerámicas, Compuestos y Pulvimetalurgia.';
-    color = 'var(--accent-amber)';
-  } else {
-    msg = 'Necesitas repasar a fondo el material de las semanas 7 a 14 antes de presentarte al examen.';
-    color = 'var(--accent-red)';
+function showQuestion(idx) {
+  document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
+  const card = document.getElementById(`q-${idx}`);
+  if (card) {
+    card.classList.add('active');
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-  document.getElementById('resultMessage').textContent = msg;
-
-  const circumference = 2 * Math.PI * 85;
-  const gaugeFill = document.getElementById('gaugeFill');
-  gaugeFill.style.stroke = color;
-  gaugeFill.style.strokeDasharray = circumference;
-  gaugeFill.style.strokeDashoffset = circumference;
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      gaugeFill.style.strokeDashoffset = circumference - (circumference * pct / 100);
-    }, 80);
-  });
-
-  const grid = document.getElementById('breakdownGrid');
-  grid.innerHTML = '';
-  userAnswers.forEach((ans, i) => {
-    const div = document.createElement('div');
-    div.className = 'led ' + (ans ? 'led-correct' : 'led-incorrect');
-    div.textContent = String(i + 1);
-    div.title = questions[i].category;
-    grid.appendChild(div);
-  });
+  updateProgress(idx);
 }
 
-function restart(){
-  currentIndex = 0;
+function selectOption(qIdx, optIdx) {
+  if (answered[qIdx]) return;
+  selectedOptions[qIdx] = optIdx;
+  QUESTIONS[qIdx].options.forEach((_, oi) => {
+    document.getElementById(`opt-${qIdx}-${oi}`).classList.remove('selected');
+  });
+  document.getElementById(`opt-${qIdx}-${optIdx}`).classList.add('selected');
+  document.getElementById(`eval-btn-${qIdx}`).disabled = false;
+}
+
+function evaluate(qIdx) {
+  const chosen = selectedOptions[qIdx];
+  if (answered[qIdx] || chosen === undefined) return;
+  answered[qIdx] = true;
+
+  const q = QUESTIONS[qIdx];
+  const correct = q.answer;
+  const isCorrect = chosen === correct;
+
+  if (isCorrect) score++;
+
+  // Mark options
+  QUESTIONS[qIdx].options.forEach((_, oi) => {
+    const el = document.getElementById(`opt-${qIdx}-${oi}`);
+    el.classList.add('disabled');
+    if (oi === correct) el.classList.add('correct-ans');
+    if (oi === chosen && !isCorrect) el.classList.add('wrong-ans');
+  });
+
+  // Feedback
+  const fb = document.getElementById(`feedback-${qIdx}`);
+  const lbl = document.getElementById(`feedback-label-${qIdx}`);
+  const txt = document.getElementById(`feedback-text-${qIdx}`);
+  fb.classList.add('show');
+  if (isCorrect) {
+    fb.classList.add('correct');
+    lbl.textContent = '✓ Correcto';
+  } else {
+    fb.classList.add('incorrect');
+    lbl.textContent = '✗ Incorrecto';
+  }
+  txt.textContent = q.feedback;
+
+  // Hide eval, show next
+  document.getElementById(`eval-btn-${qIdx}`).style.display = 'none';
+  document.getElementById(`next-btn-${qIdx}`).style.display = 'block';
+
+  updateProgress(qIdx);
+  updateScoreLabel();
+}
+
+function nextQuestion(qIdx) {
+  if (qIdx < QUESTIONS.length - 1) {
+    showQuestion(qIdx + 1);
+  } else {
+    showResults();
+  }
+}
+
+function updateProgress(currentIdx) {
+  const pct = ((currentIdx) / QUESTIONS.length) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = `PREGUNTA ${currentIdx + 1} / ${QUESTIONS.length}`;
+}
+
+function updateScoreLabel() {
+  document.getElementById('prog-score').textContent = `${score} correcta${score !== 1 ? 's' : ''}`;
+}
+
+function showResults() {
+  document.getElementById('questions-container').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+  const rs = document.getElementById('results-screen');
+  rs.style.display = 'block';
+  rs.scrollIntoView({ behavior: 'smooth' });
+
+  const pct = Math.round((score / QUESTIONS.length) * 100);
+  const wrong = QUESTIONS.length - score;
+  const nota = ((score / QUESTIONS.length) * 7).toFixed(1);
+
+  document.getElementById('score-big').textContent = score;
+  document.getElementById('bd-correct').textContent = score;
+  document.getElementById('bd-wrong').textContent = wrong;
+  document.getElementById('bd-pct').textContent = nota;
+
+  // Animate ring
+  const circumference = 377;
+  const offset = circumference - (pct / 100) * circumference;
+  setTimeout(() => {
+    document.getElementById('ring-circle').style.transition = 'stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)';
+    document.getElementById('ring-circle').style.strokeDashoffset = offset;
+  }, 100);
+
+  let title, subtitle;
+  if (pct >= 87) {
+    title = '🏆 Excelente — Listo para el examen';
+    subtitle = 'Dominas el contenido técnico. Repasa los tecnicismos de las preguntas trampa y llegarás con ventaja.';
+  } else if (pct >= 65) {
+    title = '👍 Buen nivel — Afina los detalles';
+    subtitle = 'Tienes la base. Repasa porcentajes críticos, Tg/Tm y los procesos de cementado y pulvimetalurgia.';
+  } else if (pct >= 45) {
+    title = '⚠️ En desarrollo — Estudia más';
+    subtitle = 'Necesitas reforzar. Enfócate en: ¿qué aporta cada material? y los datos duros (temperaturas, %).';
+  } else {
+    title = '🔴 Nivel insuficiente — Repasa todo';
+    subtitle = 'El examen está próximo. Vuelve a la base de conocimiento y repite el simulador hasta dominar cada categoría.';
+  }
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-subtitle').textContent = subtitle;
+}
+
+function restartExam() {
   score = 0;
-  selectedIndex = null;
-  answered = false;
-  userAnswers = new Array(questions.length).fill(null);
-  resultsScreen.hidden = true;
-  quizCard.hidden = false;
-  renderQuestion();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  selectedOptions = {};
+  currentQ = 0;
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('questions-container').style.display = 'block';
+  document.getElementById('progress-wrap').style.display = 'block';
+  document.getElementById('ring-circle').style.strokeDashoffset = 377;
+  document.getElementById('ring-circle').style.transition = 'none';
+  updateScoreLabel();
+  renderQuestions();
+  showQuestion(0);
 }
-
-document.getElementById('restartBtn').addEventListener('click', restart);
-
-renderQuestion();
 </script>
 </body>
 </html>
