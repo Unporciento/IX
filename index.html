@@ -1,659 +1,872 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Sistema de Optimización Hídrica del Complejo Turístico Playa La Virgen — Planta Desalinizadora, Red HDPE Sectorizada y Macromedidores Inteligentes">
-<meta name="author" content="Equipo de Ingeniería · INACAP">
-<title>Optimización Hídrica · Complejo Turístico Playa La Virgen</title>
-<meta property="og:title" content="Optimización Hídrica - Playa La Virgen">
-<meta property="og:type" content="website">
-<meta name="theme-color" content="#1b3d2d">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231b3d2d'/><path d='M16 4 C16 4 7 14 7 19 a9 9 0 0 0 18 0 C25 14 16 4 16 4z' fill='%23b8903a'/></svg>">
-
-<!-- Fuentes -->
+<title>Simulador de Examen — Materiales en Maquinaria Pesada</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
-
-<!-- Estilos -->
-<link rel="stylesheet" href="css/styles.css">
-
-<!-- Three.js import map -->
-<script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-    }
-  }
-</script>
-
-<!-- Estilos de impresión (Ctrl+P) -->
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-@media print {
-  /* Ocultar todo lo interactivo */
-  .nav-tabs, #section-3d, .cam-panel, #alerta-fuga,
-  #canvas-tooltip, #leak-history-panel, #leak-timer-badge,
-  #btn-toggle-pipes, #btn-day-night, #btn-shortcuts,
-  #cam-minimap, audio { display: none !important; }
-
-  /* Fondo blanco limpio */
-  *, *::before, *::after {
-    background: #fff !important;
-    color: #000 !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
+  :root{
+    --bg-base:#0a0e17;
+    --bg-card:#141c2e;
+    --bg-option:#1b2540;
+    --bg-option-hover:#243156;
+    --border:#283655;
+    --border-light:#3a4d7a;
+    --text:#e8edf5;
+    --text-muted:#8b97b0;
+    --accent-amber:#ffb627;
+    --accent-green:#39ff8c;
+    --accent-red:#ff5470;
+    --tag-polimeros:#7fe0ff;
+    --tag-ceramicas:#ffab66;
+    --tag-compuestos:#c9a8ff;
+    --tag-cobre:#5cf2c8;
+    --radius:12px;
   }
 
-  body { font-size: 11pt; line-height: 1.5; }
+  *{ margin:0; padding:0; box-sizing:border-box; }
 
-  /* Mostrar todas las secciones en el PDF */
-  .section { display: block !important; break-inside: avoid; }
+  html,body{ min-height:100%; }
 
-  /* Header impreso elegante */
-  header {
-    background: #1b3d2d !important;
-    color: #fff !important;
-    padding: 1.5cm 2cm !important;
-    text-align: center;
-    break-after: avoid;
-  }
-  header h1, header h1 em,
-  header .header-subtitle,
-  header .header-institution {
-    color: #fff !important;
-  }
-  header h1 em { color: #ddb85a !important; }
-
-  /* Cómic: 2 columnas en PDF */
-  .comic-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 1rem !important;
-  }
-  .comic-card { break-inside: avoid; }
-  .comic-img-wrap img { max-height: 120pt; }
-
-  /* Reemplazar la sección 3D con una página de referencia */
-  #section-3d::before {
-    content: '';
-    display: block;
-    break-before: page;
-  }
-  #section-3d .viewer-topbar { display: block !important; }
-  #section-3d .canvas-wrap {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    height: 200pt !important;
-    background: #e8e0d0 !important;
-    border: 2px dashed #b8903a !important;
-    border-radius: 4px;
-  }
-  #section-3d .canvas-wrap::after {
-    content: '🖥 Maqueta 3D Interactiva\ADisponible en la versión web del proyecto';
-    white-space: pre;
-    text-align: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 16pt;
-    color: #1b3d2d !important;
-    line-height: 2;
-  }
-  #three-canvas { display: none !important; }
-
-  /* CDM impreso */
-  .cdm-grid { grid-template-columns: repeat(3, 1fr) !important; gap: .8rem !important; }
-  .cdm-card { break-inside: avoid; }
-  .cdm-card--cualidades  .cdm-header { background: #1b3d2d !important; }
-  .cdm-card--debilidades .cdm-header { background: #6b5230 !important; }
-  .cdm-card--mejoras     .cdm-header { background: #3a6b4a !important; }
-  .cdm-header h3, .cdm-header p, .cdm-icon { color: #fff !important; }
-
-  /* Footer impreso */
-  footer {
-    background: #1b3d2d !important;
-    color: #fff !important;
-    break-before: avoid;
-  }
-  .footer-top, .footer-bottom,
-  .footer-brand strong, .footer-brand span,
-  .footer-credits-label, .footer-names,
-  .footer-professor-name, .footer-professor-course {
-    color: #fff !important;
+  body{
+    font-family:'Inter', sans-serif;
+    background-color:var(--bg-base);
+    background-image:
+      radial-gradient(circle at 15% -10%, rgba(255,182,39,0.06), transparent 42%),
+      radial-gradient(circle at 90% 5%, rgba(57,255,140,0.05), transparent 40%);
+    color:var(--text);
+    min-height:100vh;
+    padding:24px 16px 60px;
+    line-height:1.6;
   }
 
-  /* Hint al final del PDF */
-  body::after {
-    content: 'Proyecto generado el ' attr(data-print-date) ' · Versión interactiva disponible en línea';
-    display: block;
-    text-align: center;
-    font-size: 8pt;
-    color: #888 !important;
-    margin-top: 1cm;
-    padding-top: 0.5cm;
-    border-top: 1px solid #ccc;
-  }
-}
-</style>
+  .app{ max-width:840px; margin:0 auto; }
 
-<!-- Script para inyectar la fecha en el atributo data-print-date -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    document.body.setAttribute('data-print-date',
-      new Date().toLocaleDateString('es-CL', { year:'numeric', month:'long', day:'numeric' })
+  /* ---------- HEADER / PROGRESS ---------- */
+  .topbar{
+    background:rgba(13,18,30,0.85);
+    backdrop-filter:blur(10px);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:18px 22px;
+    margin-bottom:24px;
+    position:sticky;
+    top:12px;
+    z-index:10;
+  }
+
+  .brand h1{
+    font-family:'Rajdhani', sans-serif;
+    font-weight:700;
+    font-size:1.35rem;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:#fdfdfd;
+  }
+
+  .brand p{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem;
+    color:var(--text-muted);
+    letter-spacing:0.03em;
+    margin-top:4px;
+  }
+
+  .progress-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:16px 0 8px;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .mono-tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.74rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+  }
+
+  .mono-tag.accent{ color:var(--accent-green); }
+
+  .progress-track{
+    position:relative;
+    height:10px;
+    background:var(--bg-option);
+    border:1px solid var(--border);
+    border-radius:6px;
+    overflow:hidden;
+  }
+
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--accent-amber), #ffe08a);
+    box-shadow:0 0 14px rgba(255,182,39,0.55);
+    transition:width 0.45s ease;
+  }
+
+  .progress-track::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent calc(100%/15 - 2px),
+      var(--bg-base) calc(100%/15 - 2px),
+      var(--bg-base) calc(100%/15)
     );
-  });
-</script>
-</head>
-
-<body>
-
-<!-- ═══════════════════ HEADER ═══════════════════════════════════════════ -->
-<header>
-  <div class="header-institution">Equipo de Ingeniería &nbsp;·&nbsp; Proyecto de Innovación &nbsp;·&nbsp; INACAP</div>
-  <h1>Optimización Hídrica <em>Complejo Turístico Playa La Virgen</em></h1>
-  <p class="header-subtitle">Planta Desalinizadora &nbsp;·&nbsp; Red HDPE Sectorizada &nbsp;·&nbsp; Macromedidores Inteligentes</p>
-  <div class="header-progress-bar" aria-hidden="true"></div>
-  <div class="header-rule"><span></span><i>◆</i><span></span></div>
-
-  <!-- Hint de exportación — solo visible en pantalla, nunca en impresión -->
-  <div class="header-export-hint" aria-label="Atajos de exportación">
-    <span><kbd>Ctrl+P</kbd> PDF</span>
-    <span class="hint-sep">·</span>
-    <span><kbd>Ctrl+Shift+P</kbd> Captura 3D</span>
-  </div>
-</header>
-
-<!-- ═══════════════════ NAVEGACIÓN ════════════════════════════════════════ -->
-<nav class="nav-tabs" role="navigation" aria-label="Secciones del proyecto">
-  <button class="nav-tab active" id="tab-comic" aria-controls="section-comic">
-    <span class="tab-num">I.</span>Contexto e Implementación
-  </button>
-  <button class="nav-tab" id="tab-3d" aria-controls="section-3d">
-    <span class="tab-num">II.</span>Maqueta 3D Interactiva
-  </button>
-  <button class="nav-tab" id="tab-cdm" aria-controls="section-cdm">
-    <span class="tab-num">III.</span>Matriz de Análisis (CDM)
-  </button>
-</nav>
-
-<!-- ═══════════════════ SECCIÓN 1: CÓMIC ═════════════════════════════════ -->
-<section id="section-comic" class="section active" role="main">
-  <div class="sec-header">
-    <span class="sec-eyebrow">Narrativa del Proyecto · 6 Escenas</span>
-    <h2 class="sec-title">Del Problema a la Solución Hídrica</h2>
-    <div class="sec-rule"></div>
-  </div>
-
-  <div class="inner">
-    <div class="comic-grid">
-
-      <article class="comic-card" aria-label="Escena 00 — El Problema">
-        <div class="comic-tag"><span class="scene-num">00</span><span>El Problema</span></div>
-        <div class="comic-img-wrap">
-          <img src="assets/images/0.jpg" alt="Vista del complejo con problema hídrico severo" loading="lazy">
-        </div>
-        <div class="comic-body">
-          <h3 class="comic-scene-title">Escasez y Fugas Invisibles</h3>
-          <p>Dependencia extrema de camiones aljibe y graves fugas no visibles. El terreno salino agrava el problema estructural en el complejo.</p>
-        </div>
-      </article>
-
-      <article class="comic-card" aria-label="Escena 01 — Desarrollo">
-        <div class="comic-tag"><span class="scene-num">01</span><span>Desarrollo</span></div>
-        <div class="comic-img-wrap">
-          <img src="assets/images/1.jpg" alt="Equipos desplegando tuberías HDPE en terreno" loading="lazy">
-        </div>
-        <div class="comic-body">
-          <h3 class="comic-scene-title">Despliegue de Red HDPE</h3>
-          <p>Los equipos renuevan la matriz subterránea utilizando tuberías de Polietileno de Alta Densidad, altamente resistentes a la corrosión.</p>
-        </div>
-      </article>
-
-      <article class="comic-card" aria-label="Escena 02 — Implementación">
-        <div class="comic-tag"><span class="scene-num">02</span><span>Implementación</span></div>
-        <div class="comic-img-wrap">
-          <img src="assets/images/2.jpg" alt="Instalación de la planta desalinizadora de osmosis inversa" loading="lazy">
-        </div>
-        <div class="comic-body">
-          <h3 class="comic-scene-title">Autonomía Hídrica</h3>
-          <p>Se instala la planta desalinizadora de osmosis inversa capaz de generar 35 m³ diarios, eliminando la necesidad de camiones externos.</p>
-        </div>
-      </article>
-
-      <article class="comic-card" aria-label="Escena 03 — Tecnología">
-        <div class="comic-tag"><span class="scene-num">03</span><span>Tecnología</span></div>
-        <div class="comic-img-wrap">
-          <img src="assets/images/3.jpg" alt="Sistema de monitoreo Smart Water en funcionamiento" loading="lazy">
-        </div>
-        <div class="comic-body">
-          <h3 class="comic-scene-title">Monitoreo Smart Water</h3>
-          <p>Implementación de macromedidores digitales y sensores en la red. Todo el complejo se monitorea desde una plataforma centralizada.</p>
-        </div>
-      </article>
-
-      <article class="comic-card" aria-label="Escena 04 — La Solución">
-        <div class="comic-tag"><span class="scene-num">04</span><span>La Solución</span></div>
-        <div class="comic-img-wrap">
-          <img src="assets/images/4.jpg" alt="Sistema hídrico finalizado con logo oficial del proyecto" loading="lazy">
-        </div>
-        <div class="comic-body">
-          <h3 class="comic-scene-title">Sistema Final y Oficial</h3>
-          <p>El sistema cerrado y finalizado. En la pared de la planta luce el logo oficial del proyecto, garantizando agua limpia y sustentable.</p>
-        </div>
-      </article>
-
-      <article class="comic-card" aria-label="Escena 05 — Proyecto Terminado">
-        <div class="comic-tag"><span class="scene-num">05</span><span>Proyecto Terminado</span></div>
-        <div class="comic-img-wrap">
-          <img src="assets/images/5.jpg" alt="Sello de calidad y sistema completamente asegurado" loading="lazy">
-        </div>
-        <div class="comic-body">
-          <h3 class="comic-scene-title">Protección y Sello de Calidad</h3>
-          <p>El sistema operativo se encuentra completamente cerrado y asegurado. En sus muros destaca el logo del proyecto, marcando un hito en la sustentabilidad de Playa La Virgen.</p>
-        </div>
-      </article>
-
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════ SECCIÓN 2: 3D ════════════════════════════════════ -->
-<section id="section-3d" class="section" aria-label="Maqueta 3D interactiva">
-
-  <div class="viewer-topbar">
-    <div>
-      <h2>Maqueta 3D del Sistema Hídrico</h2>
-      <p>Representación interactiva · Arrastra para rotar · Scroll para zoom · <kbd style="font-size:.75em;background:rgba(0,0,0,.08);padding:1px 5px;border-radius:3px;border:1px solid #ccc">?</kbd> para atajos</p>
-    </div>
-
-  </div>
-
-  <div class="viewer-layout">
-
-    <!-- ── SIDEBAR IZQUIERDA: Controles ──────────────────────────────── -->
-    <aside class="sidebar sidebar-left" id="sidebar-left" aria-label="Controles">
-      <button class="sidebar-toggle toggle-left" id="sidebar-left-toggle" title="Mostrar/ocultar panel" aria-expanded="true">
-        <span class="st-icon">◀</span>
-      </button>
-      <div class="sidebar-inner">
-
-        <section class="sb-section">
-          <div class="sb-heading">📷 Vistas</div>
-          <button class="sb-btn sb-active" id="btn-general" title="Vista general (tecla 1)">
-            <span class="sb-icon">⊞</span><span class="sb-label">Vista General</span>
-          </button>
-          <button class="sb-btn" id="btn-plant" title="Planta Desalinizadora (tecla 2)">
-            <span class="sb-icon">◧</span><span class="sb-label">Planta Desalinizadora</span>
-          </button>
-          <button class="sb-btn" id="btn-network" title="Cerro y Estanque (tecla 3)">
-            <span class="sb-icon">⛰</span><span class="sb-label">Cerro y Estanque</span>
-          </button>
-          <button class="sb-btn" id="btn-cabins" title="Zona de Cabañas (tecla 4)">
-            <span class="sb-icon">🏠</span><span class="sb-label">Zona de Cabañas</span>
-          </button>
-          <button class="sb-btn" id="btn-main" title="Casa Principal (tecla 5)">
-            <span class="sb-icon">🏛</span><span class="sb-label">Casa Principal</span>
-          </button>
-        </section>
-
-        <section class="sb-section">
-          <div class="sb-heading">⚙️ Simulación</div>
-          <button class="sb-btn sb-btn-fuga" id="btn-fuga" title="Simular fuga (F)">
-            <span class="sb-icon">🚨</span><span class="sb-label">Simular Fuga</span>
-          </button>
-        </section>
-
-        <section class="sb-section">
-          <div class="sb-heading">🎨 Escena</div>
-          <button class="sb-btn" id="btn-day-night">
-            <span class="sb-icon">🌙</span><span class="sb-label">Modo Noche</span>
-          </button>
-          <button class="sb-btn" id="btn-toggle-pipes">
-            <span class="sb-icon">🔧</span><span class="sb-label">Mostrar Tuberías</span>
-          </button>
-          <button class="sb-btn" id="btn-xray">
-            <span class="sb-icon">🔬</span><span class="sb-label">Radiografía</span>
-          </button>
-          <button class="sb-btn" id="btn-clean-view">
-            <span class="sb-icon">✦</span><span class="sb-label">Vista Limpia</span>
-          </button>
-        </section>
-
-        <section class="sb-section">
-          <div class="sb-heading">🎯 Navegación</div>
-          <button class="sb-btn" id="btn-cam-back">
-            <span class="sb-icon">↩</span><span class="sb-label">Vista Anterior</span>
-          </button>
-          <button class="sb-btn" id="btn-tour">
-            <span class="sb-icon">▶</span><span class="sb-label">Tour Automático</span>
-          </button>
-        </section>
-
-        <section class="sb-section sb-legend">
-          <div class="sb-heading">🗺 Leyenda</div>
-          <div class="sb-legend-item"><span class="sb-swatch" style="background:#4a7c6f"></span>Estanques</div>
-          <div class="sb-legend-item"><span class="sb-swatch" style="background:#ddd8ce;border:1px solid #aaa"></span>Planta Desal.</div>
-          <div class="sb-legend-item"><span class="sb-swatch" style="background:#b8903a"></span>Red HDPE</div>
-          <div class="sb-legend-item"><span class="sb-swatch" style="background:#f0ead8;border:1px solid #c85a3a"></span>Cabañas</div>
-        </section>
-
-      </div>
-    </aside>
-
-    <!-- ── CANVAS ──────────────────────────────────────────────────── -->
-    <div class="canvas-wrap" role="region" aria-label="Maqueta 3D interactiva">
-      <canvas id="three-canvas" aria-label="Maqueta 3D interactiva del complejo Playa La Virgen"></canvas>
-
-      <!-- Alerta de fuga -->
-      <div id="alerta-fuga" role="alert" aria-live="assertive">
-        <div class="alert-icon">⚠️</div>
-        <h3>¡ALERTA DE FUGA!</h3>
-        <p>Pérdida de presión detectada.</p>
-        <p class="alert-severity">Gravedad: <span id="tipo-fuga"></span></p>
-        <div class="alert-progress" aria-hidden="true">
-          <div class="alert-progress-bar"></div>
-        </div>
-      </div>
-
-      <!-- Tooltip inicial -->
-      <div id="canvas-tooltip" role="status">
-        Arrastra · Scroll · Teclas 1–5 · F fuga · ? atajos
-      </div>
-    </div>
-
-    <!-- ── SIDEBAR DERECHA: Datos del sistema ─────────────────────── -->
-    <aside class="sidebar sidebar-right" id="sidebar-right" aria-label="Datos del sistema">
-      <button class="sidebar-toggle toggle-right" id="sidebar-right-toggle" title="Mostrar/ocultar datos" aria-expanded="true">
-        <span class="st-icon">▶</span>
-      </button>
-      <div class="sidebar-inner">
-
-        <!-- Presión del sistema -->
-        <section class="sb-section">
-          <div class="sb-heading">📡 Presión del Sistema</div>
-          <div id="pressure-hud-inner">
-            <div class="ph-row">
-              <span class="ph-name">Estanque</span>
-              <div class="ph-bar-wrap"><div class="ph-bar" id="ph-bar-1" style="width:92%"></div></div>
-              <span class="ph-val" id="ph-val-1">9.2 bar</span>
-            </div>
-            <div class="ph-row">
-              <span class="ph-name">Casa Princ.</span>
-              <div class="ph-bar-wrap"><div class="ph-bar" id="ph-bar-2" style="width:78%"></div></div>
-              <span class="ph-val" id="ph-val-2">7.8 bar</span>
-            </div>
-            <div class="ph-row">
-              <span class="ph-name">Cabañas</span>
-              <div class="ph-bar-wrap"><div class="ph-bar" id="ph-bar-3" style="width:65%"></div></div>
-              <span class="ph-val" id="ph-val-3">6.5 bar</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- Pérdida activa (solo durante fuga) -->
-        <section class="sb-section" id="liters-section" style="display:none">
-          <div class="sb-heading">💧 Pérdida Activa</div>
-          <div class="lc-container">
-            <span class="lc-label">Litros perdidos</span>
-            <span id="lc-value" class="lc-value-big">0 L</span>
-          </div>
-        </section>
-
-        <!-- Estadísticas de sesión -->
-        <section class="sb-section" id="session-stats-section" style="display:none">
-          <div class="sb-heading">📊 Estadísticas</div>
-          <div class="ss-row"><span class="ss-label">Total fugas</span><span class="ss-val" id="ss-total">0</span></div>
-          <div class="ss-row"><span class="ss-label">Agua perdida</span><span class="ss-val" id="ss-water">0 L</span></div>
-          <div class="ss-row"><span class="ss-label">Resp. prom.</span><span class="ss-val" id="ss-avgtime">—</span></div>
-          <div class="ss-row"><span class="ss-label">Auto-resueltas</span><span class="ss-val" id="ss-auto">0</span></div>
-        </section>
-
-        <!-- Registro de fugas -->
-        <section class="sb-section">
-          <div class="sb-heading">📋 Registro
-            <span id="lh-count" style="opacity:.5;font-size:.75em;margin-left:.3em">0 eventos</span>
-          </div>
-          <ul id="lh-list" style="list-style:none;padding:0;margin:0">
-            <li class="lh-empty">Sin eventos en esta sesión.</li>
-          </ul>
-        </section>
-
-      </div>
-    </aside>
-
-  </div><!-- /.viewer-layout -->
-</section>
-
-<!-- ═══════════════════ SECCIÓN 3: CDM ═══════════════════════════════════ -->
-<section id="section-cdm" class="section" aria-label="Matriz CDM">
-  <div class="sec-header">
-    <span class="sec-eyebrow">Análisis Estratégico · Proyecto Playa La Virgen</span>
-    <h2 class="sec-title">Matriz de Cualidades, Debilidades y Mejoras</h2>
-    <div class="sec-rule"></div>
-  </div>
-
-  <div class="inner" style="max-width:1200px;margin:0 auto;padding:0 2rem 5rem;">
-    <div class="cdm-grid">
-
-      <!-- Cualidades -->
-      <div class="cdm-card cdm-card--cualidades">
-        <div class="cdm-header">
-          <div class="cdm-icon" aria-hidden="true">✦</div>
-          <h3>Cualidades</h3>
-          <p>Aspectos positivos y fortalezas</p>
-        </div>
-        <ul class="cdm-list">
-          <li>
-            <strong>Autonomía Hídrica</strong>
-            La planta de osmosis inversa elimina al 100% la dependencia histórica de camiones aljibe, generando 35 m³ diarios.
-          </li>
-          <li>
-            <strong>Durabilidad Estructural</strong>
-            El uso de tuberías HDPE sectorizadas garantiza resistencia a la corrosión del terreno salino por décadas.
-          </li>
-          <li>
-            <strong>Control en Tiempo Real</strong>
-            Los macromedidores digitales (Smart Water) permiten detectar caídas de presión y fugas al instante desde una plataforma centralizada.
-          </li>
-        </ul>
-      </div>
-
-      <!-- Debilidades -->
-      <div class="cdm-card cdm-card--debilidades">
-        <div class="cdm-header">
-          <div class="cdm-icon" aria-hidden="true">◈</div>
-          <h3>Debilidades</h3>
-          <p>Puntos a considerar y mitigar</p>
-        </div>
-        <ul class="cdm-list">
-          <li>
-            <strong>Dependencia Eléctrica</strong>
-            La planta desalinizadora y los sensores requieren un flujo eléctrico continuo para operar correctamente.
-          </li>
-          <li>
-            <strong>Mantenimiento Especializado</strong>
-            El sistema de osmosis inversa exige cambio periódico de filtros y personal técnico capacitado en terreno.
-          </li>
-          <li>
-            <strong>Inversión Inicial Elevada</strong>
-            El costo de implementación de la infraestructura completa y sensores inteligentes es alto en su etapa inicial.
-          </li>
-        </ul>
-      </div>
-
-      <!-- Mejoras -->
-      <div class="cdm-card cdm-card--mejoras">
-        <div class="cdm-header">
-          <div class="cdm-icon" aria-hidden="true">◎</div>
-          <h3>Mejoras</h3>
-          <p>Evolución futura del proyecto</p>
-        </div>
-        <ul class="cdm-list">
-          <li>
-            <strong>Energías Renovables</strong>
-            Integrar paneles solares para alimentar la planta desalinizadora y hacer el sistema energéticamente autónomo y 100% ecológico.
-          </li>
-          <li>
-            <strong>App para Huéspedes</strong>
-            Desarrollar una aplicación móvil para que los turistas visualicen su consumo de agua y fomenten la concientización hídrica.
-          </li>
-          <li>
-            <strong>Reutilización de Aguas Grises</strong>
-            Implementar un sistema paralelo de recolección de aguas grises para el riego de las áreas verdes del complejo.
-          </li>
-        </ul>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════ FOOTER ════════════════════════════════════════════ -->
-<footer role="contentinfo">
-  <div class="footer-top">
-
-    <div class="footer-brand">
-      <strong>Optimización Hídrica</strong>
-      <span>Complejo Turístico Playa La Virgen</span>
-      <span style="margin-top:.4rem;font-style:normal;font-size:.72rem;opacity:.5;">
-        Planta Desalinizadora · Red HDPE · Macromedidores
-      </span>
-    </div>
-
-    <div class="footer-credits">
-      <div class="footer-credits-label">Integrantes</div>
-      <div class="footer-names">
-        Simón Olivares<br>
-        Julio Sinisterra<br>
-        Millaray Aguirre<br>
-        Renato Borquez<br>
-        Wiljer Mamani
-      </div>
-    </div>
-
-    <div class="footer-professor">
-      <div class="footer-credits-label">Docente</div>
-      <div class="footer-professor-name">Raul Alberto Araya Zepeda</div>
-      <div class="footer-professor-course">Innovación y Emprendimiento</div>
-      <div class="footer-credits-label" style="margin-top:.8rem;">Institución</div>
-      <div class="footer-professor-name" style="font-size:.82rem;">INACAP</div>
-    </div>
-
-  </div>
-
-  <div class="footer-bottom">
-    <span>Proyecto de Innovación · Ingeniería</span>
-    <span>
-      Complejo Turístico Playa La Virgen
-      <span class="footer-bottom-rule"></span>
-      Maqueta Interactiva 3D
-    </span>
-  </div>
-</footer>
-
-<!-- Audio de alarma -->
-<audio id="sonido-alerta" loop preload="none" aria-hidden="true">
-  <source src="https://www.soundjay.com/misc/sounds/fail-buzzer-03.mp3" type="audio/mpeg">
-  <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
-</audio>
-
-<!-- Scripts -->
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  // Ripple en botones de camara
-  document.querySelectorAll(".cam-btn").forEach(btn => {
-    btn.addEventListener("click", function(e) {
-      const r = document.createElement("span");
-      r.className = "ripple";
-      const rect = this.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height);
-      r.style.cssText = "width:"+size+"px;height:"+size+"px;left:"+(e.clientX-rect.left-size/2)+"px;top:"+(e.clientY-rect.top-size/2)+"px";
-      this.appendChild(r);
-      setTimeout(() => r.remove(), 600);
-    });
-  });
-
-  // Atajos de teclado
-  document.addEventListener("keydown", e => {
-    const tag = document.activeElement.tagName;
-    if (tag === "INPUT" || tag === "TEXTAREA") return;
-    const map = { "1":"btn-general","2":"btn-plant","3":"btn-network","4":"btn-cabins","5":"btn-main",
-      "n":"btn-day-night","N":"btn-day-night",
-      "f":"btn-fuga","F":"btn-fuga" };
-    if (e.key === "Escape") { document.getElementById("btn-general")?.click(); return; }
-    if (e.key === "?") {
-      const p = document.getElementById("shortcuts-panel");
-      if (p) p.style.display = p.style.display === "none" ? "block" : "none";
-      return;
-    }
-    const el = map[e.key] ? document.getElementById(map[e.key]) : null;
-    if (el) el.click();
-  });
-
-  // Observer color critico litros
-  setTimeout(() => {
-    const lc = document.getElementById("lc-value");
-    if (!lc) return;
-    new MutationObserver(() => {
-      const num = parseFloat(lc.textContent);
-      lc.classList.toggle("critical", num > 50);
-    }).observe(lc, { childList: true, characterData: true, subtree: true });
-  }, 2500);
-});
-</script>
-
-<script>
-// ── Dual Sidebar toggles ────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-
-  // Generic sidebar toggle factory
-  function makeSidebarToggle(sidebarId, toggleId, openIcon, closedIcon, prefKey) {
-    const sidebar = document.getElementById(sidebarId);
-    const toggle  = document.getElementById(toggleId);
-    if (!sidebar || !toggle) return;
-    const isOpen = sessionStorage.getItem(prefKey) !== 'false';
-    if (!isOpen) sidebar.classList.add('collapsed');
-    toggle.querySelector('.st-icon').textContent = isOpen ? openIcon : closedIcon;
-    toggle.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-      const open = !sidebar.classList.contains('collapsed');
-      sessionStorage.setItem(prefKey, open);
-      toggle.querySelector('.st-icon').textContent = open ? openIcon : closedIcon;
-      toggle.setAttribute('aria-expanded', open);
-      // Trigger resize so Three.js canvas fills the new space
-      window.dispatchEvent(new Event('resize'));
-    });
+    pointer-events:none;
   }
 
-  makeSidebarToggle('sidebar-left',  'sidebar-left-toggle',  '◀', '▶', 'plv_sidebar_left_open');
-  makeSidebarToggle('sidebar-right', 'sidebar-right-toggle', '▶', '◀', 'plv_sidebar_right_open');
+  /* ---------- CARD ---------- */
+  .quiz-card{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:28px;
+  }
 
-  // Mark cam buttons active on click
-  const viewBtns = ['btn-general','btn-plant','btn-network','btn-cabins','btn-main'];
-  viewBtns.forEach(id => {
-    const btn = document.getElementById(id);
-    if (!btn) return;
-    btn.addEventListener('click', () => {
-      viewBtns.forEach(vid => document.getElementById(vid)?.classList.remove('sb-active'));
-      btn.classList.add('sb-active');
+  .fade-in{ animation:fadeSlide 0.45s ease; }
+
+  @keyframes fadeSlide{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .meta-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+  }
+
+  .badge{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.09em;
+    padding:6px 12px;
+    border-radius:999px;
+    border:1px solid var(--border-light);
+    color:var(--text-muted);
+    background:rgba(255,255,255,0.02);
+  }
+
+  .badge-type{ color:var(--accent-amber); border-color:var(--accent-amber); background:rgba(255,182,39,0.08); }
+  .tag-polimeros{ color:var(--tag-polimeros); border-color:var(--tag-polimeros); background:rgba(127,224,255,0.08); }
+  .tag-ceramicas{ color:var(--tag-ceramicas); border-color:var(--tag-ceramicas); background:rgba(255,171,102,0.08); }
+  .tag-compuestos{ color:var(--tag-compuestos); border-color:var(--tag-compuestos); background:rgba(201,168,255,0.08); }
+  .tag-cobre{ color:var(--tag-cobre); border-color:var(--tag-cobre); background:rgba(92,242,200,0.08); }
+
+  .question-text{
+    font-size:1.05rem;
+    font-weight:500;
+    color:#f5f8fc;
+    margin-bottom:22px;
+  }
+
+  /* ---------- OPTIONS ---------- */
+  #optionsList{
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:20px;
+  }
+
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    background:var(--bg-option);
+    border:1px solid var(--border);
+    border-left:4px solid transparent;
+    border-radius:10px;
+    padding:14px 16px;
+    cursor:pointer;
+    transition:transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .option:hover:not(.disabled){
+    background:var(--bg-option-hover);
+    border-color:var(--accent-amber);
+    border-left-color:var(--accent-amber);
+    transform:translateX(6px);
+    box-shadow:0 4px 18px -4px rgba(255,182,39,0.35);
+  }
+
+  .option:focus-visible{
+    outline:2px solid var(--accent-amber);
+    outline-offset:2px;
+  }
+
+  .option.selected{
+    border-color:var(--accent-amber);
+    border-left-color:var(--accent-amber);
+    background:rgba(255,182,39,0.07);
+  }
+
+  .option.disabled{ cursor:default; }
+  .option.disabled:hover{ transform:none; box-shadow:none; }
+
+  .option.correct-answer{
+    border-color:var(--accent-green);
+    border-left-color:var(--accent-green);
+    background:rgba(57,255,140,0.07);
+    box-shadow:0 4px 18px -4px rgba(57,255,140,0.3);
+  }
+
+  .option.incorrect-answer{
+    border-color:var(--accent-red);
+    border-left-color:var(--accent-red);
+    background:rgba(255,84,112,0.07);
+    box-shadow:0 4px 18px -4px rgba(255,84,112,0.3);
+  }
+
+  .option-letter{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    font-size:0.85rem;
+    width:28px; height:28px;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--border-light);
+    border-radius:6px;
+    color:var(--text-muted);
+    transition:color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .option:hover:not(.disabled) .option-letter{ color:var(--accent-amber); border-color:var(--accent-amber); }
+  .option.selected .option-letter{ color:var(--accent-amber); border-color:var(--accent-amber); }
+  .option.correct-answer .option-letter{ color:var(--accent-green); border-color:var(--accent-green); }
+  .option.incorrect-answer .option-letter{ color:var(--accent-red); border-color:var(--accent-red); }
+
+  .option-text{ font-size:0.95rem; padding-top:2px; }
+
+  /* ---------- FEEDBACK ---------- */
+  .feedback-panel{
+    border-radius:10px;
+    padding:16px 18px;
+    margin-bottom:20px;
+    border-left:4px solid;
+  }
+
+  .feedback-correct{ background:rgba(57,255,140,0.06); border-color:var(--accent-green); }
+  .feedback-incorrect{ background:rgba(255,84,112,0.06); border-color:var(--accent-red); }
+
+  .feedback-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.09em;
+    color:var(--text-muted);
+    display:block;
+    margin-bottom:6px;
+  }
+
+  .feedback-title{
+    font-family:'Rajdhani', sans-serif;
+    font-weight:700;
+    font-size:1.05rem;
+    letter-spacing:0.02em;
+    margin-bottom:8px;
+  }
+
+  .feedback-correct .feedback-title{ color:var(--accent-green); }
+  .feedback-incorrect .feedback-title{ color:var(--accent-red); }
+
+  .feedback-justification{
+    font-size:0.92rem;
+    color:var(--text);
+    opacity:0.92;
+  }
+
+  /* ---------- BUTTONS ---------- */
+  .primary-btn{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:10px;
+    background:var(--accent-amber);
+    color:#1a1300;
+    font-family:'Rajdhani', sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    text-transform:uppercase;
+    letter-spacing:0.07em;
+    cursor:pointer;
+    transition:transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+
+  .primary-btn:hover:not(:disabled){
+    background:#ffc850;
+    box-shadow:0 0 24px rgba(255,182,39,0.45);
+    transform:translateY(-2px);
+  }
+
+  .primary-btn:disabled{
+    background:var(--bg-option);
+    color:var(--text-muted);
+    cursor:not-allowed;
+    box-shadow:none;
+  }
+
+  .secondary-btn{
+    padding:14px 34px;
+    border:1px solid var(--accent-amber);
+    background:transparent;
+    color:var(--accent-amber);
+    border-radius:10px;
+    font-family:'Rajdhani', sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.07em;
+    font-size:0.95rem;
+    cursor:pointer;
+    transition:background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .secondary-btn:hover{
+    background:rgba(255,182,39,0.1);
+    box-shadow:0 0 20px rgba(255,182,39,0.25);
+  }
+
+  /* ---------- RESULTS ---------- */
+  .results-screen{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:40px 28px;
+    text-align:center;
+  }
+
+  .gauge-wrap{
+    position:relative;
+    width:200px; height:200px;
+    margin:18px auto 14px;
+  }
+
+  .gauge-wrap svg{ transform:rotate(-90deg); width:100%; height:100%; }
+
+  .gauge-track{ fill:none; stroke:var(--border); stroke-width:14; }
+
+  .gauge-fill{
+    fill:none;
+    stroke:var(--accent-amber);
+    stroke-width:14;
+    stroke-linecap:round;
+    stroke-dasharray:534;
+    stroke-dashoffset:534;
+    transition:stroke-dashoffset 1.1s ease, stroke 0.4s ease;
+  }
+
+  .gauge-text{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+
+  .gauge-score{
+    font-family:'Rajdhani', sans-serif;
+    font-weight:700;
+    font-size:2.4rem;
+    color:#fdfdfd;
+  }
+
+  .gauge-pct{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.85rem;
+    color:var(--text-muted);
+    letter-spacing:0.05em;
+  }
+
+  .result-message{
+    font-size:1rem;
+    max-width:480px;
+    margin:8px auto 28px;
+    color:var(--text);
+  }
+
+  .breakdown-grid{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:8px;
+    margin-bottom:30px;
+  }
+
+  .led{
+    width:34px; height:34px;
+    border-radius:7px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.75rem; font-weight:700;
+    border:1px solid;
+  }
+
+  .led-correct{ background:rgba(57,255,140,0.1); border-color:var(--accent-green); color:var(--accent-green); }
+  .led-incorrect{ background:rgba(255,84,112,0.1); border-color:var(--accent-red); color:var(--accent-red); }
+
+  /* ---------- MISC ---------- */
+  [hidden]{ display:none !important; }
+
+  @media (max-width:560px){
+    .quiz-card{ padding:20px; }
+    .question-text{ font-size:1rem; }
+    .gauge-wrap{ width:170px; height:170px; }
+    .gauge-score{ font-size:2rem; }
+    .results-screen{ padding:30px 18px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <h1>⚙ Diagnóstico de Materiales</h1>
+      <p>Simulador · Ciencia y Tecnología de Materiales aplicada a Maquinaria Pesada — Semanas 7 a 14</p>
+    </div>
+    <div class="progress-row">
+      <span id="qCounter" class="mono-tag">PREGUNTA 1 / 15</span>
+      <span id="scoreCounter" class="mono-tag accent">ACIERTOS 0/15</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="quiz-card fade-in" id="quizCard">
+      <div class="meta-row">
+        <span class="badge badge-type" id="typeBadge"></span>
+        <span class="badge" id="categoryBadge"></span>
+      </div>
+      <p class="question-text" id="questionText"></p>
+      <ul id="optionsList"></ul>
+      <div class="feedback-panel" id="feedbackPanel" hidden>
+        <span class="feedback-label">Análisis técnico</span>
+        <div class="feedback-title" id="feedbackTitle"></div>
+        <p class="feedback-justification" id="feedbackJustification"></p>
+      </div>
+      <button class="primary-btn" id="evalBtn" disabled>Evaluar Respuesta</button>
+    </section>
+
+    <section class="results-screen" id="resultsScreen" hidden>
+      <span class="badge badge-type">Resultado Final</span>
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 200 200">
+          <circle class="gauge-track" cx="100" cy="100" r="85"></circle>
+          <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="85"></circle>
+        </svg>
+        <div class="gauge-text">
+          <span class="gauge-score" id="resultScoreText">0/15</span>
+          <span class="gauge-pct" id="resultPct">0%</span>
+        </div>
+      </div>
+      <p class="result-message" id="resultMessage"></p>
+      <div class="breakdown-grid" id="breakdownGrid"></div>
+      <button class="secondary-btn" id="restartBtn">Reintentar Simulador</button>
+    </section>
+  </main>
+
+</div>
+
+<script>
+const questions = [
+  {
+    category:"Polímeros · Elastómeros",
+    tagClass:"tag-polimeros",
+    type:"Caso Práctico",
+    question:"Un cilindro hidráulico de una excavadora opera con aceite mineral a temperaturas de hasta 90°C. Durante una mantención de emergencia, un técnico reemplaza los O-rings originales de Nitrilo (NBR) por unos de EPDM (Etileno-Propileno-Dieno) porque eran los únicos disponibles en bodega. ¿Qué consecuencia técnica es más probable en pocas horas de operación?",
+    options:[
+      "Ninguna; el EPDM es compatible con todos los fluidos industriales y reemplaza sin problemas al NBR.",
+      "El EPDM se hinchará (swelling) y perderá propiedades mecánicas, ya que tiene muy baja resistencia a hidrocarburos derivados del petróleo, provocando fugas en el sello.",
+      "El EPDM aumentará su dureza Shore, mejorando el sellado a alta presión sin efectos negativos.",
+      "El EPDM se sublimará por encima de 70°C, generando vacío dentro del circuito hidráulico."
+    ],
+    correct:1,
+    justification:"El Etileno-Propileno-Dieno (EPDM) tiene excelente resistencia a fluidos polares (agua, vapor, líquidos de freno base glicol) y a la intemperie (ozono, UV), pero una resistencia muy pobre a los aceites minerales e hidrocarburos derivados del petróleo: el aceite hidráulico penetra su estructura molecular, provoca hinchamiento (swelling), pérdida de propiedades mecánicas y fallas de sellado prematuras. Para sellos de sistemas hidráulicos con aceite mineral, el estándar de la industria es el Nitrilo (NBR) o, para temperaturas más altas, el Fluoroelastómero (FKM/Viton). Confundir EPDM con NBR es un error de compatibilidad química frecuente y costoso en mantención de maquinaria pesada."
+  },
+  {
+    category:"Polímeros · Termoplásticos",
+    tagClass:"tag-polimeros",
+    type:"Caso Práctico",
+    question:"Se debe diseñar el visor protector de la cabina de un chancador (triturador de roca), expuesto a impactos de partículas proyectadas a alta velocidad. Se evalúan PVC rígido, Polietileno de Alta Densidad (HDPE) y Policarbonato (PC). ¿Cuál es la elección técnicamente correcta y por qué?",
+    options:[
+      "PVC rígido, porque es transparente, económico y de alta tenacidad al impacto.",
+      "HDPE, porque su alta resistencia química y transparencia lo hacen ideal para visores.",
+      "Policarbonato, por su excepcional tenacidad al impacto y transparencia óptica, propiedades por las que se usa en blindajes antibalas y visores de seguridad industrial.",
+      "Cualquiera de los tres es igualmente válido, ya que todos los termoplásticos tienen la misma resistencia al impacto."
+    ],
+    correct:2,
+    justification:"El policarbonato combina una transparencia óptica cercana a la del vidrio con una tenacidad al impacto extraordinaria (su resistencia Izod supera ampliamente a la de otros termoplásticos transparentes), por lo que se utiliza en visores de seguridad, blindajes antibalas y cabinas expuestas a proyección de partículas. El PVC rígido es más frágil ante impactos y de baja transparencia en grados industriales, mientras que el HDPE es opaco y carece de la rigidez óptica necesaria para una ventana. Además, el PC mantiene buen desempeño mecánico hasta temperaturas cercanas a su Tg (~147°C), suficiente para ambientes industriales típicos."
+  },
+  {
+    category:"Polímeros · Termoestables",
+    tagClass:"tag-polimeros",
+    type:"Caso Práctico",
+    question:"Un componente estructural de fibra de carbono con matriz de resina epoxi, usado en un brazo robótico de una línea de mantenimiento, queda expuesto a 300°C durante varios minutos tras un incendio en la planta. Comparado con un termoplástico equivalente sometido a la misma temperatura, ¿qué diferencia fundamental en el comportamiento se observa?",
+    options:[
+      "La resina epoxi se funde y puede ser remoldeada para reutilizarse, igual que un termoplástico.",
+      "La resina epoxi, al ser termoestable (red reticulada con enlaces covalentes cruzados), no funde: se degrada y carboniza de forma permanente e irreversible, perdiendo su estructura química.",
+      "Ambos materiales se comportan igual, ya que la presencia de fibra de carbono determina el comportamiento térmico, no la matriz.",
+      "La resina epoxi se evapora completamente sin dejar residuo alguno, a diferencia de los termoplásticos."
+    ],
+    correct:1,
+    justification:"Las resinas epoxi curadas forman una red tridimensional de enlaces covalentes cruzados (entrecruzamiento o curado), lo que las clasifica como termoestables. A diferencia de los termoplásticos, que se ablandan o funden de forma reversible al superar su Tg o Tm y pueden remoldearse, los termoestables no funden: al superar su temperatura de degradación sufren pirólisis y carbonización, un proceso químico irreversible que destruye permanentemente su estructura y propiedades. Por eso, tras un evento térmico severo, un componente de matriz epoxi debe descartarse y no puede 'repararse' por fusión."
+  },
+  {
+    category:"Polímeros · Comportamiento Térmico",
+    tagClass:"tag-polimeros",
+    type:"Tecnicismo",
+    question:"Un ingeniero debe seleccionar el elastómero para una manguera hidráulica que operará en el Altiplano chileno, donde la temperatura nocturna desciende hasta -20°C. El elastómero candidato tiene una Temperatura de Transición Vítrea (Tg) de -10°C. ¿Qué ocurrirá durante la operación nocturna?",
+    options:[
+      "La manguera se fundirá parcialmente, ya que -20°C está por debajo de su Tg.",
+      "No habrá ningún cambio relevante, ya que la Tg solo aplica a materiales cerámicos.",
+      "Por debajo de su Tg, el elastómero pasará de un estado gomoso/flexible a un estado vítreo, rígido y frágil, aumentando drásticamente el riesgo de fractura frágil ante flexión o impacto.",
+      "La manguera se volverá más flexible, ya que el frío reduce la fricción intermolecular entre cadenas."
+    ],
+    correct:2,
+    justification:"La Temperatura de Transición Vítrea (Tg) marca el punto en que las regiones amorfas de un polímero pasan de un estado gomoso/flexible (por encima de Tg) a un estado vítreo, rígido y frágil (por debajo de Tg). Si la temperatura de servicio cae por debajo de la Tg del elastómero (-20°C versus una Tg de -10°C), el material pierde su capacidad de absorber deformación y se vuelve susceptible a fisuras y fracturas frágiles bajo flexión. La Temperatura de Fusión (Tm) corresponde a la fusión de las regiones cristalinas en polímeros semicristalinos y no es el parámetro relevante para la fragilización por frío. En climas extremos, la Tg del elastómero siempre debe quedar muy por debajo de la mínima temperatura de operación."
+  },
+  {
+    category:"Cerámicas Industriales",
+    tagClass:"tag-ceramicas",
+    type:"Tecnicismo",
+    question:"En sistemas de freno y embrague de maquinaria pesada de alto rendimiento se utilizan discos cerámicos (a base de carburo de silicio, SiC, o compuestos cerámicos) en lugar de discos metálicos convencionales. ¿Cuál es la principal ventaja técnica y cuál la principal desventaja inherente a su naturaleza cerámica?",
+    options:[
+      "Ventaja: alta conductividad eléctrica. Desventaja: bajo punto de fusión.",
+      "Ventaja: excelente resistencia al desgaste, dureza y estabilidad del coeficiente de fricción incluso por encima de 1000°C, sin 'fading'. Desventaja: baja tenacidad a la fractura, susceptibles a fallas catastróficas por impacto o choque térmico.",
+      "Ventaja: son más económicas de producir que el acero. Desventaja: se oxidan rápidamente en presencia de humedad ambiental.",
+      "Ventaja: alta ductilidad, permitiendo deformación plástica antes de la falla. Desventaja: peso excesivo frente al acero."
+    ],
+    correct:1,
+    justification:"Las cerámicas técnicas como el carburo de silicio (SiC) destacan en aplicaciones de fricción a alta temperatura porque mantienen su dureza, resistencia al desgaste y coeficiente de fricción estables incluso por encima de 1000°C, evitando el 'fading' (pérdida de eficacia de frenado por sobrecalentamiento) típico de materiales orgánicos o metálicos. Sin embargo, su naturaleza cerámica implica enlaces covalentes/iónicos muy rígidos y ausencia de mecanismos de deformación plástica, lo que se traduce en baja tenacidad a la fractura: pequeñas grietas pueden propagarse catastróficamente, y los choques térmicos (gradientes de temperatura abruptos) pueden fracturar el componente sin aviso previo. Este compromiso entre rendimiento extremo y fragilidad es central en el diseño con cerámicas industriales."
+  },
+  {
+    category:"Cerámicas Industriales · Sensores",
+    tagClass:"tag-ceramicas",
+    type:"Tecnicismo",
+    question:"Una excavadora moderna utiliza sensores de vibración y presión en su sistema hidráulico basados en cerámicas como el Titanato Zirconato de Plomo (PZT). ¿Qué principio físico permite su funcionamiento como sensor?",
+    options:[
+      "Efecto piezoeléctrico: al deformarse mecánicamente, la estructura cristalina genera una diferencia de potencial eléctrico proporcional a la deformación o presión aplicada.",
+      "Efecto fotovoltaico: la cerámica convierte la luz incidente en una señal eléctrica medible.",
+      "Conductividad iónica: el PZT conduce electricidad como un electrolito líquido al calentarse por encima de los 50°C.",
+      "Magnetismo remanente: el PZT genera un campo magnético detectable proporcional a su vibración."
+    ],
+    correct:0,
+    justification:"El efecto piezoeléctrico, presente en cerámicas con estructura cristalina no centrosimétrica como el PZT, permite que una deformación mecánica (compresión, vibración o flexión) reordene los dipolos eléctricos internos del cristal, generando una diferencia de potencial medible y proporcional a la fuerza aplicada. Este principio es la base de sensores de presión, vibración, golpeteo (knock sensors) y acelerómetros utilizados en el monitoreo de maquinaria pesada. El mismo efecto, en sentido inverso, permite además usar estas cerámicas como actuadores de precisión."
+  },
+  {
+    category:"Cerámicas Industriales · Aislantes",
+    tagClass:"tag-ceramicas",
+    type:"Caso Práctico",
+    question:"En el sistema eléctrico de un generador diésel de respaldo de una planta minera se requiere un material aislante que soporte temperaturas superiores a 1000°C, alta resistencia dieléctrica y estabilidad química. ¿Cuál es la opción correcta y por qué se descarta un termoestable como la resina epoxi para esta aplicación específica?",
+    options:[
+      "Alúmina (Al2O3): cerámica con excelente resistencia dieléctrica y estabilidad térmica hasta cerca de 2000°C; la resina epoxi se degrada y carboniza muy por debajo de 1000°C, perdiendo sus propiedades aislantes.",
+      "Resina epoxi, porque es más económica y soporta sin problemas temperaturas de 1000°C de forma continua.",
+      "Caucho de silicona, porque su flexibilidad lo hace ideal para temperaturas superiores a 1000°C en servicio continuo.",
+      "Policarbonato, por su alta resistencia dieléctrica a temperaturas criogénicas, extensible a altas temperaturas."
+    ],
+    correct:0,
+    justification:"La alúmina (Al2O3) es una cerámica óxida con un punto de fusión cercano a los 2050°C, excelente resistencia dieléctrica y estabilidad química, lo que la convierte en el estándar para aislantes eléctricos de alta temperatura (bujías, pasamuros, soportes de bobinas). En contraste, las resinas termoestables como la epoxi tienen temperaturas de servicio continuo típicamente entre 120°C y 200°C; por encima de ese rango comienzan a degradarse térmicamente (carbonización), perdiendo su capacidad aislante mucho antes de acercarse a los 1000°C. En ambientes de muy alta temperatura, los polímeros quedan descartados frente a las cerámicas técnicas."
+  },
+  {
+    category:"Compuestos · MMC",
+    tagClass:"tag-compuestos",
+    type:"Caso Práctico",
+    question:"Un fabricante de motores diésel de alto desempeño utiliza pistones fabricados con una matriz de aluminio reforzada con partículas de carburo de silicio (Al/SiC), un Material Compuesto de Matriz Metálica (MMC). ¿Cuál es el objetivo principal de este diseño?",
+    options:[
+      "Reducir el costo de producción frente al aluminio puro.",
+      "Combinar la baja densidad y buena conductividad térmica del aluminio con el aumento de dureza, resistencia al desgaste y estabilidad dimensional a alta temperatura que aportan las partículas cerámicas de SiC.",
+      "Eliminar por completo la necesidad de lubricación en el cilindro del motor.",
+      "Aumentar la conductividad eléctrica del pistón para fines de sensado remoto."
+    ],
+    correct:1,
+    justification:"Los Materiales Compuestos de Matriz Metálica (MMC), como el aluminio reforzado con partículas de carburo de silicio (Al/SiC), buscan aprovechar lo mejor de ambos mundos: la baja densidad, buena conductividad térmica y maquinabilidad del aluminio, junto con la altísima dureza, resistencia al desgaste y estabilidad dimensional a alta temperatura que aporta la fase cerámica dispersa. En pistones de motores diésel de alto desempeño, esto permite reducir peso —disminuyendo la inercia y aumentando la eficiencia— sin sacrificar la resistencia al desgaste en zonas críticas, como la canaleta del primer anillo, que operan a temperaturas elevadas."
+  },
+  {
+    category:"Compuestos · CMC",
+    tagClass:"tag-compuestos",
+    type:"Tecnicismo",
+    question:"Los discos de freno carbono-carbono (C/C) o de carburo de silicio reforzado con fibra de carbono (C/SiC), usados en frenos de muy alto desempeño, son Materiales Compuestos de Matriz Cerámica (CMC). ¿Qué problema fundamental de las cerámicas monolíticas (sin refuerzo) buscan resolver las fibras incorporadas?",
+    options:[
+      "Aumentar el punto de fusión de la cerámica por encima de los 3000°C.",
+      "Incrementar la tenacidad a la fractura: las fibras desvían, frenan o absorben energía de las grietas, evitando la falla catastrófica y frágil típica de las cerámicas monolíticas.",
+      "Reducir el coeficiente de fricción para minimizar el desgaste del disco.",
+      "Convertir la cerámica en un material conductor de electricidad para aplicaciones de sensado."
+    ],
+    correct:1,
+    justification:"Las cerámicas monolíticas son extremadamente duras pero frágiles: una grieta microscópica puede propagarse sin obstáculos y provocar una falla catastrófica instantánea. Al incorporar fibras (de carbono, SiC, etc.) dentro de una matriz cerámica para formar un CMC, se introducen mecanismos de tenacificación: las fibras pueden desviar la grieta, puentear sus caras (crack bridging) o desprenderse de la matriz (debonding), absorbiendo energía y deteniendo la propagación. El resultado conserva la resistencia al desgaste y la estabilidad térmica de la cerámica, pero con una tenacidad a la fractura órdenes de magnitud mayor, ideal para frenos de alto rendimiento y componentes de turbinas."
+  },
+  {
+    category:"Compuestos · PMC",
+    tagClass:"tag-compuestos",
+    type:"Caso Práctico",
+    question:"Se diseña el capó de un camión minero ultra-pesado, buscando reducir peso sin sacrificar rigidez estructural, mientras que para los paneles de protección contra impactos de rocas se evalúa un refuerzo distinto. ¿Qué combinación de refuerzos en una matriz polimérica (PMC) es más adecuada para cada caso?",
+    options:[
+      "Fibra de vidrio para ambos casos, ya que es la más rígida y resistente al impacto de todos los refuerzos disponibles.",
+      "Fibra de carbono para el capó, por su altísima relación rigidez/peso (aunque relativamente frágil ante impactos puntuales), y fibra de Kevlar (aramida) para los paneles de protección, por su excepcional capacidad de absorber energía de impacto sin fractura catastrófica.",
+      "Kevlar para el capó por su bajo costo, y fibra de carbono para los paneles de impacto por su alta flexibilidad.",
+      "Ninguno de estos refuerzos es compatible con matrices poliméricas; se requeriría siempre una matriz cerámica."
+    ],
+    correct:1,
+    justification:"La fibra de carbono ofrece la mayor relación rigidez/peso entre los refuerzos comunes para PMC, ideal para paneles estructurales como capós, donde se busca minimizar peso sin perder rigidez flexional; sin embargo, frente a impactos puntuales tiende a fallar de forma frágil (delaminación, astillamiento). La fibra de Kevlar (aramida), en cambio, tiene una capacidad sobresaliente para absorber energía de impacto mediante deformación de sus cadenas moleculares sin fracturarse catastróficamente, por lo que se reserva para zonas expuestas a impactos de rocas o proyectiles. La fibra de vidrio queda como alternativa de menor costo y desempeño intermedio."
+  },
+  {
+    category:"Pulvimetalurgia · Sinterizado",
+    tagClass:"tag-compuestos",
+    type:"Tecnicismo",
+    question:"En el proceso de pulvimetalurgia para fabricar un engranaje de transmisión, después de la compactación de los polvos metálicos en una matriz se obtiene la 'pieza en verde' (green part). ¿Qué característica define correctamente a esta pieza en esta etapa del proceso?",
+    options:[
+      "Ya posee sus propiedades mecánicas finales y puede entrar directamente en servicio.",
+      "Tiene la forma geométrica deseada y cierta cohesión por entrelazamiento mecánico entre partículas, pero es porosa, frágil y de baja resistencia; requiere la etapa de sinterizado para alcanzar sus propiedades finales.",
+      "Es un líquido viscoso que debe verterse en un molde de arena para solidificar.",
+      "Ha sido sometida a temperaturas cercanas al punto de fusión del metal base, alcanzando ya su densidad teórica máxima."
+    ],
+    correct:1,
+    justification:"En pulvimetalurgia, la etapa de compactación une mecánicamente las partículas de polvo mediante presión, generando cohesión por entrelazamiento y deformación plástica superficial. El resultado, la 'pieza en verde', ya tiene la geometría final y suficiente resistencia para ser manipulada, pero conserva un nivel de porosidad considerable y propiedades mecánicas muy por debajo de las requeridas en servicio. Solo después del sinterizado —donde la difusión atómica a alta temperatura une las partículas, reduce la porosidad y aumenta la densidad— la pieza adquiere su resistencia, dureza y tolerancia dimensional finales."
+  },
+  {
+    category:"Pulvimetalurgia · Sinterizado",
+    tagClass:"tag-compuestos",
+    type:"Tecnicismo",
+    question:"Para controlar adecuadamente la porosidad final y evitar la fusión prematura de las partículas durante el sinterizado de una pieza de acero, la temperatura del horno se fija, como regla general, en relación al punto de fusión absoluto (en Kelvin) del metal base. ¿Cuál es el rango aproximado correcto?",
+    options:[
+      "Entre el 30% y el 40% de la temperatura de fusión absoluta.",
+      "Aproximadamente entre el 70% y el 90% de la temperatura de fusión absoluta (en Kelvin) del metal base, suficiente para activar la difusión atómica en estado sólido sin alcanzar la fusión.",
+      "Exactamente el 100% de la temperatura de fusión, ya que el sinterizado requiere fusión completa de las partículas.",
+      "Entre el 150% y el 200% de la temperatura de fusión, sobrecalentando el material para garantizar la unión."
+    ],
+    correct:1,
+    justification:"Una regla general ampliamente aceptada en pulvimetalurgia es que la temperatura de sinterizado se ubica entre el 70% y el 90% de la temperatura de fusión absoluta (en Kelvin) del metal base. En ese rango, la energía térmica activa mecanismos de difusión en estado sólido (a través de la red cristalina, los límites de grano y la superficie de las partículas), permitiendo la unión, densificación y reducción controlada de la porosidad sin que el material llegue a fundirse. Superar este rango generaría pérdida de control dimensional o colapso de la pieza; trabajar muy por debajo no activaría suficiente difusión para una densificación adecuada."
+  },
+  {
+    category:"Industria del Cobre en Chile",
+    tagClass:"tag-cobre",
+    type:"Contexto Sectorial",
+    question:"Chile, históricamente uno de los principales productores de cobre del mundo, ha visto disminuir su participación en la capacidad mundial de fundición (smelting) de concentrados, mientras China ha incrementado drásticamente la suya. ¿Cuál es una de las principales razones técnico-económicas de esta pérdida de competitividad de las fundiciones chilenas?",
+    options:[
+      "Chile dejó de producir cobre, por lo que ya no necesita fundiciones propias.",
+      "Las fundiciones chinas, más nuevas y de mayor escala, operan con cargos de tratamiento y refinación (TC/RC) más bajos y mayores economías de escala, mientras Chile exporta una proporción creciente de concentrado sin procesar en lugar de cátodos refinados, perdiendo valor agregado.",
+      "El cobre chileno cambió su composición química y ya no puede ser fundido a alta temperatura.",
+      "China prohibió por completo la importación de concentrado de cobre proveniente de Chile."
+    ],
+    correct:1,
+    justification:"Las fundiciones chilenas, en general más antiguas y de menor escala que las grandes fundiciones chinas construidas en las últimas dos décadas, enfrentan mayores costos relativos de energía, mano de obra y cumplimiento ambiental. Las fundiciones chinas, al operar con mayor escala y tecnología más reciente, pueden ofrecer cargos de tratamiento y refinación (TC/RC) más bajos a las mineras, lo que ha incentivado a productores chilenos a exportar una proporción creciente de concentrado de cobre sin procesar, en lugar de convertirlo localmente en cátodos refinados. Esto representa una pérdida de valor agregado para la cadena productiva nacional y es uno de los ejes del debate sobre modernizar la capacidad de fundición en Chile."
+  },
+  {
+    category:"Industria del Cobre · Medio Ambiente",
+    tagClass:"tag-cobre",
+    type:"Tecnicismo",
+    question:"Los concentrados de cobre del norte de Chile suelen contener niveles significativos de impurezas como arsénico y azufre. La normativa de emisiones para fundiciones exige altos porcentajes de captura de estos contaminantes. ¿Cuál de las siguientes afirmaciones describe correctamente el desafío técnico-ambiental?",
+    options:[
+      "El arsénico y el azufre no representan riesgo alguno y no están regulados en Chile.",
+      "Las fundiciones deben capturar más del 95% del azufre (como SO2, derivándolo a plantas de ácido sulfúrico) y cumplir límites estrictos de emisión de arsénico, lo que exige tecnologías de captura costosas; el incumplimiento ha derivado en el cierre de fundiciones antiguas, como la de Ventanas.",
+      "El arsénico se elimina simplemente ventilando los gases a la atmósfera a gran altura mediante chimeneas elevadas.",
+      "La normativa chilena solo regula las emisiones de CO2, no las de SO2 ni de arsénico."
+    ],
+    correct:1,
+    justification:"Los concentrados de cobre del norte de Chile suelen contener arsénico (As) como impureza asociada a la mineralogía local, además de azufre en forma de sulfuros que se libera como SO2 durante la fusión y conversión. La normativa chilena de emisiones para fundiciones exige altas tasas de captura de SO2 (típicamente derivado a plantas de ácido sulfúrico, con metas de captura superiores al 95%) y límites estrictos para las emisiones de arsénico, dado su alto riesgo para la salud humana al ser un elemento cancerígeno. El incumplimiento de estos estándares —y episodios de contaminación asociados, como los ocurridos en la zona de Quintero-Puchuncaví— ha derivado en mayor fiscalización e incluso en el cierre de fundiciones antiguas que no podían cumplir, como la Fundición Ventanas de Codelco."
+  },
+  {
+    category:"Industria del Cobre · Minería Verde",
+    tagClass:"tag-cobre",
+    type:"Caso Práctico",
+    question:"Frente a la pérdida de competitividad y los problemas ambientales, se ha planteado la necesidad de desarrollar 'Minería Verde' y nuevas fundiciones de cobre en Chile. ¿Cuál de las siguientes opciones describe mejor un componente técnico real de esta estrategia?",
+    options:[
+      "Eliminar por completo el uso de energía en los procesos de fundición y conversión.",
+      "Incorporar fuentes de energía renovable (solar, eólica, hidrógeno verde) en los hornos de fusión/conversión, instalar sistemas modernos de captura de gases para SO2 y arsénico, y usar agua de mar desalada para reducir la presión sobre las cuencas hídricas continentales.",
+      "Trasladar todas las fundiciones a otros países para evitar por completo la regulación ambiental chilena.",
+      "Reemplazar el cobre por aluminio en toda la matriz productiva minera nacional."
+    ],
+    correct:1,
+    justification:"El concepto de 'Minería Verde' aplicado a la fundición de cobre busca reducir simultáneamente la huella de carbono y el impacto ambiental local del proceso. Esto incluye electrificar e incorporar energías renovables (solar, eólica, hidrógeno verde) para los hornos de fusión y conversión —procesos intensivos en energía—, instalar sistemas modernos de captura de gases que cumplan o superen los estándares de SO2 y arsénico, y reemplazar el uso de agua continental por agua de mar desalada para aliviar la presión sobre cuencas hídricas, especialmente críticas en el norte de Chile. Estos elementos son considerados claves para que nuevas fundiciones chilenas sean ambientalmente viables y recuperen competitividad internacional."
+  }
+];
+
+let currentIndex = 0;
+let score = 0;
+let selectedIndex = null;
+let answered = false;
+let userAnswers = new Array(questions.length).fill(null);
+
+const quizCard = document.getElementById('quizCard');
+const optionsList = document.getElementById('optionsList');
+const evalBtn = document.getElementById('evalBtn');
+const feedbackPanel = document.getElementById('feedbackPanel');
+const feedbackTitle = document.getElementById('feedbackTitle');
+const feedbackJustification = document.getElementById('feedbackJustification');
+const progressFill = document.getElementById('progressFill');
+const qCounter = document.getElementById('qCounter');
+const scoreCounter = document.getElementById('scoreCounter');
+const resultsScreen = document.getElementById('resultsScreen');
+
+function triggerAnim(el){
+  el.classList.remove('fade-in');
+  void el.offsetWidth;
+  el.classList.add('fade-in');
+}
+
+function renderQuestion(){
+  const q = questions[currentIndex];
+
+  qCounter.textContent = `PREGUNTA ${currentIndex + 1} / ${questions.length}`;
+  scoreCounter.textContent = `ACIERTOS ${score}/${questions.length}`;
+  progressFill.style.width = (currentIndex / questions.length * 100) + '%';
+
+  document.getElementById('typeBadge').textContent = q.type;
+  const catBadge = document.getElementById('categoryBadge');
+  catBadge.textContent = q.category;
+  catBadge.className = 'badge ' + q.tagClass;
+
+  document.getElementById('questionText').textContent = q.question;
+
+  optionsList.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const li = document.createElement('li');
+    li.className = 'option';
+    li.tabIndex = 0;
+    li.setAttribute('role', 'button');
+    li.innerHTML = `<span class="option-letter">${String.fromCharCode(65 + i)}</span><span class="option-text"></span>`;
+    li.querySelector('.option-text').textContent = opt;
+    li.addEventListener('click', () => selectOption(i));
+    li.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectOption(i); }
     });
+    optionsList.appendChild(li);
   });
 
-  // MutationObserver on lc-value for critical color
-  setTimeout(() => {
-    const lc = document.getElementById('lc-value');
-    if (!lc) return;
-    new MutationObserver(() => {
-      const num = parseFloat(lc.textContent);
-      lc.classList.toggle('critical', num > 50);
-    }).observe(lc, { childList: true, characterData: true, subtree: true });
-  }, 2500);
-});
-</script>
+  selectedIndex = null;
+  answered = false;
+  feedbackPanel.hidden = true;
+  feedbackPanel.className = 'feedback-panel';
 
-<script type="module" src="js/main.js"></script>
+  evalBtn.textContent = 'Evaluar Respuesta';
+  evalBtn.disabled = true;
+  evalBtn.onclick = evaluateAnswer;
+
+  triggerAnim(quizCard);
+}
+
+function selectOption(i){
+  if (answered) return;
+  selectedIndex = i;
+  const opts = optionsList.querySelectorAll('.option');
+  opts.forEach((el, idx) => el.classList.toggle('selected', idx === i));
+  evalBtn.disabled = false;
+}
+
+function evaluateAnswer(){
+  if (selectedIndex === null || answered) return;
+  answered = true;
+
+  const q = questions[currentIndex];
+  const opts = optionsList.querySelectorAll('.option');
+  opts.forEach((el, idx) => {
+    el.classList.add('disabled');
+    el.tabIndex = -1;
+    if (idx === q.correct) el.classList.add('correct-answer');
+    if (idx === selectedIndex && idx !== q.correct) el.classList.add('incorrect-answer');
+  });
+
+  const isCorrect = selectedIndex === q.correct;
+  userAnswers[currentIndex] = isCorrect;
+  if (isCorrect) score++;
+  scoreCounter.textContent = `ACIERTOS ${score}/${questions.length}`;
+  progressFill.style.width = ((currentIndex + 1) / questions.length * 100) + '%';
+
+  feedbackPanel.hidden = false;
+  feedbackPanel.className = 'feedback-panel ' + (isCorrect ? 'feedback-correct' : 'feedback-incorrect');
+  feedbackTitle.textContent = isCorrect ? '✅ Respuesta Correcta' : '❌ Respuesta Incorrecta';
+  feedbackJustification.textContent = q.justification;
+
+  evalBtn.disabled = false;
+  evalBtn.textContent = (currentIndex === questions.length - 1) ? 'Ver Resultados' : 'Siguiente Pregunta';
+  evalBtn.onclick = () => {
+    if (currentIndex === questions.length - 1) {
+      showResults();
+    } else {
+      currentIndex++;
+      renderQuestion();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+}
+
+function showResults(){
+  quizCard.hidden = true;
+  resultsScreen.hidden = false;
+  triggerAnim(resultsScreen);
+
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('resultScoreText').textContent = `${score}/${questions.length}`;
+  document.getElementById('resultPct').textContent = `${pct}%`;
+
+  let msg, color;
+  if (pct >= 90){
+    msg = '¡Dominio total! Estás más que listo para enfrentar el examen.';
+    color = 'var(--accent-green)';
+  } else if (pct >= 70){
+    msg = 'Buen manejo del contenido. Repasa los conceptos marcados en rojo antes del examen.';
+    color = 'var(--accent-green)';
+  } else if (pct >= 50){
+    msg = 'Nivel intermedio. Refuerza los conceptos de Cerámicas, Compuestos y Pulvimetalurgia.';
+    color = 'var(--accent-amber)';
+  } else {
+    msg = 'Necesitas repasar a fondo el material de las semanas 7 a 14 antes de presentarte al examen.';
+    color = 'var(--accent-red)';
+  }
+  document.getElementById('resultMessage').textContent = msg;
+
+  const circumference = 2 * Math.PI * 85;
+  const gaugeFill = document.getElementById('gaugeFill');
+  gaugeFill.style.stroke = color;
+  gaugeFill.style.strokeDasharray = circumference;
+  gaugeFill.style.strokeDashoffset = circumference;
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      gaugeFill.style.strokeDashoffset = circumference - (circumference * pct / 100);
+    }, 80);
+  });
+
+  const grid = document.getElementById('breakdownGrid');
+  grid.innerHTML = '';
+  userAnswers.forEach((ans, i) => {
+    const div = document.createElement('div');
+    div.className = 'led ' + (ans ? 'led-correct' : 'led-incorrect');
+    div.textContent = String(i + 1);
+    div.title = questions[i].category;
+    grid.appendChild(div);
+  });
+}
+
+function restart(){
+  currentIndex = 0;
+  score = 0;
+  selectedIndex = null;
+  answered = false;
+  userAnswers = new Array(questions.length).fill(null);
+  resultsScreen.hidden = true;
+  quizCard.hidden = false;
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('restartBtn').addEventListener('click', restart);
+
+renderQuestion();
+</script>
 </body>
 </html>
