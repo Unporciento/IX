@@ -233,20 +233,20 @@ textarea::placeholder{color:var(--muted)}
         <p>Preguntas capciosas, tecnicismos, porcentajes críticos y casos prácticos. Las alternativas <em style="color:var(--text)">se mezclan aleatoriamente</em> — sin memorizar posiciones.</p>
       </div>
       <div class="stats-strip">
-        <div class="ss-item"><div class="ss-val">23</div><div class="ss-label">Preguntas</div></div>
+        <div class="ss-item"><div class="ss-val">26</div><div class="ss-label">Preguntas</div></div>
         <div class="ss-item"><div class="ss-val">7–14</div><div class="ss-label">Semanas</div></div>
-        <div class="ss-item"><div class="ss-val">2</div><div class="ss-label">Desarrollo</div></div>
+        <div class="ss-item"><div class="ss-val">5</div><div class="ss-label">Desarrollo</div></div>
         <div class="ss-item"><div class="ss-val">60</div><div class="ss-label">Minutos</div></div>
         <div class="ss-item"><div class="ss-val" style="color:var(--red)">Alta</div><div class="ss-label">Dificultad</div></div>
       </div>
       <div class="mode-grid">
         <div class="mode-card sel" onclick="setMode('all',this)" id="mc-all">
           <div class="mi">🎯</div><h3>Examen Completo</h3>
-          <p>23 SM + 2 desarrollo. Formato real con temporizador de 60 min.</p>
+          <p>26 SM + 5 desarrollo. Formato real con temporizador de 60 min.</p>
         </div>
         <div class="mode-card" onclick="setMode('mc',this)" id="mc-mc">
           <div class="mi">⚡</div><h3>Solo S. Múltiple</h3>
-          <p>Las 23 preguntas capciosas. Alternativas mezcladas aleatoriamente.</p>
+          <p>Las 21 preguntas capciosas. Alternativas mezcladas aleatoriamente.</p>
         </div>
         <div class="mode-card" onclick="setMode('dev',this)" id="mc-dev">
           <div class="mi">🔬</div><h3>Solo Desarrollo</h3>
@@ -372,7 +372,7 @@ textarea::placeholder{color:var(--muted)}
   <!-- QUESTION -->
   <div class="screen" id="screen-question">
     <div class="q-header">
-      <div class="q-counter" id="q-counter">Pregunta 1 de 25</div>
+      <div class="q-counter" id="q-counter">Pregunta 1 de 26</div>
       <div id="q-badge"></div>
     </div>
     <div class="question-card">
@@ -631,11 +631,37 @@ const ALL_QUESTIONS=[
    opts:null,ans:null,
    exp:'PROBLEMA: El pasador tiene dos solicitudes contradictorias:\n— Superficie con desgaste abrasivo → necesita DUREZA SUPERFICIAL\n— Núcleo que recibe impactos → necesita TENACIDAD\n\nPOR QUÉ EL TEMPLADO SOLO NO FUNCIONA:\nEl templado endurece TODA la sección uniformemente, creando martensita en todo el espesor. Esto da dureza máxima pero elimina la tenacidad en el núcleo.\n\nSOLUCIÓN CORRECTA → CEMENTADO:\n1. Se difunde carbono adicional solo en la capa exterior (1–3 mm de profundidad)\n2. Templado posterior: solo la cáscara rica en carbono se endurece (martensita superficial)\n3. El núcleo, con bajo carbono original, permanece en microestructura ferrítica-perlítica: TENAZ\n\nMICROESTRUCTURA FINAL:\n— Cáscara: Martensita (dura) → Resiste desgaste\n— Núcleo: Ferrita + Perlita (tenaz) → Absorbe impactos\n— Gradiente de dureza: transición progresiva entre ambas zonas',
    trap:null,
-   fact:'Doble solicitud (desgaste + impacto) → siempre CEMENTADO. Templado total = duro pero frágil.'}
+   fact:'Doble solicitud (desgaste + impacto) → siempre CEMENTADO. Templado total = duro pero frágil.'},
+
+  {id:26,type:'dev',category:'dev',cat:'Desarrollo — Polímeros vs Cerámicas',
+   text:'EJERCICIO DE DESARROLLO: Estás diseñando la actualización de un cargador frontal. Debes seleccionar el material para dos componentes: (A) El parabrisas de la cabina del operador, expuesto a impactos de rocas pero no a altas temperaturas. (B) Un sensor de oxígeno instalado directamente en el múltiple de escape, expuesto a gases corrosivos y temperaturas de 700°C.',
+   context:'Justifica tu elección para (A) y (B) indicando la familia del material, un ejemplo específico y la propiedad técnica que lo hace indispensable frente a la condición de trabajo.',
+   opts:null,ans:null,
+   exp:'RESPUESTA MODELO:\n\n(A) PARABRISAS DE LA CABINA:\n— Familia: Polímero (Termoplástico).\n— Material específico: Policarbonato.\n— Justificación: El operador necesita protección contra impactos de rocas. El policarbonato tiene una altísima resistencia al impacto y, a diferencia del vidrio tradicional, absorbe la energía sin astillarse (no genera proyectiles cortantes). Al no estar expuesto a altas temperaturas, no hay riesgo de superar su Tg.\n\n(B) SENSOR DE OXÍGENO EN ESCAPE:\n— Familia: Cerámica Industrial.\n— Material específico: Óxido de Zirconio (ZrO₂) o Alúmina.\n— Justificación: Las temperaturas de 700°C derretirían cualquier polímero (superan ampliamente su Tm o temperatura de degradación) y fatigarían muchos metales. La cerámica industrial mantiene su estabilidad química y dimensional a más de 1000°C, es un excelente aislante eléctrico y resiste los gases corrosivos del escape sin alterarse.',
+   trap:null,
+   fact:'Polímeros para absorber impactos en frío (Policarbonato). Cerámicas para resistir calor y corrosión (Sensores).'},
+
+  {id:27,type:'dev',category:'dev',cat:'Desarrollo — Pulvimetalurgia',
+   text:'EJERCICIO DE DESARROLLO: El manual del fabricante indica que el cojinete (buje) del motor de arranque de un camión minero NO debe ser lubricado en los mantenimientos de rutina porque es "autolubricante". Explica detalladamente mediante qué proceso de fabricación se logró esto.',
+   context:'Tu respuesta debe incluir: (1) El nombre del proceso, (2) El rango de temperatura utilizado respecto a su punto de fusión (Tm), y (3) El mecanismo físico que permite que la pieza se lubrique sola.',
+   opts:null,ans:null,
+   exp:'RESPUESTA MODELO:\n\n1. PROCESO DE FABRICACIÓN:\nLa pieza fue fabricada mediante Pulvimetalurgia (específicamente, la etapa de Sinterizado).\n\n2. TEMPERATURA DEL PROCESO:\nEl horno de sinterizado operó entre 70% y 90% de la Temperatura de Fusión (Tm) del polvo metálico. Es crucial destacar que el metal NO se funde — las partículas se unen por difusión atómica en estado sólido.\n\n3. MECANISMO DE AUTOLUBRICACIÓN:\nComo el material no se derrite completamente, la pieza final conserva una "porosidad controlada" (entre 10% y 30% de vacíos microscópicos en su estructura). Estos poros actúan como una esponja que se impregna con aceite durante la fabricación. En operación, el calor y la fricción hacen que el aceite fluya hacia la superficie, lubricando el eje automáticamente, y al enfriarse, la capilaridad lo devuelve al interior de los poros.',
+   trap:null,
+   fact:'Pulvimetalurgia (70–90% Tm) es la única técnica que permite fabricar metales con porosidad controlada para retener aceite.'},
+
+  {id:28,type:'dev',category:'dev',cat:'Desarrollo — Minería Verde',
+   text:'EJERCICIO DE DESARROLLO: En una reunión gerencial, se discute el futuro de la exportación de cobre. Un ejecutivo propone "seguir exportando el concentrado tal como lo hemos hecho siempre, total, en Asia siempre comprarán". Refuta esta afirmación utilizando los conceptos de Minería Verde vistos en el curso.',
+   context:'Justifica: (1) El problema químico del concentrado nacional, (2) La exigencia del mercado internacional en los próximos 5–10 años, (3) La solución de infraestructura necesaria.',
+   opts:null,ans:null,
+   exp:'RESPUESTA MODELO:\n\n1. EL PROBLEMA QUÍMICO:\nEl concentrado de cobre extraído a nivel local contiene niveles críticos de impurezas tóxicas: principalmente Arsénico (As) y Azufre (S). Las fundiciones actuales son antiguas y no logran capturar el 99% de estos gases contaminantes de manera eficiente.\n\n2. EL RIESGO DE MERCADO (5–10 AÑOS):\nLa afirmación del ejecutivo es falsa. El mercado global está transitando obligatoriamente hacia la "Minería Verde" con normativas ambientales estrictas. En 5 a 10 años, el cobre podría ser rechazado o castigado financieramente (impuestos ecológicos) si no se demuestra que fue refinado bajo estándares limpios y libres de emisiones tóxicas.\n\n3. LA SOLUCIÓN:\nLa solución estratégica es construir nuevas mega-fundiciones mediante asociaciones público-privadas. Estas plantas deben estar equipadas con tecnología moderna capaz de procesar este mineral complejo y capturar los gases tóxicos, recuperando así la competitividad exportadora.',
+   trap:null,
+   fact:'Minería Verde no es solo un concepto ecológico: es una barrera comercial inminente para la exportación de cobre.'}
 ];
 
 let mode='all',questions=[],idx=0,answered=false,selectedOptIdx=null,score=0,userAnswers=[];
-let shuffledOpts=[];
+// FIX: store shuffle state separately, never mutate question objects
+let currentShuffledOpts=[];
+let currentCorrectIdx=-1;
 let timerInterval=null,secondsLeft=3600,timerRunning=false,timeoutFired=false;
 
 function switchTab(tab){
@@ -658,7 +684,7 @@ function shuffleArray(arr){
   return a;
 }
 
-function shuffleOpts(q){
+function computeShuffledOpts(q){
   if(!q.opts)return{shuffled:[],newCorrectIdx:-1};
   const indexed=q.opts.map((text,origIdx)=>({text,origIdx}));
   const shuffled=shuffleArray(indexed);
@@ -703,6 +729,7 @@ function buildQuestions(){
 
 function startExam(){
   questions=buildQuestions();idx=0;score=0;userAnswers=[];answered=false;selectedOptIdx=null;
+  currentShuffledOpts=[];currentCorrectIdx=-1;
   showScreen('screen-question');
   document.getElementById('topbar-score').style.display='flex';
   startTimer();updateProgress();renderQuestion();
@@ -738,8 +765,10 @@ function renderQuestion(){
   const devEl=document.getElementById('dev-answer');
   if(q.type==='mc'){
     devEl.style.display='none';optCont.style.display='flex';optCont.innerHTML='';
-    const{shuffled,newCorrectIdx}=shuffleOpts(q);
-    shuffledOpts=shuffled;q._currentCorrectIdx=newCorrectIdx;
+    // FIX: compute shuffle fresh every render, store in module state (never on q object)
+    const{shuffled,newCorrectIdx}=computeShuffledOpts(q);
+    currentShuffledOpts=shuffled;
+    currentCorrectIdx=newCorrectIdx;
     const letters=['A','B','C','D'];
     shuffled.forEach((opt,i)=>{
       const div=document.createElement('div');div.className='option';
@@ -774,14 +803,15 @@ function handleAction(){
 
 function confirmMC(q){
   answered=true;
-  const isCorrect=selectedOptIdx===q._currentCorrectIdx;
+  // FIX: use module-level currentCorrectIdx, not q._currentCorrectIdx
+  const isCorrect=selectedOptIdx===currentCorrectIdx;
   if(isCorrect)score++;
-  const selectedText=shuffledOpts[selectedOptIdx]?.text||'—';
-  const correctText=shuffledOpts[q._currentCorrectIdx]?.text||'—';
+  const selectedText=currentShuffledOpts[selectedOptIdx]?.text||'—';
+  const correctText=currentShuffledOpts[currentCorrectIdx]?.text||'—';
   userAnswers.push({q,selectedText,correctText,isCorrect});
   document.querySelectorAll('.option').forEach((el,i)=>{
     el.classList.add('disabled');
-    if(i===q._currentCorrectIdx)el.classList.add('correct');
+    if(i===currentCorrectIdx)el.classList.add('correct');
     else if(i===selectedOptIdx&&!isCorrect)el.classList.add('wrong');
   });
   showFeedback(q,isCorrect);
@@ -823,7 +853,9 @@ function skipQuestion(){
 }
 
 function nextQuestion(){
-  answered=false;selectedOptIdx=null;idx++;
+  answered=false;selectedOptIdx=null;
+  currentShuffledOpts=[];currentCorrectIdx=-1;
+  idx++;
   if(idx>=questions.length){showResults();return;}renderQuestion();
 }
 
