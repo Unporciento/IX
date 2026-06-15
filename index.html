@@ -21,13 +21,16 @@ body{font-family:var(--body);background:var(--bg);color:var(--text);min-height:1
 .topbar{background:var(--bg2);border-bottom:3px solid var(--cat);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
 .topbar-logo{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:2px;color:var(--cat);text-transform:uppercase;display:flex;align-items:center;gap:10px}
 .topbar-logo::before{content:'⬡';font-size:18px;opacity:.7}
-.topbar-right{display:flex;align-items:center;gap:20px}
+.topbar-right{display:flex;align-items:center;gap:16px}
+
+/* LIVES */
+.lives-display{display:none;align-items:center;gap:6px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.lives-display.show{display:flex}
+.heart{font-size:20px;transition:all .3s;filter:drop-shadow(0 0 4px rgba(255,71,87,.6))}
+.heart.lost{filter:grayscale(1) opacity(.3);transform:scale(.8)}
+
 .topbar-score{font-family:var(--mono);font-size:13px;color:var(--muted);display:none;align-items:center;gap:6px}
 .topbar-score span{color:var(--cat);font-weight:700}
-
-#timer-wrap{display:none;align-items:center;gap:8px;font-family:var(--mono);font-size:15px;font-weight:700;color:var(--cat);background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);padding:5px 12px;border-radius:6px;letter-spacing:2px;transition:all .3s}
-#timer-wrap.warning{color:var(--red);background:rgba(255,71,87,.15);border-color:rgba(255,71,87,.5);animation:timerPulse 1s ease-in-out infinite}
-@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:.6}}
 
 .prog-track{height:3px;background:var(--border);overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--cat),var(--cat2));width:0%;transition:width .5s cubic-bezier(.4,0,.2,1)}
@@ -41,15 +44,6 @@ main{max-width:860px;margin:0 auto;padding:48px 24px 80px}
 .intro-hero h1 em{color:var(--cat);font-style:normal;display:block}
 .intro-hero p{font-size:15px;color:var(--muted);max-width:560px;margin:0 auto 48px;line-height:1.7}
 
-.mode-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:36px}
-.mode-card{background:var(--bg2);border:2px solid var(--border);border-radius:12px;padding:24px 20px;cursor:pointer;text-align:left;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
-.mode-card::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--border);transition:background .2s}
-.mode-card:hover{border-color:var(--cat);transform:translateY(-2px)}.mode-card:hover::after{background:var(--cat)}
-.mode-card.sel{border-color:var(--cat);background:var(--bg3)}.mode-card.sel::after{background:var(--cat)}
-.mode-card .mi{font-size:26px;margin-bottom:10px}
-.mode-card h3{font-family:var(--display);font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.mode-card p{font-size:13px;color:var(--muted);line-height:1.5}
-
 .stats-strip{display:flex;justify-content:center;gap:32px;margin-bottom:40px;padding:20px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;flex-wrap:wrap}
 .ss-item{text-align:center}
 .ss-val{font-family:var(--display);font-size:28px;font-weight:800;color:var(--cat)}
@@ -61,21 +55,29 @@ main{max-width:860px;margin:0 auto;padding:48px 24px 80px}
 .btn-ghost{background:transparent;border:2px solid var(--border);color:var(--muted)}
 .btn-ghost:hover{border-color:var(--cat);color:var(--cat)}
 
+/* Game over overlay */
+#gameover-overlay{display:none;position:fixed;inset:0;background:rgba(14,15,17,.97);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:20px;text-align:center;padding:24px}
+#gameover-overlay.show{display:flex}
+.gameover-icon{font-size:72px;animation:shake .6s ease 3}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.gameover-title{font-family:var(--display);font-size:48px;font-weight:800;text-transform:uppercase;color:var(--red);letter-spacing:3px;margin-bottom:8px}
+.gameover-sub{font-family:var(--mono);font-size:14px;color:var(--muted);max-width:480px;line-height:1.8;margin-bottom:16px}
+.gameover-stat{font-family:var(--display);font-size:24px;font-weight:700;color:var(--cat);margin-bottom:20px}
+.gameover-btns{display:flex;gap:14px}
+.gameover-btn{font-family:var(--display);font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:14px 36px;border-radius:8px;border:none;cursor:pointer}
+.gameover-btn.primary{background:var(--cat);color:#0e0f11}
+.gameover-btn.ghost{background:transparent;border:2px solid var(--border);color:var(--muted)}
+
 .q-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .q-counter{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:1px}
 .badge{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;letter-spacing:1px;text-transform:uppercase}
-.badge-trap{background:rgba(255,71,87,.15);color:var(--red);border:1px solid rgba(255,71,87,.4)}
-.badge-tech{background:rgba(92,158,255,.15);color:var(--blue);border:1px solid rgba(92,158,255,.4)}
-.badge-theory{background:rgba(245,166,35,.15);color:var(--cat);border:1px solid rgba(245,166,35,.4)}
-.badge-dev{background:rgba(46,213,115,.15);color:var(--green);border:1px solid rgba(46,213,115,.4)}
 
 .question-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:32px;margin:16px 0 20px;position:relative;overflow:hidden}
 .question-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cat),var(--cat2))}
-.q-cat-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--cat);text-transform:uppercase;margin-bottom:12px}
-.q-text{font-size:17px;font-weight:500;line-height:1.6;color:var(--text);margin-bottom:8px}
-.q-context{font-size:13px;color:var(--muted);font-style:italic;margin-bottom:20px;line-height:1.6}
+.q-num-tag{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--cat);text-transform:uppercase;margin-bottom:12px}
+.q-text{font-size:17px;font-weight:500;line-height:1.6;color:var(--text)}
 
-.options{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.options{display:flex;flex-direction:column;gap:10px;margin-top:24px}
 .option{background:var(--bg3);border:2px solid var(--border);border-radius:10px;padding:14px 18px;cursor:pointer;display:flex;align-items:flex-start;gap:14px;transition:border-color .18s,background .18s,transform .12s;user-select:none}
 .option:hover:not(.disabled){border-color:var(--cat);background:rgba(245,166,35,.06);transform:translateX(4px)}
 .option.disabled{cursor:default;pointer-events:none}
@@ -83,40 +85,30 @@ main{max-width:860px;margin:0 auto;padding:48px 24px 80px}
 .opt-text{font-size:15px;line-height:1.5;padding-top:3px}
 .option.selected{border-color:var(--cat);background:rgba(245,166,35,.07)}
 .option.selected .opt-key{background:var(--cat);color:#0e0f11;border-color:var(--cat)}
-.option.correct{border-color:var(--green)!important;background:rgba(46,213,115,.08)!important}
+.option.correct{border-color:var(--green)!important;background:rgba(46,213,115,.10)!important;animation:pulseGreen .4s ease}
 .option.correct .opt-key{background:var(--green)!important;color:#0e0f11!important;border-color:var(--green)!important}
-.option.wrong{border-color:var(--red)!important;background:rgba(255,71,87,.08)!important}
+.option.wrong{border-color:var(--red)!important;background:rgba(255,71,87,.10)!important;animation:pulseRed .4s ease}
 .option.wrong .opt-key{background:var(--red)!important;color:#fff!important;border-color:var(--red)!important}
+@keyframes pulseGreen{0%{box-shadow:0 0 0 0 rgba(46,213,115,.5)}70%{box-shadow:0 0 0 8px rgba(46,213,115,0)}100%{box-shadow:0 0 0 0 rgba(46,213,115,0)}}
+@keyframes pulseRed{0%{box-shadow:0 0 0 0 rgba(255,71,87,.6)}70%{box-shadow:0 0 0 10px rgba(255,71,87,0)}100%{box-shadow:0 0 0 0 rgba(255,71,87,0)}}
 
-textarea{width:100%;background:var(--bg3);border:2px solid var(--border);border-radius:10px;padding:16px;color:var(--text);font-family:var(--body);font-size:15px;resize:vertical;min-height:160px;margin-top:16px;transition:border-color .18s}
-textarea:focus{outline:none;border-color:var(--cat)}
-textarea::placeholder{color:var(--muted)}
+/* FEEDBACK POP-UP */
+.feedback-popup{position:fixed;bottom:0;left:0;right:0;z-index:500;transform:translateY(100%);transition:transform .4s cubic-bezier(.2,.8,.3,1);max-height:55vh;overflow-y:auto}
+.feedback-popup.show{transform:translateY(0)}
+.feedback-popup-inner{max-width:860px;margin:0 auto;border-radius:16px 16px 0 0;padding:24px 28px 32px;border-top:4px solid var(--green)}
+.feedback-popup.correct-pop .feedback-popup-inner{background:#0d1f16;border-top-color:var(--green)}
+.feedback-popup.wrong-pop .feedback-popup-inner{background:#1f0d10;border-top-color:var(--red)}
+.fp-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.fp-icon{font-size:26px}
+.fp-verdict{font-family:var(--display);font-size:22px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.feedback-popup.correct-pop .fp-verdict{color:var(--green)}
+.feedback-popup.wrong-pop .fp-verdict{color:var(--red)}
+.fp-justif{font-size:15px;line-height:1.75;color:var(--text);margin-bottom:14px}
+.fp-trap-box{background:rgba(255,71,87,.12);border-left:3px solid var(--red);padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;color:#ffb3b8;margin-bottom:10px}
+.fp-fact-box{background:rgba(245,166,35,.10);border-left:3px solid var(--cat);padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;color:var(--cat);font-family:var(--mono)}
+.fp-next-btn{margin-top:18px;font-family:var(--display);font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:12px 32px;border-radius:8px;border:none;cursor:pointer;background:var(--cat);color:#0e0f11;width:100%}
 
-.feedback-box{border-radius:12px;padding:22px 24px;margin-top:18px;opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease;display:none}
-.feedback-box.show{display:block;opacity:1;transform:translateY(0)}
-.feedback-box.correct{background:rgba(46,213,115,.07);border:1px solid rgba(46,213,115,.35)}
-.feedback-box.incorrect{background:rgba(255,71,87,.07);border:1px solid rgba(255,71,87,.35)}
-.feedback-box.info{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.35)}
-.fb-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.fb-icon{font-size:20px}
-.fb-title{font-family:var(--display);font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.feedback-box.correct .fb-title{color:var(--green)}
-.feedback-box.incorrect .fb-title{color:var(--red)}
-.feedback-box.info .fb-title{color:var(--cat)}
-.fb-body{font-size:14px;line-height:1.75;color:var(--text)}
-.fb-trap{margin-top:14px;padding:10px 14px;background:rgba(255,71,87,.1);border-left:3px solid var(--red);border-radius:4px;font-size:13px;color:#ffb3b8}
-.fb-fact{margin-top:12px;padding:10px 14px;background:rgba(245,166,35,.1);border-left:3px solid var(--cat);border-radius:4px;font-size:13px;color:var(--cat);font-family:var(--mono)}
-
-.action-row{display:flex;gap:12px;margin-top:22px;justify-content:flex-end}
-
-#timeout-overlay{display:none;position:fixed;inset:0;background:rgba(14,15,17,.95);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:20px;text-align:center;padding:24px}
-#timeout-overlay.show{display:flex}
-.timeout-icon{font-size:64px;animation:shake .5s ease 3}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-.timeout-title{font-family:var(--display);font-size:42px;font-weight:800;text-transform:uppercase;color:var(--red);letter-spacing:2px}
-.timeout-msg{font-size:16px;color:var(--muted);max-width:460px;line-height:1.7}
-.timeout-btn{margin-top:8px;font-family:var(--display);font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:14px 40px;border-radius:8px;border:none;cursor:pointer;background:var(--cat);color:#0e0f11}
-
+/* Results */
 .results-hero{text-align:center;padding:40px 0 32px}
 .score-ring{width:150px;height:150px;margin:0 auto 28px;position:relative}
 .score-ring svg{transform:rotate(-90deg);display:block}
@@ -126,7 +118,7 @@ textarea::placeholder{color:var(--muted)}
 .result-title{font-family:var(--display);font-size:30px;font-weight:800;text-transform:uppercase;margin-bottom:10px;letter-spacing:.5px}
 .result-msg{font-size:15px;color:var(--muted);max-width:500px;margin:0 auto 36px;line-height:1.7}
 
-.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:40px}
+.result-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:40px}
 .rs-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center}
 .rs-val{font-family:var(--display);font-size:30px;font-weight:800;margin-bottom:4px}
 .rs-lbl{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
@@ -140,62 +132,10 @@ textarea::placeholder{color:var(--muted)}
 .ri-ans{font-size:13px;color:var(--muted)}
 .result-btns{display:flex;gap:12px}.result-btns .btn{flex:1}
 
-.plan-grid{display:flex;flex-direction:column;gap:16px;margin-top:20px}
-.plan-day{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.plan-day-header{background:var(--bg3);padding:14px 20px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border)}
-.plan-day-num{font-family:var(--display);font-size:22px;font-weight:800;color:var(--cat);text-transform:uppercase;letter-spacing:1px;min-width:100px}
-.plan-day-title{font-size:15px;font-weight:600}
-.plan-day-body{padding:20px;display:flex;flex-direction:column;gap:12px}
-.plan-block{padding:14px 16px;border-radius:8px;border-left:3px solid var(--border)}
-.plan-block.b-analysis{border-left-color:var(--blue);background:rgba(92,158,255,.06)}
-.plan-block.b-solo{border-left-color:#a78bfa;background:rgba(167,139,250,.06)}
-.plan-block.b-review{border-left-color:var(--cat);background:rgba(245,166,35,.06)}
-.plan-block.b-sim{border-left-color:var(--red);background:rgba(255,71,87,.06)}
-.plan-block-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;color:var(--muted)}
-.plan-block.b-analysis .plan-block-title{color:var(--blue)}
-.plan-block.b-solo .plan-block-title{color:#a78bfa}
-.plan-block.b-review .plan-block-title{color:var(--cat)}
-.plan-block.b-sim .plan-block-title{color:var(--red)}
-.plan-block-body{font-size:14px;line-height:1.7}
-.plan-block-body ul{padding-left:18px;margin-top:6px}
-.plan-block-body li{margin-bottom:4px}
-
-.ref-table-wrap{margin-top:12px;overflow-x:auto}
-.ref-table{width:100%;border-collapse:collapse;font-size:13px}
-.ref-table th{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:2px solid var(--border)}
-.ref-table td{padding:9px 12px;border-bottom:1px solid rgba(42,45,62,.7);vertical-align:top;line-height:1.5}
-.ref-table tr:last-child td{border-bottom:none}
-.ref-table tr:hover td{background:rgba(255,255,255,.02)}
-.ref-tag{display:inline-block;font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:3px;letter-spacing:.5px;font-weight:700;white-space:nowrap}
-.tag-metal{background:rgba(92,158,255,.18);color:var(--blue)}
-.tag-poly{background:rgba(46,213,115,.18);color:var(--green)}
-.tag-ceram{background:rgba(245,166,35,.18);color:var(--cat)}
-.tag-proc{background:rgba(255,71,87,.18);color:var(--red)}
-.tag-comp{background:rgba(167,139,250,.18);color:#a78bfa}
-.ref-highlight{color:var(--cat);font-weight:600;font-family:var(--mono)}
-.ref-warn{color:var(--red);font-size:11px}
-
-.flash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
-.flash-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;position:relative;overflow:hidden}
-.flash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.flash-card.fc-metal::before{background:var(--blue)}
-.flash-card.fc-poly::before{background:var(--green)}
-.flash-card.fc-ceram::before{background:var(--cat)}
-.flash-card.fc-proc::before{background:var(--red)}
-.flash-q{font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.4}
-.flash-a{font-family:var(--display);font-size:16px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.3px}
-.flash-sub{font-size:11px;color:var(--muted);margin-top:3px;font-family:var(--mono)}
-
-.nav-tabs{display:flex;gap:0;margin-bottom:32px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.nav-tab{flex:1;padding:14px;font-family:var(--display);font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;text-align:center;color:var(--muted);border:none;background:transparent;transition:background .2s,color .2s}
-.nav-tab.active{background:var(--cat);color:#0e0f11}
-.nav-tab:hover:not(.active){color:var(--cat)}
-
 @media(max-width:600px){
   .result-stats{grid-template-columns:1fr 1fr}
   .topbar{padding:0 16px}.topbar-logo{font-size:14px}
   main{padding:28px 16px 60px}.question-card{padding:20px 18px}
-  #timer-wrap{font-size:13px;padding:4px 8px}
 }
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
@@ -205,195 +145,68 @@ textarea::placeholder{color:var(--muted)}
 <div class="topbar">
   <div class="topbar-logo">MatSim · Maq. Pesada</div>
   <div class="topbar-right">
+    <div class="lives-display" id="lives-display">
+      <span class="heart" id="h1">❤️</span>
+      <span class="heart" id="h2">❤️</span>
+      <span class="heart" id="h3">❤️</span>
+    </div>
     <div class="topbar-score" id="topbar-score">Score: <span id="tb-score">0/0</span></div>
-    <div id="timer-wrap">⏱ <span id="timer-display">60:00</span></div>
   </div>
 </div>
 <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
 
-<div id="timeout-overlay">
-  <div class="timeout-icon">⏰</div>
-  <div class="timeout-title">Tiempo Agotado</div>
-  <div class="timeout-msg">Los 60 minutos del examen terminaron. Así se siente la presión real. A continuación verás tu resultado con las respuestas dadas hasta ahora.</div>
-  <button class="timeout-btn" onclick="dismissTimeout()">Ver mi resultado →</button>
+<!-- GAME OVER OVERLAY -->
+<div id="gameover-overlay">
+  <div class="gameover-icon">💥</div>
+  <div class="gameover-title">Falla Catastrófica</div>
+  <div class="gameover-sub">El equipo falló por mal mantenimiento.<br>Agotaste tus 3 vidas antes de terminar el simulacro.<br>Un buen técnico no puede darse ese lujo en terreno.</div>
+  <div class="gameover-stat" id="gameover-stat">Llegaste a la pregunta 0 de 25</div>
+  <div class="gameover-btns">
+    <button class="gameover-btn primary" onclick="retryExam()">🔄 Reiniciar</button>
+    <button class="gameover-btn ghost" onclick="goHome()">← Inicio</button>
+  </div>
+</div>
+
+<!-- FEEDBACK POPUP -->
+<div class="feedback-popup" id="feedback-popup">
+  <div class="feedback-popup-inner">
+    <div class="fp-header">
+      <span class="fp-icon" id="fp-icon"></span>
+      <span class="fp-verdict" id="fp-verdict"></span>
+    </div>
+    <div class="fp-justif" id="fp-justif"></div>
+    <div class="fp-trap-box" id="fp-trap" style="display:none"></div>
+    <div class="fp-fact-box" id="fp-fact" style="display:none"></div>
+    <button class="fp-next-btn" id="fp-next-btn" onclick="closeFeedbackAndNext()">Siguiente pregunta →</button>
+  </div>
 </div>
 
 <main>
   <!-- INTRO -->
   <div class="screen active" id="screen-intro">
-    <div style="display:flex;gap:0;margin-bottom:32px;" class="nav-tabs">
-      <button class="nav-tab active" onclick="switchTab('sim')">🎯 Simulador</button>
-      <button class="nav-tab" onclick="switchTab('plan')">📅 Plan de Estudio</button>
+    <div class="intro-hero">
+      <div class="eyebrow">100 Preguntas · Banco completo · Nivel Técnico</div>
+      <h1>Simulador<em>de Examen</em></h1>
+      <p>Cada sesión: <strong style="color:var(--text)">25 preguntas aleatorias</strong> del banco de 100. Las alternativas se mezclan en cada carga — imposible memorizar posiciones. Tienes <strong style="color:var(--red)">3 vidas</strong>.</p>
     </div>
-
-    <div id="tab-sim">
-      <div class="intro-hero">
-        <div class="eyebrow">Semanas 7–14 · Nivel Técnico Alto</div>
-        <h1>Simulador<em>de Examen</em></h1>
-        <p>Preguntas capciosas, tecnicismos, porcentajes críticos y casos prácticos. Las alternativas <em style="color:var(--text)">se mezclan aleatoriamente</em> — sin memorizar posiciones.</p>
-      </div>
-      <div class="stats-strip">
-        <div class="ss-item"><div class="ss-val">26</div><div class="ss-label">Preguntas</div></div>
-        <div class="ss-item"><div class="ss-val">7–14</div><div class="ss-label">Semanas</div></div>
-        <div class="ss-item"><div class="ss-val">5</div><div class="ss-label">Desarrollo</div></div>
-        <div class="ss-item"><div class="ss-val">60</div><div class="ss-label">Minutos</div></div>
-        <div class="ss-item"><div class="ss-val" style="color:var(--red)">Alta</div><div class="ss-label">Dificultad</div></div>
-      </div>
-      <div class="mode-grid">
-        <div class="mode-card sel" onclick="setMode('all',this)" id="mc-all">
-          <div class="mi">🎯</div><h3>Examen Completo</h3>
-          <p>21 SM + 5 desarrollo. Formato real con temporizador de 60 min.</p>
-        </div>
-        <div class="mode-card" onclick="setMode('mc',this)" id="mc-mc">
-          <div class="mi">⚡</div><h3>Solo S. Múltiple</h3>
-          <p>Las 21 preguntas capciosas. Alternativas mezcladas aleatoriamente.</p>
-        </div>
-        <div class="mode-card" onclick="setMode('dev',this)" id="mc-dev">
-          <div class="mi">🔬</div><h3>Solo Desarrollo</h3>
-          <p>Analiza y justifica como pide el profesor.</p>
-        </div>
-        <div class="mode-card" onclick="setMode('weak',this)" id="mc-weak">
-          <div class="mi">🧠</div><h3>Tecnicismos</h3>
-          <p>Números, porcentajes y términos duros. Puro dato.</p>
-        </div>
-      </div>
-      <button class="btn btn-cat" onclick="startExam()">Iniciar Simulador →</button>
+    <div class="stats-strip">
+      <div class="ss-item"><div class="ss-val">100</div><div class="ss-label">Preguntas totales</div></div>
+      <div class="ss-item"><div class="ss-val">25</div><div class="ss-label">Por sesión</div></div>
+      <div class="ss-item"><div class="ss-val">3</div><div class="ss-label">Vidas</div></div>
+      <div class="ss-item"><div class="ss-val" style="color:var(--red)">Alta</div><div class="ss-label">Dificultad</div></div>
     </div>
-
-    <div id="tab-plan" style="display:none">
-      <div style="margin-bottom:28px;">
-        <div style="font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--cat);text-transform:uppercase;margin-bottom:12px;">Plan de Estudio — Sábado a Lunes</div>
-        <p style="font-size:14px;color:var(--muted);line-height:1.7;">Tres días estructurados. Cada bloque está diseñado para que construyas el conocimiento solo, sin depender de nadie más el día del examen.</p>
-      </div>
-      <div class="plan-grid">
-        <div class="plan-day">
-          <div class="plan-day-header"><div class="plan-day-num">Día 1</div><div class="plan-day-title">Mapa Mental de Materiales y Fallas</div></div>
-          <div class="plan-day-body">
-            <div class="plan-block b-analysis">
-              <div class="plan-block-title">🧠 Bloque 1 · Análisis Mental (2h)</div>
-              <div class="plan-block-body">Para cada material pregúntate: <em>¿Dónde está en la máquina? ¿Qué falla si lo saco?</em>
-                <ul>
-                  <li><strong>Cromo (Cr):</strong> Vástago cilindro hidráulico → falla = corrosión + rayado de sellos</li>
-                  <li><strong>Manganeso (Mn):</strong> Martillo trituradora → falla = rotura por impacto</li>
-                  <li><strong>Alto Carbono (C):</strong> Zapata oruga / cuchilla → falla = desgaste abrasivo acelerado</li>
-                  <li><strong>Cementado:</strong> Pasador/buje articulación → falla = desgaste cáscara O quiebre núcleo</li>
-                  <li><strong>Elastómero:</strong> O-ring / manguera hidráulica → falla = fuga de aceite a presión</li>
-                  <li><strong>Cerámica industrial:</strong> Disco embrague / sensor temperatura → falla = deformación térmica</li>
-                </ul>
-              </div>
-            </div>
-            <div class="plan-block b-sim">
-              <div class="plan-block-title">⚡ Bloque 2 · Primera ronda simulador (1h)</div>
-              <div class="plan-block-body">Haz el modo "Solo S. Múltiple". Anota en papel las preguntas que fallaste.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="plan-day">
-          <div class="plan-day-header"><div class="plan-day-num">Día 2</div><div class="plan-day-title">Datos Duros — Tabla de Referencia Táctica</div></div>
-          <div class="plan-day-body">
-            <div class="plan-block b-solo">
-              <div class="plan-block-title">📊 Bloque Principal · Memoriza esta tabla (3h)</div>
-              <div class="plan-block-body">
-                <div class="ref-table-wrap">
-                  <table class="ref-table">
-                    <thead><tr><th>Material</th><th>Dato clave</th><th>Aplicación</th><th>Falla sin él</th></tr></thead>
-                    <tbody>
-                      <tr><td><span class="ref-tag tag-metal">METAL</span> Cromo (Cr)</td><td>Capa Cr₂O₃<br><span class="ref-highlight">Corrosión + roce</span></td><td>Vástago cilindro</td><td>Corrosión + fuga</td></tr>
-                      <tr><td><span class="ref-tag tag-metal">METAL</span> Manganeso (Mn)</td><td><span class="ref-highlight">Tenacidad = impactos</span></td><td>Martillos, zapatas</td><td>Fractura por golpe</td></tr>
-                      <tr><td><span class="ref-tag tag-metal">METAL</span> Alto Carbono (0.85%C)</td><td><span class="ref-highlight">Dureza = abrasión</span></td><td>Zapata oruga, cuchilla</td><td>Desgaste abrasivo</td></tr>
-                      <tr><td><span class="ref-tag tag-proc">PROCESO</span> Cementado</td><td>Cáscara dura 1–3mm<br><span class="ref-highlight">Núcleo tenaz</span></td><td>Pasadores y bujes</td><td>Desgaste O fractura</td></tr>
-                      <tr><td><span class="ref-tag tag-proc">PROCESO</span> Templado+Revenido</td><td>Templado → fragilidad<br><span class="ref-highlight">Revenido → tenacidad</span></td><td>Ejes, engranajes</td><td>Sin revenido: frágil</td></tr>
-                      <tr><td><span class="ref-tag tag-poly">POLÍMERO</span> PVC</td><td><span class="ref-highlight">Tg ≈ 75–85°C</span><br>Tm ≈ 160–210°C<br><span class="ref-warn">⚠ No confundir</span></td><td>Aislante eléctrico</td><td>A 90°C falla como sello</td></tr>
-                      <tr><td><span class="ref-tag tag-poly">POLÍMERO</span> Elastómero</td><td>Recupera forma 100%<br><span class="ref-highlight">Tg muy baja (&lt;−40°C)</span></td><td>O-rings, mangueras</td><td>Fuga de aceite</td></tr>
-                      <tr><td><span class="ref-tag tag-poly">POLÍMERO</span> Termoestable (Epoxi)</td><td>Moldeo único<br><span class="ref-highlight">NO reciclable</span><br>Se quema si recalienta</td><td>Matrices PMC</td><td>Degrada >150–350°C</td></tr>
-                      <tr><td><span class="ref-tag tag-ceram">CERÁMICA</span> SiC / Al₂O₃</td><td>&gt;1000°C estable<br>Mohs 9–9.5<br><span class="ref-highlight">Aislante eléctrico</span></td><td>Discos embrague, sensores</td><td>Deformación térmica</td></tr>
-                      <tr><td><span class="ref-tag tag-comp">COMPUESTO</span> PMC</td><td>Límite = <span class="ref-highlight">la MATRIZ (~350°C)</span></td><td>Estructuras livianas</td><td>Matriz degrada &gt;350°C</td></tr>
-                      <tr><td><span class="ref-tag tag-comp">COMPUESTO</span> MMC</td><td>Al/Ti + fibra C<br><span class="ref-highlight">300–500°C</span></td><td>Piezas cerca del escape</td><td>PMC colapsa a 450°C</td></tr>
-                      <tr><td><span class="ref-tag tag-proc">PROCESO</span> Pulvimetalurgia</td><td><span class="ref-highlight">70–90% de la Tm</span><br>Difusión sólida<br>Porosidad controlada</td><td>Bujes autolubricantes</td><td>Al 100% Tm: colapsa</td></tr>
-                      <tr><td><span class="ref-tag tag-proc">CONTEXTO</span> Fundiciones Chile</td><td>7 plantas · Alto As/S<br><span class="ref-highlight">No cumplen norma verde</span></td><td>Cobre nacional</td><td>Rechazo en 5–10 años</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <div class="plan-block b-analysis">
-              <div class="plan-block-title">🃏 Bloque 2 · Flashcards mentales (1h)</div>
-              <div class="plan-block-body">
-                <div class="flash-grid">
-                  <div class="flash-card fc-metal"><div class="flash-q">Vástago cilindro hidráulico → aleante</div><div class="flash-a">Cromo (Cr)</div><div class="flash-sub">→ Capa Cr₂O₃ · corrosión + roce</div></div>
-                  <div class="flash-card fc-metal"><div class="flash-q">Fractura en martillo trituradora → aleante</div><div class="flash-a">Manganeso (Mn)</div><div class="flash-sub">→ Tenacidad · impacto</div></div>
-                  <div class="flash-card fc-metal"><div class="flash-q">Cáscara dura + núcleo tenaz → tratamiento</div><div class="flash-a">Cementado</div><div class="flash-sub">→ 1–3 mm · pasadores y bujes</div></div>
-                  <div class="flash-card fc-poly"><div class="flash-q">Sello falla a 90°C → temperatura crítica</div><div class="flash-a">Supera Tg (75–85°C)</div><div class="flash-sub">→ PVC pasa a estado gomoso</div></div>
-                  <div class="flash-card fc-poly"><div class="flash-q">O-ring hidráulico → tipo polímero</div><div class="flash-a">Elastómero</div><div class="flash-sub">→ Recupera forma 100% · sella</div></div>
-                  <div class="flash-card fc-ceram"><div class="flash-q">Disco embrague 800°C → material</div><div class="flash-a">Cerámica (SiC / Al₂O₃)</div><div class="flash-sub">→ Estable &gt;1000°C · Mohs 9–9.5</div></div>
-                  <div class="flash-card fc-proc"><div class="flash-q">Sinterizado → temperatura en % Tm</div><div class="flash-a">70–90% Tm</div><div class="flash-sub">→ Difusión sólida · NO funde</div></div>
-                  <div class="flash-card fc-metal"><div class="flash-q">Límite temperatura compuesto PMC</div><div class="flash-a">La MATRIZ (~350°C)</div><div class="flash-sub">→ No la fibra · falla el eslabón débil</div></div>
-                </div>
-              </div>
-            </div>
-            <div class="plan-block b-sim">
-              <div class="plan-block-title">⚡ Bloque 3 · Modo Tecnicismos (45 min)</div>
-              <div class="plan-block-body">Haz el modo "Tecnicismos": 70–90% Tm, Tg/Tm del PVC, sinterizado, norma verde.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="plan-day">
-          <div class="plan-day-header"><div class="plan-day-num">Día 3</div><div class="plan-day-title">Simulacro Final + Repaso Rápido</div></div>
-          <div class="plan-day-body">
-            <div class="plan-block b-analysis">
-              <div class="plan-block-title">🧠 Bloque 1 · Mapa de memoria sin apuntes (1h)</div>
-              <div class="plan-block-body">
-                <ul>
-                  <li>Falla por corrosión en cilindro hidráulico → ___</li>
-                  <li>Pieza resiste impactos + roce en articulación → ___ + ___</li>
-                  <li>Temperatura 800°C en embrague → ___</li>
-                  <li>Sensor temperatura motor → ___</li>
-                  <li>Buje autolubricante → ___ (proceso)</li>
-                </ul>
-                <em style="color:var(--muted)">Respuestas: Cromo · Cementado + núcleo tenaz · Cerámica industrial · Cerámica · Pulvimetalurgia</em>
-              </div>
-            </div>
-            <div class="plan-block b-sim">
-              <div class="plan-block-title">⚡ Bloque 2 · Examen Completo con temporizador (1h)</div>
-              <div class="plan-block-body">Modo "Examen Completo" — 60 minutos reales. Si superas 85%, estás listo.</div>
-            </div>
-            <div class="plan-block b-review">
-              <div class="plan-block-title">📋 Bloque 3 · Noche antes (30 min)</div>
-              <div class="plan-block-body">Solo tabla de aleantes (Cr/Mn/C) y termoplástico/termoestable/elastómero. Nada nuevo. Descansar.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <button class="btn btn-cat" onclick="startExam()">⚙ Iniciar Simulador →</button>
   </div>
 
   <!-- QUESTION -->
   <div class="screen" id="screen-question">
     <div class="q-header">
-      <div class="q-counter" id="q-counter">Pregunta 1 de 26</div>
-      <div id="q-badge"></div>
+      <div class="q-counter" id="q-counter">Pregunta 1 de 25</div>
     </div>
     <div class="question-card">
-      <div class="q-cat-label" id="q-cat-label"></div>
+      <div class="q-num-tag" id="q-num-tag"></div>
       <div class="q-text" id="q-text"></div>
-      <div class="q-context" id="q-context" style="display:none"></div>
       <div class="options" id="options-container"></div>
-      <textarea id="dev-answer" style="display:none" placeholder="Escribe tu respuesta aquí. El profesor exige JUSTIFICACIÓN — no solo el material, sino POR QUÉ ese material para esa pieza específica..."></textarea>
-    </div>
-    <div class="feedback-box" id="feedback-box">
-      <div class="fb-header">
-        <span class="fb-icon" id="fb-icon"></span>
-        <span class="fb-title" id="fb-title"></span>
-      </div>
-      <div class="fb-body" id="fb-body"></div>
-      <div class="fb-trap" id="fb-trap" style="display:none"></div>
-      <div class="fb-fact" id="fb-fact" style="display:none"></div>
-    </div>
-    <div class="action-row">
-      <button class="btn btn-ghost" onclick="skipQuestion()" id="btn-skip">Saltar</button>
-      <button class="btn btn-cat" onclick="handleAction()" id="btn-action">Confirmar respuesta</button>
     </div>
   </div>
 
@@ -411,7 +224,7 @@ textarea::placeholder{color:var(--muted)}
         </svg>
         <div class="score-ring-inner">
           <div class="score-big" id="score-big">0</div>
-          <div class="score-sub" id="score-sub">/0 MC</div>
+          <div class="score-sub">/25</div>
         </div>
       </div>
       <div class="result-title" id="result-title"></div>
@@ -420,497 +233,372 @@ textarea::placeholder{color:var(--muted)}
     <div class="result-stats">
       <div class="rs-box"><div class="rs-val" id="rs-correct" style="color:var(--green)">0</div><div class="rs-lbl">Correctas</div></div>
       <div class="rs-box"><div class="rs-val" id="rs-wrong" style="color:var(--red)">0</div><div class="rs-lbl">Incorrectas</div></div>
+      <div class="rs-box"><div class="rs-val" id="rs-lives" style="color:var(--cat)">0</div><div class="rs-lbl">Vidas restantes</div></div>
       <div class="rs-box"><div class="rs-val" id="rs-nota" style="color:var(--cat)">0.0</div><div class="rs-lbl">Nota Aprox.</div></div>
     </div>
     <div class="review-section-title">Revisión completa</div>
     <div class="review-list" id="review-list"></div>
     <div class="result-btns">
       <button class="btn btn-ghost" onclick="goHome()">← Inicio</button>
-      <button class="btn btn-cat" onclick="retryExam()">Reintentar →</button>
+      <button class="btn btn-cat" onclick="retryExam()">🔄 Reintentar →</button>
     </div>
   </div>
 </main>
 
 <script>
-const ALL_QUESTIONS=[
-  // ── SELECCIÓN MÚLTIPLE ──────────────────────────────────────────────────────
-  {id:1,type:'mc',category:'trap',cat:'Metales — Aleantes',
-   text:'El vástago de un cilindro hidráulico de una excavadora debe deslizarse miles de veces sin corroerse ni rayarse. ¿Qué elemento de aleación es imprescindible en su superficie y por qué?',
-   opts:['Carbono (C), porque aumenta la dureza total del acero.','Cromo (Cr), porque forma una capa pasivante que resiste la corrosión y la fricción superficial.','Manganeso (Mn), porque aporta tenacidad frente a los impactos del émbolo.','Níquel (Ni), porque eleva el punto de fusión del acero para tolerar el calor del fluido.'],
-   ans:1,
-   exp:'El Cromo forma óxido de cromo (Cr₂O₃), una capa pasivante que resiste la corrosión por fluido hidráulico contaminado con agua Y reduce la fricción superficial con los sellos. El carbono da dureza general, no pasivación; el manganeso sirve para impactos, no para roce crónico.',
-   trap:'El Carbono suena correcto porque "da dureza". Pero la dureza general no es resistencia a la corrosión. El mecanismo crítico es corrosión + roce superficial = Cromo.',
-   fact:'Cr (Cromo) = Corrosión + Fricción superficial. Aplicación: vástago cilindro hidráulico.'},
-
-  {id:2,type:'mc',category:'trap',cat:'Metales — Aleantes',
-   text:'Una zapata de oruga de excavadora opera en suelo rocoso con desgaste abrasivo extremo. El jefe de mantención elige entre acero 0.35%C y acero 0.85%C. ¿Cuál elige y qué propiedad lo justifica?',
-   opts:['El 0.35% C, porque tiene mayor tenacidad y no se parte con los impactos de las rocas.','El 0.85% C, porque el mayor carbono genera mayor dureza y resistencia al desgaste abrasivo.','Ambos son equivalentes: la zapata se protege con tratamiento superficial.','El 0.35% C, porque el alto carbono genera corrosión galvánica con el suelo húmedo.'],
-   ans:1,
-   exp:'El acero de alto carbono (0.85% C) genera más carburos de hierro en la microestructura, mayor dureza Vickers y mayor resistencia al rozamiento. Las zapatas de orugas son la aplicación clásica de aceros de alto carbono.',
-   trap:'El 0.35%C es tentador porque "no se parte con golpes" (cierto). Pero el mecanismo de falla de las zapatas es ABRASIÓN, no impacto puro.',
-   fact:'Alto Carbono (0.85% C) = Dureza + Resistencia al desgaste abrasivo. Zapatas de oruga, cuchillas motoniveladoras.'},
-
-  {id:3,type:'mc',category:'theory',cat:'Tratamientos Térmicos',
-   text:'Un pasador de articulación de cuchara de excavadora debe resistir el roce constante en su superficie pero absorber golpes sin quebrarse. ¿Qué tratamiento térmico es el correcto?',
-   opts:['Templado completo, para lograr máxima dureza en toda la sección.','Revenido profundo, para máxima tenacidad en toda la pieza.','Cementado (endurecimiento superficial), que endurece solo la capa exterior dejando el núcleo tenaz.','Normalizado, para homogeneizar la microestructura y eliminar tensiones.'],
-   ans:2,
-   exp:'El cementado endurece solo la "cáscara" superficial (1–3 mm) por difusión de carbono. Esta cáscara dura resiste el roce del pasador dentro del buje. El núcleo permanece blando y tenaz, absorbiendo impactos sin partirse.',
-   trap:null,
-   fact:'Cementado = Cáscara dura (roce) + Núcleo tenaz (golpes). Aplicación: pasadores y bujes de articulaciones.'},
-
-  {id:4,type:'mc',category:'trap',cat:'Tratamientos Térmicos',
-   text:'¿Cuál es la secuencia correcta y la función de cada paso en el tratamiento TEMPLADO + REVENIDO?',
-   opts:['Templado (tenacidad) → Revenido (dureza). Se aplica en pasadores y bujes de articulaciones.','Templado (dureza máxima, queda frágil) → Revenido (devuelve tenacidad, se reduce algo la dureza).','Revenido (dureza superficial) → Templado (homogeneización). Se aplica en vástagos hidráulicos.','Templado (endurece solo la superficie) → Revenido (endurece el núcleo). Proceso en dos fases selectivas.'],
-   ans:1,
-   exp:'El templado genera enfriamiento brusco (quench) que crea martensita: máxima dureza pero altísima fragilidad. El revenido posterior calienta el metal a temperatura intermedia, transformando parte de la martensita para recuperar tenacidad.',
-   trap:'La opción C invierte el orden — trampa clásica. El templado SIEMPRE va primero. La opción D describe el CEMENTADO, no el templado+revenido.',
-   fact:'Templado (dureza + fragilidad) → Revenido (recupera tenacidad). Nunca al revés.'},
-
-  {id:5,type:'mc',category:'theory',cat:'Polímeros — Clasificación',
-   text:'¿Cuál es la diferencia fundamental entre un termoplástico y un termoestable?',
-   opts:['Los termoplásticos son siempre más resistentes a impactos porque tienen mayor tenacidad molecular.','Los termoplásticos se ablandan con calor y son reciclables; los termoestables solo se moldean una vez y se queman si se recalientan.','Los termoestables se derriten a mayor temperatura y también son reciclables mediante proceso inverso.','Los termoplásticos son polímeros naturales y los termoestables son exclusivamente polímeros sintéticos.'],
-   ans:1,
-   exp:'Los termoplásticos (PVC, Policarbonato) se ablandan al superar su Tg — proceso reversible y reciclable. Los termoestables (resinas epoxi) reaccionan químicamente al moldearse formando enlaces cruzados permanentes. Si los recalientas, no fluyen: se degradan y queman.',
-   trap:'Los termoestables no "aguantan más calor" — reaccionan diferente. Y NO son reciclables.',
-   fact:'Termoplásticos: PVC, Policarbonato (reciclables). Termoestables: Resinas Epoxi (se queman, no reciclables).'},
-
-  {id:6,type:'mc',category:'trap',cat:'Polímeros — Temperatura Crítica',
-   text:'Un ingeniero propone usar un sello de PVC en una línea hidráulica que trabaja a 90°C de forma continua. El otro ingeniero lo rechaza. ¿Cuál es el argumento técnico correcto del rechazo?',
-   opts:['El PVC es conductor eléctrico y puede generar cortocircuitos en el circuito hidráulico.','El PVC tiene una Tm de exactamente 90°C por lo que se fundirá completamente en servicio.','El PVC es un termoplástico cuya Tg está entre 75–85°C; a 90°C supera esa temperatura, pierde rigidez y fluye bajo presión, fallando como sello.','El PVC es incompatible químicamente con el aceite hidráulico a cualquier temperatura.'],
-   ans:2,
-   exp:'La Tg del PVC rígido es ≈75–85°C. Al superar la Tg, el polímero pasa de estado vítreo a estado gomoso. A 90°C de servicio continuo, el PVC fluiría bajo la presión hidráulica y el sello fallaría. La Tm del PVC es ≈160–210°C (no 90°C).',
-   trap:'La Tm del PVC es ~160°C, no 90°C — la opción B es falsa. El PVC es aislante eléctrico, no conductor. El fallo es por superar la Tg.',
-   fact:'Tg PVC ≈ 75–85°C. A 90°C falla como sello. Tm PVC ≈ 160–210°C. Confundir Tg con Tm = error clásico.'},
-
-  {id:7,type:'mc',category:'tech',cat:'Polímeros — Tg y Tm',
-   text:'¿Qué representa la Tg (temperatura de transición vítrea) en los polímeros, y en qué se diferencia de la Tm?',
-   opts:['Tg es la temperatura de ignición del polímero; Tm es la temperatura donde se ablanda sin quemarse.','Tg es donde el polímero pasa de gomoso a rígido y frágil (como vidrio); Tm es donde el termoplástico se derrite y fluye.','Tg y Tm son sinónimos; ambas representan el límite donde el polímero pierde sus propiedades mecánicas.','Tg es exclusiva de los termoestables; Tm es el parámetro de los termoplásticos.'],
-   ans:1,
-   exp:'La Tg es la temperatura donde el polímero cambia comportamiento: por encima está flexible/gomoso; por debajo se vuelve rígido y frágil. La Tm es donde el termoplástico se derrite y fluye. Los termoestables no tienen Tm definida.',
-   trap:'La opción C es la trampa: decir que son sinónimos. Son parámetros completamente diferentes.',
-   fact:'Tg = se vuelve frágil/rígido. Tm = se derrite. Tg < Tm siempre. Los termoestables tienen Tg pero NO Tm.'},
-
-  {id:8,type:'mc',category:'theory',cat:'Polímeros — Elastómeros',
-   text:'¿Por qué los O-rings de un sistema hidráulico de alta presión son de elastómero y no de termoplástico o termoestable?',
-   opts:['Porque los elastómeros tienen mayor dureza que los termoplásticos, resistiendo mejor la presión.','Porque los elastómeros son los únicos polímeros que recuperan su forma al 100% tras la deformación, generando el sello dinámico.','Porque los elastómeros son más económicos que los otros tipos de polímeros.','Porque los elastómeros son reciclables y cumplen con las normas ambientales del sistema hidráulico.'],
-   ans:1,
-   exp:'Los elastómeros tienen la propiedad única de deformarse mucho y recuperar su forma original al 100%. En un O-ring, el anillo se comprime al instalar la conexión y esa presión de retorno genera el sello hermético.',
-   trap:null,
-   fact:'Elastómeros = Deformación máxima + Recuperación 100%. Tercera categoría de polímeros.'},
-
-  {id:9,type:'mc',category:'trap',cat:'Polímeros — Aplicaciones',
-   text:'El tablero transparente de la cabina de un bulldozer está en policarbonato. El técnico propone reemplazarlo con vidrio templado por ser más resistente. ¿Cuál es el argumento técnico para mantener el policarbonato?',
-   opts:['El policarbonato tiene mayor transparencia óptica que el vidrio templado, mejorando la visibilidad.','El policarbonato resiste impactos sin astillarse ni generar fragmentos cortantes, protegiendo al operador.','El policarbonato resiste disolventes y aceites mejor que el vidrio, protegiéndolo en ambiente de obra.','El policarbonato soporta temperaturas superiores a 300°C, mientras el vidrio templado solo aguanta 200°C.'],
-   ans:1,
-   exp:'El policarbonato supera al vidrio en resistencia al impacto: absorbe golpes sin astillarse ni generar fragmentos peligrosos — crítico en ambiente de obra donde piedras impactan la cabina.',
-   trap:'La opción C es trampa: el policarbonato tiene BAJA resistencia a disolventes. La opción D es falsa: su Tg es 147°C.',
-   fact:'Policarbonato = Impacto sin astillas + Liviano. No aguanta solventes ni altas temperaturas.'},
-
-  {id:10,type:'mc',category:'theory',cat:'Cerámicas Industriales',
-   text:'¿Por qué los sensores de temperatura del motor y las sondas lambda de un camión minero son de material cerámico?',
-   opts:['Porque las cerámicas son excelentes conductores eléctricos, mejorando la señal del sensor.','Porque las cerámicas son más económicas que los metales y reducen costos de mantenimiento.','Porque las cerámicas tienen alta ductilidad, deformándose sin romperse en ambientes vibrados.','Porque las cerámicas tienen estabilidad química y dimensional a temperaturas extremas (>600°C) y resisten gases corrosivos del escape.'],
-   ans:3,
-   exp:'Los sensores de motor usan cerámica porque mantienen propiedades sin degradarse a temperaturas extremas y resisten gases sulfurosos. Las cerámicas son aislantes eléctricos (no conductores), son frágiles (no dúctiles).',
-   trap:'La opción A es trampa perfecta: las cerámicas son AISLANTES eléctricos, no conductores.',
-   fact:'Cerámicas en sensores: ZrO₂ (sonda lambda), Al₂O₃ (temperatura). Estabilidad térmica + química > 600°C.'},
-
-  {id:11,type:'mc',category:'trap',cat:'Cerámicas Industriales',
-   text:'Los discos de embrague del convertidor de torque de un camión minero alcanzan más de 800°C por fricción. ¿Qué material es el estándar de la industria?',
-   opts:['Acero bonificado templado y revenido, por su alta dureza superficial.','Compuesto de fibra de carbono con matriz polimérica (CFRP), por su bajo peso y resistencia mecánica.','Cerámica industrial (carburo de silicio SiC o alúmina Al₂O₃), por su dureza extrema y estabilidad térmica superior a 1000°C.','Elastómero reforzado con Kevlar, por su resistencia combinada al desgaste y alta temperatura.'],
-   ans:2,
-   exp:'Las cerámicas industriales (SiC, Al₂O₃) soportan más de 1000°C sin fundirse, con dureza de 9–9.5 Mohs. Los aceros pierden propiedades a 600–700°C; los polímeros se degradan muy por debajo de 800°C.',
-   trap:'El CFRP suena técnico y resistente, pero la matriz polimérica se degrada entre 150–350°C — muy por debajo de los 800°C del embrague.',
-   fact:'Cerámica industrial: dureza extrema + >1000°C. Discos embrague + sensores motor = aplicaciones clave.'},
-
-  {id:12,type:'mc',category:'theory',cat:'Materiales Compuestos',
-   text:'En un material compuesto (como fibra de carbono + resina epoxi), ¿cuál es la función de la MATRIZ y cuál la del REFUERZO?',
-   opts:['La matriz aporta la rigidez mecánica; el refuerzo da forma y protege el componente.','La matriz da forma y protege las fibras del ambiente; el refuerzo (fibras) aporta rigidez y resistencia mecánica.','Ambos tienen la misma función: aumentar la resistencia total del material compuesto.','El refuerzo protege de la corrosión; la matriz absorbe los impactos mecánicos del entorno.'],
-   ans:1,
-   exp:'La MATRIZ da forma al componente, transfiere cargas a las fibras y las protege del ambiente. El REFUERZO (fibras de carbono, vidrio o Kevlar) aporta la alta rigidez y resistencia mecánica.',
-   trap:'La opción A invierte los roles — es la trampa perfecta.',
-   fact:'Matriz (da forma + protege) + Refuerzo (fibras = resistencia).'},
-
-  {id:13,type:'mc',category:'trap',cat:'Compuestos — MMC vs PMC',
-   text:'Se necesita fabricar una pieza estructural cerca del escape de un camión minero que trabaja a 450°C con cargas mecánicas altas. Un PMC queda descartado. ¿Qué tipo es el correcto?',
-   opts:['PMC con fibra de vidrio, porque la fibra en sí soporta esas temperaturas aunque la matriz no.','MMC (Matriz Metálica, ej. aluminio + fibra de carbono), porque combina resistencia mecánica con mayor tolerancia térmica que los polímeros.','CMC (Matriz Cerámica), pero solo si la pieza no tiene función estructural.','Elastómero reforzado con Kevlar, porque es la combinación flexible + resistente al calor.'],
-   ans:1,
-   exp:'Para 450°C un PMC es inviable — los polímeros se degradan entre 150–350°C. La solución es un MMC: la matriz de aluminio o titanio soporta 300–500°C; el refuerzo aporta rigidez.',
-   trap:'La opción A es trampa: aunque la FIBRA de vidrio soporte calor, la MATRIZ polimérica se degradaría a 450°C. El compuesto falla por el componente más débil.',
-   fact:'PMC → hasta ~350°C. MMC → 300–500°C. CMC → >800°C. El límite lo pone SIEMPRE la matriz.'},
-
-  {id:14,type:'mc',category:'tech',cat:'Pulvimetalurgia',
-   text:'En pulvimetalurgia, la "pieza en verde" se introduce al horno de sinterizado. ¿A qué temperatura, expresada como porcentaje de la Tm del metal, opera el horno?',
-   opts:['Entre 20% y 40% de la Tm, para evitar cualquier difusión que altere la porosidad.','Entre 50% y 60% de la Tm, punto donde inicia la difusión superficial entre partículas.','Entre 70% y 90% de la Tm, donde ocurre difusión sólida que une las partículas sin que la pieza se funda.','Al 100% de la Tm, para asegurar que el metal fluya completamente y llene los vacíos.'],
-   ans:2,
-   exp:'El sinterizado opera entre 70% y 90% de la Tm. Esto activa la difusión atómica en estado sólido, uniendo las partículas sin que la pieza se funda. Si se llegara al 100% de Tm, el material colapsaría.',
-   trap:'La opción D es la trampa: llegar al 100% Tm destruiría la pieza. El sinterizado NO es fusión.',
-   fact:'Sinterizado: 70–90% de Tm. Difusión sólida. Sin fundirse. Porosidad controlada.'},
-
-  {id:15,type:'mc',category:'theory',cat:'Pulvimetalurgia — Aplicaciones',
-   text:'¿En qué aplicación específica de maquinaria pesada la porosidad controlada de la pulvimetalurgia es una ventaja decisiva?',
-   opts:['Zapatas de oruga, donde la porosidad aumenta la dureza superficial y resistencia abrasiva.','Bujes y cojinetes autolubricantes, donde la porosidad retiene aceite que se libera gradualmente en servicio.','Pistones de motor, donde la porosidad reduce el peso del componente mejorando la relación potencia/peso.','Cables de acero trenzado, donde la porosidad mejora la flexibilidad bajo carga torsional.'],
-   ans:1,
-   exp:'Los bujes y cojinetes autolubricantes son la aplicación estrella. La porosidad controlada (10–30% de volumen) actúa como esponja: se impregna de aceite y lo libera gradualmente eliminando la necesidad de lubricación externa.',
-   trap:null,
-   fact:'Pulvimetalurgia → Bujes autolubricantes. Porosidad = reservorio de aceite.'},
-
-  {id:16,type:'mc',category:'theory',cat:'Fundiciones Chile',
-   text:'¿Cuál es el principal riesgo de mercado que enfrentan las fundiciones chilenas si no se modernizan en los próximos 5–10 años?',
-   opts:['Que China supere a Chile en reservas de mineral de cobre, dejándolo sin materia prima.','Que el precio internacional del cobre caiga por sobreproducción indonesa y peruana.','Que el cobre chileno sea rechazado en mercados internacionales por no cumplir estándares de Minería Verde (control de arsénico/azufre).','Que las 7 fundiciones colapsen simultáneamente por falta de energía eléctrica renovable.'],
-   ans:2,
-   exp:'El riesgo central es el rechazo comercial. Las 7 fundiciones chilenas procesan minerales con alto arsénico y azufre y no cumplen normas de emisión internacionales.',
-   trap:null,
-   fact:'7 fundiciones / alto As+S / no cumplen norma verde / riesgo en 5–10 años.'},
-
-  {id:17,type:'mc',category:'trap',cat:'Metales — Hierro y Fundición',
-   text:'El bloque de motor de un camión minero está fabricado en fundición gris. ¿Por qué no se usa acero de alto carbono, que es más duro?',
-   opts:['Porque el acero de alto carbono es más costoso y la fundición gris es la opción más económica para motores.','Porque la fundición gris tiene resistencia superior a la tracción, necesaria para las explosiones del motor.','Porque la fundición gris tiene excelente capacidad de absorción de vibraciones y resiste mejor la compresión, ideal para el bloque motor.','Porque el acero de alto carbono se corroe rápidamente con el refrigerante del motor.'],
-   ans:2,
-   exp:'La fundición gris tiene grafito en láminas que le da excelente amortiguación de vibraciones y gran resistencia a compresión. El bloque motor trabaja principalmente a compresión.',
-   trap:'La opción A puede sonar correcta, pero el argumento real no es el costo — es la función técnica.',
-   fact:'Fundición gris = Absorción de vibraciones + Resistencia a compresión. Bloque motor.'},
-
-  {id:18,type:'mc',category:'theory',cat:'Metales — Bronce y Aluminio',
-   text:'¿Por qué los bujes interiores de los pasadores de una excavadora se fabrican en bronce (Cu + Sn) y los pistones del motor en aleación de aluminio?',
-   opts:['Bronce por su dureza extrema (8 Mohs); aluminio por su punto de fusión más alto que el hierro.','Bronce por su alta resistencia a la fricción por deslizamiento; aluminio por su baja densidad y alta conductividad térmica.','Bronce por su resistencia a la corrosión marina; aluminio porque no necesita lubricación en el cilindro.','Ambos materiales son intercambiables; la elección depende del costo y disponibilidad.'],
-   ans:1,
-   exp:'El bronce tiene alta resistencia a la fricción por deslizamiento, ideal para bujes con movimiento rotativo continuo. El aluminio tiene baja densidad (menor inercia en el pistón) y alta conductividad térmica (disipa calor de la combustión).',
-   trap:null,
-   fact:'Bronce = Fricción por deslizamiento → Bujes. Aluminio = Liviano + Conductor térmico → Pistones.'},
-
-  {id:19,type:'mc',category:'trap',cat:'Manganeso vs Cromo — Trampa Clásica',
-   text:'Un martillo de una trituradora de rocas falla por fractura ante los impactos de la roca. El ingeniero decide cambiar la aleación del acero. ¿Qué elemento agrega prioritariamente?',
-   opts:['Cromo (Cr), porque forma una capa pasivante que resiste el impacto superficial de la roca.','Carbono (C), porque la mayor dureza permite que el martillo no se deforme al golpear la roca.','Manganeso (Mn), porque aporta tenacidad — la capacidad de absorber energía de impacto sin fracturarse.','Molibdeno (Mo), porque resiste las altas temperaturas generadas en cada impacto.'],
-   ans:2,
-   exp:'La falla es FRACTURA por impacto, no desgaste ni corrosión. El Manganeso (Mn) aporta tenacidad — la capacidad de absorber energía de golpe sin quebrarse. Los aceros Hadfield (alto Mn) son el estándar para martillos de trituradora.',
-   trap:'El Carbono es la trampa perfecta: "más duro = aguanta mejor". Pero la fragilidad aumenta con el carbono. Si el fallo es FRACTURA, agregar carbono podría empeorarlo.',
-   fact:'Mn = Tenacidad/Impactos. Cr = Corrosión. C = Dureza/Abrasión. Tres elementos, tres mecanismos distintos.'},
-
-  {id:20,type:'mc',category:'tech',cat:'Sintetizado vs Compuesto',
-   text:'¿Cuál es la diferencia fundamental entre un material SINTETIZADO (pulvimetalurgia) y un MATERIAL COMPUESTO?',
-   opts:['No hay diferencia real; ambos términos describen materiales formados mezclando componentes distintos.','Sintetizado = polvo metálico prensado y horneado al 70–90% Tm; Compuesto = matriz continua + refuerzo fibroso que da propiedades combinadas superiores.','Los compuestos son siempre metálicos; los sintetizados pueden ser metálicos o poliméricos indistintamente.','Los sintetizados se producen a la temperatura de fusión completa; los compuestos se moldean siempre en frío.'],
-   ans:1,
-   exp:'PULVIMETALURGIA: PROCESO DE FABRICACIÓN — polvo metálico → prensar → hornear al 70–90% Tm para que las partículas difundan sin fundirse. COMPUESTO: CATEGORÍA DE MATERIAL — una matriz continua + un refuerzo (fibras) que juntos dan propiedades que ninguno tiene solo.',
-   trap:'La opción A es la trampa: uno es un PROCESO DE FABRICACIÓN, el otro es una CATEGORÍA DE MATERIAL.',
-   fact:'Sintetizado = PROCESO (polvo → prensar → hornear 70–90% Tm). Compuesto = MATERIAL (Matriz + Refuerzo).'},
-
-  {id:23,type:'mc',category:'theory',cat:'Fundiciones — Minería Verde',
-   text:'Para cumplir estándares de Minería Verde, ¿por qué los expertos recomiendan construir nuevas plantas con alianzas público-privadas en lugar de modernizar las 7 fundiciones antiguas?',
-   opts:['Porque las fundiciones antiguas están construidas con termoestables que ya no se pueden modificar estructuralmente.','Porque el costo y la dificultad técnica de adaptar tecnología de captura de gases (al 99%) en infraestructura antigua es mayor que diseñar una planta moderna desde cero con capital privado.','Porque las alianzas público-privadas son una exigencia legal de China para seguir comprando el concentrado de cobre chileno.','Porque las fundiciones antiguas no tienen la temperatura de fusión (Tm) necesaria para procesar el cobre actual.'],
-   ans:1,
-   exp:'Modernizar infraestructura antigua para alcanzar un 99% de captura de gases tóxicos es costoso y técnicamente limitante. La solución estratégica es la asociación público-privada para construir mega-fundiciones con tecnología limpia desde el diseño base.',
-   trap:'La opción C suena a geopolítica creíble, pero el problema es de cumplimiento ambiental global, no una exigencia legal china.',
-   fact:'Solución Minería Verde: Nuevas plantas (diseño limpio) + Capital Privado.'},
-
-  {id:24,type:'mc',category:'tech',cat:'Monitoreo de Condiciones + Materiales',
-   text:'Durante el Monitoreo de Condiciones de una excavadora, el análisis de aceite del circuito hidráulico arroja alta concentración de partículas de "acero de bajo carbono". ¿Qué componente crítico está fallando y por qué fue un error de diseño usar ese material?',
-   opts:['Los sellos O-ring; deberían ser de elastómero porque el acero no puede deformarse y recuperar su forma al 100%.','El bloque de la bomba; debería ser de fundición gris para absorber vibraciones, el bajo carbono se fatiga rápido.','El vástago del cilindro hidráulico; debería tener recubrimiento de Cromo (Cr) sobre acero aleado para resistir fricción y corrosión — el bajo carbono se raya y oxida rápido.','Los engranajes de la bomba; deberían ser de acero cementado exclusivamente.'],
-   ans:2,
-   exp:'El vástago del cilindro es el componente expuesto que entra y sale, friccionando los sellos. Si fuera de acero de bajo carbono (blando y dúctil), se rayaría y desgastaría al instante. Requiere obligatoriamente cromado duro (Cr) para pasivar la superficie.',
-   trap:'La opción A menciona los O-rings, pero los O-rings no son de acero — no soltarían "partículas de acero de bajo carbono".',
-   fact:'Falla típica en hidráulica: Vástago rayado = desgaste abrasivo. Solución: Acero + Cromo (Cr) superficial.'},
-
-  {id:25,type:'mc',category:'trap',cat:'Trampa — Templado sin Revenido',
-   text:'Un técnico aplica "Templado Completo" (sin procesos posteriores) a un engranaje de transmisión para maximizar su dureza. ¿Qué ocurrirá cuando la máquina entre en operación?',
-   opts:['El engranaje funcionará perfecto porque el templado le dará resistencia total a la fricción y al torque.','El engranaje no sufrirá desgaste superficial, pero sus dientes se quebrarán como vidrio al recibir impactos y torque, porque carece de tenacidad.','El engranaje se doblará y deformará bajo carga, porque el templado reduce la dureza a cambio de tenacidad.','El engranaje se oxidará rápidamente porque el templado elimina el carbono de la superficie.'],
-   ans:1,
-   exp:'El Templado aumenta drásticamente la dureza, pero la estructura resultante (martensita) es extremadamente frágil. En un engranaje que soporta torques e impactos al cambiar marchas, los dientes se partirían. El templado SIEMPRE debe ir seguido de Revenido.',
-   trap:'La opción A es el error de novato: creer que "más dureza siempre es mejor". Dureza sin tenacidad = fractura catastrófica.',
-   fact:'Templado sin Revenido = Pieza frágil que se rompe por impacto. NUNCA se usa templado "solo" en transmisión.'},
-
-  // ── DESARROLLO ──────────────────────────────────────────────────────────────
-  {id:21,type:'dev',category:'dev',cat:'Desarrollo — Sistema Hidráulico',
-   text:'EJERCICIO DE DESARROLLO: Especifica el material adecuado para cada componente del sistema hidráulico: (A) manguera de alta presión, (B) junta tórica O-ring, (C) vástago del cilindro, (D) cableado eléctrico del sensor de presión.',
-   context:'Justifica completamente: indica el material, por qué ese material, y qué propiedad específica cumple la función del componente.',
-   opts:null,ans:null,
-   exp:'(A) MANGUERA DE ALTA PRESIÓN → Elastómero (NBR o EPDM)\nLa manguera debe resistir presiones hasta 350 bar Y flexionarse. Los elastómeros se deforman y recuperan su forma al 100%, soportando ciclos continuos de presión-flexión sin fatiga.\n\n(B) JUNTA TÓRICA (O-ring) → Elastómero (FKM o silicona)\nEl O-ring se comprime al instalarse y esa presión de retorno genera el sello hermético. Solo los elastómeros mantienen esa fuerza de sellado sin fluir bajo la presión del aceite.\n\n(C) VÁSTAGO DEL CILINDRO → Acero con recubrimiento de Cromo duro (Cr)\nEl vástago desliza miles de veces por los sellos (fricción superficial) y está expuesto al fluido hidráulico (corrosión). El Cromo forma la capa pasivante Cr₂O₃ que resiste exactamente esas dos solicitaciones.\n\n(D) CABLEADO ELÉCTRICO DEL SENSOR → PVC (termoplástico)\nEl PVC es excelente aislante eléctrico. Recubre el cable para prevenir cortocircuitos en el entorno hostil de la maquinaria.',
-   trap:null,
-   fact:'Cuatro materiales distintos en un solo sistema: elasticidad, sellado, corrosión/fricción, aislamiento.'},
-
-  {id:22,type:'dev',category:'dev',cat:'Desarrollo — Selección por Mecanismo de Falla',
-   text:'EJERCICIO DE DESARROLLO: Un pasador de articulación está fallando por desgaste superficial acelerado, pero cuando se aumentó la dureza total con templado, empezó a fracturarse. Analiza el problema y propón la solución de tratamiento térmico correcta.',
-   context:'Justifica: (1) por qué el templado solo no funciona, (2) qué tratamiento resolverá AMBOS problemas, (3) qué microestructura queda en la pieza final.',
-   opts:null,ans:null,
-   exp:'PROBLEMA: El pasador tiene dos solicitudes contradictorias:\n— Superficie con desgaste abrasivo → necesita DUREZA SUPERFICIAL\n— Núcleo que recibe impactos → necesita TENACIDAD\n\nPOR QUÉ EL TEMPLADO SOLO NO FUNCIONA:\nEl templado endurece TODA la sección uniformemente, creando martensita en todo el espesor. Esto da dureza máxima pero elimina la tenacidad en el núcleo.\n\nSOLUCIÓN CORRECTA → CEMENTADO:\n1. Se difunde carbono adicional solo en la capa exterior (1–3 mm de profundidad)\n2. Templado posterior: solo la cáscara rica en carbono se endurece (martensita superficial)\n3. El núcleo, con bajo carbono original, permanece en microestructura ferrítica-perlítica: TENAZ\n\nMICROESTRUCTURA FINAL:\n— Cáscara: Martensita (dura) → Resiste desgaste\n— Núcleo: Ferrita + Perlita (tenaz) → Absorbe impactos\n— Gradiente de dureza: transición progresiva entre ambas zonas',
-   trap:null,
-   fact:'Doble solicitud (desgaste + impacto) → siempre CEMENTADO. Templado total = duro pero frágil.'},
-
-  {id:26,type:'dev',category:'dev',cat:'Desarrollo — Polímeros vs Cerámicas',
-   text:'EJERCICIO DE DESARROLLO: Estás diseñando la actualización de un cargador frontal. Debes seleccionar el material para dos componentes: (A) El parabrisas de la cabina del operador, expuesto a impactos de rocas pero no a altas temperaturas. (B) Un sensor de oxígeno instalado directamente en el múltiple de escape, expuesto a gases corrosivos y temperaturas de 700°C.',
-   context:'Justifica tu elección para (A) y (B) indicando la familia del material, un ejemplo específico y la propiedad técnica que lo hace indispensable frente a la condición de trabajo.',
-   opts:null,ans:null,
-   exp:'RESPUESTA MODELO:\n\n(A) PARABRISAS DE LA CABINA:\n— Familia: Polímero (Termoplástico).\n— Material específico: Policarbonato.\n— Justificación: El operador necesita protección contra impactos de rocas. El policarbonato tiene una altísima resistencia al impacto y, a diferencia del vidrio tradicional, absorbe la energía sin astillarse (no genera proyectiles cortantes). Al no estar expuesto a altas temperaturas, no hay riesgo de superar su Tg.\n\n(B) SENSOR DE OXÍGENO EN ESCAPE:\n— Familia: Cerámica Industrial.\n— Material específico: Óxido de Zirconio (ZrO₂) o Alúmina.\n— Justificación: Las temperaturas de 700°C derretirían cualquier polímero (superan ampliamente su Tm o temperatura de degradación) y fatigarían muchos metales. La cerámica industrial mantiene su estabilidad química y dimensional a más de 1000°C, es un excelente aislante eléctrico y resiste los gases corrosivos del escape sin alterarse.',
-   trap:null,
-   fact:'Polímeros para absorber impactos en frío (Policarbonato). Cerámicas para resistir calor y corrosión (Sensores).'},
-
-  {id:27,type:'dev',category:'dev',cat:'Desarrollo — Pulvimetalurgia',
-   text:'EJERCICIO DE DESARROLLO: El manual del fabricante indica que el cojinete (buje) del motor de arranque de un camión minero NO debe ser lubricado en los mantenimientos de rutina porque es "autolubricante". Explica detalladamente mediante qué proceso de fabricación se logró esto.',
-   context:'Tu respuesta debe incluir: (1) El nombre del proceso, (2) El rango de temperatura utilizado respecto a su punto de fusión (Tm), y (3) El mecanismo físico que permite que la pieza se lubrique sola.',
-   opts:null,ans:null,
-   exp:'RESPUESTA MODELO:\n\n1. PROCESO DE FABRICACIÓN:\nLa pieza fue fabricada mediante Pulvimetalurgia (específicamente, la etapa de Sinterizado).\n\n2. TEMPERATURA DEL PROCESO:\nEl horno de sinterizado operó entre 70% y 90% de la Temperatura de Fusión (Tm) del polvo metálico. Es crucial destacar que el metal NO se funde — las partículas se unen por difusión atómica en estado sólido.\n\n3. MECANISMO DE AUTOLUBRICACIÓN:\nComo el material no se derrite completamente, la pieza final conserva una "porosidad controlada" (entre 10% y 30% de vacíos microscópicos en su estructura). Estos poros actúan como una esponja que se impregna con aceite durante la fabricación. En operación, el calor y la fricción hacen que el aceite fluya hacia la superficie, lubricando el eje automáticamente, y al enfriarse, la capilaridad lo devuelve al interior de los poros.',
-   trap:null,
-   fact:'Pulvimetalurgia (70–90% Tm) es la única técnica que permite fabricar metales con porosidad controlada para retener aceite.'},
-
-  {id:28,type:'dev',category:'dev',cat:'Desarrollo — Minería Verde',
-   text:'EJERCICIO DE DESARROLLO: En una reunión gerencial, se discute el futuro de la exportación de cobre. Un ejecutivo propone "seguir exportando el concentrado tal como lo hemos hecho siempre, total, en Asia siempre comprarán". Refuta esta afirmación utilizando los conceptos de Minería Verde vistos en el curso.',
-   context:'Justifica: (1) El problema químico del concentrado nacional, (2) La exigencia del mercado internacional en los próximos 5–10 años, (3) La solución de infraestructura necesaria.',
-   opts:null,ans:null,
-   exp:'RESPUESTA MODELO:\n\n1. EL PROBLEMA QUÍMICO:\nEl concentrado de cobre extraído a nivel local contiene niveles críticos de impurezas tóxicas: principalmente Arsénico (As) y Azufre (S). Las fundiciones actuales son antiguas y no logran capturar el 99% de estos gases contaminantes de manera eficiente.\n\n2. EL RIESGO DE MERCADO (5–10 AÑOS):\nLa afirmación del ejecutivo es falsa. El mercado global está transitando obligatoriamente hacia la "Minería Verde" con normativas ambientales estrictas. En 5 a 10 años, el cobre podría ser rechazado o castigado financieramente (impuestos ecológicos) si no se demuestra que fue refinado bajo estándares limpios y libres de emisiones tóxicas.\n\n3. LA SOLUCIÓN:\nLa solución estratégica es construir nuevas mega-fundiciones mediante asociaciones público-privadas. Estas plantas deben estar equipadas con tecnología moderna capaz de procesar este mineral complejo y capturar los gases tóxicos, recuperando así la competitividad exportadora.',
-   trap:null,
-   fact:'Minería Verde no es solo un concepto ecológico: es una barrera comercial inminente para la exportación de cobre.'}
+// ══════════════════════════════════════════════════════════════
+//  BANCO DE 100 PREGUNTAS
+// ══════════════════════════════════════════════════════════════
+const BANK = [
+  {id:1,pregunta:"¿Qué elemento de aleación es fundamental añadir al acero para fabricar una cuchilla de motoniveladora sometida a desgaste abrasivo constante?",opciones:["Alto porcentaje de Carbono","Manganeso","Cromo"],respuestaCorrecta:"Alto porcentaje de Carbono",justificacion:"El carbono aporta la máxima dureza superficial necesaria para resistir el rayado y la abrasión constante contra la tierra y la arena."},
+  {id:2,pregunta:"En un diagnóstico de fluidos, ¿qué indica una alta concentración de escamas de Cromo en el aceite del circuito hidráulico?",opciones:["Desprendimiento del recubrimiento del vástago del cilindro","Degradación térmica de los sellos elastómeros","Desintegración prematura de los bujes de las articulaciones"],respuestaCorrecta:"Desprendimiento del recubrimiento del vástago del cilindro",justificacion:"El cromo se utiliza como capa pasivante y de dureza en los vástagos. Si hay escamas en el aceite, el acero base quedará expuesto a la oxidación y los sellos se destruirán."},
+  {id:3,pregunta:"¿Cuál es el tratamiento térmico obligatorio que debe aplicarse a un engranaje inmediatamente después del templado para evitar que se quiebre?",opciones:["Revenido","Cementado","Normalizado"],respuestaCorrecta:"Revenido",justificacion:"El templado deja el acero extremadamente duro pero con nula tenacidad (frágil como vidrio). El revenido alivia esas tensiones internas para que soporte impactos."},
+  {id:4,pregunta:"¿Por qué es técnicamente inviable recalentar y volver a moldear un panel de resina epoxi (polímero termoestable) que quedó mal fabricado?",opciones:["Porque sus cadenas forman enlaces químicos cruzados y se degradará antes de derretirse","Porque requiere superar los 1000°C y los hornos convencionales no alcanzan esa temperatura","Porque al calentarse pierde su temperatura de transición vítrea y se vuelve un caucho"],respuestaCorrecta:"Porque sus cadenas forman enlaces químicos cruzados y se degradará antes de derretirse",justificacion:"A diferencia de los termoplásticos, los termoestables tienen una estructura reticulada 3D. Al aplicarles calor, no fluyen, sino que se queman y carbonizan."},
+  {id:5,pregunta:"¿Qué propiedad física microscópica única permite que los bujes de bronce fabricados por 'Sinterizado' funcionen como piezas autolubricantes?",opciones:["Su alta porosidad interna, que actúa como una esponja reteniendo el aceite","La formación de escamas de grafito aislantes en su interior","La creación de una capa pasivante superficial durante el horneado"],respuestaCorrecta:"Su alta porosidad interna, que actúa como una esponja reteniendo el aceite",justificacion:"La pulvimetalurgia no funde el metal al 100%. Las partículas de polvo se unen dejando poros capilares que se impregnan de lubricante, liberándolo con el calor por fricción."},
+  {id:6,pregunta:"Se necesita reemplazar los frenos de un camión minero que superan los 1000°C por fricción extrema. ¿Qué material se debe emplear en las pastillas?",opciones:["Cerámica industrial (ej. Carburo de Silicio)","Material Compuesto PMC (Matriz de resina y fibra de carbono)","Fundición gris aleada con Manganeso y Cromo"],respuestaCorrecta:"Cerámica industrial (ej. Carburo de Silicio)",justificacion:"Las cerámicas industriales poseen una estabilidad térmica insuperable, manteniendo sus propiedades mecánicas y resistencia al desgaste a temperaturas donde los metales y polímeros colapsan."},
+  {id:7,pregunta:"¿Cuál es la función principal de la Fundición Gris en la fabricación del bloque de un motor diésel de maquinaria pesada?",opciones:["Absorber y amortiguar las fuertes vibraciones mecánicas gracias a sus escamas de grafito","Soportar las altas temperaturas del múltiple de escape sin sufrir fluencia térmica","Evitar la corrosión por cavitación en contacto directo con el líquido refrigerante"],respuestaCorrecta:"Absorber y amortiguar las fuertes vibraciones mecánicas gracias a sus escamas de grafito",justificacion:"Las escamas de grafito en la microestructura actúan como micro-amortiguadores, disipando la energía mecánica de los pistones antes de que se transmita al chasis."},
+  {id:8,pregunta:"¿Cuál es el 'talón de Aquiles' de un compuesto PMC al ser expuesto a temperaturas sobre los 300°C?",opciones:["La matriz de resina se degrada y carboniza, haciendo colapsar la pieza entera","Las fibras de refuerzo se dilatan térmicamente y quiebran la estructura","El material sufre un proceso de sinterización descontrolado"],respuestaCorrecta:"La matriz de resina se degrada y carboniza, haciendo colapsar la pieza entera",justificacion:"La matriz polimérica (resina) no soporta altas temperaturas. Aunque la fibra de carbono resista el calor, sin la resina que la mantenga en posición, la pieza pierde toda su resistencia."},
+  {id:9,pregunta:"Al analizar un 'Desgaste Adhesivo' (microsoldadura en frío) en un mando final, ¿cuál es la causa raíz mecánica de esta falla?",opciones:["Ruptura del film lubricante, permitiendo contacto directo metal con metal bajo alta presión","Exceso de revoluciones sostenidas en el tren de engranajes epicicloidales","Uso de un acero sin tratamiento de revenido en la corona dentada"],respuestaCorrecta:"Ruptura del film lubricante, permitiendo contacto directo metal con metal bajo alta presión",justificacion:"Sin la película de aceite, las micro-asperezas de las dos superficies metálicas rozan en seco, generando calor instantáneo que las funde y arranca pedazos de material."},
+  {id:10,pregunta:"En el contexto de la Minería Verde en Chile, ¿cuáles son los dos elementos tóxicos críticos que obligan a modernizar la tecnología de las fundiciones?",opciones:["Arsénico y Azufre","Plomo y Cadmio","Carbono y Wolframio"],respuestaCorrecta:"Arsénico y Azufre",justificacion:"Los concentrados de cobre chilenos tienen altas concentraciones de estos elementos. Las nuevas plantas deben capturar el 99% de estos gases para cumplir los estándares ambientales internacionales."},
+  {id:11,pregunta:"¿Qué elemento de aleación es esencial para que una pieza de acero mantenga su dureza e integridad estructural al trabajar en temperaturas extremas (como en un escape)?",opciones:["Wolframio (Tungsteno)","Manganeso","Magnesio"],respuestaCorrecta:"Wolframio (Tungsteno)",justificacion:"El wolframio tiene uno de los puntos de fusión más altos de todos los metales, dándole al acero una resistencia excepcional a la deformación por calor (fluencia térmica)."},
+  {id:12,pregunta:"Un supervisor pide usar Líquidos Penetrantes (tintas) para buscar burbujas internas en una soldadura. ¿Cuál es el error técnico de esta petición?",opciones:["Las tintas penetrantes solo pueden detectar fisuras o defectos que afloren a la superficie, no problemas internos","Las tintas penetrantes reaccionan químicamente con la soldadura y la oxidan","Las tintas solo funcionan en materiales poliméricos, no en aceros soldados"],respuestaCorrecta:"Las tintas penetrantes solo pueden detectar fisuras o defectos que afloren a la superficie, no problemas internos",justificacion:"El ensayo por líquidos penetrantes funciona por capilaridad; el líquido debe poder entrar en la grieta desde el exterior. Para ver el interior (burbujas), se requiere Ultrasonido o Radiografía."},
+  {id:13,pregunta:"¿Cuál es la principal ventaja operativa de utilizar Polímeros Termoplásticos frente a los Termoestables en la industria?",opciones:["Se pueden calentar, derretir y volver a moldear múltiples veces sin destruir su estructura química","Soportan temperaturas superiores a los 800°C sin perder su forma original","Forman enlaces químicos cruzados que los hacen indestructibles ante impactos secos"],respuestaCorrecta:"Se pueden calentar, derretir y volver a moldear múltiples veces sin destruir su estructura química",justificacion:"Los termoplásticos tienen cadenas lineales o ramificadas que se separan con el calor, permitiendo su reciclaje y remoldeo, a diferencia de los termoestables que se carbonizan."},
+  {id:14,pregunta:"Al diseñar un panel sometido a los 450°C del múltiple de escape de un camión, ¿qué tipo de material compuesto es el único seguro de usar?",opciones:["CMC (Material Compuesto de Matriz Cerámica)","PMC (Material Compuesto de Matriz Polimérica)","MMC (Material Compuesto de Matriz Metálica en base a Aluminio)"],respuestaCorrecta:"CMC (Material Compuesto de Matriz Cerámica)",justificacion:"Las matrices poliméricas (PMC) se queman a los 300°C, y las metálicas de aluminio (MMC) se ablandan. Solo la matriz cerámica (CMC) mantiene sus propiedades a más de 450°C."},
+  {id:15,pregunta:"¿Qué mecanismo físico causa el 'Desgaste Abrasivo' en los componentes de una máquina para movimiento de tierras?",opciones:["Partículas externas más duras que la superficie del componente rozan y arrancan material como si fueran una lija","Dos superficies metálicas se sueldan por un milisegundo por falta de lubricación y luego se desgarran","El material sufre fatiga por impactos constantes y se quiebra por la mitad"],respuestaCorrecta:"Partículas externas más duras que la superficie del componente rozan y arrancan material como si fueran una lija",justificacion:"La abrasión ocurre cuando un tercer cuerpo (como sílice, tierra o arena) es más duro que el acero de la herramienta y penetra la superficie durante el movimiento."},
+  {id:16,pregunta:"¿Cuál es el objetivo principal del tratamiento térmico de 'Templado' en el acero?",opciones:["Obtener la máxima dureza superficial mediante un enfriamiento brusco (ej. en agua o aceite) desde la temperatura de austenización","Disminuir la dureza del acero para facilitar su mecanizado en el torno","Aumentar la resistencia a la corrosión creando una capa pasivante de óxido"],respuestaCorrecta:"Obtener la máxima dureza superficial mediante un enfriamiento brusco (ej. en agua o aceite) desde la temperatura de austenización",justificacion:"El enfriamiento rápido (temple) atrapa el carbono en la estructura cristalina, formando martensita, la cual es extremadamente dura pero frágil."},
+  {id:17,pregunta:"En el diseño de pasadores y bujes, ¿por qué el buje siempre se fabrica de un material más blando (como bronce) que el pasador (acero)?",opciones:["Para que actúe como pieza de sacrificio, desgastándose el buje (fácil y barato de cambiar) en lugar del eje principal","Porque el bronce funde a mayor temperatura que el acero y previene incendios","Para que el buje transmita las vibraciones del motor de manera eficiente hacia el pasador"],respuestaCorrecta:"Para que actúe como pieza de sacrificio, desgastándose el buje (fácil y barato de cambiar) en lugar del eje principal",justificacion:"En tribología, se busca que el desgaste ocurra siempre en la pieza estática más pequeña, económica y reemplazable de un conjunto móvil."},
+  {id:18,pregunta:"¿Cuál es una limitación importante del proceso de Sinterizado (pulvimetalurgia) en la fabricación de repuestos pesados?",opciones:["El alto costo del polvo metálico y la dificultad técnica para compactar piezas muy grandes o de geometrías extremadamente complejas","Que los materiales fabricados por este método son siempre más pesados que los fundidos tradicionales","La imposibilidad de mezclar diferentes tipos de metales en un mismo componente"],respuestaCorrecta:"El alto costo del polvo metálico y la dificultad técnica para compactar piezas muy grandes o de geometrías extremadamente complejas",justificacion:"El sinterizado requiere prensas inmensas para compactar el polvo. Hacer piezas gigantescas o con formas que impidan la presión uniforme es inviable técnica y económicamente."},
+  {id:19,pregunta:"En un Material Compuesto (ej. fibra de vidrio y resina), ¿cuál es la función exclusiva de la 'Matriz'?",opciones:["Mantener las fibras en su posición correcta, protegerlas del ambiente y transferirles las cargas mecánicas","Soportar más del 90% de los esfuerzos de tracción directa de la pieza","Actuar como un conductor eléctrico para sistemas de sensórica avanzada"],respuestaCorrecta:"Mantener las fibras en su posición correcta, protegerlas del ambiente y transferirles las cargas mecánicas",justificacion:"El refuerzo (las fibras) es el que soporta la fuerza bruta. La matriz es el 'pegamento' que les da forma, las protege del desgaste y distribuye el esfuerzo entre ellas."},
+  {id:20,pregunta:"¿Qué ventaja operativa crítica ofrece la integración de sensores (IoT) en el interior de materiales compuestos de nueva generación?",opciones:["Permite pasar a un mantenimiento predictivo puro, monitoreando el estado de salud de la pieza en tiempo real","Aumenta la dureza superficial del material compuesto frente al desgaste abrasivo","Disminuye el costo de fabricación de la resina epoxi utilizada en la matriz"],respuestaCorrecta:"Permite pasar a un mantenimiento predictivo puro, monitoreando el estado de salud de la pieza en tiempo real",justificacion:"El IoT integrado permite que las piezas 'avisen' sobre micro-deformaciones o cambios de temperatura antes de la rotura, evitando detenciones no programadas del equipo."},
+  {id:21,pregunta:"¿Qué resultado mecánico se busca al aplicar un tratamiento termoquímico de 'Cementado' a un engranaje?",opciones:["Crear una capa exterior muy dura para resistir el desgaste, conservando un núcleo tenaz para soportar los impactos","Ablandar toda la pieza para que pueda ser moldeada en frío mediante forja","Inyectar oxígeno en la superficie para formar una capa que evite la corrosión química"],respuestaCorrecta:"Crear una capa exterior muy dura para resistir el desgaste, conservando un núcleo tenaz para soportar los impactos",justificacion:"El cementado enriquece solo la superficie con carbono. Así, los dientes del engranaje no se desgastan, pero el centro del diente no se quiebra al recibir torque."},
+  {id:22,pregunta:"En un circuito hidráulico que pierde presión, revisas un sello O-ring y notas que no vuelve a su forma original al apretarlo. ¿Qué propiedad técnica perdió este elastómero?",opciones:["Su resiliencia y alta capacidad de deformación elástica","Su dureza Rockwell en la escala C","Su conductividad térmica estructural"],respuestaCorrecta:"Su resiliencia y alta capacidad de deformación elástica",justificacion:"Los elastómeros deben poder deformarse bajo compresión para sellar un espacio y recuperar casi el 100% de su forma inicial. Si se endurecen o aplanan, el sello falla."},
+  {id:23,pregunta:"En un ensayo de materiales, ¿cómo se define técnicamente la propiedad de 'Tenacidad'?",opciones:["La capacidad de un material para absorber energía y deformarse plásticamente antes de llegar a la fractura","La resistencia absoluta de una superficie a ser penetrada o rayada por un diamante","La habilidad de un metal para recuperar su forma exacta después de aplicarle una carga de tracción"],respuestaCorrecta:"La capacidad de un material para absorber energía y deformarse plásticamente antes de llegar a la fractura",justificacion:"Un material tenaz (como un acero aleado con manganeso) 'avisa' antes de romperse doblándose. Un material sin tenacidad es frágil (como el vidrio o la cerámica) y estalla de golpe."},
+  {id:24,pregunta:"Para identificar rápidamente en el taller si un pedazo de acero es de bajo, medio o alto carbono, ¿qué ensayo rápido y económico se utiliza?",opciones:["Ensayo de prueba de chispa usando un esmeril angular","Ensayo de tracción en una máquina universal","Análisis ferromagnético por ultrasonido"],respuestaCorrecta:"Ensayo de prueba de chispa usando un esmeril angular",justificacion:"Al acercar el acero a una piedra de esmeril, la forma, color y explosiones de las chispas cambian dramáticamente dependiendo del porcentaje de carbono aleado."},
+  {id:25,pregunta:"¿Cuál es la principal característica mecánica que diferencia a las Cerámicas Avanzadas (industriales) de los metales dúctiles?",opciones:["Carecen de zona de deformación plástica; si superan su límite de resistencia, se fracturan inmediatamente (fragilidad extrema)","Poseen una altísima tenacidad frente a los impactos directos en faena","Tienen una excelente capacidad para ser soldadas entre sí usando arco eléctrico"],respuestaCorrecta:"Carecen de zona de deformación plástica; si superan su límite de resistencia, se fracturan inmediatamente (fragilidad extrema)",justificacion:"La cerámica es excelente contra el desgaste abrasivo y el calor, pero es su nula tenacidad lo que obliga a usarlas solo en lugares libres de golpes secos."},
+  {id:26,pregunta:"¿Qué información crítica entrega la gráfica de esfuerzo-deformación proveniente de un 'Ensayo de Tracción' destructivo?",opciones:["El límite de fluencia elástica, la resistencia máxima a la tracción y el punto de ruptura del material","La concentración exacta de carbono e impurezas de azufre en el acero","La vida útil restante del aceite hidráulico en horas de funcionamiento"],respuestaCorrecta:"El límite de fluencia elástica, la resistencia máxima a la tracción y el punto de ruptura del material",justificacion:"La curva de tracción es el 'ADN mecánico' del material. Muestra exactamente hasta qué peso aguanta sin deformarse (zona elástica) y en qué punto se corta."},
+  {id:27,pregunta:"¿Cuál es la principal característica de las fibras de Aramida (como el Kevlar) utilizadas como refuerzo en polímeros?",opciones:["Tienen una enorme resistencia al impacto y al corte, usándose en protección balística y correas de transmisión pesadas","Poseen un peso bajísimo pero se funden inmediatamente al contacto con el agua salada","Son las fibras de menor costo en el mercado y reemplazan a la fibra de vidrio en piezas no estructurales"],respuestaCorrecta:"Tienen una enorme resistencia al impacto y al corte, usándose en protección balística y correas de transmisión pesadas",justificacion:"Las aramidas son plásticos de altísimo rendimiento orientados molecularmente para absorber enormes cantidades de energía de impacto, superando al acero en la relación resistencia/peso."},
+  {id:28,pregunta:"¿Qué proceso industrial permite convertir el caucho natural (pegajoso y blando) en un elastómero comercial resistente y elástico para fabricar neumáticos?",opciones:["La vulcanización, que agrega azufre y calor para crear enlaces cruzados (reticulación) entre las cadenas del polímero","El normalizado en hornos de inducción magnética","La sinterización a alta presión en matrices de acero tungsteno"],respuestaCorrecta:"La vulcanización, que agrega azufre y calor para crear enlaces cruzados (reticulación) entre las cadenas del polímero",justificacion:"La vulcanización une químicamente las cadenas del caucho mediante puentes de azufre, otorgándole la resistencia al desgaste y la 'memoria' elástica."},
+  {id:29,pregunta:"Si un material compuesto indica las siglas PTFE (Teflón) en su especificación, ¿qué comportamiento se espera de esta superficie?",opciones:["Una extrema resistencia química, baja fricción (antiadherencia) y tolerancia a altas temperaturas para un polímero","Una alta conductividad eléctrica superficial","Una dureza en la escala de Mohs equivalente a la de un diamante industrial"],respuestaCorrecta:"Una extrema resistencia química, baja fricción (antiadherencia) y tolerancia a altas temperaturas para un polímero",justificacion:"Los polímeros fluorados como el PTFE son inertes a casi todos los solventes químicos y poseen uno de los coeficientes de fricción más bajos conocidos por la ingeniería."},
+  {id:30,pregunta:"Respecto a las nuevas tecnologías de fundiciones exigidas para cumplir estándares medioambientales, ¿qué solución se requiere para reemplazar las plantas antiguas obsoletas?",opciones:["La construcción de mega-fundiciones mediante asociación público-privada, garantizando capital para tecnología limpia de captura al 99%","Instalar filtros de carbón activado en las chimeneas de las 7 fundiciones que actualmente operan en Chile","Reemplazar el uso de carbón por polímeros termoestables reciclados durante la reducción del concentrado"],respuestaCorrecta:"La construcción de mega-fundiciones mediante asociación público-privada, garantizando capital para tecnología limpia de captura al 99%",justificacion:"Poner 'parches' a las fundiciones viejas es ineficiente técnica y financieramente. El salto tecnológico requiere nuevas plantas diseñadas desde cero con inversión mixta."},
+  {id:31,pregunta:"¿Qué técnica de Ensayos No Destructivos (END) es la más adecuada para detectar grietas internas y profundas en un eje de transmisión de acero macizo?",opciones:["Inspección por Ultrasonido industrial","Líquidos Penetrantes (Tintas fluorescentes)","Inspección Visual con boroscopio"],respuestaCorrecta:"Inspección por Ultrasonido industrial",justificacion:"El ultrasonido envía ondas acústicas de alta frecuencia a través del material. Si las ondas chocan con una grieta interna, rebotan y muestran el defecto en la pantalla del equipo."},
+  {id:32,pregunta:"Para inspeccionar soldaduras en busca de fisuras superficiales en materiales ferromagnéticos, ¿qué END es el más rápido y efectivo?",opciones:["Partículas Magnéticas","Radiografía Industrial (Rayos X)","Análisis de Aceite (Ferrografía)"],respuestaCorrecta:"Partículas Magnéticas",justificacion:"Al magnetizar la pieza, cualquier fisura interrumpe el campo magnético. Las partículas de hierro rociadas se agrupan en esa interrupción, marcando la grieta de forma visible e inmediata."},
+  {id:33,pregunta:"¿Qué tipo de desgaste superficial se caracteriza por la formación de micro-cráteres o 'picaduras' (pitting) en los dientes de un engranaje debido a cargas cíclicas repetitivas?",opciones:["Desgaste por Fatiga Superficial","Desgaste Abrasivo de tres cuerpos","Desgaste Corrosivo"],respuestaCorrecta:"Desgaste por Fatiga Superficial",justificacion:"La fatiga ocurre cuando el material soporta ciclos de carga y descarga constantes. Con el tiempo, se generan microfisuras debajo de la superficie que terminan desprendiendo pequeños trozos de metal."},
+  {id:34,pregunta:"En el monitoreo de condiciones mediante Termografía, ¿qué indica un 'punto caliente' asimétrico en el rodamiento de un motor eléctrico?",opciones:["Un aumento excesivo de fricción, probablemente por falta de lubricación o desgaste incipiente","Un excelente funcionamiento del sistema de refrigeración líquida","Que el material del rodamiento ha cambiado su estructura cristalina a martensita"],respuestaCorrecta:"Un aumento excesivo de fricción, probablemente por falta de lubricación o desgaste incipiente",justificacion:"La cámara térmica detecta la radiación infrarroja. Un aumento de temperatura focalizado significa que la energía mecánica se está perdiendo en forma de calor debido al roce anormal entre los componentes."},
+  {id:35,pregunta:"Al analizar el aceite de un motor diésel, se nota un aumento dramático en la viscosidad del fluido y un color negro opaco. ¿Cuál es el diagnóstico más probable?",opciones:["Alta contaminación con hollín producto de una combustión ineficiente o fugas de compresión","Dilución del aceite por mezcla directa con combustible diésel no quemado","Reacción química del aceite con el recubrimiento de cromo de los cilindros"],respuestaCorrecta:"Alta contaminación con hollín producto de una combustión ineficiente o fugas de compresión",justificacion:"El hollín es un subproducto sólido de la combustión. Cuando los anillos del pistón fallan, el hollín pasa al cárter, saturando el aceite y volviéndolo espeso."},
+  {id:36,pregunta:"En la selección de polímeros para revestir el interior de la tolva de un camión que recibe impactos de rocas, ¿qué material es el indicado?",opciones:["Poliuretano de alta densidad (Elastómero)","Resina Epoxi pura (Termoestable)","Policloruro de Vinilo (PVC rígido)"],respuestaCorrecta:"Poliuretano de alta densidad (Elastómero)",justificacion:"El poliuretano es un elastómero extremadamente tenaz. Tiene la capacidad de absorber la energía del impacto de la roca deformándose elásticamente y recuperando su forma sin quebrarse."},
+  {id:51,pregunta:"¿Qué gran ventaja ofrece la Pulvimetalurgia (sinterizado) frente a la fundición tradicional al trabajar con metales como el Wolframio (Tungsteno)?",opciones:["Permite fabricar piezas con metales de punto de fusión extremadamente alto sin necesidad de llegar a derretirlos por completo","Garantiza que la pieza final tenga un 0% de porosidad interna","Permite que el metal adquiera propiedades de polímero termoestable"],respuestaCorrecta:"Permite fabricar piezas con metales de punto de fusión extremadamente alto sin necesidad de llegar a derretirlos por completo",justificacion:"Metales como el wolframio funden a más de 3400°C, lo cual destruiría cualquier molde convencional. El sinterizado permite compactar su polvo a temperaturas mucho más bajas."},
+  {id:52,pregunta:"En un ensayo de Líquidos Penetrantes, ¿cuál es el paso previo absolutamente crítico antes de aplicar la tinta sobre la soldadura?",opciones:["Limpiar y desengrasar la superficie a la perfección para evitar que la suciedad tape las grietas","Calentar la pieza a 200°C para dilatar los poros del metal","Magnetizar la pieza usando un yugo electromagnético"],respuestaCorrecta:"Limpiar y desengrasar la superficie a la perfección para evitar que la suciedad tape las grietas",justificacion:"Si la grieta está llena de aceite, pintura o escoria, el líquido penetrante no podrá entrar por capilaridad y el defecto pasará totalmente desapercibido."},
+  {id:53,pregunta:"En tribología, ¿qué condición define una 'Lubricación Hidrodinámica' perfecta en un descanso de motor?",opciones:["Las dos superficies metálicas están completamente separadas por una película de aceite presurizada generada por el propio movimiento","El aceite se encuentra en estado sólido actuando como un rodamiento de bolas","Las crestas de ambas superficies rozan levemente, pero el desgaste es controlado"],respuestaCorrecta:"Las dos superficies metálicas están completamente separadas por una película de aceite presurizada generada por el propio movimiento",justificacion:"En régimen hidrodinámico, la velocidad del eje 'arrastra' el aceite formando una cuña de presión tan fuerte que levanta el eje, logrando que el desgaste sea cero."},
+  {id:54,pregunta:"En un Material Compuesto (PMC), ¿cómo afecta la orientación en la que se instalan las fibras continuas?",opciones:["El material será 'anisotrópico', es decir, solo tendrá máxima resistencia en la misma dirección en la que corren las fibras","El material será 'isotrópico', resistiendo exactamente igual en cualquier dirección geométrica","La orientación de la fibra solo afecta el color del material, no su resistencia mecánica"],respuestaCorrecta:"El material será 'anisotrópico', es decir, solo tendrá máxima resistencia en la misma dirección en la que corren las fibras",justificacion:"A diferencia de los metales tradicionales que resisten igual en todas direcciones (isotrópicos), los compuestos resisten los esfuerzos principalmente en el eje longitudinal de sus fibras."},
+  {id:55,pregunta:"A diferencia de la Fundición Gris, la 'Fundición Blanca' es extremadamente dura pero muy frágil. ¿A qué se debe esto a nivel microscópico?",opciones:["A que su carbono no forma escamas de grafito, sino que se combina formando carburo de hierro (cementita)","A que contiene un alto porcentaje de plomo en su aleación","A que es enfriada lentamente al aire libre durante una semana"],respuestaCorrecta:"A que su carbono no forma escamas de grafito, sino que se combina formando carburo de hierro (cementita)",justificacion:"El enfriamiento rápido de la fundición blanca impide que el carbono precipite como grafito. En su lugar, forma cementita, un compuesto durísimo pero quebradizo."},
+  {id:56,pregunta:"¿Qué falla catastrófica ocurre si instalas un O-ring de caucho estándar (Nitrilo) en un sistema hidráulico que usa fluidos sintéticos ésteres de aviación?",opciones:["Incompatibilidad química: el caucho se hinchará, se ablandará y se desintegrará","Cristalización estructural: el O-ring se transformará en un termoestable","El fluido se congelará alrededor del sello, bloqueando el cilindro"],respuestaCorrecta:"Incompatibilidad química: el caucho se hinchará, se ablandará y se desintegrará",justificacion:"Los polímeros son altamente sensibles a la química del fluido. Un elastómero incompatible absorberá el fluido como una esponja, perdiendo toda su resistencia mecánica y capacidad de sellado."},
+  {id:57,pregunta:"En el Monitoreo de Condiciones por análisis de partículas (Ferrografía), ¿qué indica la presencia de partículas con forma 'esférica' microscópica?",opciones:["Desgaste por fatiga avanzada o micro-picaduras (pitting) en los elementos rodantes de un rodamiento","Desgaste abrasivo severo causado por ingreso de arena al cárter","Corrosión química en los engranajes de bronce"],respuestaCorrecta:"Desgaste por fatiga avanzada o micro-picaduras (pitting) en los elementos rodantes de un rodamiento",justificacion:"Las partículas esféricas se forman cuando las micro-fisuras por fatiga liberan material que es 'amasado' y redondeado por las bolas del rodamiento bajo extrema presión."},
+  {id:58,pregunta:"¿Por qué las Cerámicas Industriales (como la Alúmina) son excelentes aislantes eléctricos y térmicos, a diferencia de los metales?",opciones:["Porque carecen de electrones libres; sus enlaces iónicos y covalentes mantienen los electrones fuertemente unidos a los átomos","Porque su alta porosidad permite que el aire frío circule por su interior","Porque reaccionan con el oxígeno creando una capa magnética repulsiva"],respuestaCorrecta:"Porque carecen de electrones libres; sus enlaces iónicos y covalentes mantienen los electrones fuertemente unidos a los átomos",justificacion:"En los metales, la 'nube' de electrones libres conduce el calor y la electricidad fácilmente. En las cerámicas, los electrones están fijos, bloqueando ambas transferencias."},
+  {id:59,pregunta:"En los tratamientos térmicos de ablandamiento, ¿cuál es la diferencia clave entre el 'Recocido' y el 'Normalizado' respecto a la velocidad de enfriamiento?",opciones:["El recocido se enfría muy lentamente dentro del horno apagado; el normalizado se enfría más rápido al aire libre","El normalizado se enfría sumergiendo la pieza en agua con sal; el recocido en aceite","El recocido utiliza nitrógeno líquido para enfriar; el normalizado usa gas argón"],respuestaCorrecta:"El recocido se enfría muy lentamente dentro del horno apagado; el normalizado se enfría más rápido al aire libre",justificacion:"El recocido (horno) busca el ablandamiento máximo. El normalizado (al aire) enfría más rápido, logrando un grano más fino y un acero ligeramente más resistente."},
+  {id:60,pregunta:"¿Cuál es el elemento de aleación que, al añadirse en al menos un 10.5%, convierte a un acero común en 'Acero Inoxidable'?",opciones:["Cromo","Níquel","Cobre"],respuestaCorrecta:"Cromo",justificacion:"El cromo reacciona instantáneamente con el oxígeno del ambiente para formar una capa invisible y auto-reparable de óxido de cromo que bloquea la corrosión del hierro subyacente."},
+  {id:61,pregunta:"En un ensayo de Ultrasonido Industrial, ¿para qué se utiliza obligatoriamente el 'acoplante' (gel o aceite) entre el palpador y la pieza?",opciones:["Para eliminar la capa de aire entre ambos, ya que el sonido de alta frecuencia no viaja a través del aire y no entraría en el metal","Para evitar que la fricción raye el sensor ultrasónico","Para lubricar la pieza y evitar que se oxide durante el ensayo"],respuestaCorrecta:"Para eliminar la capa de aire entre ambos, ya que el sonido de alta frecuencia no viaja a través del aire y no entraría en el metal",justificacion:"El ultrasonido industrial requiere un medio denso para propagarse. Incluso una micra de aire refleja casi el 100% de la onda acústica, haciendo imposible el ensayo sin el gel."},
+  {id:62,pregunta:"¿Qué tipo de desgaste (conocido como 'Fretting') ocurre entre dos piezas fuertemente apernadas que sufren micro-vibraciones oscilatorias invisibles?",opciones:["Desgaste por Corrosión por Fricción (Fretting corrosion)","Desgaste Abrasivo de dos cuerpos","Cavitación ultrasónica"],respuestaCorrecta:"Desgaste por Corrosión por Fricción (Fretting corrosion)",justificacion:"Las micro-vibraciones rompen la capa de óxido pasivante, arrancan micro-partículas de metal que se oxidan inmediatamente (formando polvo rojo/negro) y actúan como lija atrapada entre las piezas."},
+  {id:63,pregunta:"En la creación de Materiales Compuestos de Matriz Metálica (MMC) aeroespaciales, ¿por qué se elegiría el Titanio como matriz en lugar del Aluminio?",opciones:["Porque el Titanio soporta temperaturas de servicio mucho más altas y posee mayor resistencia mecánica que el Aluminio","Porque el Titanio es más fácil de fundir y requiere menos energía","Porque el Aluminio reacciona explosivamente al combinarse con fibras de carbono"],respuestaCorrecta:"Porque el Titanio soporta temperaturas de servicio mucho más altas y posee mayor resistencia mecánica que el Aluminio",justificacion:"El aluminio pierde fuerza rápidamente por encima de los 200°C. El titanio mantiene sus excelentes propiedades mecánicas a temperaturas donde el aluminio ya se ablandó por completo."},
+  {id:64,pregunta:"Si sospechas de conexiones eléctricas sueltas o desbalance de fases en el tablero de control de una chancadora, ¿qué tecnología de monitoreo predictivo utilizas?",opciones:["Termografía Infrarroja","Análisis de Vibraciones","Líquidos Penetrantes"],respuestaCorrecta:"Termografía Infrarroja",justificacion:"Una conexión eléctrica floja aumenta la resistencia al paso de la corriente (Efecto Joule), generando calor inmediato. La cámara térmica permite ver este 'punto caliente' a distancia y sin detener el equipo."},
+  {id:65,pregunta:"Durante la fabricación de un filtro metálico mediante Sinterización, ¿es posible controlar qué tan porosa quedará la pieza final?",opciones:["Sí, controlando la presión de compactación en la matriz y el tamaño de los granos del polvo metálico","No, la porosidad final siempre es del 50% y es completamente aleatoria","Sí, pero solo si se le inyecta oxígeno líquido durante el horneado"],respuestaCorrecta:"Sí, controlando la presión de compactación en la matriz y el tamaño de los granos del polvo metálico",justificacion:"A menor presión de compactación y polvo de mayor tamaño, quedarán huecos más grandes entre las partículas. Esto permite fabricar filtros metálicos a medida para líquidos o gases."},
+  {id:66,pregunta:"¿Cuál es uno de los agentes ambientales más destructivos que causa fragilización, micro-grietas y decoloración en plásticos de ingeniería expuestos al exterior?",opciones:["La radiación Ultravioleta (UV) del sol","El gas Argón presente en la atmósfera","Los cambios de presión barométrica"],respuestaCorrecta:"La radiación Ultravioleta (UV) del sol",justificacion:"Los fotones de la luz UV tienen la energía suficiente para romper los enlaces químicos de las cadenas poliméricas (foto-degradación), volviendo al plástico extremadamente frágil con el tiempo."},
+  {id:67,pregunta:"¿Qué propiedad tribológica fundamental tiene el 'Metal Babbitt' (metal blanco) utilizado para recubrir el interior de cojinetes lisos grandes?",opciones:["Es lo suficientemente blando para permitir que las partículas duras del aceite se incrusten en él, sin rayar el eje de acero","Es el metal con mayor dureza Rockwell de la industria pesada","Alcanza el punto de fusión a los 1500°C, superando al acero"],respuestaCorrecta:"Es lo suficientemente blando para permitir que las partículas duras del aceite se incrusten en él, sin rayar el eje de acero",justificacion:"La propiedad de 'incrustabilidad' es vital. Si entra arena al rodamiento, el metal blanco la absorbe en su matriz blanda en lugar de dejarla rozar y destruir el cigüeñal."},
+  {id:68,pregunta:"¿Qué proceso de tratamiento térmico superficial utiliza una bobina de cobre con corriente alterna de alta frecuencia para calentar solo el exterior de un eje en segundos?",opciones:["Temple por Inducción","Cementación Gaseosa","Nitruración líquida"],respuestaCorrecta:"Temple por Inducción",justificacion:"El campo electromagnético de alta frecuencia induce corrientes parásitas superficiales que calientan la 'piel' del eje instantáneamente, permitiendo un temple ultra rápido mediante una ducha de agua."},
+  {id:69,pregunta:"En estructuras compuestas, ¿qué objetivo mecánico cumple el uso de un núcleo tipo 'panal de abeja' (Honeycomb) entre dos láminas finas?",opciones:["Aumentar drásticamente la rigidez a la flexión del panel manteniendo un peso total extremadamente bajo","Actuar como un conductor térmico rápido para disipar calor","Permitir la visibilidad a través del panel"],respuestaCorrecta:"Aumentar drásticamente la rigidez a la flexión del panel manteniendo un peso total extremadamente bajo",justificacion:"El núcleo Honeycomb separa las láminas externas aumentando el espesor del panel sin sumar masa, actuando bajo el mismo principio que una viga doble T."},
+  {id:70,pregunta:"¿Bajo qué condición extrema se debe preferir el uso de lubricantes sólidos (como el Disulfuro de Molibdeno o Grafito) por sobre los aceites líquidos?",opciones:["En condiciones de alto vacío o temperaturas extremadamente altas donde el aceite líquido se evaporaría o quemaría","En sistemas de circulación de bombas hidráulicas de alta velocidad","Cuando se busca enfriar activamente los engranajes de un reductor"],respuestaCorrecta:"En condiciones de alto vacío o temperaturas extremadamente altas donde el aceite líquido se evaporaría o quemaría",justificacion:"Los lubricantes sólidos son ideales para hornos, ambiente espacial o polvo extremo. Proveen deslizamiento sin riesgo de evaporación térmica."},
+  {id:71,pregunta:"¿Qué limitación física fundamental tienen las Partículas Magnéticas al intentar inspeccionar el bloque de un motor de Aluminio?",opciones:["El ensayo es completamente inútil porque el aluminio no es un material ferromagnético y no retiene ni conduce el campo magnético","Las partículas magnéticas rayarán la superficie blanda del aluminio","El aluminio disipará la tinta fluorescente antes de que pueda magnetizarse"],respuestaCorrecta:"El ensayo es completamente inútil porque el aluminio no es un material ferromagnético y no retiene ni conduce el campo magnético",justificacion:"Las partículas magnéticas exigen que el material pueda ser magnetizado (como el hierro, acero al carbono o fundición). Materiales como el aluminio, cobre o acero inoxidable austenítico no sirven para este END."},
+  {id:72,pregunta:"¿Qué modificación se le hace a la Fundición Gris para transformarla en 'Fundición Nodular' (o Dúctil)?",opciones:["Se le añade Magnesio antes de fundir, lo que obliga al grafito a formar esferas (nódulos) en lugar de escamas puntiagudas","Se somete a un proceso de sinterizado a 1200°C durante 48 horas","Se elimina por completo el carbono de su estructura"],respuestaCorrecta:"Se le añade Magnesio antes de fundir, lo que obliga al grafito a formar esferas (nódulos) en lugar de escamas puntiagudas",justificacion:"Las escamas de grafito en la fundición gris actúan como micro-grietas que la hacen frágil. Al volver el grafito esférico mediante magnesio, se eliminan esos puntos de tensión y el material gana muchísima ductilidad."},
+  {id:73,pregunta:"En tribología, ¿qué significa que un rodamiento esté operando en régimen de 'Lubricación Límite' (Boundary Lubrication)?",opciones:["La película de aceite es tan delgada que las asperezas metálicas de ambas superficies chocan constantemente, generando alto desgaste","El rodamiento está funcionando en el vacío absoluto sin ningún tipo de fluido","La separación entre las piezas es total y perfecta, sin ningún contacto de metal con metal"],respuestaCorrecta:"La película de aceite es tan delgada que las asperezas metálicas de ambas superficies chocan constantemente, generando alto desgaste",justificacion:"La lubricación límite ocurre típicamente durante el arranque o parada del equipo, o si el aceite perdió viscosidad. Al no haber presión suficiente para separar las piezas, el metal roza con el metal."},
+  {id:74,pregunta:"¿Qué fenómeno físico, conocido como 'Choque Térmico', causa que una pieza de Cerámica Industrial estalle si se enfría de golpe?",opciones:["Su bajísima conductividad térmica y nula ductilidad hacen que la superficie se contraiga bruscamente mientras el interior sigue dilatado, generando tensiones que la quiebran","La cerámica absorbe el agua de refrigeración, expandiéndose como una esponja hasta estallar","Sus electrones libres se congelan y detienen la vibración molecular del material"],respuestaCorrecta:"Su bajísima conductividad térmica y nula ductilidad hacen que la superficie se contraiga bruscamente mientras el interior sigue dilatado, generando tensiones que la quiebran",justificacion:"A diferencia de los metales que distribuyen el calor rápido y se pueden deformar, las cerámicas no distribuyen el calor y no se pueden estirar. La diferencia de temperatura literal parte la pieza."},
+  {id:75,pregunta:"En el proceso de Pulvimetalurgia, ¿cómo se le llama a la pieza que acaba de salir de la prensa compactadora pero que AÚN NO ha sido horneada?",opciones:["Pieza en verde (Green compact), la cual es extremadamente frágil y se desarma con facilidad","Matriz martensítica, la cual ya posee dureza final","Termoestable reticulado, listo para su uso industrial"],respuestaCorrecta:"Pieza en verde (Green compact), la cual es extremadamente frágil y se desarma con facilidad",justificacion:"Antes del horneado (sinterización), los polvos metálicos solo están unidos por la presión mecánica, como si fuera arena mojada aplastada. El calor del horno es lo que soldará las partículas definitivamente."},
+  {id:76,pregunta:"¿Cuál es la regla de oro en la metalurgia respecto a la relación entre la Dureza y la Tenacidad?",opciones:["Son inversamente proporcionales: por lo general, a medida que aumentas la dureza, sacrificas la tenacidad (se vuelve más frágil)","Son directamente proporcionales: un acero más duro siempre será capaz de soportar mayores impactos sin romperse","No tienen relación: la tenacidad depende exclusivamente del tipo de pintura que cubra al metal"],respuestaCorrecta:"Son inversamente proporcionales: por lo general, a medida que aumentas la dureza, sacrificas la tenacidad (se vuelve más frágil)",justificacion:"Aumentar la dureza (ej. mediante templado) bloquea el movimiento cristalino, lo que impide que el metal se deforme plásticamente ante un golpe. Al no poder deformarse para absorber energía, se quiebra."},
+  {id:77,pregunta:"Si un reporte de Monitoreo de Aceite indica alta contaminación con 'Agua' en un sistema hidráulico, ¿qué aspecto visual tendrá el fluido y qué daño causará?",opciones:["Tendrá un aspecto lechoso (emulsión) y causará corrosión interna, además de romper la película lubricante","Se volverá completamente transparente y aumentará la presión de las bombas","Tomará un color negro opaco y mejorará la lubricación hidrodinámica"],respuestaCorrecta:"Tendrá un aspecto lechoso (emulsión) y causará corrosión interna, además de romper la película lubricante",justificacion:"El agua batida a alta presión con el aceite forma una emulsión blanquecina. Esta mezcla no soporta las cargas de presión, permitiendo el contacto metal-metal y oxidando los componentes internos."},
+  {id:78,pregunta:"En el contexto de las fundiciones de cobre y la Minería Verde, ¿qué producto de valor comercial se fabrica a partir del gas tóxico (SO2) capturado por los filtros?",opciones:["Ácido Sulfúrico, el cual luego se reutiliza en los procesos de lixiviación de la misma industria minera","Carbón activado para uso en filtros de agua domiciliarios","Grafito industrial para la fabricación de lubricantes sólidos"],respuestaCorrecta:"Ácido Sulfúrico, el cual luego se reutiliza en los procesos de lixiviación de la misma industria minera",justificacion:"El Dióxido de Azufre (SO2) capturado para evitar la contaminación atmosférica se procesa en plantas de contacto para producir ácido sulfúrico, cerrando el ciclo productivo y generando un subproducto útil."},
+  {id:79,pregunta:"En un Análisis de Vibraciones, si además del pico en 1X RPM aparecen picos altos en 2X y 3X RPM (armónicos), ¿cuál es la falla mecánica más clásica que se diagnostica?",opciones:["Desalineamiento angular o paralelo entre el eje del motor y la máquina conducida","Cavitación severa en el interior del fluido","Falta de aceite en el cárter"],respuestaCorrecta:"Desalineamiento angular o paralelo entre el eje del motor y la máquina conducida",justificacion:"El desalineamiento genera esfuerzos que 'tiran y empujan' el eje múltiples veces por revolución a través del acoplamiento, lo que se refleja en el espectro como altos niveles de vibración en el segundo y tercer armónico."},
+  {id:80,pregunta:"En la fabricación de polímeros elastómeros (como los neumáticos), ¿qué es el fenómeno de 'Histéresis'?",opciones:["La energía que se pierde en forma de calor cuando el caucho se deforma y recupera su forma cíclicamente (ej. al rodar)","La capacidad del neumático para resistir el ataque del ozono ambiental","El proceso químico donde el azufre se separa del carbono a altas velocidades"],respuestaCorrecta:"La energía que se pierde en forma de calor cuando el caucho se deforma y recupera su forma cíclicamente (ej. al rodar)",justificacion:"Ningún elastómero es 100% elástico. Una pequeña fracción de la energía usada para aplastarlo no se recupera, sino que se transforma en calor interno. Si la histéresis es alta, un neumático pesado puede incendiarse por dentro."},
+  {id:81,pregunta:"¿Qué ocurre mecánicamente con la resina matriz de un PMC (Material Compuesto) cuando absorbe humedad ambiente de manera prolongada?",opciones:["Se plastifica, disminuyendo su temperatura de transición vítrea (Tg) y reduciendo drásticamente su resistencia estructural","Aumenta su dureza superficial creando una capa de óxido polimérico impenetrable","Se transforma espontáneamente en un material de matriz cerámica (CMC)"],respuestaCorrecta:"Se plastifica, disminuyendo su temperatura de transición vítrea (Tg) y reduciendo drásticamente su resistencia estructural",justificacion:"El agua actúa como un plastificante en muchas resinas epóxicas. Se infiltra entre las cadenas moleculares, separándolas y volviendo a la matriz más blanda y menos capaz de soportar cargas a temperaturas normales."},
+  {id:82,pregunta:"Al reparar una pieza con gran desgaste abrasivo (ej. los dientes de una excavadora), se usa el proceso 'Hardfacing'. ¿En qué consiste?",opciones:["Aplicar cordones de soldadura con electrodos de aleaciones especiales (ej. carburos) para crear una costra extremadamente dura sobre el metal base gastado","Enfriar la pieza con nitrógeno líquido hasta que recupere sus dimensiones originales","Sumergir el diente de la excavadora en una tina de cromo líquido durante una semana"],respuestaCorrecta:"Aplicar cordones de soldadura con electrodos de aleaciones especiales (ej. carburos) para crear una costra extremadamente dura sobre el metal base gastado",justificacion:"El recubrimiento duro o 'hardfacing' es la forma más económica de recuperar geometría y dar resistencia extrema al desgaste. Se depositan metales muy duros solo en la zona que sufrirá la abrasión."},
+  {id:83,pregunta:"¿Cuál es la principal ventaja de utilizar Fibra de Vidrio en lugar de Fibra de Carbono en la fabricación de paneles para maquinaria agrícola?",opciones:["Tiene un costo de producción muchísimo menor, manteniendo una excelente resistencia a la corrosión y flexibilidad","Soporta temperaturas de hasta 1500°C sin degradar su matriz polimérica","Es el mejor conductor de electricidad disponible para sistemas de puesta a tierra"],respuestaCorrecta:"Tiene un costo de producción muchísimo menor, manteniendo una excelente resistencia a la corrosión y flexibilidad",justificacion:"Aunque la fibra de carbono es superior en fuerza y peso, es extremadamente costosa y frágil. La fibra de vidrio ofrece el mejor equilibrio costo-beneficio para coberturas que no soportan cargas estructurales críticas."},
+  {id:84,pregunta:"Para que un tratamiento térmico de Templado funcione en un acero, ¿qué fase cristalina debe alcanzarse primero calentando la pieza en el horno?",opciones:["Austenita (Temperatura de Austenización)","Martensita (Temperatura criogénica)","Grafito esferoidal"],respuestaCorrecta:"Austenita (Temperatura de Austenización)",justificacion:"El acero debe superar su temperatura crítica (generalmente sobre 727°C) para transformarse en Austenita. En esta fase, los átomos de carbono pueden disolverse en la estructura. El enfriamiento rápido atrapa ese carbono, creando la dureza."},
+  {id:85,pregunta:"En las tendencias modernas de Materiales Compuestos, ¿cuál es la solución que investiga la industria para resolver el grave problema de reciclaje de los plásticos termoestables?",opciones:["El reemplazo de resinas termoestables por resinas Termoplásticas de alto rendimiento, que sí pueden ser fundidas y remoldeadas","Quemar obligatoriamente todos los materiales compuestos en las fundiciones de cobre","Enterrar los compuestos en el fondo oceánico para evitar la contaminación por carbono"],respuestaCorrecta:"El reemplazo de resinas termoestables por resinas Termoplásticas de alto rendimiento, que sí pueden ser fundidas y remoldeadas",justificacion:"Dado que las resinas epoxi termoestables no se pueden derretir, los investigadores están creando matrices termoplásticas avanzadas. Al final de su vida útil, estas piezas se calientan, la matriz se funde, y se puede recuperar tanto el plástico como la fibra."},
+  {id:86,pregunta:"¿Qué ensayo de END utiliza una bobina electromagnética para inducir corrientes en una pieza de aluminio y detectar fisuras superficiales observando variaciones en la impedancia?",opciones:["Ensayo por Corrientes Inducidas (Eddy Current)","Ensayo de Tintas Penetrantes Fluorescentes","Análisis Espectrográfico de Chispa"],respuestaCorrecta:"Ensayo por Corrientes Inducidas (Eddy Current)",justificacion:"A diferencia de las partículas magnéticas, las corrientes de Eddy (Foucault) funcionan en metales no ferromagnéticos pero conductores (como el aluminio o titanio). Una grieta interrumpe el flujo de electrones en la superficie, delatando el defecto."},
+  {id:87,pregunta:"¿Qué propiedad del Cobre lo hace el material absoluto en la fabricación de bobinados para motores eléctricos de maquinaria?",opciones:["Su excepcional conductividad eléctrica, solo superada comercialmente por la plata","Su altísima dureza frente al desgaste abrasivo en el rotor","Su capacidad para soportar 2000°C sin derretirse en el estator"],respuestaCorrecta:"Su excepcional conductividad eléctrica, solo superada comercialmente por la plata",justificacion:"El cobre ofrece la menor resistencia al paso de electrones a un costo viable. Aunque es muy blando, su rol en un motor eléctrico no es estructural, sino asegurar la máxima eficiencia en la generación del campo electromagnético."},
+  {id:88,pregunta:"En tribología, el 'Índice de Viscosidad' (IV) de un aceite lubricante indica su resistencia a:",opciones:["Perder o cambiar su viscosidad a medida que aumenta o disminuye la temperatura de operación","Mezclarse con el agua de refrigeración en caso de una fuga en los empaques","Evaporarse cuando entra en contacto con el polvo de la faena minera"],respuestaCorrecta:"Perder o cambiar su viscosidad a medida que aumenta o disminuye la temperatura de operación",justificacion:"Un aceite con un Índice de Viscosidad alto mantiene su 'espesor' relativamente estable sin importar si el motor está frío en la mañana o trabajando a máxima temperatura al mediodía."},
+  {id:89,pregunta:"¿Qué mecanismo de degradación sufren los polímeros al someterse a tensiones mecánicas constantes a temperatura ambiente durante mucho tiempo (ej. una tubería plástica bajo presión)?",opciones:["Termofluencia en frío (Creep), deformándose plásticamente y alargándose lentamente hasta fallar","Templado espontáneo, aumentando su dureza pero volviéndose frágiles como el vidrio","Desgaste por cavitación en su capa más externa"],respuestaCorrecta:"Termofluencia en frío (Creep), deformándose plásticamente y alargándose lentamente hasta fallar",justificacion:"Los metales usualmente solo sufren Creep a altísimas temperaturas. Los polímeros, debido a sus enlaces moleculares más débiles, pueden deformarse y estirarse lentamente a lo largo de los meses incluso a temperatura ambiente."},
+  {id:90,pregunta:"¿Qué técnica de mantenimiento predictivo es la más efectiva para inspeccionar el estado de aislamiento térmico en cañerías o reactores de alta temperatura?",opciones:["Termografía Infrarroja, ya que revelará visualmente las zonas donde falta aislante como 'puntos calientes'","Análisis de Ferrografía Analítica del aceite del reactor","Líquidos Penetrantes rociados sobre la lana de vidrio"],respuestaCorrecta:"Termografía Infrarroja, ya que revelará visualmente las zonas donde falta aislante como 'puntos calientes'",justificacion:"La cámara térmica escanea grandes áreas en segundos. Si el aislante interno de un reactor o tubería está dañado, la cámara mostrará una fuga masiva de calor en esa sección específica de la coraza externa."},
+  {id:91,pregunta:"¿Qué técnica de END se utiliza para inspeccionar visualmente el interior de los cilindros de un motor diésel sin tener que desarmar la culata?",opciones:["Inspección Visual mediante Boroscopio (o Videoscopio)","Inspección por Partículas Magnéticas Fluorescentes","Radiografía Industrial con Isótopos"],respuestaCorrecta:"Inspección Visual mediante Boroscopio (o Videoscopio)",justificacion:"El boroscopio es una cámara articulada introducida por el orificio del inyector o la bujía, permitiendo ver rayaduras, válvulas quemadas o depósitos de carbón en la cámara de combustión ahorrando horas de desarme."},
+  {id:92,pregunta:"¿Qué tipo de corrosión ocurre cuando dos metales de diferente nobleza (ej. aluminio y acero inoxidable) se conectan físicamente en presencia de agua salada o barro?",opciones:["Corrosión Galvánica","Corrosión por Cavitación","Oxidación a Alta Temperatura"],respuestaCorrecta:"Corrosión Galvánica",justificacion:"Al juntar metales distintos con un líquido conductor, se forma una 'pila' microscópica. El metal más débil (ánodo) se sacrifica y se disuelve rápidamente para proteger al más noble."},
+  {id:93,pregunta:"En rodamientos sometidos a altísimas RPM y riesgo de corrientes eléctricas parásitas (como en motores de tracción mineros), ¿qué material cerámico avanzado se utiliza para las bolas?",opciones:["Nitruro de Silicio (Si3N4)","Carburo de Tungsteno sinterizado","Fibra de Carbono trenzada"],respuestaCorrecta:"Nitruro de Silicio (Si3N4)",justificacion:"El nitruro de silicio es más ligero y duro que el acero, reduciendo la fricción a altas velocidades. Además, al ser cerámica, es aislante eléctrico, evitando que las chispas internas fundan las pistas del rodamiento."},
+  {id:94,pregunta:"¿Qué información vital nos permite obtener el equipo de Ultrasonido al apoyar el palpador contra el casco de una tolva o tubería vieja?",opciones:["Medir el espesor restante del material para calcular cuánto se ha desgastado por corrosión o abrasión","Medir la dureza superficial del acero en la escala Rockwell C","Detectar el tipo exacto de aleación de la placa (porcentaje de carbono)"],respuestaCorrecta:"Medir el espesor restante del material para calcular cuánto se ha desgastado por corrosión o abrasión",justificacion:"Sabiendo la velocidad a la que el sonido viaja en el acero, el equipo mide cuánto tarda la onda en rebotar en el fondo. Esto da la medida exacta del grosor del metal sin tener que perforarlo."},
+  {id:95,pregunta:"En un Análisis de Aceite de un motor, los niveles de Sílice (Silicio) se disparan bruscamente. ¿Qué falla de mantenimiento básico delata este indicador?",opciones:["Ruptura, saturación o mala instalación del filtro de aire, permitiendo el ingreso de polvo al motor","Desgaste excesivo de los metales antifricción del cigüeñal","Fuga de líquido refrigerante hacia el interior del cárter"],respuestaCorrecta:"Ruptura, saturación o mala instalación del filtro de aire, permitiendo el ingreso de polvo al motor",justificacion:"El sílice es el componente principal de la tierra y la arena. Si hay sílice en el aceite, significa que el motor está 'respirando' polvo, el cual actuará como una lija destruyendo anillos y cilindros."},
+  {id:96,pregunta:"¿Por qué las resinas Epóxicas (Termoestables) son la opción dominante como 'matriz' en la fabricación de materiales compuestos estructurales?",opciones:["Por su excelente adhesión a las fibras, altísima resistencia mecánica y estabilidad dimensional al curar","Porque son las únicas resinas que pueden ser fundidas y recicladas repetidas veces","Porque son inmunes a la radiación UV y nunca se cristalizan"],respuestaCorrecta:"Por su excelente adhesión a las fibras, altísima resistencia mecánica y estabilidad dimensional al curar",justificacion:"Las resinas epoxi actúan como un pegamento estructural insuperable. Al reticularse (curar), se vuelven extremadamente rígidas y no se contraen, asegurando que la fibra transfiera la fuerza perfectamente."},
+  {id:97,pregunta:"En el taller se habla de realizar un tratamiento térmico de 'Bonificado' a un eje forjado. ¿A qué combinación exacta de procesos se refiere este término?",opciones:["Al proceso de Templado seguido inmediatamente de un Revenido","A un Recocido seguido de un Normalizado al aire","A la aplicación de un recubrimiento de Cromo duro sobre la pieza"],respuestaCorrecta:"Al proceso de Templado seguido inmediatamente de un Revenido",justificacion:"El bonificado es la receta clásica para piezas de maquinaria pesada. El temple da la máxima dureza y fuerza, mientras que el revenido le quita la fragilidad de vidrio, logrando un eje tenaz y resistente."},
+  {id:98,pregunta:"¿Cuál es la función del recubrimiento de Cloruro de Polivinilo (PVC) en el cableado eléctrico de la maquinaria?",opciones:["Actuar como un aislante dieléctrico (eléctrico) flexible, protegiendo el cobre del contacto con el chasis y la humedad","Aumentar la resistencia a la tracción del cable de cobre para que no se corte al tensarlo","Disipar el calor generado por la corriente eléctrica hacia el exterior"],respuestaCorrecta:"Actuar como un aislante dieléctrico (eléctrico) flexible, protegiendo el cobre del contacto con el chasis y la humedad",justificacion:"El PVC es un termoplástico con excelentes propiedades aislantes y flexibilidad. Impide los cortocircuitos al evitar que la corriente del cobre salte hacia el acero del chasis del equipo."},
+  {id:99,pregunta:"Un O-ring de un cilindro telescópico falló porque se 'mordió' a sí mismo torciéndose en espiral dentro de su ranura. ¿Cómo se llama esta falla?",opciones:["Falla por Torsión o Fallo en Espiral (Spiral failure)","Falla por Extrusión de holgura","Falla por descompresión explosiva"],respuestaCorrecta:"Falla por Torsión o Fallo en Espiral (Spiral failure)",justificacion:"Ocurre principalmente en sellos dinámicos de carrera larga. Si el sello no está bien lubricado o el vástago tiene rayas, la fricción 'frena' un lado del O-ring mientras el resto rueda, torciéndolo como un resorte hasta cortarlo."},
+  {id:100,pregunta:"Al finalizar la vida útil de los neumáticos gigantes de los CAEX, ¿qué proceso térmico se utiliza para descomponer el caucho vulcanizado sin quemarlo, recuperando aceite, acero y negro de humo?",opciones:["Pirólisis (descomposición térmica en ausencia de oxígeno)","Sinterización de alta presión en autoclave","Fusión termoplástica a 500°C"],respuestaCorrecta:"Pirólisis (descomposición térmica en ausencia de oxígeno)",justificacion:"Al calentar el neumático en un horno sin oxígeno, el caucho no se incendia, sino que sus enlaces químicos se rompen, separando el material de vuelta en sus componentes originales para ser reutilizados en la industria."}
 ];
 
-let mode='all',questions=[],idx=0,answered=false,selectedOptIdx=null,score=0,userAnswers=[];
-let currentShuffledOpts=[];
-let currentCorrectIdx=-1;
-let timerInterval=null,secondsLeft=3600,timerRunning=false,timeoutFired=false;
+// ══════════════════════════════════════════════════════════════
+//  ESTADO DEL JUEGO
+// ══════════════════════════════════════════════════════════════
+const TOTAL_PER_SESSION = 25;
+const MAX_LIVES = 3;
 
-function switchTab(tab){
-  document.querySelectorAll('.nav-tab').forEach((t,i)=>{
-    t.classList.toggle('active',(i===0&&tab==='sim')||(i===1&&tab==='plan'));
-  });
-  document.getElementById('tab-sim').style.display=tab==='sim'?'block':'none';
-  document.getElementById('tab-plan').style.display=tab==='plan'?'block':'none';
-}
+let questions = [];
+let idx = 0;
+let lives = MAX_LIVES;
+let score = 0;
+let userAnswers = [];
+let answered = false;
+let currentShuffled = [];
+let correctShuffledIdx = -1;
 
-function setMode(m,el){
-  mode=m;
-  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-function shuffleArray(arr){
-  const a=[...arr];
-  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+// ══════════════════════════════════════════════════════════════
+//  UTILIDADES
+// ══════════════════════════════════════════════════════════════
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
   return a;
 }
 
-function computeShuffledOpts(q){
-  if(!q.opts)return{shuffled:[],newCorrectIdx:-1};
-  const indexed=q.opts.map((text,origIdx)=>({text,origIdx}));
-  const shuffled=shuffleArray(indexed);
-  const newCorrectIdx=shuffled.findIndex(o=>o.origIdx===q.ans);
-  return{shuffled,newCorrectIdx};
-}
-
-function startTimer(){
-  secondsLeft=3600;timeoutFired=false;updateTimerDisplay();
-  const wrap=document.getElementById('timer-wrap');
-  wrap.style.display='flex';wrap.classList.remove('warning');
-  clearInterval(timerInterval);timerRunning=true;
-  timerInterval=setInterval(()=>{
-    secondsLeft--;updateTimerDisplay();
-    if(secondsLeft<=300&&secondsLeft>0)document.getElementById('timer-wrap').classList.add('warning');
-    if(secondsLeft<=0){clearInterval(timerInterval);timerRunning=false;if(!timeoutFired){timeoutFired=true;fireTimeout();}}
-  },1000);
-}
-
-function updateTimerDisplay(){
-  const m=Math.floor(secondsLeft/60),s=secondsLeft%60;
-  document.getElementById('timer-display').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-}
-
-function stopTimer(){
-  clearInterval(timerInterval);timerRunning=false;
-  document.getElementById('timer-wrap').style.display='none';
-  document.getElementById('timer-wrap').classList.remove('warning');
-}
-
-function fireTimeout(){document.getElementById('timeout-overlay').classList.add('show');}
-function dismissTimeout(){document.getElementById('timeout-overlay').classList.remove('show');showResults();}
-
-function buildQuestions(){
-  let qs=[...ALL_QUESTIONS];
-  if(mode==='mc')qs=qs.filter(q=>q.type==='mc');
-  if(mode==='dev')qs=qs.filter(q=>q.type==='dev');
-  if(mode==='weak')qs=qs.filter(q=>q.category==='tech'||q.category==='trap');
-  for(let i=qs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[qs[i],qs[j]]=[qs[j],qs[i]];}
-  return qs;
-}
-
-function startExam(){
-  questions=buildQuestions();idx=0;score=0;userAnswers=[];answered=false;selectedOptIdx=null;
-  currentShuffledOpts=[];currentCorrectIdx=-1;
-  showScreen('screen-question');
-  document.getElementById('topbar-score').style.display='flex';
-  startTimer();updateProgress();renderQuestion();
-}
-
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function updateProgress(){
-  const pct=(idx/questions.length)*100;
-  document.getElementById('prog-fill').style.width=pct+'%';
-  const mc=userAnswers.filter(a=>a.q.type==='mc');
-  const correct=mc.filter(a=>a.isCorrect).length;
-  document.getElementById('tb-score').textContent=correct+'/'+mc.length+' MC';
+function updateProgress() {
+  const pct = (idx / TOTAL_PER_SESSION) * 100;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('tb-score').textContent = score + '/' + idx;
 }
 
-function renderQuestion(){
-  const q=questions[idx];
-  answered=false;selectedOptIdx=null;
-  document.getElementById('q-counter').textContent='Pregunta '+(idx+1)+' de '+questions.length;
-  const badges={trap:['badge-trap','⚠ TRAMPA'],tech:['badge-tech','⚙ TECNICISMO'],theory:['badge-theory','📚 TEORÍA'],dev:['badge-dev','🔬 DESARROLLO']};
-  const[cls,lbl]=badges[q.category]||['',''];
-  document.getElementById('q-badge').innerHTML='<span class="badge '+cls+'">'+lbl+'</span>';
-  document.getElementById('q-cat-label').textContent=q.cat;
-  document.getElementById('q-text').textContent=q.text;
-  const ctxEl=document.getElementById('q-context');
-  if(q.context){ctxEl.textContent=q.context;ctxEl.style.display='block';}else{ctxEl.style.display='none';}
-  const fbEl=document.getElementById('feedback-box');
-  fbEl.style.display='none';fbEl.classList.remove('show','correct','incorrect','info');
-  const optCont=document.getElementById('options-container');
-  const devEl=document.getElementById('dev-answer');
-  if(q.type==='mc'){
-    devEl.style.display='none';optCont.style.display='flex';optCont.innerHTML='';
-    const{shuffled,newCorrectIdx}=computeShuffledOpts(q);
-    currentShuffledOpts=shuffled;
-    currentCorrectIdx=newCorrectIdx;
-    const letters=['A','B','C','D'];
-    shuffled.forEach((opt,i)=>{
-      const div=document.createElement('div');div.className='option';
-      div.innerHTML='<div class="opt-key">'+letters[i]+'</div><div class="opt-text">'+opt.text+'</div>';
-      div.addEventListener('click',()=>pickOption(i,div));
-      optCont.appendChild(div);
-    });
-    document.getElementById('btn-action').textContent='Confirmar respuesta';
-    document.getElementById('btn-action').disabled=true;
-  }else{
-    optCont.style.display='none';devEl.style.display='block';devEl.value='';
-    document.getElementById('btn-action').textContent='Ver respuesta modelo';
-    document.getElementById('btn-action').disabled=false;
-  }
-  document.getElementById('btn-skip').style.display='';
-  updateProgress();
-}
-
-function pickOption(i,el){
-  if(answered)return;
-  selectedOptIdx=i;
-  document.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
-  el.classList.add('selected');
-  document.getElementById('btn-action').disabled=false;
-}
-
-function handleAction(){
-  const q=questions[idx];
-  if(q.type==='mc'){if(!answered){confirmMC(q);}else{nextQuestion();}}
-  else{if(!answered){confirmDev(q);}else{nextQuestion();}}
-}
-
-function confirmMC(q){
-  answered=true;
-  const isCorrect=selectedOptIdx===currentCorrectIdx;
-  if(isCorrect)score++;
-  const selectedText=currentShuffledOpts[selectedOptIdx]?.text||'—';
-  const correctText=currentShuffledOpts[currentCorrectIdx]?.text||'—';
-  userAnswers.push({q,selectedText,correctText,isCorrect});
-  document.querySelectorAll('.option').forEach((el,i)=>{
-    el.classList.add('disabled');
-    if(i===currentCorrectIdx)el.classList.add('correct');
-    else if(i===selectedOptIdx&&!isCorrect)el.classList.add('wrong');
+function updateLivesUI() {
+  const hearts = ['h1','h2','h3'];
+  hearts.forEach((hid, i) => {
+    const el = document.getElementById(hid);
+    el.classList.toggle('lost', i >= lives);
+    el.textContent = i < lives ? '❤️' : '🖤';
   });
-  showFeedback(q,isCorrect);
-  document.getElementById('btn-action').textContent=idx<questions.length-1?'Siguiente →':'Ver resultados →';
-  document.getElementById('btn-action').disabled=false;
-  document.getElementById('btn-skip').style.display='none';
+}
+
+// ══════════════════════════════════════════════════════════════
+//  INICIO
+// ══════════════════════════════════════════════════════════════
+function startExam() {
+  // Seleccionar 25 preguntas aleatorias del banco
+  questions = shuffle(BANK).slice(0, TOTAL_PER_SESSION);
+  idx = 0; score = 0; lives = MAX_LIVES; userAnswers = []; answered = false;
+  showScreen('screen-question');
+  document.getElementById('lives-display').classList.add('show');
+  document.getElementById('topbar-score').style.display = 'flex';
+  updateLivesUI();
   updateProgress();
+  renderQuestion();
 }
 
-function confirmDev(q){
-  answered=true;
-  userAnswers.push({q,selectedText:'dev',correctText:'dev',isCorrect:null});
-  showFeedback(q,null);
-  document.getElementById('btn-action').textContent=idx<questions.length-1?'Siguiente →':'Ver resultados →';
-  document.getElementById('btn-action').disabled=false;
-  document.getElementById('btn-skip').style.display='none';
+// ══════════════════════════════════════════════════════════════
+//  RENDER PREGUNTA
+// ══════════════════════════════════════════════════════════════
+function renderQuestion() {
+  answered = false;
+  const q = questions[idx];
+  document.getElementById('q-counter').textContent = 'Pregunta ' + (idx + 1) + ' de ' + TOTAL_PER_SESSION;
+  document.getElementById('q-num-tag').textContent = '— Pregunta #' + q.id + ' del banco —';
+  document.getElementById('q-text').textContent = q.pregunta;
+
+  // Mezclar alternativas (Aleatoriedad Doble)
+  const indexedOpts = q.opciones.map((text, i) => ({ text, i }));
+  currentShuffled = shuffle(indexedOpts);
+  const correctOrigIdx = q.opciones.indexOf(q.respuestaCorrecta);
+  correctShuffledIdx = currentShuffled.findIndex(o => o.i === correctOrigIdx);
+
+  const letters = ['A', 'B', 'C', 'D', 'E'];
+  const cont = document.getElementById('options-container');
+  cont.innerHTML = '';
+  currentShuffled.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = '<div class="opt-key">' + letters[i] + '</div><div class="opt-text">' + opt.text + '</div>';
+    div.addEventListener('click', () => pickOption(i, div));
+    cont.appendChild(div);
+  });
+
+  updateProgress();
+  // Cerrar popup si estaba abierto
+  document.getElementById('feedback-popup').classList.remove('show','correct-pop','wrong-pop');
 }
 
-function showFeedback(q,isCorrect){
-  const fbEl=document.getElementById('feedback-box');
-  if(isCorrect===null)fbEl.className='feedback-box info';
-  else if(isCorrect)fbEl.className='feedback-box correct';
-  else fbEl.className='feedback-box incorrect';
-  document.getElementById('fb-icon').textContent=isCorrect===null?'📋':isCorrect?'✅':'❌';
-  document.getElementById('fb-title').textContent=isCorrect===null?'Respuesta modelo del profesor':isCorrect?'¡Correcto!':'Incorrecto — Aquí está la clave:';
-  document.getElementById('fb-body').innerHTML=q.exp.replace(/\n/g,'<br>');
-  const trapEl=document.getElementById('fb-trap');
-  trapEl.style.display=q.trap?'block':'none';
-  if(q.trap)trapEl.innerHTML='⚠ <strong>La trampa:</strong> '+q.trap;
-  const factEl=document.getElementById('fb-fact');
-  factEl.style.display=q.fact?'block':'none';
-  if(q.fact)factEl.textContent='★ '+q.fact;
-  fbEl.style.display='block';void fbEl.offsetWidth;fbEl.classList.add('show');
+// ══════════════════════════════════════════════════════════════
+//  SELECCIÓN Y CONFIRMACIÓN
+// ══════════════════════════════════════════════════════════════
+function pickOption(i, el) {
+  if (answered) return;
+  answered = true;
+
+  const isCorrect = (i === correctShuffledIdx);
+  const selectedText = currentShuffled[i].text;
+  const correctText = q => q.respuestaCorrecta;
+
+  // Marcar opciones
+  const opts = document.querySelectorAll('.option');
+  opts.forEach(o => o.classList.add('disabled'));
+  opts[correctShuffledIdx].classList.add('correct');
+  if (!isCorrect) {
+    el.classList.add('wrong');
+    lives--;
+    updateLivesUI();
+  } else {
+    score++;
+  }
+
+  const q = questions[idx];
+  userAnswers.push({ q, selectedText, isCorrect });
+
+  updateProgress();
+
+  // Mostrar feedback popup
+  showFeedbackPopup(q, isCorrect);
+
+  // Verificar game over
+  if (lives <= 0) {
+    setTimeout(() => {
+      document.getElementById('feedback-popup').classList.remove('show','correct-pop','wrong-pop');
+      showGameOver();
+    }, 2600);
+  }
 }
 
-function skipQuestion(){
-  userAnswers.push({q:questions[idx],selectedText:'—',correctText:'—',isCorrect:false});
-  idx++;if(idx>=questions.length){showResults();return;}renderQuestion();
+// ══════════════════════════════════════════════════════════════
+//  FEEDBACK POP-UP (Idea #2)
+// ══════════════════════════════════════════════════════════════
+function showFeedbackPopup(q, isCorrect) {
+  const popup = document.getElementById('feedback-popup');
+  popup.classList.remove('correct-pop','wrong-pop','show');
+
+  document.getElementById('fp-icon').textContent = isCorrect ? '✅' : '❌';
+  document.getElementById('fp-verdict').textContent = isCorrect
+    ? '¡Correcto!'
+    : '¡Error! — Aquí está la clave:';
+
+  document.getElementById('fp-justif').textContent = q.justificacion;
+
+  // Trap / fact boxes (no tenemos campo separado en el banco nuevo, mostramos justificación)
+  document.getElementById('fp-trap').style.display = 'none';
+  document.getElementById('fp-fact').style.display = 'none';
+
+  popup.classList.add(isCorrect ? 'correct-pop' : 'wrong-pop');
+
+  // Si es última pregunta cambia el botón
+  const nextBtn = document.getElementById('fp-next-btn');
+  const isLast = (idx >= TOTAL_PER_SESSION - 1);
+  nextBtn.textContent = isLast ? 'Ver resultados →' : 'Siguiente pregunta →';
+  nextBtn.style.display = lives <= 0 ? 'none' : 'block';
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => popup.classList.add('show'));
+  });
 }
 
-function nextQuestion(){
-  answered=false;selectedOptIdx=null;
-  currentShuffledOpts=[];currentCorrectIdx=-1;
-  idx++;
-  if(idx>=questions.length){showResults();return;}renderQuestion();
+function closeFeedbackAndNext() {
+  const popup = document.getElementById('feedback-popup');
+  popup.classList.remove('show');
+  setTimeout(() => {
+    popup.classList.remove('correct-pop','wrong-pop');
+    idx++;
+    if (idx >= TOTAL_PER_SESSION) {
+      showResults();
+    } else {
+      renderQuestion();
+    }
+  }, 420);
 }
 
-function showResults(){
-  stopTimer();showScreen('screen-results');
-  document.getElementById('topbar-score').style.display='none';
-  document.getElementById('prog-fill').style.width='100%';
-  const mc=userAnswers.filter(a=>a.q.type==='mc');
-  const correct=mc.filter(a=>a.isCorrect).length;
-  const wrong=mc.filter(a=>a.isCorrect===false).length;
-  const total=mc.length;
-  const pct=total>0?Math.round((correct/total)*100):100;
-  const nota=total>0?((correct/total)*7).toFixed(1):'7.0';
-  document.getElementById('score-big').textContent=correct;
-  document.getElementById('score-sub').textContent='/'+total+' MC';
-  document.getElementById('rs-correct').textContent=correct;
-  document.getElementById('rs-wrong').textContent=wrong;
-  document.getElementById('rs-nota').textContent=nota;
-  const circumference=389.6;
-  const offset=circumference-(pct/100)*circumference;
-  setTimeout(()=>{
-    const arc=document.getElementById('ring-arc');
-    arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)';
-    arc.style.strokeDashoffset=offset;
-  },120);
-  let title,msg;
-  if(pct>=87){title='🏆 Listo para el examen';msg='Dominas el contenido técnico. Repasa las preguntas trampa que fallaste y llegas con ventaja.';}
-  else if(pct>=70){title='✅ Buen nivel — afina detalles';msg='Tienes la base. Repasa porcentajes críticos (70–90% Tm), Tg/Tm y los procesos de cementado vs templado.';}
-  else if(pct>=50){title='⚡ En desarrollo — estudia más';msg='Refuerza: ¿qué aporta cada aleante? y los datos duros (temperaturas, %). El simulador es tu herramienta.';}
-  else{title='📚 Repasa todo antes del examen';msg='Vuelve al plan de estudio, usa los 3 días del plan y repite el simulador. Estás a tiempo.';}
-  document.getElementById('result-title').textContent=title;
-  document.getElementById('result-msg').textContent=msg;
-  const list=document.getElementById('review-list');list.innerHTML='';
-  userAnswers.forEach(a=>{
-    const div=document.createElement('div');div.className='review-item';
-    const icon=a.isCorrect===null?'📋':a.isCorrect?'✅':'❌';
-    let ans='';
-    if(a.q.type==='mc'){
-      if(a.selectedText==='—')ans='Saltada';
-      else{ans='Tu respuesta: "'+a.selectedText.substring(0,60)+(a.selectedText.length>60?'…':'')+'"'+(!a.isCorrect?' · Correcta: "'+a.correctText.substring(0,60)+(a.correctText.length>60?'…':'')+'"':'');}
-    }else{ans='Desarrollo — ver respuesta modelo en la pantalla de preguntas';}
-    div.innerHTML='<div class="ri-icon">'+icon+'</div><div><div class="ri-q">'+a.q.text.substring(0,90)+'…</div><div class="ri-ans">'+ans+'</div></div>';
+// ══════════════════════════════════════════════════════════════
+//  GAME OVER (Idea #3 — Vidas)
+// ══════════════════════════════════════════════════════════════
+function showGameOver() {
+  document.getElementById('gameover-stat').textContent =
+    'Llegaste a la pregunta ' + (idx + 1) + ' de ' + TOTAL_PER_SESSION +
+    ' — ' + score + ' respuestas correctas';
+  document.getElementById('gameover-overlay').classList.add('show');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  RESULTADOS
+// ══════════════════════════════════════════════════════════════
+function showResults() {
+  document.getElementById('lives-display').classList.remove('show');
+  document.getElementById('topbar-score').style.display = 'none';
+  document.getElementById('prog-fill').style.width = '100%';
+  showScreen('screen-results');
+
+  const total = userAnswers.length;
+  const correct = userAnswers.filter(a => a.isCorrect).length;
+  const wrong = total - correct;
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+  const nota = total > 0 ? ((correct / total) * 7).toFixed(1) : '0.0';
+
+  document.getElementById('score-big').textContent = correct;
+  document.getElementById('rs-correct').textContent = correct;
+  document.getElementById('rs-wrong').textContent = wrong;
+  document.getElementById('rs-lives').textContent = lives;
+  document.getElementById('rs-nota').textContent = nota;
+
+  const circumference = 389.6;
+  const offset = circumference - (pct / 100) * circumference;
+  setTimeout(() => {
+    const arc = document.getElementById('ring-arc');
+    arc.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)';
+    arc.style.strokeDashoffset = offset;
+  }, 120);
+
+  let title, msg;
+  if (pct >= 88) { title = '🏆 Listo para el examen'; msg = 'Dominas el contenido. Las vidas que conservaste demuestran que vas sólido en la materia.'; }
+  else if (pct >= 70) { title = '✅ Buen nivel — afina detalles'; msg = 'Sólida base técnica. Refuerza los tecnicismos de temperatura (Tg, Tm, 70–90% Tm) y diferencias de aleantes.'; }
+  else if (pct >= 50) { title = '⚡ En desarrollo — estudia más'; msg = 'Repasa cada mecanismo de falla: abrasión vs adhesivo vs fatiga. El banco tiene 100 preguntas, sigue practicando.'; }
+  else { title = '📚 Hay que estudiar más'; msg = 'Vuelve a los conceptos base: aleantes (Cr/Mn/C), tratamientos térmicos y tipos de polímeros. Inténtalo de nuevo.'; }
+
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-msg').textContent = msg;
+
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  userAnswers.forEach(a => {
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    const icon = a.isCorrect ? '✅' : '❌';
+    const qShort = a.q.pregunta.substring(0, 80) + '…';
+    const ansShort = a.isCorrect
+      ? 'Correcto: "' + a.selectedText.substring(0, 60) + '"'
+      : 'Tu resp.: "' + a.selectedText.substring(0, 50) + '" · Correcta: "' + a.q.respuestaCorrecta.substring(0, 50) + '"';
+    div.innerHTML = '<div class="ri-icon">' + icon + '</div><div><div class="ri-q">' + qShort + '</div><div class="ri-ans">' + ansShort + '</div></div>';
     list.appendChild(div);
   });
 }
 
-function goHome(){
-  stopTimer();showScreen('screen-intro');
-  document.getElementById('prog-fill').style.width='0%';
-  document.getElementById('topbar-score').style.display='none';
-  const arc=document.getElementById('ring-arc');
-  arc.style.transition='none';arc.style.strokeDashoffset='389.6';
+// ══════════════════════════════════════════════════════════════
+//  NAVEGACIÓN
+// ══════════════════════════════════════════════════════════════
+function goHome() {
+  document.getElementById('gameover-overlay').classList.remove('show');
+  document.getElementById('feedback-popup').classList.remove('show','correct-pop','wrong-pop');
+  document.getElementById('lives-display').classList.remove('show');
+  document.getElementById('topbar-score').style.display = 'none';
+  document.getElementById('prog-fill').style.width = '0%';
+  const arc = document.getElementById('ring-arc');
+  arc.style.transition = 'none';
+  arc.style.strokeDashoffset = '389.6';
+  showScreen('screen-intro');
 }
 
-function retryExam(){startExam();}
-setMode('all',document.getElementById('mc-all'));
+function retryExam() {
+  document.getElementById('gameover-overlay').classList.remove('show');
+  startExam();
+}
 </script>
 </body>
 </html>
