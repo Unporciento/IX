@@ -8,648 +8,373 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&family=Share+Tech+Mono&display=swap');
 
 :root {
-  --bg:       #0e0f11;
-  --bg2:      #161820;
-  --bg3:      #1e2030;
-  --border:   #2a2d3e;
-  --cat:      #f5a623;
-  --cat2:     #e8911a;
-  --green:    #2ed573;
-  --red:      #ff4757;
-  --blue:     #5c9eff;
-  --text:     #dce1ed;
-  --muted:    #7c84a0;
-  --mono:     'Share Tech Mono', monospace;
-  --display:  'Barlow Condensed', sans-serif;
-  --body:     'Barlow', sans-serif;
+  --bg:#0e0f11;--bg2:#161820;--bg3:#1e2030;--border:#2a2d3e;
+  --cat:#f5a623;--cat2:#e8911a;--green:#2ed573;--red:#ff4757;
+  --blue:#5c9eff;--text:#dce1ed;--muted:#7c84a0;
+  --mono:'Share Tech Mono',monospace;
+  --display:'Barlow Condensed',sans-serif;
+  --body:'Barlow',sans-serif;
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);background:var(--bg);color:var(--text);min-height:100vh}
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--body); background: var(--bg); color: var(--text); min-height: 100vh; }
+.topbar{background:var(--bg2);border-bottom:3px solid var(--cat);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.topbar-logo{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:2px;color:var(--cat);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.topbar-logo::before{content:'⬡';font-size:18px;opacity:.7}
+.topbar-right{display:flex;align-items:center;gap:20px}
+.topbar-score{font-family:var(--mono);font-size:13px;color:var(--muted);display:none;align-items:center;gap:6px}
+.topbar-score span{color:var(--cat);font-weight:700}
 
-.topbar {
-  background: var(--bg2);
-  border-bottom: 3px solid var(--cat);
-  padding: 0 32px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 200;
+#timer-wrap{display:none;align-items:center;gap:8px;font-family:var(--mono);font-size:15px;font-weight:700;color:var(--cat);background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);padding:5px 12px;border-radius:6px;letter-spacing:2px;transition:all .3s}
+#timer-wrap.warning{color:var(--red);background:rgba(255,71,87,.15);border-color:rgba(255,71,87,.5);animation:timerPulse 1s ease-in-out infinite}
+@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+.prog-track{height:3px;background:var(--border);overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--cat),var(--cat2));width:0%;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+.screen{display:none}.screen.active{display:block}
+main{max-width:860px;margin:0 auto;padding:48px 24px 80px}
+
+.intro-hero{text-align:center;padding:20px 0 48px}
+.intro-hero .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:4px;color:var(--cat);text-transform:uppercase;margin-bottom:18px}
+.intro-hero h1{font-family:var(--display);font-size:clamp(36px,7vw,64px);font-weight:800;text-transform:uppercase;line-height:1;letter-spacing:1px;margin-bottom:12px}
+.intro-hero h1 em{color:var(--cat);font-style:normal;display:block}
+.intro-hero p{font-size:15px;color:var(--muted);max-width:560px;margin:0 auto 48px;line-height:1.7}
+
+.mode-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:36px}
+.mode-card{background:var(--bg2);border:2px solid var(--border);border-radius:12px;padding:24px 20px;cursor:pointer;text-align:left;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
+.mode-card::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--border);transition:background .2s}
+.mode-card:hover{border-color:var(--cat);transform:translateY(-2px)}.mode-card:hover::after{background:var(--cat)}
+.mode-card.sel{border-color:var(--cat);background:var(--bg3)}.mode-card.sel::after{background:var(--cat)}
+.mode-card .mi{font-size:26px;margin-bottom:10px}
+.mode-card h3{font-family:var(--display);font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.mode-card p{font-size:13px;color:var(--muted);line-height:1.5}
+
+.stats-strip{display:flex;justify-content:center;gap:32px;margin-bottom:40px;padding:20px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;flex-wrap:wrap}
+.ss-item{text-align:center}
+.ss-val{font-family:var(--display);font-size:28px;font-weight:800;color:var(--cat)}
+.ss-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+
+.btn{font-family:var(--display);font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:14px 36px;border-radius:8px;border:none;cursor:pointer;transition:transform .15s,opacity .15s}
+.btn:hover{transform:translateY(-2px);opacity:.9}.btn:active{transform:translateY(0)}.btn:disabled{opacity:.3;cursor:default;transform:none}
+.btn-cat{background:var(--cat);color:#0e0f11;width:100%}
+.btn-ghost{background:transparent;border:2px solid var(--border);color:var(--muted)}
+.btn-ghost:hover{border-color:var(--cat);color:var(--cat)}
+
+.q-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.q-counter{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:1px}
+.badge{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;letter-spacing:1px;text-transform:uppercase}
+.badge-trap{background:rgba(255,71,87,.15);color:var(--red);border:1px solid rgba(255,71,87,.4)}
+.badge-tech{background:rgba(92,158,255,.15);color:var(--blue);border:1px solid rgba(92,158,255,.4)}
+.badge-theory{background:rgba(245,166,35,.15);color:var(--cat);border:1px solid rgba(245,166,35,.4)}
+.badge-dev{background:rgba(46,213,115,.15);color:var(--green);border:1px solid rgba(46,213,115,.4)}
+
+.question-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:32px;margin:16px 0 20px;position:relative;overflow:hidden}
+.question-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cat),var(--cat2))}
+.q-cat-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--cat);text-transform:uppercase;margin-bottom:12px}
+.q-text{font-size:17px;font-weight:500;line-height:1.6;color:var(--text);margin-bottom:8px}
+.q-context{font-size:13px;color:var(--muted);font-style:italic;margin-bottom:20px;line-height:1.6}
+
+.options{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.option{background:var(--bg3);border:2px solid var(--border);border-radius:10px;padding:14px 18px;cursor:pointer;display:flex;align-items:flex-start;gap:14px;transition:border-color .18s,background .18s,transform .12s;user-select:none}
+.option:hover:not(.disabled){border-color:var(--cat);background:rgba(245,166,35,.06);transform:translateX(4px)}
+.option.disabled{cursor:default;pointer-events:none}
+.opt-key{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted);background:var(--bg2);border:1px solid var(--border);width:28px;height:28px;min-width:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
+.opt-text{font-size:15px;line-height:1.5;padding-top:3px}
+.option.selected{border-color:var(--cat);background:rgba(245,166,35,.07)}
+.option.selected .opt-key{background:var(--cat);color:#0e0f11;border-color:var(--cat)}
+.option.correct{border-color:var(--green)!important;background:rgba(46,213,115,.08)!important}
+.option.correct .opt-key{background:var(--green)!important;color:#0e0f11!important;border-color:var(--green)!important}
+.option.wrong{border-color:var(--red)!important;background:rgba(255,71,87,.08)!important}
+.option.wrong .opt-key{background:var(--red)!important;color:#fff!important;border-color:var(--red)!important}
+
+textarea{width:100%;background:var(--bg3);border:2px solid var(--border);border-radius:10px;padding:16px;color:var(--text);font-family:var(--body);font-size:15px;resize:vertical;min-height:160px;margin-top:16px;transition:border-color .18s}
+textarea:focus{outline:none;border-color:var(--cat)}
+textarea::placeholder{color:var(--muted)}
+
+.feedback-box{border-radius:12px;padding:22px 24px;margin-top:18px;opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease;display:none}
+.feedback-box.show{display:block;opacity:1;transform:translateY(0)}
+.feedback-box.correct{background:rgba(46,213,115,.07);border:1px solid rgba(46,213,115,.35)}
+.feedback-box.incorrect{background:rgba(255,71,87,.07);border:1px solid rgba(255,71,87,.35)}
+.feedback-box.info{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.35)}
+.fb-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.fb-icon{font-size:20px}
+.fb-title{font-family:var(--display);font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.feedback-box.correct .fb-title{color:var(--green)}
+.feedback-box.incorrect .fb-title{color:var(--red)}
+.feedback-box.info .fb-title{color:var(--cat)}
+.fb-body{font-size:14px;line-height:1.75;color:var(--text)}
+.fb-trap{margin-top:14px;padding:10px 14px;background:rgba(255,71,87,.1);border-left:3px solid var(--red);border-radius:4px;font-size:13px;color:#ffb3b8}
+.fb-fact{margin-top:12px;padding:10px 14px;background:rgba(245,166,35,.1);border-left:3px solid var(--cat);border-radius:4px;font-size:13px;color:var(--cat);font-family:var(--mono)}
+
+.action-row{display:flex;gap:12px;margin-top:22px;justify-content:flex-end}
+
+#timeout-overlay{display:none;position:fixed;inset:0;background:rgba(14,15,17,.95);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:20px;text-align:center;padding:24px}
+#timeout-overlay.show{display:flex}
+.timeout-icon{font-size:64px;animation:shake .5s ease 3}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.timeout-title{font-family:var(--display);font-size:42px;font-weight:800;text-transform:uppercase;color:var(--red);letter-spacing:2px}
+.timeout-msg{font-size:16px;color:var(--muted);max-width:460px;line-height:1.7}
+.timeout-btn{margin-top:8px;font-family:var(--display);font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:14px 40px;border-radius:8px;border:none;cursor:pointer;background:var(--cat);color:#0e0f11}
+
+.results-hero{text-align:center;padding:40px 0 32px}
+.score-ring{width:150px;height:150px;margin:0 auto 28px;position:relative}
+.score-ring svg{transform:rotate(-90deg);display:block}
+.score-ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-big{font-family:var(--display);font-size:40px;font-weight:800;color:var(--cat);line-height:1}
+.score-sub{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px}
+.result-title{font-family:var(--display);font-size:30px;font-weight:800;text-transform:uppercase;margin-bottom:10px;letter-spacing:.5px}
+.result-msg{font-size:15px;color:var(--muted);max-width:500px;margin:0 auto 36px;line-height:1.7}
+
+.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:40px}
+.rs-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center}
+.rs-val{font-family:var(--display);font-size:30px;font-weight:800;margin-bottom:4px}
+.rs-lbl{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+
+.review-section-title{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--cat);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.review-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.review-list{display:flex;flex-direction:column;gap:10px;margin-bottom:36px}
+.review-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;gap:12px;align-items:flex-start}
+.ri-icon{font-size:16px;flex-shrink:0;margin-top:2px}
+.ri-q{font-size:14px;font-weight:500;margin-bottom:4px;line-height:1.4}
+.ri-ans{font-size:13px;color:var(--muted)}
+.result-btns{display:flex;gap:12px}.result-btns .btn{flex:1}
+
+.plan-grid{display:flex;flex-direction:column;gap:16px;margin-top:20px}
+.plan-day{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.plan-day-header{background:var(--bg3);padding:14px 20px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border)}
+.plan-day-num{font-family:var(--display);font-size:22px;font-weight:800;color:var(--cat);text-transform:uppercase;letter-spacing:1px;min-width:100px}
+.plan-day-title{font-size:15px;font-weight:600}
+.plan-day-body{padding:20px;display:flex;flex-direction:column;gap:12px}
+.plan-block{padding:14px 16px;border-radius:8px;border-left:3px solid var(--border)}
+.plan-block.b-analysis{border-left-color:var(--blue);background:rgba(92,158,255,.06)}
+.plan-block.b-solo{border-left-color:#a78bfa;background:rgba(167,139,250,.06)}
+.plan-block.b-review{border-left-color:var(--cat);background:rgba(245,166,35,.06)}
+.plan-block.b-sim{border-left-color:var(--red);background:rgba(255,71,87,.06)}
+.plan-block-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;color:var(--muted)}
+.plan-block.b-analysis .plan-block-title{color:var(--blue)}
+.plan-block.b-solo .plan-block-title{color:#a78bfa}
+.plan-block.b-review .plan-block-title{color:var(--cat)}
+.plan-block.b-sim .plan-block-title{color:var(--red)}
+.plan-block-body{font-size:14px;line-height:1.7}
+.plan-block-body ul{padding-left:18px;margin-top:6px}
+.plan-block-body li{margin-bottom:4px}
+
+.ref-table-wrap{margin-top:12px;overflow-x:auto}
+.ref-table{width:100%;border-collapse:collapse;font-size:13px}
+.ref-table th{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:2px solid var(--border)}
+.ref-table td{padding:9px 12px;border-bottom:1px solid rgba(42,45,62,.7);vertical-align:top;line-height:1.5}
+.ref-table tr:last-child td{border-bottom:none}
+.ref-table tr:hover td{background:rgba(255,255,255,.02)}
+.ref-tag{display:inline-block;font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:3px;letter-spacing:.5px;font-weight:700;white-space:nowrap}
+.tag-metal{background:rgba(92,158,255,.18);color:var(--blue)}
+.tag-poly{background:rgba(46,213,115,.18);color:var(--green)}
+.tag-ceram{background:rgba(245,166,35,.18);color:var(--cat)}
+.tag-proc{background:rgba(255,71,87,.18);color:var(--red)}
+.tag-comp{background:rgba(167,139,250,.18);color:#a78bfa}
+.ref-highlight{color:var(--cat);font-weight:600;font-family:var(--mono)}
+.ref-warn{color:var(--red);font-size:11px}
+
+.flash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+.flash-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;position:relative;overflow:hidden}
+.flash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.flash-card.fc-metal::before{background:var(--blue)}
+.flash-card.fc-poly::before{background:var(--green)}
+.flash-card.fc-ceram::before{background:var(--cat)}
+.flash-card.fc-proc::before{background:var(--red)}
+.flash-q{font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.4}
+.flash-a{font-family:var(--display);font-size:16px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.3px}
+.flash-sub{font-size:11px;color:var(--muted);margin-top:3px;font-family:var(--mono)}
+
+.nav-tabs{display:flex;gap:0;margin-bottom:32px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.nav-tab{flex:1;padding:14px;font-family:var(--display);font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;text-align:center;color:var(--muted);border:none;background:transparent;transition:background .2s,color .2s}
+.nav-tab.active{background:var(--cat);color:#0e0f11}
+.nav-tab:hover:not(.active){color:var(--cat)}
+
+@media(max-width:600px){
+  .result-stats{grid-template-columns:1fr 1fr}
+  .topbar{padding:0 16px}.topbar-logo{font-size:14px}
+  main{padding:28px 16px 60px}.question-card{padding:20px 18px}
+  #timer-wrap{font-size:13px;padding:4px 8px}
 }
-.topbar-logo {
-  font-family: var(--display);
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  color: var(--cat);
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.topbar-logo::before { content: '⬡'; font-size: 18px; opacity: 0.7; }
-.topbar-score {
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-.topbar-score span { color: var(--cat); font-weight: 700; }
-
-.prog-track { height: 3px; background: var(--border); overflow: hidden; }
-.prog-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--cat), var(--cat2));
-  width: 0%;
-  transition: width .5s cubic-bezier(.4,0,.2,1);
-}
-
-.screen { display: none; }
-.screen.active { display: block; }
-main { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
-
-.intro-hero { text-align: center; padding: 20px 0 48px; }
-.intro-hero .eyebrow {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 4px;
-  color: var(--cat);
-  text-transform: uppercase;
-  margin-bottom: 18px;
-}
-.intro-hero h1 {
-  font-family: var(--display);
-  font-size: clamp(36px, 7vw, 64px);
-  font-weight: 800;
-  text-transform: uppercase;
-  line-height: 1;
-  letter-spacing: 1px;
-  margin-bottom: 12px;
-}
-.intro-hero h1 em { color: var(--cat); font-style: normal; display: block; }
-.intro-hero p { font-size: 15px; color: var(--muted); max-width: 560px; margin: 0 auto 48px; line-height: 1.7; }
-
-.mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 36px; }
-.mode-card {
-  background: var(--bg2);
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  padding: 24px 20px;
-  cursor: pointer;
-  text-align: left;
-  transition: border-color .2s, transform .2s;
-  position: relative;
-  overflow: hidden;
-}
-.mode-card::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--border); transition: background .2s; }
-.mode-card:hover { border-color: var(--cat); transform: translateY(-2px); }
-.mode-card:hover::after { background: var(--cat); }
-.mode-card.sel { border-color: var(--cat); background: var(--bg3); }
-.mode-card.sel::after { background: var(--cat); }
-.mode-card .mi { font-size: 26px; margin-bottom: 10px; }
-.mode-card h3 { font-family: var(--display); font-size: 17px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
-.mode-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
-
-.stats-strip { display: flex; justify-content: center; gap: 32px; margin-bottom: 40px; padding: 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; }
-.ss-item { text-align: center; }
-.ss-val { font-family: var(--display); font-size: 28px; font-weight: 800; color: var(--cat); }
-.ss-label { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
-
-.btn { font-family: var(--display); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 14px 36px; border-radius: 8px; border: none; cursor: pointer; transition: transform .15s, opacity .15s; }
-.btn:hover { transform: translateY(-2px); opacity: .9; }
-.btn:active { transform: translateY(0); }
-.btn:disabled { opacity: .3; cursor: default; transform: none; }
-.btn-cat { background: var(--cat); color: #0e0f11; width: 100%; }
-.btn-ghost { background: transparent; border: 2px solid var(--border); color: var(--muted); }
-.btn-ghost:hover { border-color: var(--cat); color: var(--cat); }
-
-.q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.q-counter { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: 1px; }
-.badge { font-family: var(--mono); font-size: 10px; padding: 3px 10px; border-radius: 4px; letter-spacing: 1px; text-transform: uppercase; }
-.badge-trap { background: rgba(255,71,87,.15); color: var(--red); border: 1px solid rgba(255,71,87,.4); }
-.badge-tech { background: rgba(92,158,255,.15); color: var(--blue); border: 1px solid rgba(92,158,255,.4); }
-.badge-theory { background: rgba(245,166,35,.15); color: var(--cat); border: 1px solid rgba(245,166,35,.4); }
-.badge-dev { background: rgba(46,213,115,.15); color: var(--green); border: 1px solid rgba(46,213,115,.4); }
-
-.question-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 32px;
-  margin: 16px 0 20px;
-  position: relative;
-  overflow: hidden;
-}
-.question-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--cat), var(--cat2)); }
-.q-cat-label { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: var(--cat); text-transform: uppercase; margin-bottom: 12px; }
-.q-text { font-size: 17px; font-weight: 500; line-height: 1.6; color: var(--text); margin-bottom: 8px; }
-.q-context { font-size: 13px; color: var(--muted); font-style: italic; margin-bottom: 20px; line-height: 1.6; }
-
-.options { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-.option {
-  background: var(--bg3);
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  transition: border-color .18s, background .18s, transform .12s;
-  user-select: none;
-}
-.option:hover:not(.disabled) { border-color: var(--cat); background: rgba(245,166,35,.06); transform: translateX(4px); }
-.option.disabled { cursor: default; pointer-events: none; }
-.opt-key { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--muted); background: var(--bg2); border: 1px solid var(--border); width: 28px; height: 28px; min-width: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: all .18s; flex-shrink: 0; }
-.opt-text { font-size: 15px; line-height: 1.5; padding-top: 3px; }
-.option.selected { border-color: var(--cat); background: rgba(245,166,35,.07); }
-.option.selected .opt-key { background: var(--cat); color: #0e0f11; border-color: var(--cat); }
-.option.correct { border-color: var(--green) !important; background: rgba(46,213,115,.08) !important; }
-.option.correct .opt-key { background: var(--green) !important; color: #0e0f11 !important; border-color: var(--green) !important; }
-.option.wrong { border-color: var(--red) !important; background: rgba(255,71,87,.08) !important; }
-.option.wrong .opt-key { background: var(--red) !important; color: #fff !important; border-color: var(--red) !important; }
-
-textarea {
-  width: 100%;
-  background: var(--bg3);
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  padding: 16px;
-  color: var(--text);
-  font-family: var(--body);
-  font-size: 15px;
-  resize: vertical;
-  min-height: 160px;
-  margin-top: 16px;
-  transition: border-color .18s;
-}
-textarea:focus { outline: none; border-color: var(--cat); }
-textarea::placeholder { color: var(--muted); }
-
-.feedback-box { border-radius: 12px; padding: 22px 24px; margin-top: 18px; opacity: 0; transform: translateY(8px); transition: opacity .3s ease, transform .3s ease; display: none; }
-.feedback-box.show { display: block; opacity: 1; transform: translateY(0); }
-.feedback-box.correct { background: rgba(46,213,115,.07); border: 1px solid rgba(46,213,115,.35); }
-.feedback-box.incorrect { background: rgba(255,71,87,.07); border: 1px solid rgba(255,71,87,.35); }
-.feedback-box.info { background: rgba(245,166,35,.07); border: 1px solid rgba(245,166,35,.35); }
-.fb-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.fb-icon { font-size: 20px; }
-.fb-title { font-family: var(--display); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
-.feedback-box.correct .fb-title { color: var(--green); }
-.feedback-box.incorrect .fb-title { color: var(--red); }
-.feedback-box.info .fb-title { color: var(--cat); }
-.fb-body { font-size: 14px; line-height: 1.75; color: var(--text); }
-.fb-trap { margin-top: 14px; padding: 10px 14px; background: rgba(255,71,87,.1); border-left: 3px solid var(--red); border-radius: 4px; font-size: 13px; color: #ffb3b8; }
-.fb-fact { margin-top: 12px; padding: 10px 14px; background: rgba(245,166,35,.1); border-left: 3px solid var(--cat); border-radius: 4px; font-size: 13px; color: var(--cat); font-family: var(--mono); }
-
-.action-row { display: flex; gap: 12px; margin-top: 22px; justify-content: flex-end; }
-
-.results-hero { text-align: center; padding: 40px 0 32px; }
-.score-ring { width: 150px; height: 150px; margin: 0 auto 28px; position: relative; }
-.score-ring svg { transform: rotate(-90deg); display: block; }
-.score-ring-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.score-big { font-family: var(--display); font-size: 40px; font-weight: 800; color: var(--cat); line-height: 1; }
-.score-sub { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 2px; }
-.result-title { font-family: var(--display); font-size: 30px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; letter-spacing: .5px; }
-.result-msg { font-size: 15px; color: var(--muted); max-width: 500px; margin: 0 auto 36px; line-height: 1.7; }
-
-.result-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 40px; }
-.rs-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: center; }
-.rs-val { font-family: var(--display); font-size: 30px; font-weight: 800; margin-bottom: 4px; }
-.rs-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
-
-.review-section-title { font-family: var(--mono); font-size: 11px; letter-spacing: 3px; color: var(--cat); text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 14px; }
-.review-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-.review-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 36px; }
-.review-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; gap: 12px; align-items: flex-start; }
-.ri-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
-.ri-q { font-size: 14px; font-weight: 500; margin-bottom: 4px; line-height: 1.4; }
-.ri-ans { font-size: 13px; color: var(--muted); }
-
-.result-btns { display: flex; gap: 12px; }
-.result-btns .btn { flex: 1; }
-
-/* ─── PLAN DE ESTUDIO ──────────────────────────────────── */
-.plan-grid { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
-.plan-day { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.plan-day-header { background: var(--bg3); padding: 14px 20px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--border); }
-.plan-day-num { font-family: var(--display); font-size: 22px; font-weight: 800; color: var(--cat); text-transform: uppercase; letter-spacing: 1px; min-width: 100px; }
-.plan-day-title { font-size: 15px; font-weight: 600; }
-.plan-day-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-.plan-block { padding: 14px 16px; border-radius: 8px; border-left: 3px solid var(--border); }
-.plan-block.b-analysis { border-left-color: var(--blue); background: rgba(92,158,255,.06); }
-.plan-block.b-solo { border-left-color: #a78bfa; background: rgba(167,139,250,.06); }
-.plan-block.b-review { border-left-color: var(--cat); background: rgba(245,166,35,.06); }
-.plan-block.b-sim { border-left-color: var(--red); background: rgba(255,71,87,.06); }
-.plan-block-title { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; color: var(--muted); }
-.plan-block.b-analysis .plan-block-title { color: var(--blue); }
-.plan-block.b-solo .plan-block-title { color: #a78bfa; }
-.plan-block.b-review .plan-block-title { color: var(--cat); }
-.plan-block.b-sim .plan-block-title { color: var(--red); }
-.plan-block-body { font-size: 14px; line-height: 1.7; }
-.plan-block-body ul { padding-left: 18px; margin-top: 6px; }
-.plan-block-body li { margin-bottom: 4px; }
-
-/* ─── TABLA DE REFERENCIA TÁCTICA ──────────────────────── */
-.ref-table-wrap { margin-top: 12px; overflow-x: auto; }
-.ref-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-.ref-table th {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 8px 12px;
-  text-align: left;
-  border-bottom: 2px solid var(--border);
-}
-.ref-table td {
-  padding: 9px 12px;
-  border-bottom: 1px solid rgba(42,45,62,.7);
-  vertical-align: top;
-  line-height: 1.5;
-}
-.ref-table tr:last-child td { border-bottom: none; }
-.ref-table tr:hover td { background: rgba(255,255,255,.02); }
-.ref-tag {
-  display: inline-block;
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 2px 7px;
-  border-radius: 3px;
-  letter-spacing: .5px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-.tag-metal  { background: rgba(92,158,255,.18); color: var(--blue); }
-.tag-poly   { background: rgba(46,213,115,.18); color: var(--green); }
-.tag-ceram  { background: rgba(245,166,35,.18); color: var(--cat); }
-.tag-proc   { background: rgba(255,71,87,.18);  color: var(--red); }
-.tag-comp   { background: rgba(167,139,250,.18); color: #a78bfa; }
-.ref-highlight { color: var(--cat); font-weight: 600; font-family: var(--mono); }
-.ref-warn { color: var(--red); font-size: 11px; }
-
-/* ─── FLASHCARD MENTAL ─────────────────────────────────── */
-.flash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; }
-.flash-card {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px;
-  position: relative;
-  overflow: hidden;
-}
-.flash-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-.flash-card.fc-metal::before { background: var(--blue); }
-.flash-card.fc-poly::before  { background: var(--green); }
-.flash-card.fc-ceram::before { background: var(--cat); }
-.flash-card.fc-proc::before  { background: var(--red); }
-.flash-q { font-size: 12px; color: var(--muted); margin-bottom: 6px; line-height: 1.4; }
-.flash-a { font-family: var(--display); font-size: 16px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: .3px; }
-.flash-sub { font-size: 11px; color: var(--muted); margin-top: 3px; font-family: var(--mono); }
-
-/* ─── TABS ────────────────────────────────────────────── */
-.nav-tabs { display: flex; gap: 0; margin-bottom: 32px; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-.nav-tab { flex: 1; padding: 14px; font-family: var(--display); font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; cursor: pointer; text-align: center; color: var(--muted); border: none; background: transparent; transition: background .2s, color .2s; }
-.nav-tab.active { background: var(--cat); color: #0e0f11; }
-.nav-tab:hover:not(.active) { color: var(--cat); }
-
-@media (max-width: 600px) {
-  .result-stats { grid-template-columns: 1fr 1fr; }
-  .topbar { padding: 0 16px; }
-  .topbar-logo { font-size: 15px; }
-  main { padding: 28px 16px 60px; }
-  .question-card { padding: 20px 18px; }
-}
-
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <div class="topbar-logo">MatSim · Maq. Pesada</div>
-  <div class="topbar-score" id="topbar-score" style="display:none">
-    Score: <span id="tb-score">0/0</span>
+  <div class="topbar-right">
+    <div class="topbar-score" id="topbar-score">Score: <span id="tb-score">0/0</span></div>
+    <div id="timer-wrap">⏱ <span id="timer-display">60:00</span></div>
   </div>
 </div>
 <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
 
+<div id="timeout-overlay">
+  <div class="timeout-icon">⏰</div>
+  <div class="timeout-title">Tiempo Agotado</div>
+  <div class="timeout-msg">Los 60 minutos del examen terminaron. Así se siente la presión real. A continuación verás tu resultado con las respuestas dadas hasta ahora.</div>
+  <button class="timeout-btn" onclick="dismissTimeout()">Ver mi resultado →</button>
+</div>
+
 <main>
-
-  <!-- ══ SCREEN: INTRO ══════════════════════════════════ -->
+  <!-- INTRO -->
   <div class="screen active" id="screen-intro">
-
-    <div style="display:flex;gap:8px;margin-bottom:32px;">
+    <div style="display:flex;gap:0;margin-bottom:32px;" class="nav-tabs">
       <button class="nav-tab active" onclick="switchTab('sim')">🎯 Simulador</button>
       <button class="nav-tab" onclick="switchTab('plan')">📅 Plan de Estudio</button>
     </div>
 
     <div id="tab-sim">
       <div class="intro-hero">
-        <div class="eyebrow">Semanas 7 – 14 · Nivel Técnico Alto</div>
+        <div class="eyebrow">Semanas 7–14 · Nivel Técnico Alto</div>
         <h1>Simulador<em>de Examen</em></h1>
-        <p>Preguntas capciosas, tecnicismos, porcentajes críticos y casos prácticos. Las alternativas <em style="color:var(--text)">todas parecen correctas</em> — eso es el punto.</p>
+        <p>Preguntas capciosas, tecnicismos, porcentajes críticos y casos prácticos. Las alternativas <em style="color:var(--text)">se mezclan aleatoriamente</em> — sin memorizar posiciones.</p>
       </div>
-
       <div class="stats-strip">
-        <div class="ss-item"><div class="ss-val">20</div><div class="ss-label">Preguntas</div></div>
+        <div class="ss-item"><div class="ss-val">23</div><div class="ss-label">Preguntas</div></div>
         <div class="ss-item"><div class="ss-val">7–14</div><div class="ss-label">Semanas</div></div>
         <div class="ss-item"><div class="ss-val">2</div><div class="ss-label">Desarrollo</div></div>
+        <div class="ss-item"><div class="ss-val">60</div><div class="ss-label">Minutos</div></div>
         <div class="ss-item"><div class="ss-val" style="color:var(--red)">Alta</div><div class="ss-label">Dificultad</div></div>
       </div>
-
       <div class="mode-grid">
         <div class="mode-card sel" onclick="setMode('all',this)" id="mc-all">
-          <div class="mi">🎯</div>
-          <h3>Examen Completo</h3>
-          <p>20 SM + 2 desarrollo. Formato real con feedback al instante.</p>
+          <div class="mi">🎯</div><h3>Examen Completo</h3>
+          <p>23 SM + 2 desarrollo. Formato real con temporizador de 60 min.</p>
         </div>
         <div class="mode-card" onclick="setMode('mc',this)" id="mc-mc">
-          <div class="mi">⚡</div>
-          <h3>Solo S. Múltiple</h3>
-          <p>Las 20 preguntas capciosas. Entrena identificar las trampas.</p>
+          <div class="mi">⚡</div><h3>Solo S. Múltiple</h3>
+          <p>Las 23 preguntas capciosas. Alternativas mezcladas aleatoriamente.</p>
         </div>
         <div class="mode-card" onclick="setMode('dev',this)" id="mc-dev">
-          <div class="mi">🔬</div>
-          <h3>Solo Desarrollo</h3>
+          <div class="mi">🔬</div><h3>Solo Desarrollo</h3>
           <p>Analiza y justifica como pide el profesor.</p>
         </div>
         <div class="mode-card" onclick="setMode('weak',this)" id="mc-weak">
-          <div class="mi">🧠</div>
-          <h3>Tecnicismos</h3>
+          <div class="mi">🧠</div><h3>Tecnicismos</h3>
           <p>Números, porcentajes y términos duros. Puro dato.</p>
         </div>
       </div>
-
       <button class="btn btn-cat" onclick="startExam()">Iniciar Simulador →</button>
     </div>
 
     <div id="tab-plan" style="display:none">
       <div style="margin-bottom:28px;">
-        <div class="eyebrow" style="font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--cat);text-transform:uppercase;margin-bottom:12px;">Plan de Estudio — Sábado a Lunes</div>
-        <p style="font-size:14px;color:var(--muted);line-height:1.7;">Tres días estructurados. Examen individual, hoja y lápiz — cada bloque está diseñado para que construyas el conocimiento solo, sin depender de nadie más el martes.</p>
+        <div style="font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--cat);text-transform:uppercase;margin-bottom:12px;">Plan de Estudio — Sábado a Lunes</div>
+        <p style="font-size:14px;color:var(--muted);line-height:1.7;">Tres días estructurados. Cada bloque está diseñado para que construyas el conocimiento solo, sin depender de nadie más el día del examen.</p>
       </div>
-
       <div class="plan-grid">
-
-        <!-- DÍA 1 -->
         <div class="plan-day">
-          <div class="plan-day-header">
-            <div class="plan-day-num">Sábado</div>
-            <div class="plan-day-title">Mapa Mental de Materiales y Fallas</div>
-          </div>
+          <div class="plan-day-header"><div class="plan-day-num">Día 1</div><div class="plan-day-title">Mapa Mental de Materiales y Fallas</div></div>
           <div class="plan-day-body">
             <div class="plan-block b-analysis">
               <div class="plan-block-title">🧠 Bloque 1 · Análisis Mental (2h)</div>
-              <div class="plan-block-body">
-                Para cada material, pregúntate: <em>¿Dónde está en la máquina? ¿Qué falla si falta?</em>
+              <div class="plan-block-body">Para cada material pregúntate: <em>¿Dónde está en la máquina? ¿Qué falla si lo saco?</em>
                 <ul>
                   <li><strong>Cromo (Cr):</strong> Vástago cilindro hidráulico → falla = corrosión + rayado de sellos</li>
-                  <li><strong>Manganeso (Mn):</strong> Zapata de oruga → falla = rotura por impacto</li>
-                  <li><strong>Alto Carbono (C):</strong> Cuchilla motoniveladora → falla = desgaste abrasivo acelerado</li>
-                  <li><strong>Cementado:</strong> Pasador/buje articulación → falla = desgaste cáscara + quiebre núcleo</li>
-                  <li><strong>Elastómero:</strong> O-ring / manguera hidráulica → falla = fuga de aceite</li>
+                  <li><strong>Manganeso (Mn):</strong> Martillo trituradora → falla = rotura por impacto</li>
+                  <li><strong>Alto Carbono (C):</strong> Zapata oruga / cuchilla → falla = desgaste abrasivo acelerado</li>
+                  <li><strong>Cementado:</strong> Pasador/buje articulación → falla = desgaste cáscara O quiebre núcleo</li>
+                  <li><strong>Elastómero:</strong> O-ring / manguera hidráulica → falla = fuga de aceite a presión</li>
                   <li><strong>Cerámica industrial:</strong> Disco embrague / sensor temperatura → falla = deformación térmica</li>
                 </ul>
               </div>
             </div>
-            <div class="plan-block b-review">
-              <div class="plan-block-title">📋 Bloque 2 · Repaso Monitoreo de Condiciones (1.5h)</div>
-              <div class="plan-block-body">
-                Relaciona materiales con indicadores de falla que detectarías en monitoreo:
-                <ul>
-                  <li>Vibración anormal en bujes → desgaste de cáscara cementada</li>
-                  <li>Temperatura alta en cilindro → O-ring elastómero superó su Tg</li>
-                  <li>Contaminación del aceite con partículas metálicas → desgaste abrasivo por bajo carbono en piezas de fricción</li>
-                  <li>Fuga en vástago → pérdida de capa de cromo por abrasión</li>
-                </ul>
-              </div>
-            </div>
             <div class="plan-block b-sim">
-              <div class="plan-block-title">⚡ Bloque 3 · Primera ronda simulador (1h)</div>
-              <div class="plan-block-body">Haz el modo "Solo S. Múltiple" aquí. Anota en papel las preguntas que fallaste. Son tus prioridades del domingo.</div>
+              <div class="plan-block-title">⚡ Bloque 2 · Primera ronda simulador (1h)</div>
+              <div class="plan-block-body">Haz el modo "Solo S. Múltiple". Anota en papel las preguntas que fallaste.</div>
             </div>
           </div>
         </div>
 
-        <!-- DÍA 2 -->
         <div class="plan-day">
-          <div class="plan-day-header">
-            <div class="plan-day-num">Domingo</div>
-            <div class="plan-day-title">Dominar los Datos Duros — Tabla de Referencia Táctica</div>
-          </div>
+          <div class="plan-day-header"><div class="plan-day-num">Día 2</div><div class="plan-day-title">Datos Duros — Tabla de Referencia Táctica</div></div>
           <div class="plan-day-body">
-
             <div class="plan-block b-solo">
               <div class="plan-block-title">📊 Bloque Principal · Memoriza esta tabla (3h)</div>
               <div class="plan-block-body">
-                El examen de hoja y lápiz te va a pedir datos precisos. Esta tabla es tu munición — estúdiala hasta poder reproducirla de memoria.
-
-                <div class="ref-table-wrap" style="margin-top:16px;">
+                <div class="ref-table-wrap">
                   <table class="ref-table">
-                    <thead>
-                      <tr>
-                        <th>Material / Concepto</th>
-                        <th>Dato clave</th>
-                        <th>Aplicación en maquinaria</th>
-                        <th>Falla si no se usa</th>
-                      </tr>
-                    </thead>
+                    <thead><tr><th>Material</th><th>Dato clave</th><th>Aplicación</th><th>Falla sin él</th></tr></thead>
                     <tbody>
-                      <tr>
-                        <td><span class="ref-tag tag-metal">METAL</span><br><strong>Cromo (Cr)</strong></td>
-                        <td>Capa pasivante Cr₂O₃<br><span class="ref-highlight">Corrosión + roce superficial</span></td>
-                        <td>Vástago cilindro hidráulico</td>
-                        <td>Corrosión + fuga por daño en sellos</td>
-                      </tr>
-                      <tr>
-                        <td><span class="ref-tag tag-metal">METAL</span><br><strong>Manganeso (Mn)</strong></td>
-                        <td><span class="ref-highlight">Tenacidad = impactos</span><br>Acero Hadfield: alto Mn</td>
-                        <td>Martillos trituradora, zapatas oruga</td>
-                        <td>Fractura por golpe</td>
-                      </tr>
-                      <tr>
-                        <td><span class="ref-tag tag-metal">METAL</span><br><strong>Alto Carbono (0.85%C)</strong></td>
-                        <td><span class="ref-highlight">Dureza = abrasión</span><br>Mayor C → más carburos</td>
-                        <td>Zapata oruga, cuchilla motoniveladora</td>
-                        <td>Desgaste abrasivo acelerado</td>
-                      </tr>
-                      <tr>
-                        <td><span class="ref-tag tag-metal">PROCESO</span><br><strong>Cementado</strong></td>
-                        <td>Cáscara dura (1–3 mm)<br><span class="ref-highlight">Núcleo tenaz</span> (bajo C)</td>
-                        <td>Pasadores y bujes de articulación</td>
-                        <td>Desgaste cáscara O fractura núcleo</td>
-                      </tr>
-                      <tr>
-                        <td><span class="ref-tag tag-metal">PROCESO</span><br><strong>Templado + Revenido</strong></td>
-                        <td>Templado → dureza + fragilidad<br><span class="ref-highlight">Revenido → recupera tenacidad</span></td>
-                        <td>Ejes, engranajes, cigüeñales</td>
-                        <td>Sin revenido: pieza frágil</td>
-                      </tr>
-                      <tr>
-                        <td><span class="ref-tag tag-poly">POLÍMERO</span><br><strong>PVC (termoplástico)</strong></td>
-                        <td><span class="ref-highlight">Tg ≈ 75–85°C</span><br>Tm ≈ 160–210°C<br><span class="ref-warn">⚠ NO confundir Tg con Tm</span></td>
-                        <td>Aislante eléctrico, mangueras frías</td>
-                        <td>A 90°C falla como sello (supera Tg)</td>
-                      </tr>
-                      <tr>
-                        <td><span class="ref-tag tag-poly">POLÍMERO</span><br><strong>Elastómero (FKM/EPDM)</strong></td>
-                        <td>Deformación + recuperación 100%<br><span class="ref-highlight">Tg muy baja (&lt;−40°C)</span></td>
-                        <td>O-rings, mangueras hidráulicas, sellos</td>
-                        <td>Fuga de aceite a presión</td>
-                      </tr>
-                      <tr>
-                        <td><span class="ref-tag tag-poly">POLÍMERO</span><br><strong>Termoestable (Epoxi)</strong></td>
-                        <td>Moldeo único → <span class="ref-highlight">NO reciclable</span><br>Se quema si se recalienta</td>
-                        <td>Matrices de compuestos PMC</td>
-                        <td>Se degrada >150–350°C</td>
-                      </tr>
-                      <tr>
-                        <td><span class="ref-tag tag-ceram">CERÁMICA</span><br><strong>SiC / Al₂O₃</strong></td>
-                        <td>&gt;1000°C estable<br>Dureza 9–9.5 Mohs<br><span class="ref-highlight">Aislante eléctrico</span></td>
-                        <td>Discos embrague, sensores motor</td>
-                        <td>Deformación térmica a &gt;600°C</td>
-                      </tr>
-                      <tr>
-                        <td><span class="ref-tag tag-comp">COMPUESTO</span><br><strong>PMC (Matriz Polimérica)</strong></td>
-                        <td>Matriz: resina (hasta ~350°C)<br><span class="ref-highlight">Límite = la MATRIZ, no la fibra</span></td>
-                        <td>Estructuras livianas en temperatura moderada</td>
-                        <td>Matriz se degrada &gt;350°C</td>
-                      </tr>
-                      <tr>
-                        <td><span class="ref-tag tag-comp">COMPUESTO</span><br><strong>MMC (Matriz Metálica)</strong></td>
-                        <td>Aluminio/Titanio + fibra C<br><span class="ref-highlight">300–500°C</span></td>
-                        <td>Piezas cerca del escape (450°C)</td>
-                        <td>PMC colapsaría a esa temperatura</td>
-                      </tr>
-                      <tr>
-                        <td><span class="ref-tag tag-proc">PROCESO</span><br><strong>Pulvimetalurgia / Sinterizado</strong></td>
-                        <td><span class="ref-highlight">70–90% de la Tm</span><br>Difusión sólida (NO funde)<br>Porosidad controlada</td>
-                        <td>Bujes autolubricantes (10–30% poros)</td>
-                        <td>Al 100% Tm: colapsa + pierde porosidad</td>
-                      </tr>
-                      <tr>
-                        <td><span class="ref-tag tag-proc">CONTEXTO</span><br><strong>Fundiciones Chile</strong></td>
-                        <td>7 plantas · Alto As/S<br><span class="ref-highlight">No cumplen norma verde</span></td>
-                        <td>Procesamiento de cobre nacional</td>
-                        <td>Rechazo mercado int. en 5–10 años</td>
-                      </tr>
+                      <tr><td><span class="ref-tag tag-metal">METAL</span> Cromo (Cr)</td><td>Capa Cr₂O₃<br><span class="ref-highlight">Corrosión + roce</span></td><td>Vástago cilindro</td><td>Corrosión + fuga</td></tr>
+                      <tr><td><span class="ref-tag tag-metal">METAL</span> Manganeso (Mn)</td><td><span class="ref-highlight">Tenacidad = impactos</span></td><td>Martillos, zapatas</td><td>Fractura por golpe</td></tr>
+                      <tr><td><span class="ref-tag tag-metal">METAL</span> Alto Carbono (0.85%C)</td><td><span class="ref-highlight">Dureza = abrasión</span></td><td>Zapata oruga, cuchilla</td><td>Desgaste abrasivo</td></tr>
+                      <tr><td><span class="ref-tag tag-proc">PROCESO</span> Cementado</td><td>Cáscara dura 1–3mm<br><span class="ref-highlight">Núcleo tenaz</span></td><td>Pasadores y bujes</td><td>Desgaste O fractura</td></tr>
+                      <tr><td><span class="ref-tag tag-proc">PROCESO</span> Templado+Revenido</td><td>Templado → fragilidad<br><span class="ref-highlight">Revenido → tenacidad</span></td><td>Ejes, engranajes</td><td>Sin revenido: frágil</td></tr>
+                      <tr><td><span class="ref-tag tag-poly">POLÍMERO</span> PVC</td><td><span class="ref-highlight">Tg ≈ 75–85°C</span><br>Tm ≈ 160–210°C<br><span class="ref-warn">⚠ No confundir</span></td><td>Aislante eléctrico</td><td>A 90°C falla como sello</td></tr>
+                      <tr><td><span class="ref-tag tag-poly">POLÍMERO</span> Elastómero</td><td>Recupera forma 100%<br><span class="ref-highlight">Tg muy baja (&lt;−40°C)</span></td><td>O-rings, mangueras</td><td>Fuga de aceite</td></tr>
+                      <tr><td><span class="ref-tag tag-poly">POLÍMERO</span> Termoestable (Epoxi)</td><td>Moldeo único<br><span class="ref-highlight">NO reciclable</span><br>Se quema si recalienta</td><td>Matrices PMC</td><td>Degrada >150–350°C</td></tr>
+                      <tr><td><span class="ref-tag tag-ceram">CERÁMICA</span> SiC / Al₂O₃</td><td>&gt;1000°C estable<br>Mohs 9–9.5<br><span class="ref-highlight">Aislante eléctrico</span></td><td>Discos embrague, sensores</td><td>Deformación térmica</td></tr>
+                      <tr><td><span class="ref-tag tag-comp">COMPUESTO</span> PMC</td><td>Límite = <span class="ref-highlight">la MATRIZ (~350°C)</span></td><td>Estructuras livianas</td><td>Matriz degrada &gt;350°C</td></tr>
+                      <tr><td><span class="ref-tag tag-comp">COMPUESTO</span> MMC</td><td>Al/Ti + fibra C<br><span class="ref-highlight">300–500°C</span></td><td>Piezas cerca del escape</td><td>PMC colapsa a 450°C</td></tr>
+                      <tr><td><span class="ref-tag tag-proc">PROCESO</span> Pulvimetalurgia</td><td><span class="ref-highlight">70–90% de la Tm</span><br>Difusión sólida<br>Porosidad controlada</td><td>Bujes autolubricantes</td><td>Al 100% Tm: colapsa</td></tr>
+                      <tr><td><span class="ref-tag tag-proc">CONTEXTO</span> Fundiciones Chile</td><td>7 plantas · Alto As/S<br><span class="ref-highlight">No cumplen norma verde</span></td><td>Cobre nacional</td><td>Rechazo en 5–10 años</td></tr>
                     </tbody>
                   </table>
                 </div>
               </div>
             </div>
-
             <div class="plan-block b-analysis">
-              <div class="plan-block-title">🃏 Bloque 2 · Flashcards mentales — repite en voz alta (1h)</div>
+              <div class="plan-block-title">🃏 Bloque 2 · Flashcards mentales (1h)</div>
               <div class="plan-block-body">
-                Tapa la columna "dato clave" y responde de memoria. Si fallas uno, lo repites 3 veces antes de avanzar.
-                <div class="flash-grid" style="margin-top:14px;">
-                  <div class="flash-card fc-metal">
-                    <div class="flash-q">Vástago cilindro hidráulico → elemento aleante</div>
-                    <div class="flash-a">Cromo (Cr)</div>
-                    <div class="flash-sub">→ Capa Cr₂O₃ · corrosión + roce</div>
-                  </div>
-                  <div class="flash-card fc-metal">
-                    <div class="flash-q">Falla por fractura en trituradora → aleante</div>
-                    <div class="flash-a">Manganeso (Mn)</div>
-                    <div class="flash-sub">→ Tenacidad / impacto · Hadfield</div>
-                  </div>
-                  <div class="flash-card fc-metal">
-                    <div class="flash-q">Cáscara dura + núcleo tenaz → tratamiento</div>
-                    <div class="flash-a">Cementado</div>
-                    <div class="flash-sub">→ 1–3 mm · pasadores y bujes</div>
-                  </div>
-                  <div class="flash-card fc-poly">
-                    <div class="flash-q">Sello que falla a 90°C → por qué</div>
-                    <div class="flash-a">Supera Tg (75–85°C)</div>
-                    <div class="flash-sub">→ PVC pasa a estado gomoso</div>
-                  </div>
-                  <div class="flash-card fc-poly">
-                    <div class="flash-q">O-ring hidráulico → tipo de polímero</div>
-                    <div class="flash-a">Elastómero</div>
-                    <div class="flash-sub">→ Recupera forma 100% · sella</div>
-                  </div>
-                  <div class="flash-card fc-ceram">
-                    <div class="flash-q">Disco embrague 800°C → material</div>
-                    <div class="flash-a">Cerámica (SiC / Al₂O₃)</div>
-                    <div class="flash-sub">→ Estable &gt;1000°C · Mohs 9–9.5</div>
-                  </div>
-                  <div class="flash-card fc-proc">
-                    <div class="flash-q">Sinterizado → temperatura en % Tm</div>
-                    <div class="flash-a">70–90% Tm</div>
-                    <div class="flash-sub">→ Difusión sólida · NO funde</div>
-                  </div>
-                  <div class="flash-card fc-metal">
-                    <div class="flash-q">Límite de temperatura en un compuesto PMC</div>
-                    <div class="flash-a">La MATRIZ (~350°C)</div>
-                    <div class="flash-sub">→ No la fibra · falla el eslabón débil</div>
-                  </div>
+                <div class="flash-grid">
+                  <div class="flash-card fc-metal"><div class="flash-q">Vástago cilindro hidráulico → aleante</div><div class="flash-a">Cromo (Cr)</div><div class="flash-sub">→ Capa Cr₂O₃ · corrosión + roce</div></div>
+                  <div class="flash-card fc-metal"><div class="flash-q">Fractura en martillo trituradora → aleante</div><div class="flash-a">Manganeso (Mn)</div><div class="flash-sub">→ Tenacidad · impacto</div></div>
+                  <div class="flash-card fc-metal"><div class="flash-q">Cáscara dura + núcleo tenaz → tratamiento</div><div class="flash-a">Cementado</div><div class="flash-sub">→ 1–3 mm · pasadores y bujes</div></div>
+                  <div class="flash-card fc-poly"><div class="flash-q">Sello falla a 90°C → temperatura crítica</div><div class="flash-a">Supera Tg (75–85°C)</div><div class="flash-sub">→ PVC pasa a estado gomoso</div></div>
+                  <div class="flash-card fc-poly"><div class="flash-q">O-ring hidráulico → tipo polímero</div><div class="flash-a">Elastómero</div><div class="flash-sub">→ Recupera forma 100% · sella</div></div>
+                  <div class="flash-card fc-ceram"><div class="flash-q">Disco embrague 800°C → material</div><div class="flash-a">Cerámica (SiC / Al₂O₃)</div><div class="flash-sub">→ Estable &gt;1000°C · Mohs 9–9.5</div></div>
+                  <div class="flash-card fc-proc"><div class="flash-q">Sinterizado → temperatura en % Tm</div><div class="flash-a">70–90% Tm</div><div class="flash-sub">→ Difusión sólida · NO funde</div></div>
+                  <div class="flash-card fc-metal"><div class="flash-q">Límite temperatura compuesto PMC</div><div class="flash-a">La MATRIZ (~350°C)</div><div class="flash-sub">→ No la fibra · falla el eslabón débil</div></div>
                 </div>
               </div>
             </div>
-
             <div class="plan-block b-sim">
               <div class="plan-block-title">⚡ Bloque 3 · Modo Tecnicismos (45 min)</div>
-              <div class="plan-block-body">Haz el modo "Tecnicismos" del simulador. Son los datos duros que el profe incluirá: 70–90% Tm, Tg PVC ~75–85°C, Tm PVC ~160°C, sinterizado, etc.</div>
+              <div class="plan-block-body">Haz el modo "Tecnicismos": 70–90% Tm, Tg/Tm del PVC, sinterizado, norma verde.</div>
             </div>
           </div>
         </div>
 
-        <!-- DÍA 3 -->
         <div class="plan-day">
-          <div class="plan-day-header">
-            <div class="plan-day-num">Lunes</div>
-            <div class="plan-day-title">Simulacro Final + Repaso Rápido</div>
-          </div>
+          <div class="plan-day-header"><div class="plan-day-num">Día 3</div><div class="plan-day-title">Simulacro Final + Repaso Rápido</div></div>
           <div class="plan-day-body">
             <div class="plan-block b-analysis">
-              <div class="plan-block-title">🧠 Bloque 1 · Repaso de tarjetas mentales (1h)</div>
+              <div class="plan-block-title">🧠 Bloque 1 · Mapa de memoria sin apuntes (1h)</div>
               <div class="plan-block-body">
-                Sin mirar apuntes, completa este mapa de memoria:
                 <ul>
                   <li>Falla por corrosión en cilindro hidráulico → ___</li>
                   <li>Pieza resiste impactos + roce en articulación → ___ + ___</li>
                   <li>Temperatura 800°C en embrague → ___</li>
-                  <li>Sensor de temperatura motor → ___</li>
-                  <li>Buje autolubricante sin mantenimiento → ___ (proceso)</li>
+                  <li>Sensor temperatura motor → ___</li>
+                  <li>Buje autolubricante → ___ (proceso)</li>
                 </ul>
                 <em style="color:var(--muted)">Respuestas: Cromo · Cementado + núcleo tenaz · Cerámica industrial · Cerámica · Pulvimetalurgia</em>
               </div>
             </div>
             <div class="plan-block b-sim">
-              <div class="plan-block-title">⚡ Bloque 2 · Examen Completo final (1.5h)</div>
-              <div class="plan-block-body">Modo "Examen Completo" del simulador. Si superas 85%, estás listo. Si no: enfócate en los temas que fallaste según el resumen de resultados.</div>
+              <div class="plan-block-title">⚡ Bloque 2 · Examen Completo con temporizador (1h)</div>
+              <div class="plan-block-body">Modo "Examen Completo" — 60 minutos reales. Si superas 85%, estás listo.</div>
             </div>
             <div class="plan-block b-review">
               <div class="plan-block-title">📋 Bloque 3 · Noche antes (30 min)</div>
-              <div class="plan-block-body">Solo repasar la tabla de aleantes (Cr/Mn/C/Ni) y la diferencia termoplástico/termoestable/elastómero. Nada nuevo. Descansar.</div>
+              <div class="plan-block-body">Solo tabla de aleantes (Cr/Mn/C) y termoplástico/termoestable/elastómero. Nada nuevo. Descansar.</div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- ══ SCREEN: QUESTION ═══════════════════════════════ -->
+  <!-- QUESTION -->
   <div class="screen" id="screen-question">
     <div class="q-header">
-      <div class="q-counter" id="q-counter">Pregunta 1 de 22</div>
+      <div class="q-counter" id="q-counter">Pregunta 1 de 25</div>
       <div id="q-badge"></div>
     </div>
-
     <div class="question-card">
       <div class="q-cat-label" id="q-cat-label"></div>
       <div class="q-text" id="q-text"></div>
@@ -657,7 +382,6 @@ textarea::placeholder { color: var(--muted); }
       <div class="options" id="options-container"></div>
       <textarea id="dev-answer" style="display:none" placeholder="Escribe tu respuesta aquí. El profesor exige JUSTIFICACIÓN — no solo el material, sino POR QUÉ ese material para esa pieza específica..."></textarea>
     </div>
-
     <div class="feedback-box" id="feedback-box">
       <div class="fb-header">
         <span class="fb-icon" id="fb-icon"></span>
@@ -667,14 +391,13 @@ textarea::placeholder { color: var(--muted); }
       <div class="fb-trap" id="fb-trap" style="display:none"></div>
       <div class="fb-fact" id="fb-fact" style="display:none"></div>
     </div>
-
     <div class="action-row">
       <button class="btn btn-ghost" onclick="skipQuestion()" id="btn-skip">Saltar</button>
       <button class="btn btn-cat" onclick="handleAction()" id="btn-action">Confirmar respuesta</button>
     </div>
   </div>
 
-  <!-- ══ SCREEN: RESULTS ════════════════════════════════ -->
+  <!-- RESULTS -->
   <div class="screen" id="screen-results">
     <div class="results-hero">
       <div class="score-ring">
@@ -682,164 +405,479 @@ textarea::placeholder { color: var(--muted); }
           <circle cx="75" cy="75" r="62" fill="none" stroke="#1e2030" stroke-width="13"/>
           <circle id="ring-arc" cx="75" cy="75" r="62" fill="none" stroke="url(#rg)" stroke-width="13"
             stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="389.6"/>
-          <defs>
-            <linearGradient id="rg" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#f5a623"/>
-              <stop offset="100%" stop-color="#e8911a"/>
-            </linearGradient>
-          </defs>
+          <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#f5a623"/><stop offset="100%" stop-color="#e8911a"/>
+          </linearGradient></defs>
         </svg>
         <div class="score-ring-inner">
           <div class="score-big" id="score-big">0</div>
-          <div class="score-sub" id="score-sub">/20 MC</div>
+          <div class="score-sub" id="score-sub">/0 MC</div>
         </div>
       </div>
       <div class="result-title" id="result-title"></div>
       <div class="result-msg" id="result-msg"></div>
     </div>
-
     <div class="result-stats">
-      <div class="rs-box">
-        <div class="rs-val" id="rs-correct" style="color:var(--green)">0</div>
-        <div class="rs-lbl">Correctas</div>
-      </div>
-      <div class="rs-box">
-        <div class="rs-val" id="rs-wrong" style="color:var(--red)">0</div>
-        <div class="rs-lbl">Incorrectas</div>
-      </div>
-      <div class="rs-box">
-        <div class="rs-val" id="rs-nota" style="color:var(--cat)">0.0</div>
-        <div class="rs-lbl">Nota Aprox.</div>
-      </div>
+      <div class="rs-box"><div class="rs-val" id="rs-correct" style="color:var(--green)">0</div><div class="rs-lbl">Correctas</div></div>
+      <div class="rs-box"><div class="rs-val" id="rs-wrong" style="color:var(--red)">0</div><div class="rs-lbl">Incorrectas</div></div>
+      <div class="rs-box"><div class="rs-val" id="rs-nota" style="color:var(--cat)">0.0</div><div class="rs-lbl">Nota Aprox.</div></div>
     </div>
-
     <div class="review-section-title">Revisión completa</div>
     <div class="review-list" id="review-list"></div>
-
     <div class="result-btns">
       <button class="btn btn-ghost" onclick="goHome()">← Inicio</button>
       <button class="btn btn-cat" onclick="retryExam()">Reintentar →</button>
     </div>
   </div>
-
 </main>
 
 <script>
-const ALL_QUESTIONS = [
-  {id:1,type:'mc',category:'trap',cat:'Metales — Aleantes',text:'El vástago de un cilindro hidráulico de una excavadora debe deslizarse miles de veces sin corroerse ni rayarse. ¿Qué elemento de aleación es imprescindible en su superficie y por qué?',opts:['Carbono (C), porque aumenta la dureza total del acero.','Cromo (Cr), porque forma una capa pasivante que resiste la corrosión y la fricción superficial.','Manganeso (Mn), porque aporta tenacidad frente a los impactos del émbolo.','Níquel (Ni), porque eleva el punto de fusión del acero para tolerar el calor del fluido.'],ans:1,exp:'El Cromo forma óxido de cromo (Cr₂O₃), una capa pasivante que resiste la corrosión por fluido hidráulico contaminado con agua Y reduce la fricción superficial con los sellos. Por eso todos los vástagos llevan "hard chrome plating" (cromado duro). El carbono da dureza general, no pasivación; el manganeso sirve para impactos, no para roce crónico.',trap:'El Carbono suena correcto porque "da dureza". Pero la dureza general no es lo mismo que resistencia a la corrosión. El mecanismo crítico aquí es corrosión + roce superficial = Cromo.',fact:'Cr (Cromo) = Corrosión + Fricción superficial. Aplicación clásica: vástago cilindro hidráulico.'},
-  {id:2,type:'mc',category:'trap',cat:'Metales — Aleantes',text:'Una zapata de oruga de excavadora opera en suelo rocoso con desgaste abrasivo extremo. El jefe de mantención elige entre acero 0.35%C y acero 0.85%C. ¿Cuál elige y qué propiedad lo justifica?',opts:['El 0.35% C, porque tiene mayor tenacidad y no se parte con los impactos de las rocas.','El 0.85% C, porque el mayor carbono genera mayor dureza y resistencia al desgaste abrasivo.','Ambos son equivalentes: la zapata se protege con tratamiento superficial.','El 0.35% C, porque el alto carbono genera corrosión galvánica con el suelo húmedo.'],ans:1,exp:'El acero de alto carbono (0.85% C) es correcto para desgaste abrasivo. A mayor %C, más carburos de hierro en la microestructura, mayor dureza Vickers y mayor resistencia al rozamiento. Zapatas de orugas son la aplicación clásica de aceros de alto carbono. La tenacidad es secundaria aquí; prima el antidesgaste.',trap:'El 0.35%C es tentador porque "no se parte con golpes" (cierto). Pero el mecanismo de falla de las zapatas es ABRASIÓN, no impacto puro.',fact:'Alto Carbono (0.85% C) = Dureza + Resistencia al desgaste abrasivo. Zapatas de oruga, cuchillas motoniveladoras.'},
-  {id:3,type:'mc',category:'theory',cat:'Tratamientos Térmicos',text:'Un pasador de articulación de cuchara de excavadora debe resistir el roce constante en su superficie pero absorber golpes sin quebrarse. ¿Qué tratamiento térmico es el correcto?',opts:['Templado completo, para lograr máxima dureza en toda la sección.','Revenido profundo, para máxima tenacidad en toda la pieza.','Cementado (endurecimiento superficial), que endurece solo la capa exterior dejando el núcleo tenaz.','Normalizado, para homogeneizar la microestructura y eliminar tensiones.'],ans:2,exp:'El cementado endurece solo la "cáscara" superficial (1–3 mm) por difusión de carbono. Esta cáscara dura resiste el roce del pasador dentro del buje. El núcleo permanece blando y tenaz, absorbiendo impactos sin partirse. El templado total dejaría la pieza completa dura pero frágil.',trap:null,fact:'Cementado = Cáscara dura (roce) + Núcleo tenaz (golpes). Aplicación: pasadores y bujes de articulaciones.'},
-  {id:4,type:'mc',category:'trap',cat:'Tratamientos Térmicos',text:'¿Cuál es la secuencia correcta y la función de cada paso en el tratamiento TEMPLADO + REVENIDO?',opts:['Templado (tenacidad) → Revenido (dureza). Se aplica en pasadores y bujes de articulaciones.','Templado (dureza máxima, queda frágil) → Revenido (devuelve tenacidad, se reduce algo la dureza).','Revenido (dureza superficial) → Templado (homogeneización). Se aplica en vástagos hidráulicos.','Templado (endurece solo la superficie) → Revenido (endurece el núcleo). Proceso en dos fases selectivas.'],ans:1,exp:'El templado genera enfriamiento brusco (quench) que crea martensita: máxima dureza pero altísima fragilidad. El revenido posterior calienta el metal a temperatura intermedia, transformando parte de la martensita para recuperar tenacidad, a costo de algo de dureza. Resultado: pieza dura Y capaz de absorber cargas sin romperse.',trap:'La opción C invierte el orden de los procesos — trampa clásica. El templado SIEMPRE va primero. La opción D describe el CEMENTADO, no el templado+revenido.',fact:'Templado (dureza + fragilidad) → Revenido (recupera tenacidad). Nunca al revés. Para ejes, engranajes, cigüeñales.'},
-  {id:5,type:'mc',category:'theory',cat:'Polímeros — Clasificación',text:'¿Cuál es la diferencia fundamental entre un termoplástico y un termoestable?',opts:['Los termoplásticos son siempre más resistentes a impactos porque tienen mayor tenacidad molecular.','Los termoplásticos se ablandan con calor y son reciclables; los termoestables solo se moldean una vez y se queman si se recalientan.','Los termoestables se derriten a mayor temperatura y también son reciclables mediante proceso inverso.','Los termoplásticos son polímeros naturales y los termoestables son exclusivamente polímeros sintéticos.'],ans:1,exp:'La diferencia clave es la reversibilidad. Los termoplásticos (PVC, Policarbonato) se ablandan al superar su Tg y se derriten al superar su Tm — proceso reversible y reciclable. Los termoestables (resinas epoxi) reaccionan químicamente al moldearse, formando enlaces cruzados permanentes. Si los recalientas, no fluyen: se degradan y queman.',trap:'Cuidado con creer que los termoestables "aguantan más calor". No es que aguanten más — es que reaccionan diferente al calor. Y NO son reciclables en ningún caso.',fact:'Termoplásticos: PVC, Policarbonato (reciclables). Termoestables: Resinas Epoxi (se queman, no reciclables).'},
-  {id:6,type:'mc',category:'trap',cat:'Polímeros — Temperatura Crítica',text:'Un ingeniero propone usar un sello de PVC en una línea hidráulica que trabaja a 90°C de forma continua. El otro ingeniero lo rechaza. ¿Cuál es el argumento técnico correcto del rechazo?',opts:['El PVC es conductor eléctrico y puede generar cortocircuitos en el circuito hidráulico.','El PVC tiene una Tm de exactamente 90°C por lo que se fundirá completamente en servicio.','El PVC es un termoplástico cuya Tg está entre 75–85°C; a 90°C supera esa temperatura, pierde rigidez y fluye bajo presión, fallando como sello.','El PVC es incompatible químicamente con el aceite hidráulico a cualquier temperatura.'],ans:2,exp:'La Tg del PVC rígido es ≈75–85°C. Al superar la Tg, el polímero pasa de estado vítreo (rígido) a estado gomoso (blando, deformable). A 90°C de servicio continuo, el PVC fluiría bajo la presión hidráulica y el sello fallaría completamente. La Tm del PVC es ≈160–210°C (no 90°C). Para esta aplicación se necesita un elastómero (FKM o EPDM) con Tg muy baja.',trap:'Esta es la trampa clásica de temperaturas. La Tm del PVC es ~160°C, no 90°C — así que la opción B es falsa. El PVC es aislante eléctrico, no conductor. El fallo es por superar la Tg, no la Tm.',fact:'Tg PVC ≈ 75–85°C. A 90°C falla como sello. Tm PVC ≈ 160–210°C. Confundir Tg con Tm = error clásico de examen.'},
-  {id:7,type:'mc',category:'tech',cat:'Polímeros — Tg y Tm',text:'¿Qué representa la Tg (temperatura de transición vítrea) en los polímeros, y en qué se diferencia de la Tm?',opts:['Tg es la temperatura de ignición del polímero; Tm es la temperatura donde se ablanda sin quemarse.','Tg es donde el polímero pasa de gomoso a rígido y frágil (como vidrio); Tm es donde el termoplástico se derrite y fluye.','Tg y Tm son sinónimos; ambas representan el límite donde el polímero pierde sus propiedades mecánicas.','Tg es exclusiva de los termoestables; Tm es el parámetro de los termoplásticos.'],ans:1,exp:'La Tg (Transición Vítrea) es la temperatura donde el polímero cambia de comportamiento: por encima está flexible/gomoso; por debajo se vuelve rígido y frágil como el vidrio. La Tm es distinta: es donde el termoplástico se derrite y fluye. Los termoestables no tienen Tm definida (se degradan). La Tg siempre es menor que la Tm en termoplásticos.',trap:'La opción C es la trampa: decir que son sinónimos. Son parámetros completamente diferentes.',fact:'Tg = se vuelve frágil/rígido. Tm = se derrite. Tg < Tm siempre. Los termoestables tienen Tg pero NO Tm (se queman).'},
-  {id:8,type:'mc',category:'theory',cat:'Polímeros — Elastómeros',text:'¿Por qué los O-rings de un sistema hidráulico de alta presión son de elastómero y no de termoplástico o termoestable?',opts:['Porque los elastómeros tienen mayor dureza que los termoplásticos, resistiendo mejor la presión.','Porque los elastómeros son los únicos polímeros que recuperan su forma al 100% tras la deformación, generando el sello dinámico.','Porque los elastómeros son más económicos que los otros tipos de polímeros.','Porque los elastómeros son reciclables y cumplen con las normas ambientales del sistema hidráulico.'],ans:1,exp:'Los elastómeros tienen la propiedad única de deformarse mucho y recuperar su forma original al 100% (elasticidad perfecta). En un O-ring, el anillo se comprime al instalar la conexión y esa presión de retorno es la que genera el sello hermético que impide que el aceite a alta presión se escape.',trap:null,fact:'Elastómeros = Deformación máxima + Recuperación 100%. Tercera categoría de polímeros. Ni termoplásticos ni termoestables.'},
-  {id:9,type:'mc',category:'trap',cat:'Polímeros — Aplicaciones',text:'El tablero transparente de la cabina de un bulldozer está en policarbonato. El técnico de mantenimiento propone reemplazarlo con vidrio templado por ser más resistente. ¿Cuál es el argumento técnico correcto para mantener el policarbonato?',opts:['El policarbonato tiene mayor transparencia óptica que el vidrio templado, mejorando la visibilidad.','El policarbonato resiste impactos sin astillarse ni generar fragmentos cortantes, protegiendo al operador.','El policarbonato resiste disolventes y aceites mejor que el vidrio, protegiéndolo en ambiente de obra.','El policarbonato soporta temperaturas superiores a 300°C, mientras el vidrio templado solo aguanta 200°C.'],ans:1,exp:'El policarbonato (termoplástico) supera al vidrio en resistencia al impacto: absorbe golpes sin astillarse ni generar fragmentos peligrosos — crítico en ambiente de obra donde piedras y escombros impactan la cabina. Además es ≈50% más liviano. Sin embargo, el policarbonato tiene baja resistencia a disolventes (aceites lo atacan) y su Tg es ≈147°C, no aguanta 300°C.',trap:'La opción C es una trampa: el policarbonato tiene BAJA resistencia a disolventes y aceites. La opción D es falsa: su Tg es 147°C.',fact:'Policarbonato = Impacto sin astillas + Liviano. No aguanta solventes ni altas temperaturas. Reemplaza vidrio en cabinas.'},
-  {id:10,type:'mc',category:'theory',cat:'Cerámicas Industriales',text:'¿Por qué los sensores de temperatura del motor y las sondas lambda de un camión minero son de material cerámico?',opts:['Porque las cerámicas son excelentes conductores eléctricos, mejorando la señal del sensor.','Porque las cerámicas son más económicas que los metales y reducen costos de mantenimiento.','Porque las cerámicas tienen alta ductilidad, deformándose sin romperse en ambientes vibrados.','Porque las cerámicas tienen estabilidad química y dimensional a temperaturas extremas (>600°C) y resisten gases corrosivos del escape.'],ans:3,exp:'Los sensores de motor (ZrO₂ en sondas lambda, Al₂O₃ en vainas de temperatura) se usan porque mantienen sus propiedades sin degradarse a temperaturas extremas del motor y resisten gases sulfurosos y de combustión. Las cerámicas son aislantes eléctricos (no conductores), son frágiles (no dúctiles), y son más costosas que el acero.',trap:'La opción A es una trampa perfecta: las cerámicas son AISLANTES eléctricos, no conductores.',fact:'Cerámicas en sensores: ZrO₂ (sonda lambda), Al₂O₃ (temperatura). Estabilidad térmica + química > 600°C. Son aislantes eléctricos.'},
-  {id:11,type:'mc',category:'trap',cat:'Cerámicas Industriales',text:'Los discos de embrague del convertidor de torque de un camión minero Caterpillar 793 alcanzan más de 800°C por fricción. ¿Qué material es el estándar de la industria?',opts:['Acero bonificado templado y revenido, por su alta dureza superficial después del tratamiento.','Compuesto de fibra de carbono con matriz polimérica (CFRP), por su bajo peso y resistencia mecánica.','Cerámica industrial (carburo de silicio SiC o alúmina Al₂O₃), por su dureza extrema y estabilidad térmica superior a 1000°C.','Elastómero reforzado con Kevlar, por su resistencia combinada al desgaste y alta temperatura.'],ans:2,exp:'Las cerámicas industriales (SiC, Al₂O₃) soportan más de 1000°C sin fundirse, con dureza de 9–9.5 Mohs y bajo coeficiente de dilatación térmica. Los aceros pierden propiedades a 600–700°C; los polímeros (CFRP, elastómeros) se degradan muy por debajo de 800°C.',trap:'El CFRP (fibra de carbono) suena técnico y resistente, pero la matriz polimérica se degrada entre 150–350°C — muy por debajo de los 800°C del embrague.',fact:'Cerámica industrial: dureza extrema + >1000°C. Discos embrague minería + sensores motor = las dos aplicaciones clave del curso.'},
-  {id:12,type:'mc',category:'theory',cat:'Materiales Compuestos',text:'En un material compuesto (como fibra de carbono + resina epoxi), ¿cuál es la función de la MATRIZ y cuál la del REFUERZO?',opts:['La matriz aporta la rigidez mecánica; el refuerzo da forma y protege el componente.','La matriz da forma y protege las fibras del ambiente; el refuerzo (fibras) aporta rigidez y resistencia mecánica.','Ambos tienen la misma función: aumentar la resistencia total del material compuesto.','El refuerzo protege de la corrosión; la matriz absorbe los impactos mecánicos del entorno.'],ans:1,exp:'En materiales compuestos los roles están perfectamente definidos: la MATRIZ (material continuo: resina epoxi, aluminio, cerámica) da forma al componente, transfiere cargas a las fibras y las protege del ambiente. El REFUERZO (fibras de carbono, vidrio o Kevlar) aporta la alta rigidez y resistencia mecánica.',trap:'La opción A invierte los roles — es la trampa perfecta.',fact:'Matriz (da forma + protege) + Refuerzo (fibras = resistencia). Si te preguntan quién da forma: MATRIZ. Quién da fuerza: REFUERZO.'},
-  {id:13,type:'mc',category:'trap',cat:'Materiales Compuestos — MMC vs PMC',text:'Se necesita fabricar una pieza estructural cerca del escape de un camión minero que trabaja a 450°C con cargas mecánicas altas. Un compuesto PMC (Matriz Polimérica) queda descartado. ¿Qué tipo es el correcto?',opts:['PMC con fibra de vidrio, porque la fibra en sí soporta esas temperaturas aunque la matriz no.','MMC (Matriz Metálica, ej. aluminio + fibra de carbono), porque combina resistencia mecánica con mayor tolerancia térmica que los polímeros.','CMC (Matriz Cerámica), pero solo si la pieza no tiene función estructural.','Elastómero reforzado con Kevlar, porque es la combinación flexible + resistente al calor.'],ans:1,exp:'Para 450°C un PMC es inviable — los polímeros se degradan entre 150–350°C. La solución es un MMC (Metal Matrix Composite): la matriz de aluminio o titanio soporta 300–500°C; el refuerzo (fibra de carbono o SiC) aporta rigidez. Los CMC (cerámica) se usan para temperaturas aún más extremas (>800°C).',trap:'La opción A es una trampa técnica: aunque la FIBRA de vidrio soporte calor, la MATRIZ polimérica se degradaría a 450°C. El compuesto falla por el componente más débil, no el más fuerte.',fact:'PMC → hasta ~350°C. MMC → 300–500°C. CMC → >800°C. El límite lo pone SIEMPRE la matriz, no el refuerzo.'},
-  {id:14,type:'mc',category:'tech',cat:'Pulvimetalurgia',text:'En pulvimetalurgia, la "pieza en verde" se introduce al horno de sinterizado. ¿A qué temperatura, expresada como porcentaje de la Tm del metal, opera el horno?',opts:['Entre 20% y 40% de la Tm, para evitar cualquier tipo de difusión que altere la porosidad.','Entre 50% y 60% de la Tm, punto donde inicia la difusión superficial entre partículas.','Entre 70% y 90% de la Tm, donde ocurre difusión sólida que une las partículas sin que la pieza se funda.','Al 100% de la Tm, para asegurar que el metal fluya completamente y llene los vacíos.'],ans:2,exp:'El sinterizado opera entre 70% y 90% de la Tm del polvo metálico. Esto activa la difusión atómica en estado sólido, uniendo las partículas sin que la pieza se funda y pierda forma. Si se llegara al 100% de Tm, el material colapsaría y la porosidad controlada (ventaja clave del proceso) se destruiría.',trap:'La opción D es la trampa: llegar al 100% Tm destruiría la pieza y la porosidad controlada. El sinterizado NO es fusión.',fact:'Sinterizado: 70–90% de Tm. Difusión sólida. Sin fundirse. Porosidad controlada. Aplicación estrella: bujes autolubricantes.'},
-  {id:15,type:'mc',category:'theory',cat:'Pulvimetalurgia — Aplicaciones',text:'¿En qué aplicación específica de maquinaria pesada la porosidad controlada de la pulvimetalurgia es una ventaja decisiva?',opts:['Zapatas de oruga, donde la porosidad aumenta la dureza superficial y resistencia abrasiva.','Bujes y cojinetes autolubricantes, donde la porosidad retiene aceite que se libera gradualmente en servicio.','Pistones de motor, donde la porosidad reduce el peso del componente mejorando la relación potencia/peso.','Cables de acero trenzado, donde la porosidad mejora la flexibilidad bajo carga torsional.'],ans:1,exp:'Los bujes y cojinetes autolubricantes ("self-lubricating bearings") son la aplicación estrella de la pulvimetalurgia. La porosidad controlada (10–30% de volumen de vacíos) actúa como esponja: se impregna de aceite durante el montaje y lo libera gradualmente durante el funcionamiento, eliminando la necesidad de lubricación externa.',trap:null,fact:'Pulvimetalurgia → Bujes autolubricantes. Porosidad = reservorio de aceite. Elimina mantenimiento de lubricación.'},
-  {id:16,type:'mc',category:'theory',cat:'Fundiciones Chile',text:'¿Cuál es el principal riesgo de mercado que enfrentan las fundiciones chilenas si no se modernizan en los próximos 5–10 años?',opts:['Que China supere a Chile en reservas de mineral de cobre, dejándolo sin materia prima.','Que el precio internacional del cobre caiga por sobreproducción indonesia y peruana.','Que el cobre chileno sea rechazado en mercados internacionales por no cumplir estándares de Minería Verde (control de arsénico/azufre).','Que las 7 fundiciones colapsen simultáneamente por falta de energía eléctrica renovable.'],ans:2,exp:'El riesgo central es el rechazo comercial. Las 7 fundiciones chilenas procesan minerales con alto arsénico y azufre y no cumplen normas de emisión internacionales. El mercado global (especialmente Europa y Asia) exige estándares de Minería Verde. Si Chile no invierte en captura de gases, en 5–10 años el cobre chileno podría quedar fuera de la cadena de valor global.',trap:null,fact:'7 fundiciones / alto As+S / no cumplen norma verde / riesgo en 5–10 años. Solución: asociaciones público-privadas + tecnología de captura.'},
-  {id:17,type:'mc',category:'trap',cat:'Metales — Hierro y Bronce',text:'El bloque de motor de un camión minero está fabricado en fundición gris. ¿Por qué no se usa acero de alto carbono, que es más duro?',opts:['Porque el acero de alto carbono es más costoso y la fundición gris es la opción más económica para motores.','Porque la fundición gris tiene resistencia superior a la tracción, necesaria para las explosiones del motor.','Porque la fundición gris tiene excelente capacidad de absorción de vibraciones y resiste mejor la compresión, ideal para el bloque motor.','Porque el acero de alto carbono se corroen rápidamente con el refrigerante del motor.'],ans:2,exp:'La fundición gris tiene grafito en láminas en su microestructura, lo que le da excelente amortiguación de vibraciones (el motor vibra continuamente) y gran resistencia a compresión. El bloque motor trabaja principalmente a compresión por las explosiones. El acero de alto carbono es duro pero frágil, y NO tiene la capacidad de absorber vibraciones que la fundición gris tiene de forma natural.',trap:'La opción A puede sonar correcta, pero el argumento real no es el costo — es la función técnica.',fact:'Fundición gris = Absorción de vibraciones + Resistencia a compresión. Bloque motor, carcasas de bomba hidráulica.'},
-  {id:18,type:'mc',category:'theory',cat:'Metales — Bronce y Aluminio',text:'¿Por qué los bujes interiores de los pasadores de una excavadora se fabrican en bronce (Cu + Sn) y los pistones del motor en aleación de aluminio?',opts:['Bronce por su dureza extrema (8 Mohs); aluminio por su punto de fusión más alto que el hierro.','Bronce por su alta resistencia a la fricción por deslizamiento; aluminio por su baja densidad y alta conductividad térmica.','Bronce por su resistencia a la corrosión marina; aluminio porque no necesita lubricación en el cilindro.','Ambos materiales son intercambiables; la elección depende del costo y disponibilidad.'],ans:1,exp:'El bronce (Cu + Sn) tiene alta resistencia a la fricción por deslizamiento — es "auto-lubricante" por naturaleza — lo que lo hace ideal para bujes donde hay movimiento rotativo continuo del pasador. El aluminio (en aleaciones) tiene baja densidad (liviano = menor inercia en el pistón) y alta conductividad térmica (disipa el calor de la combustión hacia el cilindro).',trap:null,fact:'Bronce = Fricción por deslizamiento → Bujes. Aluminio = Liviano + Conductor térmico → Pistones motor.'},
-  {id:19,type:'mc',category:'trap',cat:'Manganeso vs Cromo — Trampa Clásica',text:'Un martillo de una trituradora de rocas falla por fractura ante los impactos de la roca. El ingeniero decide cambiar la aleación del acero. ¿Qué elemento agrega prioritariamente?',opts:['Cromo (Cr), porque forma una capa pasivante que resiste el impacto superficial de la roca.','Carbono (C), porque la mayor dureza permite que el martillo no se deforme al golpear la roca.','Manganeso (Mn), porque aporta tenacidad — la capacidad de absorber energía de impacto sin fracturarse.','Molibdeno (Mo), porque resiste las altas temperaturas generadas en cada impacto.'],ans:2,exp:'La falla es FRACTURA por impacto, no desgaste ni corrosión. El Manganeso (Mn) es el elemento que aporta tenacidad — la capacidad de absorber energía de golpe sin quebrarse. Los aceros Hadfield (alto Mn + algo de C) son el estándar para martillos de trituradora y componentes que reciben golpes brutales. El Cromo es para corrosión; el Carbono es para dureza/abrasión.',trap:'El Carbono es la trampa perfecta: "más duro = aguanta mejor". Pero la fragilidad aumenta con el carbono. Si el fallo es FRACTURA, agregar carbono podría empeorar el problema.',fact:'Mn (Manganeso) = Tenacidad / Resistencia a Impactos. Cr = Corrosión. C = Dureza + Abrasión. Tres elementos, tres mecanismos distintos.'},
-  {id:20,type:'mc',category:'tech',cat:'Sintetizado vs Compuesto — Distinción',text:'¿Cuál es la diferencia fundamental entre un material SINTETIZADO (pulvimetalurgia) y un MATERIAL COMPUESTO?',opts:['No hay diferencia real; ambos términos describen materiales formados mezclando componentes distintos.','Sintetizado = polvo metálico prensado y horneado al 70–90% Tm; Compuesto = matriz continua + refuerzo fibroso que da propiedades combinadas superiores.','Los compuestos son siempre metálicos; los sintetizados pueden ser metálicos o poliméricos indistintamente.','Los sintetizados se producen a la temperatura de fusión completa; los compuestos se moldean siempre en frío.'],ans:1,exp:'Son conceptos completamente distintos. PULVIMETALURGIA (sintetizado): PROCESO DE FABRICACIÓN — parte de polvo metálico, se prensa (pieza en verde), se hornea al 70–90% Tm para que las partículas difundan y se unan sin fundirse. COMPUESTO: CATEGORÍA DE MATERIAL — una matriz continua (resina, metal, cerámica) + un refuerzo (fibras de carbono, vidrio, Kevlar) que juntos dan propiedades que ninguno tiene solo.',trap:'La opción A es la trampa: uno es un PROCESO DE FABRICACIÓN, el otro es una CATEGORÍA DE MATERIAL.',fact:'Sintetizado = PROCESO (polvo → prensar → hornear 70–90% Tm). Compuesto = MATERIAL (Matriz + Refuerzo).'},
-  {id:21,type:'dev',category:'dev',cat:'Desarrollo — Sistema Hidráulico',text:'EJERCICIO DE DESARROLLO: Especifica el material adecuado para cada componente del sistema hidráulico de una excavadora: (A) manguera de alta presión, (B) junta tórica O-ring, (C) vástago del cilindro, (D) cableado eléctrico del sensor de presión.',context:'Justifica completamente: indica el material, por qué ese material, y qué propiedad específica cumple la función del componente.',opts:null,ans:null,exp:`RESPUESTA MODELO COMPLETA:\n\n(A) MANGUERA DE ALTA PRESIÓN → Elastómero (goma sintética / NBR o EPDM)\nJustificación: La manguera debe resistir presiones hidráulicas muy altas (hasta 350 bar) Y flexionarse al mover el cilindro. Los elastómeros se deforman mucho y recuperan su forma al 100%, soportando ciclos continuos de presión-flexión sin fatiga.\n\n(B) JUNTA TÓRICA (O-ring) → Elastómero (FKM o silicona para altas temperaturas)\nJustificación: El O-ring se comprime al instalarse y esa presión de retorno genera el sello hermético. Solo los elastómeros con su elasticidad perfecta mantienen esa fuerza de sellado sin fluir bajo la presión del aceite.\n\n(C) VÁSTAGO DEL CILINDRO → Acero con recubrimiento de Cromo duro (Cr)\nJustificación: El vástago desliza miles de veces por los sellos (fricción superficial crónica) y está expuesto al fluido hidráulico y ambiente (corrosión). El Cromo forma una capa pasivante Cr₂O₃ que resiste exactamente esas dos solicitaciones.\n\n(D) CABLEADO ELÉCTRICO DEL SENSOR → PVC (termoplástico)\nJustificación: El PVC es un excelente aislante eléctrico. Recubre el cable para que la corriente eléctrica no salte al chasis metálico ni al operador, previniendo cortocircuitos en el entorno hostil de la maquinaria.`,trap:null,fact:'Cuatro materiales distintos en un solo sistema. Cada zona tiene una solicitud diferente: elasticidad, sellado, corrosión/fricción, aislamiento.'},
-  {id:22,type:'dev',category:'dev',cat:'Desarrollo — Selección por Mecanismo de Falla',text:'EJERCICIO DE DESARROLLO: Un pasador de articulación de brazo de excavadora está fallando por desgaste superficial acelerado, pero cuando se aumentó la dureza total con templado, empezó a fracturarse. Analiza el problema y propón la solución de tratamiento térmico correcta.',context:'Justifica: (1) por qué el templado solo no funciona, (2) qué tratamiento resolverá AMBOS problemas simultáneamente, (3) qué microestructura queda en la pieza final.',opts:null,ans:null,exp:`ANÁLISIS Y SOLUCIÓN COMPLETA:\n\nPROBLEMA IDENTIFICADO: El pasador tiene dos solicitudes simultáneas y contradictorias:\n— Solicitud 1: Superficie con alto desgaste abrasivo → necesita DUREZA SUPERFICIAL\n— Solicitud 2: Núcleo que recibe impactos de articulación → necesita TENACIDAD\n\nPOR QUÉ EL TEMPLADO SOLO NO FUNCIONA:\nEl templado endurece TODA la sección de manera uniforme, creando una microestructura martensítica en todo el espesor. Esto da dureza máxima pero elimina la tenacidad en el núcleo — el pasador puede resistir el desgaste superficial, pero se fractura ante los impactos.\n\nSOLUCIÓN CORRECTA → CEMENTADO:\n1. Se difunde carbono adicional solo en la capa exterior (1–3 mm de profundidad)\n2. Se realiza templado posterior: solo la cáscara rica en carbono se endurece (martensita superficial)\n3. El núcleo, con bajo carbono original, permanece en microestructura ferrítica-perlítica: BLANDO y TENAZ\n\nMICROESTRUCTURA FINAL:\n— Cáscara superficial: Martensita (dura) → Resiste desgaste abrasivo del buje\n— Núcleo: Ferrita + Perlita (blanda, tenaz) → Absorbe impactos sin fracturarse\n— Gradiente de dureza: transición progresiva entre ambas zonas\n\nCONCLUSIÓN: El cementado es la solución clásica para pasadores y bujes porque es el único proceso que genera un gradiente de dureza controlado, resolviendo el dilema dureza vs tenacidad sin comprometer ninguno de los dos requisitos.`,trap:null,fact:'Doble solicitud (desgaste + impacto) → siempre CEMENTADO. Templado total = duro pero frágil.'}
+const ALL_QUESTIONS=[
+  {id:1,type:'mc',category:'trap',cat:'Metales — Aleantes',
+   text:'El vástago de un cilindro hidráulico de una excavadora debe deslizarse miles de veces sin corroerse ni rayarse. ¿Qué elemento de aleación es imprescindible en su superficie y por qué?',
+   opts:['Carbono (C), porque aumenta la dureza total del acero.','Cromo (Cr), porque forma una capa pasivante que resiste la corrosión y la fricción superficial.','Manganeso (Mn), porque aporta tenacidad frente a los impactos del émbolo.','Níquel (Ni), porque eleva el punto de fusión del acero para tolerar el calor del fluido.'],
+   ans:1,
+   exp:'El Cromo forma óxido de cromo (Cr₂O₃), una capa pasivante que resiste la corrosión por fluido hidráulico contaminado con agua Y reduce la fricción superficial con los sellos. El carbono da dureza general, no pasivación; el manganeso sirve para impactos, no para roce crónico.',
+   trap:'El Carbono suena correcto porque "da dureza". Pero la dureza general no es resistencia a la corrosión. El mecanismo crítico es corrosión + roce superficial = Cromo.',
+   fact:'Cr (Cromo) = Corrosión + Fricción superficial. Aplicación: vástago cilindro hidráulico.'},
+
+  {id:2,type:'mc',category:'trap',cat:'Metales — Aleantes',
+   text:'Una zapata de oruga de excavadora opera en suelo rocoso con desgaste abrasivo extremo. El jefe de mantención elige entre acero 0.35%C y acero 0.85%C. ¿Cuál elige y qué propiedad lo justifica?',
+   opts:['El 0.35% C, porque tiene mayor tenacidad y no se parte con los impactos de las rocas.','El 0.85% C, porque el mayor carbono genera mayor dureza y resistencia al desgaste abrasivo.','Ambos son equivalentes: la zapata se protege con tratamiento superficial.','El 0.35% C, porque el alto carbono genera corrosión galvánica con el suelo húmedo.'],
+   ans:1,
+   exp:'El acero de alto carbono (0.85% C) genera más carburos de hierro en la microestructura, mayor dureza Vickers y mayor resistencia al rozamiento. Las zapatas de orugas son la aplicación clásica de aceros de alto carbono.',
+   trap:'El 0.35%C es tentador porque "no se parte con golpes" (cierto). Pero el mecanismo de falla de las zapatas es ABRASIÓN, no impacto puro.',
+   fact:'Alto Carbono (0.85% C) = Dureza + Resistencia al desgaste abrasivo. Zapatas de oruga, cuchillas motoniveladoras.'},
+
+  {id:3,type:'mc',category:'theory',cat:'Tratamientos Térmicos',
+   text:'Un pasador de articulación de cuchara de excavadora debe resistir el roce constante en su superficie pero absorber golpes sin quebrarse. ¿Qué tratamiento térmico es el correcto?',
+   opts:['Templado completo, para lograr máxima dureza en toda la sección.','Revenido profundo, para máxima tenacidad en toda la pieza.','Cementado (endurecimiento superficial), que endurece solo la capa exterior dejando el núcleo tenaz.','Normalizado, para homogeneizar la microestructura y eliminar tensiones.'],
+   ans:2,
+   exp:'El cementado endurece solo la "cáscara" superficial (1–3 mm) por difusión de carbono. Esta cáscara dura resiste el roce del pasador dentro del buje. El núcleo permanece blando y tenaz, absorbiendo impactos sin partirse.',
+   trap:null,
+   fact:'Cementado = Cáscara dura (roce) + Núcleo tenaz (golpes). Aplicación: pasadores y bujes de articulaciones.'},
+
+  {id:4,type:'mc',category:'trap',cat:'Tratamientos Térmicos',
+   text:'¿Cuál es la secuencia correcta y la función de cada paso en el tratamiento TEMPLADO + REVENIDO?',
+   opts:['Templado (tenacidad) → Revenido (dureza). Se aplica en pasadores y bujes de articulaciones.','Templado (dureza máxima, queda frágil) → Revenido (devuelve tenacidad, se reduce algo la dureza).','Revenido (dureza superficial) → Templado (homogeneización). Se aplica en vástagos hidráulicos.','Templado (endurece solo la superficie) → Revenido (endurece el núcleo). Proceso en dos fases selectivas.'],
+   ans:1,
+   exp:'El templado genera enfriamiento brusco (quench) que crea martensita: máxima dureza pero altísima fragilidad. El revenido posterior calienta el metal a temperatura intermedia, transformando parte de la martensita para recuperar tenacidad.',
+   trap:'La opción C invierte el orden — trampa clásica. El templado SIEMPRE va primero. La opción D describe el CEMENTADO, no el templado+revenido.',
+   fact:'Templado (dureza + fragilidad) → Revenido (recupera tenacidad). Nunca al revés.'},
+
+  {id:5,type:'mc',category:'theory',cat:'Polímeros — Clasificación',
+   text:'¿Cuál es la diferencia fundamental entre un termoplástico y un termoestable?',
+   opts:['Los termoplásticos son siempre más resistentes a impactos porque tienen mayor tenacidad molecular.','Los termoplásticos se ablandan con calor y son reciclables; los termoestables solo se moldean una vez y se queman si se recalientan.','Los termoestables se derriten a mayor temperatura y también son reciclables mediante proceso inverso.','Los termoplásticos son polímeros naturales y los termoestables son exclusivamente polímeros sintéticos.'],
+   ans:1,
+   exp:'Los termoplásticos (PVC, Policarbonato) se ablandan al superar su Tg — proceso reversible y reciclable. Los termoestables (resinas epoxi) reaccionan químicamente al moldearse formando enlaces cruzados permanentes. Si los recalientas, no fluyen: se degradan y queman.',
+   trap:'Los termoestables no "aguantan más calor" — reaccionan diferente. Y NO son reciclables.',
+   fact:'Termoplásticos: PVC, Policarbonato (reciclables). Termoestables: Resinas Epoxi (se queman, no reciclables).'},
+
+  {id:6,type:'mc',category:'trap',cat:'Polímeros — Temperatura Crítica',
+   text:'Un ingeniero propone usar un sello de PVC en una línea hidráulica que trabaja a 90°C de forma continua. El otro ingeniero lo rechaza. ¿Cuál es el argumento técnico correcto del rechazo?',
+   opts:['El PVC es conductor eléctrico y puede generar cortocircuitos en el circuito hidráulico.','El PVC tiene una Tm de exactamente 90°C por lo que se fundirá completamente en servicio.','El PVC es un termoplástico cuya Tg está entre 75–85°C; a 90°C supera esa temperatura, pierde rigidez y fluye bajo presión, fallando como sello.','El PVC es incompatible químicamente con el aceite hidráulico a cualquier temperatura.'],
+   ans:2,
+   exp:'La Tg del PVC rígido es ≈75–85°C. Al superar la Tg, el polímero pasa de estado vítreo a estado gomoso. A 90°C de servicio continuo, el PVC fluiría bajo la presión hidráulica y el sello fallaría. La Tm del PVC es ≈160–210°C (no 90°C).',
+   trap:'La Tm del PVC es ~160°C, no 90°C — la opción B es falsa. El PVC es aislante eléctrico, no conductor. El fallo es por superar la Tg.',
+   fact:'Tg PVC ≈ 75–85°C. A 90°C falla como sello. Tm PVC ≈ 160–210°C. Confundir Tg con Tm = error clásico.'},
+
+  {id:7,type:'mc',category:'tech',cat:'Polímeros — Tg y Tm',
+   text:'¿Qué representa la Tg (temperatura de transición vítrea) en los polímeros, y en qué se diferencia de la Tm?',
+   opts:['Tg es la temperatura de ignición del polímero; Tm es la temperatura donde se ablanda sin quemarse.','Tg es donde el polímero pasa de gomoso a rígido y frágil (como vidrio); Tm es donde el termoplástico se derrite y fluye.','Tg y Tm son sinónimos; ambas representan el límite donde el polímero pierde sus propiedades mecánicas.','Tg es exclusiva de los termoestables; Tm es el parámetro de los termoplásticos.'],
+   ans:1,
+   exp:'La Tg es la temperatura donde el polímero cambia comportamiento: por encima está flexible/gomoso; por debajo se vuelve rígido y frágil. La Tm es donde el termoplástico se derrite y fluye. Los termoestables no tienen Tm definida.',
+   trap:'La opción C es la trampa: decir que son sinónimos. Son parámetros completamente diferentes.',
+   fact:'Tg = se vuelve frágil/rígido. Tm = se derrite. Tg < Tm siempre. Los termoestables tienen Tg pero NO Tm.'},
+
+  {id:8,type:'mc',category:'theory',cat:'Polímeros — Elastómeros',
+   text:'¿Por qué los O-rings de un sistema hidráulico de alta presión son de elastómero y no de termoplástico o termoestable?',
+   opts:['Porque los elastómeros tienen mayor dureza que los termoplásticos, resistiendo mejor la presión.','Porque los elastómeros son los únicos polímeros que recuperan su forma al 100% tras la deformación, generando el sello dinámico.','Porque los elastómeros son más económicos que los otros tipos de polímeros.','Porque los elastómeros son reciclables y cumplen con las normas ambientales del sistema hidráulico.'],
+   ans:1,
+   exp:'Los elastómeros tienen la propiedad única de deformarse mucho y recuperar su forma original al 100%. En un O-ring, el anillo se comprime al instalar la conexión y esa presión de retorno genera el sello hermético.',
+   trap:null,
+   fact:'Elastómeros = Deformación máxima + Recuperación 100%. Tercera categoría de polímeros.'},
+
+  {id:9,type:'mc',category:'trap',cat:'Polímeros — Aplicaciones',
+   text:'El tablero transparente de la cabina de un bulldozer está en policarbonato. El técnico propone reemplazarlo con vidrio templado por ser más resistente. ¿Cuál es el argumento técnico para mantener el policarbonato?',
+   opts:['El policarbonato tiene mayor transparencia óptica que el vidrio templado, mejorando la visibilidad.','El policarbonato resiste impactos sin astillarse ni generar fragmentos cortantes, protegiendo al operador.','El policarbonato resiste disolventes y aceites mejor que el vidrio, protegiéndolo en ambiente de obra.','El policarbonato soporta temperaturas superiores a 300°C, mientras el vidrio templado solo aguanta 200°C.'],
+   ans:1,
+   exp:'El policarbonato supera al vidrio en resistencia al impacto: absorbe golpes sin astillarse ni generar fragmentos peligrosos — crítico en ambiente de obra donde piedras impactan la cabina.',
+   trap:'La opción C es trampa: el policarbonato tiene BAJA resistencia a disolventes. La opción D es falsa: su Tg es 147°C.',
+   fact:'Policarbonato = Impacto sin astillas + Liviano. No aguanta solventes ni altas temperaturas.'},
+
+  {id:10,type:'mc',category:'theory',cat:'Cerámicas Industriales',
+   text:'¿Por qué los sensores de temperatura del motor y las sondas lambda de un camión minero son de material cerámico?',
+   opts:['Porque las cerámicas son excelentes conductores eléctricos, mejorando la señal del sensor.','Porque las cerámicas son más económicas que los metales y reducen costos de mantenimiento.','Porque las cerámicas tienen alta ductilidad, deformándose sin romperse en ambientes vibrados.','Porque las cerámicas tienen estabilidad química y dimensional a temperaturas extremas (>600°C) y resisten gases corrosivos del escape.'],
+   ans:3,
+   exp:'Los sensores de motor usan cerámica porque mantienen propiedades sin degradarse a temperaturas extremas y resisten gases sulfurosos. Las cerámicas son aislantes eléctricos (no conductores), son frágiles (no dúctiles).',
+   trap:'La opción A es trampa perfecta: las cerámicas son AISLANTES eléctricos, no conductores.',
+   fact:'Cerámicas en sensores: ZrO₂ (sonda lambda), Al₂O₃ (temperatura). Estabilidad térmica + química > 600°C.'},
+
+  {id:11,type:'mc',category:'trap',cat:'Cerámicas Industriales',
+   text:'Los discos de embrague del convertidor de torque de un camión minero alcanzan más de 800°C por fricción. ¿Qué material es el estándar de la industria?',
+   opts:['Acero bonificado templado y revenido, por su alta dureza superficial.','Compuesto de fibra de carbono con matriz polimérica (CFRP), por su bajo peso y resistencia mecánica.','Cerámica industrial (carburo de silicio SiC o alúmina Al₂O₃), por su dureza extrema y estabilidad térmica superior a 1000°C.','Elastómero reforzado con Kevlar, por su resistencia combinada al desgaste y alta temperatura.'],
+   ans:2,
+   exp:'Las cerámicas industriales (SiC, Al₂O₃) soportan más de 1000°C sin fundirse, con dureza de 9–9.5 Mohs. Los aceros pierden propiedades a 600–700°C; los polímeros se degradan muy por debajo de 800°C.',
+   trap:'El CFRP suena técnico y resistente, pero la matriz polimérica se degrada entre 150–350°C — muy por debajo de los 800°C del embrague.',
+   fact:'Cerámica industrial: dureza extrema + >1000°C. Discos embrague + sensores motor = aplicaciones clave.'},
+
+  {id:12,type:'mc',category:'theory',cat:'Materiales Compuestos',
+   text:'En un material compuesto (como fibra de carbono + resina epoxi), ¿cuál es la función de la MATRIZ y cuál la del REFUERZO?',
+   opts:['La matriz aporta la rigidez mecánica; el refuerzo da forma y protege el componente.','La matriz da forma y protege las fibras del ambiente; el refuerzo (fibras) aporta rigidez y resistencia mecánica.','Ambos tienen la misma función: aumentar la resistencia total del material compuesto.','El refuerzo protege de la corrosión; la matriz absorbe los impactos mecánicos del entorno.'],
+   ans:1,
+   exp:'La MATRIZ da forma al componente, transfiere cargas a las fibras y las protege del ambiente. El REFUERZO (fibras de carbono, vidrio o Kevlar) aporta la alta rigidez y resistencia mecánica.',
+   trap:'La opción A invierte los roles — es la trampa perfecta.',
+   fact:'Matriz (da forma + protege) + Refuerzo (fibras = resistencia).'},
+
+  {id:13,type:'mc',category:'trap',cat:'Compuestos — MMC vs PMC',
+   text:'Se necesita fabricar una pieza estructural cerca del escape de un camión minero que trabaja a 450°C con cargas mecánicas altas. Un PMC queda descartado. ¿Qué tipo es el correcto?',
+   opts:['PMC con fibra de vidrio, porque la fibra en sí soporta esas temperaturas aunque la matriz no.','MMC (Matriz Metálica, ej. aluminio + fibra de carbono), porque combina resistencia mecánica con mayor tolerancia térmica que los polímeros.','CMC (Matriz Cerámica), pero solo si la pieza no tiene función estructural.','Elastómero reforzado con Kevlar, porque es la combinación flexible + resistente al calor.'],
+   ans:1,
+   exp:'Para 450°C un PMC es inviable — los polímeros se degradan entre 150–350°C. La solución es un MMC: la matriz de aluminio o titanio soporta 300–500°C; el refuerzo aporta rigidez.',
+   trap:'La opción A es trampa: aunque la FIBRA de vidrio soporte calor, la MATRIZ polimérica se degradaría a 450°C. El compuesto falla por el componente más débil.',
+   fact:'PMC → hasta ~350°C. MMC → 300–500°C. CMC → >800°C. El límite lo pone SIEMPRE la matriz.'},
+
+  {id:14,type:'mc',category:'tech',cat:'Pulvimetalurgia',
+   text:'En pulvimetalurgia, la "pieza en verde" se introduce al horno de sinterizado. ¿A qué temperatura, expresada como porcentaje de la Tm del metal, opera el horno?',
+   opts:['Entre 20% y 40% de la Tm, para evitar cualquier difusión que altere la porosidad.','Entre 50% y 60% de la Tm, punto donde inicia la difusión superficial entre partículas.','Entre 70% y 90% de la Tm, donde ocurre difusión sólida que une las partículas sin que la pieza se funda.','Al 100% de la Tm, para asegurar que el metal fluya completamente y llene los vacíos.'],
+   ans:2,
+   exp:'El sinterizado opera entre 70% y 90% de la Tm. Esto activa la difusión atómica en estado sólido, uniendo las partículas sin que la pieza se funda. Si se llegara al 100% de Tm, el material colapsaría.',
+   trap:'La opción D es la trampa: llegar al 100% Tm destruiría la pieza. El sinterizado NO es fusión.',
+   fact:'Sinterizado: 70–90% de Tm. Difusión sólida. Sin fundirse. Porosidad controlada.'},
+
+  {id:15,type:'mc',category:'theory',cat:'Pulvimetalurgia — Aplicaciones',
+   text:'¿En qué aplicación específica de maquinaria pesada la porosidad controlada de la pulvimetalurgia es una ventaja decisiva?',
+   opts:['Zapatas de oruga, donde la porosidad aumenta la dureza superficial y resistencia abrasiva.','Bujes y cojinetes autolubricantes, donde la porosidad retiene aceite que se libera gradualmente en servicio.','Pistones de motor, donde la porosidad reduce el peso del componente mejorando la relación potencia/peso.','Cables de acero trenzado, donde la porosidad mejora la flexibilidad bajo carga torsional.'],
+   ans:1,
+   exp:'Los bujes y cojinetes autolubricantes son la aplicación estrella. La porosidad controlada (10–30% de volumen) actúa como esponja: se impregna de aceite y lo libera gradualmente eliminando la necesidad de lubricación externa.',
+   trap:null,
+   fact:'Pulvimetalurgia → Bujes autolubricantes. Porosidad = reservorio de aceite.'},
+
+  {id:16,type:'mc',category:'theory',cat:'Fundiciones Chile',
+   text:'¿Cuál es el principal riesgo de mercado que enfrentan las fundiciones chilenas si no se modernizan en los próximos 5–10 años?',
+   opts:['Que China supere a Chile en reservas de mineral de cobre, dejándolo sin materia prima.','Que el precio internacional del cobre caiga por sobreproducción indonesa y peruana.','Que el cobre chileno sea rechazado en mercados internacionales por no cumplir estándares de Minería Verde (control de arsénico/azufre).','Que las 7 fundiciones colapsen simultáneamente por falta de energía eléctrica renovable.'],
+   ans:2,
+   exp:'El riesgo central es el rechazo comercial. Las 7 fundiciones chilenas procesan minerales con alto arsénico y azufre y no cumplen normas de emisión internacionales.',
+   trap:null,
+   fact:'7 fundiciones / alto As+S / no cumplen norma verde / riesgo en 5–10 años.'},
+
+  {id:17,type:'mc',category:'trap',cat:'Metales — Hierro y Fundición',
+   text:'El bloque de motor de un camión minero está fabricado en fundición gris. ¿Por qué no se usa acero de alto carbono, que es más duro?',
+   opts:['Porque el acero de alto carbono es más costoso y la fundición gris es la opción más económica para motores.','Porque la fundición gris tiene resistencia superior a la tracción, necesaria para las explosiones del motor.','Porque la fundición gris tiene excelente capacidad de absorción de vibraciones y resiste mejor la compresión, ideal para el bloque motor.','Porque el acero de alto carbono se corroe rápidamente con el refrigerante del motor.'],
+   ans:2,
+   exp:'La fundición gris tiene grafito en láminas que le da excelente amortiguación de vibraciones y gran resistencia a compresión. El bloque motor trabaja principalmente a compresión.',
+   trap:'La opción A puede sonar correcta, pero el argumento real no es el costo — es la función técnica.',
+   fact:'Fundición gris = Absorción de vibraciones + Resistencia a compresión. Bloque motor.'},
+
+  {id:18,type:'mc',category:'theory',cat:'Metales — Bronce y Aluminio',
+   text:'¿Por qué los bujes interiores de los pasadores de una excavadora se fabrican en bronce (Cu + Sn) y los pistones del motor en aleación de aluminio?',
+   opts:['Bronce por su dureza extrema (8 Mohs); aluminio por su punto de fusión más alto que el hierro.','Bronce por su alta resistencia a la fricción por deslizamiento; aluminio por su baja densidad y alta conductividad térmica.','Bronce por su resistencia a la corrosión marina; aluminio porque no necesita lubricación en el cilindro.','Ambos materiales son intercambiables; la elección depende del costo y disponibilidad.'],
+   ans:1,
+   exp:'El bronce tiene alta resistencia a la fricción por deslizamiento, ideal para bujes con movimiento rotativo continuo. El aluminio tiene baja densidad (menor inercia en el pistón) y alta conductividad térmica (disipa calor de la combustión).',
+   trap:null,
+   fact:'Bronce = Fricción por deslizamiento → Bujes. Aluminio = Liviano + Conductor térmico → Pistones.'},
+
+  {id:19,type:'mc',category:'trap',cat:'Manganeso vs Cromo — Trampa Clásica',
+   text:'Un martillo de una trituradora de rocas falla por fractura ante los impactos de la roca. El ingeniero decide cambiar la aleación del acero. ¿Qué elemento agrega prioritariamente?',
+   opts:['Cromo (Cr), porque forma una capa pasivante que resiste el impacto superficial de la roca.','Carbono (C), porque la mayor dureza permite que el martillo no se deforme al golpear la roca.','Manganeso (Mn), porque aporta tenacidad — la capacidad de absorber energía de impacto sin fracturarse.','Molibdeno (Mo), porque resiste las altas temperaturas generadas en cada impacto.'],
+   ans:2,
+   exp:'La falla es FRACTURA por impacto, no desgaste ni corrosión. El Manganeso (Mn) aporta tenacidad — la capacidad de absorber energía de golpe sin quebrarse. Los aceros Hadfield (alto Mn) son el estándar para martillos de trituradora.',
+   trap:'El Carbono es la trampa perfecta: "más duro = aguanta mejor". Pero la fragilidad aumenta con el carbono. Si el fallo es FRACTURA, agregar carbono podría empeorarlo.',
+   fact:'Mn = Tenacidad/Impactos. Cr = Corrosión. C = Dureza/Abrasión. Tres elementos, tres mecanismos distintos.'},
+
+  {id:20,type:'mc',category:'tech',cat:'Sintetizado vs Compuesto',
+   text:'¿Cuál es la diferencia fundamental entre un material SINTETIZADO (pulvimetalurgia) y un MATERIAL COMPUESTO?',
+   opts:['No hay diferencia real; ambos términos describen materiales formados mezclando componentes distintos.','Sintetizado = polvo metálico prensado y horneado al 70–90% Tm; Compuesto = matriz continua + refuerzo fibroso que da propiedades combinadas superiores.','Los compuestos son siempre metálicos; los sintetizados pueden ser metálicos o poliméricos indistintamente.','Los sintetizados se producen a la temperatura de fusión completa; los compuestos se moldean siempre en frío.'],
+   ans:1,
+   exp:'PULVIMETALURGIA: PROCESO DE FABRICACIÓN — polvo metálico → prensar → hornear al 70–90% Tm para que las partículas difundan sin fundirse. COMPUESTO: CATEGORÍA DE MATERIAL — una matriz continua + un refuerzo (fibras) que juntos dan propiedades que ninguno tiene solo.',
+   trap:'La opción A es la trampa: uno es un PROCESO DE FABRICACIÓN, el otro es una CATEGORÍA DE MATERIAL.',
+   fact:'Sintetizado = PROCESO (polvo → prensar → hornear 70–90% Tm). Compuesto = MATERIAL (Matriz + Refuerzo).'},
+
+  {id:23,type:'mc',category:'theory',cat:'Fundiciones — Minería Verde',
+   text:'Para cumplir estándares de Minería Verde, ¿por qué los expertos recomiendan construir nuevas plantas con alianzas público-privadas en lugar de modernizar las 7 fundiciones antiguas?',
+   opts:['Porque las fundiciones antiguas están construidas con termoestables que ya no se pueden modificar estructuralmente.','Porque el costo y la dificultad técnica de adaptar tecnología de captura de gases (al 99%) en infraestructura antigua es mayor que diseñar una planta moderna desde cero con capital privado.','Porque las alianzas público-privadas son una exigencia legal de China para seguir comprando el concentrado de cobre chileno.','Porque las fundiciones antiguas no tienen la temperatura de fusión (Tm) necesaria para procesar el cobre actual.'],
+   ans:1,
+   exp:'Modernizar infraestructura antigua para alcanzar un 99% de captura de gases tóxicos es costoso y técnicamente limitante. La solución estratégica es la asociación público-privada para construir mega-fundiciones con tecnología limpia desde el diseño base.',
+   trap:'La opción C suena a geopolítica creíble, pero el problema es de cumplimiento ambiental global, no una exigencia legal china.',
+   fact:'Solución Minería Verde: Nuevas plantas (diseño limpio) + Capital Privado.'},
+
+  {id:24,type:'mc',category:'tech',cat:'Monitoreo de Condiciones + Materiales',
+   text:'Durante el Monitoreo de Condiciones de una excavadora, el análisis de aceite del circuito hidráulico arroja alta concentración de partículas de "acero de bajo carbono". ¿Qué componente crítico está fallando y por qué fue un error de diseño usar ese material?',
+   opts:['Los sellos O-ring; deberían ser de elastómero porque el acero no puede deformarse y recuperar su forma al 100%.','El bloque de la bomba; debería ser de fundición gris para absorber vibraciones, el bajo carbono se fatiga rápido.','El vástago del cilindro hidráulico; debería tener recubrimiento de Cromo (Cr) sobre acero aleado para resistir fricción y corrosión — el bajo carbono se raya y oxida rápido.','Los engranajes de la bomba; deberían ser de acero cementado exclusivamente.'],
+   ans:2,
+   exp:'El vástago del cilindro es el componente expuesto que entra y sale, friccionando los sellos. Si fuera de acero de bajo carbono (blando y dúctil), se rayaría y desgastaría al instante. Requiere obligatoriamente cromado duro (Cr) para pasivar la superficie.',
+   trap:'La opción A menciona los O-rings, pero los O-rings no son de acero — no soltarían "partículas de acero de bajo carbono".',
+   fact:'Falla típica en hidráulica: Vástago rayado = desgaste abrasivo. Solución: Acero + Cromo (Cr) superficial.'},
+
+  {id:25,type:'mc',category:'trap',cat:'Trampa — Templado sin Revenido',
+   text:'Un técnico aplica "Templado Completo" (sin procesos posteriores) a un engranaje de transmisión para maximizar su dureza. ¿Qué ocurrirá cuando la máquina entre en operación?',
+   opts:['El engranaje funcionará perfecto porque el templado le dará resistencia total a la fricción y al torque.','El engranaje no sufrirá desgaste superficial, pero sus dientes se quebrarán como vidrio al recibir impactos y torque, porque carece de tenacidad.','El engranaje se doblará y deformará bajo carga, porque el templado reduce la dureza a cambio de tenacidad.','El engranaje se oxidará rápidamente porque el templado elimina el carbono de la superficie.'],
+   ans:1,
+   exp:'El Templado aumenta drásticamente la dureza, pero la estructura resultante (martensita) es extremadamente frágil. En un engranaje que soporta torques e impactos al cambiar marchas, los dientes se partirían. El templado SIEMPRE debe ir seguido de Revenido.',
+   trap:'La opción A es el error de novato: creer que "más dureza siempre es mejor". Dureza sin tenacidad = fractura catastrófica.',
+   fact:'Templado sin Revenido = Pieza frágil que se rompe por impacto. NUNCA se usa templado "solo" en transmisión.'},
+
+  {id:21,type:'dev',category:'dev',cat:'Desarrollo — Sistema Hidráulico',
+   text:'EJERCICIO DE DESARROLLO: Especifica el material adecuado para cada componente del sistema hidráulico: (A) manguera de alta presión, (B) junta tórica O-ring, (C) vástago del cilindro, (D) cableado eléctrico del sensor de presión.',
+   context:'Justifica completamente: indica el material, por qué ese material, y qué propiedad específica cumple la función del componente.',
+   opts:null,ans:null,
+   exp:'(A) MANGUERA DE ALTA PRESIÓN → Elastómero (NBR o EPDM)\nLa manguera debe resistir presiones hasta 350 bar Y flexionarse. Los elastómeros se deforman y recuperan su forma al 100%, soportando ciclos continuos de presión-flexión sin fatiga.\n\n(B) JUNTA TÓRICA (O-ring) → Elastómero (FKM o silicona)\nEl O-ring se comprime al instalarse y esa presión de retorno genera el sello hermético. Solo los elastómeros mantienen esa fuerza de sellado sin fluir bajo la presión del aceite.\n\n(C) VÁSTAGO DEL CILINDRO → Acero con recubrimiento de Cromo duro (Cr)\nEl vástago desliza miles de veces por los sellos (fricción superficial) y está expuesto al fluido hidráulico (corrosión). El Cromo forma la capa pasivante Cr₂O₃ que resiste exactamente esas dos solicitaciones.\n\n(D) CABLEADO ELÉCTRICO DEL SENSOR → PVC (termoplástico)\nEl PVC es excelente aislante eléctrico. Recubre el cable para prevenir cortocircuitos en el entorno hostil de la maquinaria.',
+   trap:null,
+   fact:'Cuatro materiales distintos en un solo sistema: elasticidad, sellado, corrosión/fricción, aislamiento.'},
+
+  {id:22,type:'dev',category:'dev',cat:'Desarrollo — Selección por Mecanismo de Falla',
+   text:'EJERCICIO DE DESARROLLO: Un pasador de articulación está fallando por desgaste superficial acelerado, pero cuando se aumentó la dureza total con templado, empezó a fracturarse. Analiza el problema y propón la solución de tratamiento térmico correcta.',
+   context:'Justifica: (1) por qué el templado solo no funciona, (2) qué tratamiento resolverá AMBOS problemas, (3) qué microestructura queda en la pieza final.',
+   opts:null,ans:null,
+   exp:'PROBLEMA: El pasador tiene dos solicitudes contradictorias:\n— Superficie con desgaste abrasivo → necesita DUREZA SUPERFICIAL\n— Núcleo que recibe impactos → necesita TENACIDAD\n\nPOR QUÉ EL TEMPLADO SOLO NO FUNCIONA:\nEl templado endurece TODA la sección uniformemente, creando martensita en todo el espesor. Esto da dureza máxima pero elimina la tenacidad en el núcleo.\n\nSOLUCIÓN CORRECTA → CEMENTADO:\n1. Se difunde carbono adicional solo en la capa exterior (1–3 mm de profundidad)\n2. Templado posterior: solo la cáscara rica en carbono se endurece (martensita superficial)\n3. El núcleo, con bajo carbono original, permanece en microestructura ferrítica-perlítica: TENAZ\n\nMICROESTRUCTURA FINAL:\n— Cáscara: Martensita (dura) → Resiste desgaste\n— Núcleo: Ferrita + Perlita (tenaz) → Absorbe impactos\n— Gradiente de dureza: transición progresiva entre ambas zonas',
+   trap:null,
+   fact:'Doble solicitud (desgaste + impacto) → siempre CEMENTADO. Templado total = duro pero frágil.'}
 ];
 
-let mode='all',questions=[],idx=0,answered=false,selectedOpt=null,score=0,userAnswers=[];
+let mode='all',questions=[],idx=0,answered=false,selectedOptIdx=null,score=0,userAnswers=[];
+let shuffledOpts=[];
+let timerInterval=null,secondsLeft=3600,timerRunning=false,timeoutFired=false;
 
 function switchTab(tab){
-  document.querySelectorAll('.nav-tab').forEach((t,i)=>{t.classList.toggle('active',(i===0&&tab==='sim')||(i===1&&tab==='plan'));});
+  document.querySelectorAll('.nav-tab').forEach((t,i)=>{
+    t.classList.toggle('active',(i===0&&tab==='sim')||(i===1&&tab==='plan'));
+  });
   document.getElementById('tab-sim').style.display=tab==='sim'?'block':'none';
   document.getElementById('tab-plan').style.display=tab==='plan'?'block':'none';
 }
-function setMode(m,el){mode=m;document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
+
+function setMode(m,el){
+  mode=m;
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function shuffleArray(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function shuffleOpts(q){
+  if(!q.opts)return{shuffled:[],newCorrectIdx:-1};
+  const indexed=q.opts.map((text,origIdx)=>({text,origIdx}));
+  const shuffled=shuffleArray(indexed);
+  const newCorrectIdx=shuffled.findIndex(o=>o.origIdx===q.ans);
+  return{shuffled,newCorrectIdx};
+}
+
+function startTimer(){
+  secondsLeft=3600;timeoutFired=false;updateTimerDisplay();
+  const wrap=document.getElementById('timer-wrap');
+  wrap.style.display='flex';wrap.classList.remove('warning');
+  clearInterval(timerInterval);timerRunning=true;
+  timerInterval=setInterval(()=>{
+    secondsLeft--;updateTimerDisplay();
+    if(secondsLeft<=300&&secondsLeft>0)document.getElementById('timer-wrap').classList.add('warning');
+    if(secondsLeft<=0){clearInterval(timerInterval);timerRunning=false;if(!timeoutFired){timeoutFired=true;fireTimeout();}}
+  },1000);
+}
+
+function updateTimerDisplay(){
+  const m=Math.floor(secondsLeft/60),s=secondsLeft%60;
+  document.getElementById('timer-display').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+function stopTimer(){
+  clearInterval(timerInterval);timerRunning=false;
+  document.getElementById('timer-wrap').style.display='none';
+  document.getElementById('timer-wrap').classList.remove('warning');
+}
+
+function fireTimeout(){document.getElementById('timeout-overlay').classList.add('show');}
+function dismissTimeout(){document.getElementById('timeout-overlay').classList.remove('show');showResults();}
+
 function buildQuestions(){
   let qs=[...ALL_QUESTIONS];
-  if(mode==='mc') qs=qs.filter(q=>q.type==='mc');
-  if(mode==='dev') qs=qs.filter(q=>q.type==='dev');
-  if(mode==='weak') qs=qs.filter(q=>q.category==='tech'||q.category==='trap');
+  if(mode==='mc')qs=qs.filter(q=>q.type==='mc');
+  if(mode==='dev')qs=qs.filter(q=>q.type==='dev');
+  if(mode==='weak')qs=qs.filter(q=>q.category==='tech'||q.category==='trap');
   for(let i=qs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[qs[i],qs[j]]=[qs[j],qs[i]];}
   return qs;
 }
-function startExam(){questions=buildQuestions();idx=0;score=0;userAnswers=[];answered=false;selectedOpt=null;showScreen('screen-question');document.getElementById('topbar-score').style.display='flex';updateProgress();renderQuestion();}
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function startExam(){
+  questions=buildQuestions();idx=0;score=0;userAnswers=[];answered=false;selectedOptIdx=null;
+  showScreen('screen-question');
+  document.getElementById('topbar-score').style.display='flex';
+  startTimer();updateProgress();renderQuestion();
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
 function updateProgress(){
   const pct=(idx/questions.length)*100;
   document.getElementById('prog-fill').style.width=pct+'%';
   const mc=userAnswers.filter(a=>a.q.type==='mc');
   const correct=mc.filter(a=>a.isCorrect).length;
-  document.getElementById('tb-score').textContent=`${correct}/${mc.length} MC`;
+  document.getElementById('tb-score').textContent=correct+'/'+mc.length+' MC';
 }
+
 function renderQuestion(){
-  const q=questions[idx];answered=false;selectedOpt=null;
-  document.getElementById('q-counter').textContent=`Pregunta ${idx+1} de ${questions.length}`;
+  const q=questions[idx];
+  answered=false;selectedOptIdx=null;
+  document.getElementById('q-counter').textContent='Pregunta '+(idx+1)+' de '+questions.length;
   const badges={trap:['badge-trap','⚠ TRAMPA'],tech:['badge-tech','⚙ TECNICISMO'],theory:['badge-theory','📚 TEORÍA'],dev:['badge-dev','🔬 DESARROLLO']};
   const[cls,lbl]=badges[q.category]||['',''];
-  document.getElementById('q-badge').innerHTML=`<span class="badge ${cls}">${lbl}</span>`;
+  document.getElementById('q-badge').innerHTML='<span class="badge '+cls+'">'+lbl+'</span>';
   document.getElementById('q-cat-label').textContent=q.cat;
   document.getElementById('q-text').textContent=q.text;
   const ctxEl=document.getElementById('q-context');
   if(q.context){ctxEl.textContent=q.context;ctxEl.style.display='block';}else{ctxEl.style.display='none';}
-  const fbEl=document.getElementById('feedback-box');fbEl.style.display='none';fbEl.classList.remove('show','correct','incorrect','info');
-  const optCont=document.getElementById('options-container');const devEl=document.getElementById('dev-answer');
+  const fbEl=document.getElementById('feedback-box');
+  fbEl.style.display='none';fbEl.classList.remove('show','correct','incorrect','info');
+  const optCont=document.getElementById('options-container');
+  const devEl=document.getElementById('dev-answer');
   if(q.type==='mc'){
     devEl.style.display='none';optCont.style.display='flex';optCont.innerHTML='';
+    const{shuffled,newCorrectIdx}=shuffleOpts(q);
+    shuffledOpts=shuffled;q._currentCorrectIdx=newCorrectIdx;
     const letters=['A','B','C','D'];
-    q.opts.forEach((opt,i)=>{const div=document.createElement('div');div.className='option';div.innerHTML=`<div class="opt-key">${letters[i]}</div><div class="opt-text">${opt}</div>`;div.addEventListener('click',()=>pickOption(i,div));optCont.appendChild(div);});
+    shuffled.forEach((opt,i)=>{
+      const div=document.createElement('div');div.className='option';
+      div.innerHTML='<div class="opt-key">'+letters[i]+'</div><div class="opt-text">'+opt.text+'</div>';
+      div.addEventListener('click',()=>pickOption(i,div));
+      optCont.appendChild(div);
+    });
     document.getElementById('btn-action').textContent='Confirmar respuesta';
-  }else{optCont.style.display='none';devEl.style.display='block';devEl.value='';document.getElementById('btn-action').textContent='Ver respuesta modelo';}
+    document.getElementById('btn-action').disabled=true;
+  }else{
+    optCont.style.display='none';devEl.style.display='block';devEl.value='';
+    document.getElementById('btn-action').textContent='Ver respuesta modelo';
+    document.getElementById('btn-action').disabled=false;
+  }
   document.getElementById('btn-skip').style.display='';
-  document.getElementById('btn-action').disabled=(q.type==='mc');
   updateProgress();
 }
-function pickOption(i,el){if(answered)return;selectedOpt=i;document.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');document.getElementById('btn-action').disabled=false;}
-function handleAction(){const q=questions[idx];if(q.type==='mc'){if(!answered){confirmMC(q);}else{nextQuestion();}}else{if(!answered){confirmDev(q);}else{nextQuestion();}}}
+
+function pickOption(i,el){
+  if(answered)return;
+  selectedOptIdx=i;
+  document.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('btn-action').disabled=false;
+}
+
+function handleAction(){
+  const q=questions[idx];
+  if(q.type==='mc'){if(!answered){confirmMC(q);}else{nextQuestion();}}
+  else{if(!answered){confirmDev(q);}else{nextQuestion();}}
+}
+
 function confirmMC(q){
-  answered=true;const isCorrect=selectedOpt===q.ans;if(isCorrect)score++;userAnswers.push({q,selected:selectedOpt,isCorrect});
-  document.querySelectorAll('.option').forEach((el,i)=>{el.classList.add('disabled');if(i===q.ans)el.classList.add('correct');else if(i===selectedOpt&&!isCorrect)el.classList.add('wrong');});
+  answered=true;
+  const isCorrect=selectedOptIdx===q._currentCorrectIdx;
+  if(isCorrect)score++;
+  const selectedText=shuffledOpts[selectedOptIdx]?.text||'—';
+  const correctText=shuffledOpts[q._currentCorrectIdx]?.text||'—';
+  userAnswers.push({q,selectedText,correctText,isCorrect});
+  document.querySelectorAll('.option').forEach((el,i)=>{
+    el.classList.add('disabled');
+    if(i===q._currentCorrectIdx)el.classList.add('correct');
+    else if(i===selectedOptIdx&&!isCorrect)el.classList.add('wrong');
+  });
   showFeedback(q,isCorrect);
   document.getElementById('btn-action').textContent=idx<questions.length-1?'Siguiente →':'Ver resultados →';
-  document.getElementById('btn-action').disabled=false;document.getElementById('btn-skip').style.display='none';updateProgress();
+  document.getElementById('btn-action').disabled=false;
+  document.getElementById('btn-skip').style.display='none';
+  updateProgress();
 }
-function confirmDev(q){answered=true;userAnswers.push({q,selected:'dev',isCorrect:null});showFeedback(q,null);document.getElementById('btn-action').textContent=idx<questions.length-1?'Siguiente →':'Ver resultados →';document.getElementById('btn-action').disabled=false;document.getElementById('btn-skip').style.display='none';}
+
+function confirmDev(q){
+  answered=true;
+  userAnswers.push({q,selectedText:'dev',correctText:'dev',isCorrect:null});
+  showFeedback(q,null);
+  document.getElementById('btn-action').textContent=idx<questions.length-1?'Siguiente →':'Ver resultados →';
+  document.getElementById('btn-action').disabled=false;
+  document.getElementById('btn-skip').style.display='none';
+}
+
 function showFeedback(q,isCorrect){
   const fbEl=document.getElementById('feedback-box');
-  if(isCorrect===null){fbEl.className='feedback-box info';}else if(isCorrect){fbEl.className='feedback-box correct';}else{fbEl.className='feedback-box incorrect';}
+  if(isCorrect===null)fbEl.className='feedback-box info';
+  else if(isCorrect)fbEl.className='feedback-box correct';
+  else fbEl.className='feedback-box incorrect';
   document.getElementById('fb-icon').textContent=isCorrect===null?'📋':isCorrect?'✅':'❌';
   document.getElementById('fb-title').textContent=isCorrect===null?'Respuesta modelo del profesor':isCorrect?'¡Correcto!':'Incorrecto — Aquí está la clave:';
   document.getElementById('fb-body').innerHTML=q.exp.replace(/\n/g,'<br>');
-  const trapEl=document.getElementById('fb-trap');trapEl.style.display=q.trap?'block':'none';if(q.trap)trapEl.innerHTML=`⚠ <strong>La trampa:</strong> ${q.trap}`;
-  const factEl=document.getElementById('fb-fact');factEl.style.display=q.fact?'block':'none';if(q.fact)factEl.textContent=`★ ${q.fact}`;
+  const trapEl=document.getElementById('fb-trap');
+  trapEl.style.display=q.trap?'block':'none';
+  if(q.trap)trapEl.innerHTML='⚠ <strong>La trampa:</strong> '+q.trap;
+  const factEl=document.getElementById('fb-fact');
+  factEl.style.display=q.fact?'block':'none';
+  if(q.fact)factEl.textContent='★ '+q.fact;
   fbEl.style.display='block';void fbEl.offsetWidth;fbEl.classList.add('show');
 }
-function skipQuestion(){userAnswers.push({q:questions[idx],selected:null,isCorrect:false});idx++;if(idx>=questions.length){showResults();return;}renderQuestion();}
-function nextQuestion(){answered=false;selectedOpt=null;idx++;if(idx>=questions.length){showResults();return;}renderQuestion();}
+
+function skipQuestion(){
+  userAnswers.push({q:questions[idx],selectedText:'—',correctText:'—',isCorrect:false});
+  idx++;if(idx>=questions.length){showResults();return;}renderQuestion();
+}
+
+function nextQuestion(){
+  answered=false;selectedOptIdx=null;idx++;
+  if(idx>=questions.length){showResults();return;}renderQuestion();
+}
+
 function showResults(){
-  showScreen('screen-results');document.getElementById('topbar-score').style.display='none';document.getElementById('prog-fill').style.width='100%';
-  const mc=userAnswers.filter(a=>a.q.type==='mc');const correct=mc.filter(a=>a.isCorrect).length;const wrong=mc.filter(a=>a.isCorrect===false).length;const total=mc.length;const pct=total>0?Math.round((correct/total)*100):100;const nota=total>0?((correct/total)*7).toFixed(1):'7.0';
-  document.getElementById('score-big').textContent=correct;document.getElementById('score-sub').textContent=`/${total} MC`;document.getElementById('rs-correct').textContent=correct;document.getElementById('rs-wrong').textContent=wrong;document.getElementById('rs-nota').textContent=nota;
-  const circumference=389.6;const offset=circumference-(pct/100)*circumference;
-  setTimeout(()=>{const arc=document.getElementById('ring-arc');arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)';arc.style.strokeDashoffset=offset;},120);
+  stopTimer();showScreen('screen-results');
+  document.getElementById('topbar-score').style.display='none';
+  document.getElementById('prog-fill').style.width='100%';
+  const mc=userAnswers.filter(a=>a.q.type==='mc');
+  const correct=mc.filter(a=>a.isCorrect).length;
+  const wrong=mc.filter(a=>a.isCorrect===false).length;
+  const total=mc.length;
+  const pct=total>0?Math.round((correct/total)*100):100;
+  const nota=total>0?((correct/total)*7).toFixed(1):'7.0';
+  document.getElementById('score-big').textContent=correct;
+  document.getElementById('score-sub').textContent='/'+total+' MC';
+  document.getElementById('rs-correct').textContent=correct;
+  document.getElementById('rs-wrong').textContent=wrong;
+  document.getElementById('rs-nota').textContent=nota;
+  const circumference=389.6;
+  const offset=circumference-(pct/100)*circumference;
+  setTimeout(()=>{
+    const arc=document.getElementById('ring-arc');
+    arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)';
+    arc.style.strokeDashoffset=offset;
+  },120);
   let title,msg;
   if(pct>=87){title='🏆 Listo para el examen';msg='Dominas el contenido técnico. Repasa las preguntas trampa que fallaste y llegas con ventaja.';}
   else if(pct>=70){title='✅ Buen nivel — afina detalles';msg='Tienes la base. Repasa porcentajes críticos (70–90% Tm), Tg/Tm y los procesos de cementado vs templado.';}
-  else if(pct>=50){title='⚡ En desarrollo — estudia más';msg='Refuerza: ¿qué aporta cada aleante? y los datos duros (temperaturas, %). El simulador es tu herramienta.'}
-  else{title='📚 Repasa todo antes del martes';msg='Vuelve al plan de estudio, usa los 3 días del plan y repite el simulador. Estás a tiempo.';}
-  document.getElementById('result-title').textContent=title;document.getElementById('result-msg').textContent=msg;
+  else if(pct>=50){title='⚡ En desarrollo — estudia más';msg='Refuerza: ¿qué aporta cada aleante? y los datos duros (temperaturas, %). El simulador es tu herramienta.';}
+  else{title='📚 Repasa todo antes del examen';msg='Vuelve al plan de estudio, usa los 3 días del plan y repite el simulador. Estás a tiempo.';}
+  document.getElementById('result-title').textContent=title;
+  document.getElementById('result-msg').textContent=msg;
   const list=document.getElementById('review-list');list.innerHTML='';
   userAnswers.forEach(a=>{
     const div=document.createElement('div');div.className='review-item';
-    const icon=a.isCorrect===null?'📋':a.isCorrect?'✅':'❌';let ans='';
-    if(a.q.type==='mc'){if(a.selected===null)ans='Saltada';else{const l=['A','B','C','D'];ans=`Tu respuesta: ${l[a.selected]}${!a.isCorrect?` · Correcta: ${l[a.q.ans]}`:''}`; }}else{ans='Desarrollo — ver respuesta modelo arriba';}
-    div.innerHTML=`<div class="ri-icon">${icon}</div><div><div class="ri-q">${a.q.text.substring(0,90)}…</div><div class="ri-ans">${ans}</div></div>`;list.appendChild(div);
+    const icon=a.isCorrect===null?'📋':a.isCorrect?'✅':'❌';
+    let ans='';
+    if(a.q.type==='mc'){
+      if(a.selectedText==='—')ans='Saltada';
+      else{ans='Tu respuesta: "'+a.selectedText.substring(0,50)+'…"'+(!a.isCorrect?' · Correcta: "'+a.correctText.substring(0,50)+'…"':'');}
+    }else{ans='Desarrollo — ver respuesta modelo arriba';}
+    div.innerHTML='<div class="ri-icon">'+icon+'</div><div><div class="ri-q">'+a.q.text.substring(0,90)+'…</div><div class="ri-ans">'+ans+'</div></div>';
+    list.appendChild(div);
   });
 }
-function goHome(){showScreen('screen-intro');document.getElementById('prog-fill').style.width='0%';document.getElementById('topbar-score').style.display='none';const arc=document.getElementById('ring-arc');arc.style.transition='none';arc.style.strokeDashoffset='389.6';}
+
+function goHome(){
+  stopTimer();showScreen('screen-intro');
+  document.getElementById('prog-fill').style.width='0%';
+  document.getElementById('topbar-score').style.display='none';
+  const arc=document.getElementById('ring-arc');
+  arc.style.transition='none';arc.style.strokeDashoffset='389.6';
+}
+
 function retryExam(){startExam();}
 setMode('all',document.getElementById('mc-all'));
 </script>
