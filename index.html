@@ -242,7 +242,7 @@ textarea::placeholder{color:var(--muted)}
       <div class="mode-grid">
         <div class="mode-card sel" onclick="setMode('all',this)" id="mc-all">
           <div class="mi">🎯</div><h3>Examen Completo</h3>
-          <p>26 SM + 5 desarrollo. Formato real con temporizador de 60 min.</p>
+          <p>21 SM + 5 desarrollo. Formato real con temporizador de 60 min.</p>
         </div>
         <div class="mode-card" onclick="setMode('mc',this)" id="mc-mc">
           <div class="mi">⚡</div><h3>Solo S. Múltiple</h3>
@@ -433,6 +433,7 @@ textarea::placeholder{color:var(--muted)}
 
 <script>
 const ALL_QUESTIONS=[
+  // ── SELECCIÓN MÚLTIPLE ──────────────────────────────────────────────────────
   {id:1,type:'mc',category:'trap',cat:'Metales — Aleantes',
    text:'El vástago de un cilindro hidráulico de una excavadora debe deslizarse miles de veces sin corroerse ni rayarse. ¿Qué elemento de aleación es imprescindible en su superficie y por qué?',
    opts:['Carbono (C), porque aumenta la dureza total del acero.','Cromo (Cr), porque forma una capa pasivante que resiste la corrosión y la fricción superficial.','Manganeso (Mn), porque aporta tenacidad frente a los impactos del émbolo.','Níquel (Ni), porque eleva el punto de fusión del acero para tolerar el calor del fluido.'],
@@ -617,6 +618,7 @@ const ALL_QUESTIONS=[
    trap:'La opción A es el error de novato: creer que "más dureza siempre es mejor". Dureza sin tenacidad = fractura catastrófica.',
    fact:'Templado sin Revenido = Pieza frágil que se rompe por impacto. NUNCA se usa templado "solo" en transmisión.'},
 
+  // ── DESARROLLO ──────────────────────────────────────────────────────────────
   {id:21,type:'dev',category:'dev',cat:'Desarrollo — Sistema Hidráulico',
    text:'EJERCICIO DE DESARROLLO: Especifica el material adecuado para cada componente del sistema hidráulico: (A) manguera de alta presión, (B) junta tórica O-ring, (C) vástago del cilindro, (D) cableado eléctrico del sensor de presión.',
    context:'Justifica completamente: indica el material, por qué ese material, y qué propiedad específica cumple la función del componente.',
@@ -659,7 +661,6 @@ const ALL_QUESTIONS=[
 ];
 
 let mode='all',questions=[],idx=0,answered=false,selectedOptIdx=null,score=0,userAnswers=[];
-// FIX: store shuffle state separately, never mutate question objects
 let currentShuffledOpts=[];
 let currentCorrectIdx=-1;
 let timerInterval=null,secondsLeft=3600,timerRunning=false,timeoutFired=false;
@@ -765,7 +766,6 @@ function renderQuestion(){
   const devEl=document.getElementById('dev-answer');
   if(q.type==='mc'){
     devEl.style.display='none';optCont.style.display='flex';optCont.innerHTML='';
-    // FIX: compute shuffle fresh every render, store in module state (never on q object)
     const{shuffled,newCorrectIdx}=computeShuffledOpts(q);
     currentShuffledOpts=shuffled;
     currentCorrectIdx=newCorrectIdx;
@@ -803,7 +803,6 @@ function handleAction(){
 
 function confirmMC(q){
   answered=true;
-  // FIX: use module-level currentCorrectIdx, not q._currentCorrectIdx
   const isCorrect=selectedOptIdx===currentCorrectIdx;
   if(isCorrect)score++;
   const selectedText=currentShuffledOpts[selectedOptIdx]?.text||'—';
@@ -895,8 +894,8 @@ function showResults(){
     let ans='';
     if(a.q.type==='mc'){
       if(a.selectedText==='—')ans='Saltada';
-      else{ans='Tu respuesta: "'+a.selectedText.substring(0,50)+'…"'+(!a.isCorrect?' · Correcta: "'+a.correctText.substring(0,50)+'…"':'');}
-    }else{ans='Desarrollo — ver respuesta modelo arriba';}
+      else{ans='Tu respuesta: "'+a.selectedText.substring(0,60)+(a.selectedText.length>60?'…':'')+'"'+(!a.isCorrect?' · Correcta: "'+a.correctText.substring(0,60)+(a.correctText.length>60?'…':'')+'"':'');}
+    }else{ans='Desarrollo — ver respuesta modelo en la pantalla de preguntas';}
     div.innerHTML='<div class="ri-icon">'+icon+'</div><div><div class="ri-q">'+a.q.text.substring(0,90)+'…</div><div class="ri-ans">'+ans+'</div></div>';
     list.appendChild(div);
   });
