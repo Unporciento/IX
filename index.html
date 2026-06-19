@@ -2,593 +2,758 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulador · Ciencia de Materiales · Maquinaria Pesada</title>
+<title>Modo Supervivencia · Optimización</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&family=Share+Tech+Mono&display=swap');
-
-:root {
-  --bg:#0e0f11;--bg2:#161820;--bg3:#1e2030;--border:#2a2d3e;
-  --cat:#f5a623;--cat2:#e8911a;--green:#2ed573;--red:#ff4757;
-  --blue:#5c9eff;--text:#dce1ed;--muted:#7c84a0;
-  --mono:'Share Tech Mono',monospace;
-  --display:'Barlow Condensed',sans-serif;
-  --body:'Barlow',sans-serif;
+:root{
+  --bg:#10221c;
+  --bg2:#142b23;
+  --panel:#0c1d17;
+  --panel2:#0a1813;
+  --chalk:#eef3ee;
+  --dim:#a9c2b3;
+  --red:#e8584a;
+  --blue:#5fa3ff;
+  --green:#52c98a;
+  --yellow:#e8c25a;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+  --disp: 'Georgia', 'Times New Roman', serif;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--body);background:var(--bg);color:var(--text);min-height:100vh}
-
-.topbar{background:var(--bg2);border-bottom:3px solid var(--cat);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
-.topbar-logo{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:2px;color:var(--cat);text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.topbar-logo::before{content:'⬡';font-size:18px;opacity:.7}
-.topbar-right{display:flex;align-items:center;gap:16px}
-
-/* LIVES */
-.lives-display{display:none;align-items:center;gap:6px;font-family:var(--mono);font-size:13px;color:var(--muted)}
-.lives-display.show{display:flex}
-.heart{font-size:20px;transition:all .3s;filter:drop-shadow(0 0 4px rgba(255,71,87,.6))}
-.heart.lost{filter:grayscale(1) opacity(.3);transform:scale(.8)}
-
-.topbar-score{font-family:var(--mono);font-size:13px;color:var(--muted);display:none;align-items:center;gap:6px}
-.topbar-score span{color:var(--cat);font-weight:700}
-
-.prog-track{height:3px;background:var(--border);overflow:hidden}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--cat),var(--cat2));width:0%;transition:width .5s cubic-bezier(.4,0,.2,1)}
-
-.screen{display:none}.screen.active{display:block}
-main{max-width:860px;margin:0 auto;padding:48px 24px 80px}
-
-.intro-hero{text-align:center;padding:20px 0 48px}
-.intro-hero .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:4px;color:var(--cat);text-transform:uppercase;margin-bottom:18px}
-.intro-hero h1{font-family:var(--display);font-size:clamp(36px,7vw,64px);font-weight:800;text-transform:uppercase;line-height:1;letter-spacing:1px;margin-bottom:12px}
-.intro-hero h1 em{color:var(--cat);font-style:normal;display:block}
-.intro-hero p{font-size:15px;color:var(--muted);max-width:560px;margin:0 auto 48px;line-height:1.7}
-
-.stats-strip{display:flex;justify-content:center;gap:32px;margin-bottom:40px;padding:20px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;flex-wrap:wrap}
-.ss-item{text-align:center}
-.ss-val{font-family:var(--display);font-size:28px;font-weight:800;color:var(--cat)}
-.ss-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:2px}
-
-.btn{font-family:var(--display);font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:14px 36px;border-radius:8px;border:none;cursor:pointer;transition:transform .15s,opacity .15s}
-.btn:hover{transform:translateY(-2px);opacity:.9}.btn:active{transform:translateY(0)}.btn:disabled{opacity:.3;cursor:default;transform:none}
-.btn-cat{background:var(--cat);color:#0e0f11;width:100%}
-.btn-ghost{background:transparent;border:2px solid var(--border);color:var(--muted)}
-.btn-ghost:hover{border-color:var(--cat);color:var(--cat)}
-
-/* Game over overlay */
-#gameover-overlay{display:none;position:fixed;inset:0;background:rgba(14,15,17,.97);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:20px;text-align:center;padding:24px}
-#gameover-overlay.show{display:flex}
-.gameover-icon{font-size:72px;animation:shake .6s ease 3}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
-.gameover-title{font-family:var(--display);font-size:48px;font-weight:800;text-transform:uppercase;color:var(--red);letter-spacing:3px;margin-bottom:8px}
-.gameover-sub{font-family:var(--mono);font-size:14px;color:var(--muted);max-width:480px;line-height:1.8;margin-bottom:16px}
-.gameover-stat{font-family:var(--display);font-size:24px;font-weight:700;color:var(--cat);margin-bottom:20px}
-.gameover-btns{display:flex;gap:14px}
-.gameover-btn{font-family:var(--display);font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:14px 36px;border-radius:8px;border:none;cursor:pointer}
-.gameover-btn.primary{background:var(--cat);color:#0e0f11}
-.gameover-btn.ghost{background:transparent;border:2px solid var(--border);color:var(--muted)}
-
-.q-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.q-counter{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:1px}
-.badge{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;letter-spacing:1px;text-transform:uppercase}
-
-.question-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:32px;margin:16px 0 20px;position:relative;overflow:hidden}
-.question-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cat),var(--cat2))}
-.q-num-tag{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--cat);text-transform:uppercase;margin-bottom:12px}
-.q-text{font-size:17px;font-weight:500;line-height:1.6;color:var(--text)}
-
-.options{display:flex;flex-direction:column;gap:10px;margin-top:24px}
-.option{background:var(--bg3);border:2px solid var(--border);border-radius:10px;padding:14px 18px;cursor:pointer;display:flex;align-items:flex-start;gap:14px;transition:border-color .18s,background .18s,transform .12s;user-select:none}
-.option:hover:not(.disabled){border-color:var(--cat);background:rgba(245,166,35,.06);transform:translateX(4px)}
-.option.disabled{cursor:default;pointer-events:none}
-.opt-key{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted);background:var(--bg2);border:1px solid var(--border);width:28px;height:28px;min-width:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
-.opt-text{font-size:15px;line-height:1.5;padding-top:3px}
-.option.selected{border-color:var(--cat);background:rgba(245,166,35,.07)}
-.option.selected .opt-key{background:var(--cat);color:#0e0f11;border-color:var(--cat)}
-.option.correct{border-color:var(--green)!important;background:rgba(46,213,115,.10)!important;animation:pulseGreen .4s ease}
-.option.correct .opt-key{background:var(--green)!important;color:#0e0f11!important;border-color:var(--green)!important}
-.option.wrong{border-color:var(--red)!important;background:rgba(255,71,87,.10)!important;animation:pulseRed .4s ease}
-.option.wrong .opt-key{background:var(--red)!important;color:#fff!important;border-color:var(--red)!important}
-@keyframes pulseGreen{0%{box-shadow:0 0 0 0 rgba(46,213,115,.5)}70%{box-shadow:0 0 0 8px rgba(46,213,115,0)}100%{box-shadow:0 0 0 0 rgba(46,213,115,0)}}
-@keyframes pulseRed{0%{box-shadow:0 0 0 0 rgba(255,71,87,.6)}70%{box-shadow:0 0 0 10px rgba(255,71,87,0)}100%{box-shadow:0 0 0 0 rgba(255,71,87,0)}}
-
-/* FEEDBACK POP-UP */
-.feedback-popup{position:fixed;bottom:0;left:0;right:0;z-index:500;transform:translateY(100%);transition:transform .4s cubic-bezier(.2,.8,.3,1);max-height:55vh;overflow-y:auto}
-.feedback-popup.show{transform:translateY(0)}
-.feedback-popup-inner{max-width:860px;margin:0 auto;border-radius:16px 16px 0 0;padding:24px 28px 32px;border-top:4px solid var(--green)}
-.feedback-popup.correct-pop .feedback-popup-inner{background:#0d1f16;border-top-color:var(--green)}
-.feedback-popup.wrong-pop .feedback-popup-inner{background:#1f0d10;border-top-color:var(--red)}
-.fp-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.fp-icon{font-size:26px}
-.fp-verdict{font-family:var(--display);font-size:22px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
-.feedback-popup.correct-pop .fp-verdict{color:var(--green)}
-.feedback-popup.wrong-pop .fp-verdict{color:var(--red)}
-.fp-justif{font-size:15px;line-height:1.75;color:var(--text);margin-bottom:14px}
-.fp-trap-box{background:rgba(255,71,87,.12);border-left:3px solid var(--red);padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;color:#ffb3b8;margin-bottom:10px}
-.fp-fact-box{background:rgba(245,166,35,.10);border-left:3px solid var(--cat);padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;color:var(--cat);font-family:var(--mono)}
-.fp-next-btn{margin-top:18px;font-family:var(--display);font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:12px 32px;border-radius:8px;border:none;cursor:pointer;background:var(--cat);color:#0e0f11;width:100%}
-
-/* Results */
-.results-hero{text-align:center;padding:40px 0 32px}
-.score-ring{width:150px;height:150px;margin:0 auto 28px;position:relative}
-.score-ring svg{transform:rotate(-90deg);display:block}
-.score-ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.score-big{font-family:var(--display);font-size:40px;font-weight:800;color:var(--cat);line-height:1}
-.score-sub{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px}
-.result-title{font-family:var(--display);font-size:30px;font-weight:800;text-transform:uppercase;margin-bottom:10px;letter-spacing:.5px}
-.result-msg{font-size:15px;color:var(--muted);max-width:500px;margin:0 auto 36px;line-height:1.7}
-
-.result-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:40px}
-.rs-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center}
-.rs-val{font-family:var(--display);font-size:30px;font-weight:800;margin-bottom:4px}
-.rs-lbl{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
-
-.review-section-title{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--cat);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:14px}
-.review-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-.review-list{display:flex;flex-direction:column;gap:10px;margin-bottom:36px}
-.review-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;gap:12px;align-items:flex-start}
-.ri-icon{font-size:16px;flex-shrink:0;margin-top:2px}
-.ri-q{font-size:14px;font-weight:500;margin-bottom:4px;line-height:1.4}
-.ri-ans{font-size:13px;color:var(--muted)}
-.result-btns{display:flex;gap:12px}.result-btns .btn{flex:1}
-
-@media(max-width:600px){
-  .result-stats{grid-template-columns:1fr 1fr}
-  .topbar{padding:0 16px}.topbar-logo{font-size:14px}
-  main{padding:28px 16px 60px}.question-card{padding:20px 18px}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:
+    linear-gradient(var(--bg),var(--bg2)) ,
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 28px);
+  color:var(--chalk);
+  font-family:var(--mono);
+  min-height:100vh;
+  padding:28px 18px 60px;
 }
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.wrap{max-width:800px;margin:0 auto;}
+
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:18px;flex-wrap:wrap;}
+h1{font-family:var(--disp);font-size:1.6rem;letter-spacing:0.5px;margin:0 0 4px;color:var(--chalk);}
+.eyebrow{font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--red);}
+.hud{display:flex;gap:18px;align-items:center;font-size:0.85rem;color:var(--dim);}
+.lives{display:flex;gap:6px;}
+.pt{width:14px;height:14px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red);}
+.pt.dead{background:#33433b;box-shadow:none;}
+.score{color:var(--green);font-weight:bold;}
+
+/* ---- chuleta de derivadas, siempre visible y plegable ---- */
+.cheatsheet{
+  background:var(--panel2);
+  border:1px solid #244a3b;
+  border-radius:10px;
+  padding:14px 18px;
+  margin-bottom:18px;
+}
+.cheatsheet summary{cursor:pointer;color:var(--yellow);font-size:0.85rem;letter-spacing:0.5px;}
+.cheatsheet table{width:100%;margin-top:12px;border-collapse:collapse;font-size:0.85rem;}
+.cheatsheet td{padding:6px 8px;border-bottom:1px solid #1d3a2e;color:var(--dim);}
+.cheatsheet td.f{color:var(--blue);}
+.cheatsheet td.d{color:var(--green);}
+.cheatsheet .ex{color:var(--dim);font-size:0.78rem;margin-top:8px;line-height:1.5;}
+
+.menu{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:22px;}
+@media(max-width:520px){.menu{grid-template-columns:1fr;}}
+.menu button{
+  background:var(--panel);border:1px solid #244a3b;color:var(--chalk);
+  padding:10px 12px;font-family:var(--mono);font-size:0.8rem;text-align:left;
+  border-radius:6px;cursor:pointer;transition:.15s;
+}
+.menu button:hover{border-color:var(--blue);color:var(--blue);}
+.menu button.survival{
+  grid-column:1/-1;background:linear-gradient(90deg,#1c3a2c,#1c2f3a);
+  border:1px solid var(--red);color:var(--chalk);font-weight:bold;letter-spacing:1px;padding:14px;
+}
+
+#game{display:none;}
+.card{background:var(--panel);border:1px solid #224236;border-radius:10px;padding:20px 22px;margin-bottom:16px;}
+.tag{display:inline-block;font-size:0.65rem;letter-spacing:2px;color:var(--blue);border:1px solid var(--blue);
+  border-radius:20px;padding:2px 10px;margin-bottom:10px;text-transform:uppercase;}
+.statement{font-family:var(--disp);font-size:1.05rem;line-height:1.55;color:var(--chalk);}
+.statement b{color:var(--green);}
+
+.fields{margin-top:16px;display:flex;flex-direction:column;gap:10px;}
+.field{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.field label{font-size:0.85rem;color:var(--dim);min-width:200px;}
+.field input{
+  background:#06140f;border:1px solid #244a3b;color:var(--chalk);font-family:var(--mono);
+  padding:8px 10px;border-radius:6px;width:130px;font-size:0.95rem;
+}
+.field input:focus{outline:none;border-color:var(--blue);}
+
+.actions{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;}
+button.primary{background:var(--green);color:#06140f;border:none;font-family:var(--mono);font-weight:bold;
+  padding:10px 18px;border-radius:6px;cursor:pointer;letter-spacing:0.5px;}
+button.ghost{background:transparent;border:1px solid var(--dim);color:var(--dim);font-family:var(--mono);
+  padding:10px 18px;border-radius:6px;cursor:pointer;}
+button.ghost:hover{color:var(--chalk);border-color:var(--chalk);}
+button.primary:hover{filter:brightness(1.08);}
+button.ghost.blue{border-color:var(--blue);color:var(--blue);}
+
+.feedback{margin-top:14px;font-size:0.9rem;display:none;}
+.feedback.ok{color:var(--green);}
+.feedback.bad{color:var(--red);}
+
+/* ---- explicación manual paso a paso ---- */
+.manual{display:none;margin-top:16px;}
+.step{
+  background:var(--panel2);border:1px solid #1d3a2e;border-radius:8px;
+  padding:14px 16px;margin-bottom:10px;
+}
+.step .stepnum{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:50%;background:var(--blue);color:#06140f;
+  font-size:0.75rem;font-weight:bold;margin-right:8px;
+}
+.step .stitle{color:var(--chalk);font-size:0.9rem;font-weight:bold;}
+.step .sbody{color:var(--dim);font-size:0.87rem;line-height:1.6;margin-top:8px;}
+.step .sbody b{color:var(--yellow);}
+.step .sbody .math{color:var(--green);font-family:var(--mono);}
+.step.hidden{display:none;}
+.revealMore{text-align:center;margin:6px 0 14px;}
+
+.console{background:#06140f;border:1px solid #1d3a2e;border-radius:8px;padding:14px 16px;margin-top:10px;display:none;}
+.console .lead{color:var(--dim);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.cmdline{display:flex;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px dashed #16301f;font-size:0.92rem;}
+.cmdline:last-child{border-bottom:none;}
+.cmdline .n{color:#3c6450;width:18px;}
+.cmdline .code{color:var(--blue);}
+.cmdline .res{color:var(--green);margin-left:auto;}
+.note{color:var(--dim);font-size:0.78rem;margin-top:10px;line-height:1.5;}
+
+.endscreen{display:none;text-align:center;padding:40px 0;}
+.endscreen h2{font-family:var(--disp);font-size:2rem;color:var(--red);}
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<div class="topbar">
-  <div class="topbar-logo">MatSim · Maq. Pesada</div>
-  <div class="topbar-right">
-    <div class="lives-display" id="lives-display">
-      <span class="heart" id="h1">❤️</span>
-      <span class="heart" id="h2">❤️</span>
-      <span class="heart" id="h3">❤️</span>
+  <header>
+    <div>
+      <div class="eyebrow">DERIVADA → EXTREMO → RESPUESTA</div>
+      <h1>Modo Supervivencia: Optimización</h1>
     </div>
-    <div class="topbar-score" id="topbar-score">Score: <span id="tb-score">0/0</span></div>
+    <div class="hud" id="hud" style="display:none">
+      <div class="lives" id="lives"></div>
+      <div>Puntaje: <span class="score" id="score">0</span></div>
+    </div>
+  </header>
+
+  <details class="cheatsheet" id="cheat">
+    <summary>📎 Chuleta rápida: reglas de derivación que vas a usar SIEMPRE en estos problemas</summary>
+    <table>
+      <tr><td class="f">d/dx ( c )  → constante sola</td><td class="d">= 0</td></tr>
+      <tr><td class="f">d/dx ( c·x )</td><td class="d">= c</td></tr>
+      <tr><td class="f">d/dx ( c·xⁿ )</td><td class="d">= c·n·x^(n-1)</td></tr>
+      <tr><td class="f">d/dx ( c/x ) = d/dx ( c·x⁻¹ )</td><td class="d">= -c·x⁻² = -c/x²</td></tr>
+      <tr><td class="f">d/dx ( √x ) = d/dx ( x^(1/2) )</td><td class="d">= 1/(2√x)</td></tr>
+    </table>
+    <div class="ex">
+      Eso es literalmente TODO lo que necesitas. En cada problema vas a: (1) escribir la función con una sola variable,
+      (2) derivar término por término usando esta tabla, (3) igualar la derivada a 0, (4) despejar la variable.
+      Ese x que encuentras siempre es un candidato a máximo o mínimo.
+    </div>
+  </details>
+
+  <div id="menu">
+    <p class="note" style="margin-bottom:14px;color:var(--dim)">
+      Cada botón genera el mismo tipo de problema que viste en tu actividad, con números nuevos al azar.
+      Puedes ver la explicación <b style="color:var(--yellow)">paso a paso a mano</b> (con la derivada completa)
+      y también el atajo en GeoGebra.
+    </p>
+    <div class="menu" id="menuButtons"></div>
   </div>
+
+  <div id="game">
+    <div class="card" id="problemCard"></div>
+  </div>
+
+  <div class="endscreen" id="endscreen">
+    <h2>SIN VIDAS</h2>
+    <p class="note">Puntaje final: <span id="finalScore" class="score">0</span></p>
+    <button class="primary" onclick="backToMenu()">Volver al menú</button>
+  </div>
+
 </div>
-<div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
-
-<!-- GAME OVER OVERLAY -->
-<div id="gameover-overlay">
-  <div class="gameover-icon">💥</div>
-  <div class="gameover-title">Falla Catastrófica</div>
-  <div class="gameover-sub">El equipo falló por mal mantenimiento.<br>Agotaste tus 3 vidas antes de terminar el simulacro.<br>Un buen técnico no puede darse ese lujo en terreno.</div>
-  <div class="gameover-stat" id="gameover-stat">Llegaste a la pregunta 0 de 25</div>
-  <div class="gameover-btns">
-    <button class="gameover-btn primary" onclick="retryExam()">🔄 Reiniciar</button>
-    <button class="gameover-btn ghost" onclick="goHome()">← Inicio</button>
-  </div>
-</div>
-
-<!-- FEEDBACK POPUP -->
-<div class="feedback-popup" id="feedback-popup">
-  <div class="feedback-popup-inner">
-    <div class="fp-header">
-      <span class="fp-icon" id="fp-icon"></span>
-      <span class="fp-verdict" id="fp-verdict"></span>
-    </div>
-    <div class="fp-justif" id="fp-justif"></div>
-    <div class="fp-trap-box" id="fp-trap" style="display:none"></div>
-    <div class="fp-fact-box" id="fp-fact" style="display:none"></div>
-    <button class="fp-next-btn" id="fp-next-btn" onclick="closeFeedbackAndNext()">Siguiente pregunta →</button>
-  </div>
-</div>
-
-<main>
-  <!-- INTRO -->
-  <div class="screen active" id="screen-intro">
-    <div class="intro-hero">
-      <div class="eyebrow">100 Preguntas · Banco completo · Nivel Técnico</div>
-      <h1>Simulador<em>de Examen</em></h1>
-      <p>Cada sesión: <strong style="color:var(--text)">25 preguntas aleatorias</strong> del banco de 100. Las alternativas se mezclan en cada carga — imposible memorizar posiciones. Tienes <strong style="color:var(--red)">3 vidas</strong>.</p>
-    </div>
-    <div class="stats-strip">
-      <div class="ss-item"><div class="ss-val">100</div><div class="ss-label">Preguntas totales</div></div>
-      <div class="ss-item"><div class="ss-val">25</div><div class="ss-label">Por sesión</div></div>
-      <div class="ss-item"><div class="ss-val">3</div><div class="ss-label">Vidas</div></div>
-      <div class="ss-item"><div class="ss-val" style="color:var(--red)">Alta</div><div class="ss-label">Dificultad</div></div>
-    </div>
-    <button class="btn btn-cat" onclick="startExam()">⚙ Iniciar Simulador →</button>
-  </div>
-
-  <!-- QUESTION -->
-  <div class="screen" id="screen-question">
-    <div class="q-header">
-      <div class="q-counter" id="q-counter">Pregunta 1 de 25</div>
-    </div>
-    <div class="question-card">
-      <div class="q-num-tag" id="q-num-tag"></div>
-      <div class="q-text" id="q-text"></div>
-      <div class="options" id="options-container"></div>
-    </div>
-  </div>
-
-  <!-- RESULTS -->
-  <div class="screen" id="screen-results">
-    <div class="results-hero">
-      <div class="score-ring">
-        <svg width="150" height="150" viewBox="0 0 150 150">
-          <circle cx="75" cy="75" r="62" fill="none" stroke="#1e2030" stroke-width="13"/>
-          <circle id="ring-arc" cx="75" cy="75" r="62" fill="none" stroke="url(#rg)" stroke-width="13"
-            stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="389.6"/>
-          <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#f5a623"/><stop offset="100%" stop-color="#e8911a"/>
-          </linearGradient></defs>
-        </svg>
-        <div class="score-ring-inner">
-          <div class="score-big" id="score-big">0</div>
-          <div class="score-sub">/25</div>
-        </div>
-      </div>
-      <div class="result-title" id="result-title"></div>
-      <div class="result-msg" id="result-msg"></div>
-    </div>
-    <div class="result-stats">
-      <div class="rs-box"><div class="rs-val" id="rs-correct" style="color:var(--green)">0</div><div class="rs-lbl">Correctas</div></div>
-      <div class="rs-box"><div class="rs-val" id="rs-wrong" style="color:var(--red)">0</div><div class="rs-lbl">Incorrectas</div></div>
-      <div class="rs-box"><div class="rs-val" id="rs-lives" style="color:var(--cat)">0</div><div class="rs-lbl">Vidas restantes</div></div>
-      <div class="rs-box"><div class="rs-val" id="rs-nota" style="color:var(--cat)">0.0</div><div class="rs-lbl">Nota Aprox.</div></div>
-    </div>
-    <div class="review-section-title">Revisión completa</div>
-    <div class="review-list" id="review-list"></div>
-    <div class="result-btns">
-      <button class="btn btn-ghost" onclick="goHome()">← Inicio</button>
-      <button class="btn btn-cat" onclick="retryExam()">🔄 Reintentar →</button>
-    </div>
-  </div>
-</main>
 
 <script>
-// ══════════════════════════════════════════════════════════════
-//  BANCO DE 100 PREGUNTAS
-//  NOTA: opciones reescritas para que la respuesta correcta
-//  NO sea siempre la más larga. Longitudes variadas.
-// ══════════════════════════════════════════════════════════════
-const BANK = [
-  {id:1,pregunta:"¿Qué elemento de aleación es fundamental añadir al acero para fabricar una cuchilla de motoniveladora sometida a desgaste abrasivo constante?",opciones:["Alto porcentaje de Carbono","Manganeso en proporción superior al 15% de la aleación total","Cromo como agente pasivante superficial"],respuestaCorrecta:"Alto porcentaje de Carbono",justificacion:"El carbono aporta la máxima dureza superficial necesaria para resistir el rayado y la abrasión constante contra la tierra y la arena."},
-  {id:2,pregunta:"En un diagnóstico de fluidos, ¿qué indica una alta concentración de escamas de Cromo en el aceite del circuito hidráulico?",opciones:["Desgaste del buje de bronce por sobrecarga","Degradación térmica y rotura progresiva de los sellos elastómeros del circuito","Desprendimiento del recubrimiento del vástago"],respuestaCorrecta:"Desprendimiento del recubrimiento del vástago",justificacion:"El cromo se utiliza como capa pasivante y de dureza en los vástagos. Si hay escamas en el aceite, el acero base quedará expuesto a la oxidación y los sellos se destruirán."},
-  {id:3,pregunta:"¿Cuál es el tratamiento térmico obligatorio que debe aplicarse a un engranaje inmediatamente después del templado para evitar que se quiebre?",opciones:["Revenido","Cementado termoquímico superficial a alta temperatura","Normalizado al horno con enfriamiento en nitrógeno"],respuestaCorrecta:"Revenido",justificacion:"El templado deja el acero extremadamente duro pero con nula tenacidad (frágil como vidrio). El revenido alivia esas tensiones internas para que soporte impactos."},
-  {id:4,pregunta:"¿Por qué es técnicamente inviable recalentar y volver a moldear un panel de resina epoxi (polímero termoestable) que quedó mal fabricado?",opciones:["Porque requiere superar los 1000°C y los hornos convencionales no alcanzan esa temperatura para reblandecer la red polimérica","Porque sus cadenas forman enlaces cruzados y se degrada antes de derretirse","Porque al calentarse pierde su temperatura de transición vítrea y se transforma en un elastómero no procesable"],respuestaCorrecta:"Porque sus cadenas forman enlaces cruzados y se degrada antes de derretirse",justificacion:"A diferencia de los termoplásticos, los termoestables tienen una estructura reticulada 3D. Al aplicarles calor, no fluyen, sino que se queman y carbonizan."},
-  {id:5,pregunta:"¿Qué propiedad física microscópica única permite que los bujes de bronce fabricados por 'Sinterizado' funcionen como piezas autolubricantes?",opciones:["Su alta porosidad interna que retiene aceite como una esponja","La formación de escamas de grafito lamelar aislantes en su microestructura interna durante la sinterización","La capa pasivante de óxido de estaño que se genera en el horneado final"],respuestaCorrecta:"Su alta porosidad interna que retiene aceite como una esponja",justificacion:"La pulvimetalurgia no funde el metal al 100%. Las partículas de polvo se unen dejando poros capilares que se impregnan de lubricante, liberándolo con el calor por fricción."},
-  {id:6,pregunta:"Se necesita reemplazar los frenos de un camión minero que superan los 1000°C por fricción extrema. ¿Qué material se debe emplear en las pastillas?",opciones:["Compuesto PMC con fibra de carbono de alta temperatura y resina fenólica modificada","Fundición gris aleada con Manganeso, Cromo y alto contenido de grafito laminar","Cerámica industrial (ej. Carburo de Silicio)"],respuestaCorrecta:"Cerámica industrial (ej. Carburo de Silicio)",justificacion:"Las cerámicas industriales poseen una estabilidad térmica insuperable, manteniendo sus propiedades mecánicas y resistencia al desgaste a temperaturas donde los metales y polímeros colapsan."},
-  {id:7,pregunta:"¿Cuál es la función principal de la Fundición Gris en la fabricación del bloque de un motor diésel de maquinaria pesada?",opciones:["Absorber y amortiguar las vibraciones mecánicas gracias a sus escamas de grafito","Soportar las altísimas temperaturas del múltiple de escape sin deformarse por fluencia térmica prolongada","Evitar la corrosión por cavitación al estar en contacto permanente con el líquido refrigerante"],respuestaCorrecta:"Absorber y amortiguar las vibraciones mecánicas gracias a sus escamas de grafito",justificacion:"Las escamas de grafito en la microestructura actúan como micro-amortiguadores, disipando la energía mecánica de los pistones antes de que se transmita al chasis."},
-  {id:8,pregunta:"¿Cuál es el 'talón de Aquiles' de un compuesto PMC al ser expuesto a temperaturas sobre los 300°C?",opciones:["Las fibras de refuerzo se dilatan térmicamente y fracturan toda la lámina compuesta","La matriz de resina se degrada y carboniza, colapsando la pieza","Ocurre una sinterización descontrolada que destruye la interfaz fibra-matriz por completo"],respuestaCorrecta:"La matriz de resina se degrada y carboniza, colapsando la pieza",justificacion:"La matriz polimérica (resina) no soporta altas temperaturas. Aunque la fibra de carbono resista el calor, sin la resina que la mantenga en posición, la pieza pierde toda su resistencia."},
-  {id:9,pregunta:"Al analizar un 'Desgaste Adhesivo' (microsoldadura en frío) en un mando final, ¿cuál es la causa raíz mecánica de esta falla?",opciones:["Exceso de revoluciones sostenidas en el tren de engranajes epicicloidales bajo carga axial máxima","Ruptura del film lubricante con contacto directo metal-metal bajo alta presión","Uso de acero sin revenido posterior al temple en la corona dentada del mando"],respuestaCorrecta:"Ruptura del film lubricante con contacto directo metal-metal bajo alta presión",justificacion:"Sin la película de aceite, las micro-asperezas de las dos superficies metálicas rozan en seco, generando calor instantáneo que las funde y arranca pedazos de material."},
-  {id:10,pregunta:"En el contexto de la Minería Verde en Chile, ¿cuáles son los dos elementos tóxicos críticos que obligan a modernizar la tecnología de las fundiciones?",opciones:["Arsénico y Azufre","Plomo y Cadmio en concentraciones superiores a las normas internacionales vigentes","Carbono y Wolframio liberados durante la fundición del concentrado"],respuestaCorrecta:"Arsénico y Azufre",justificacion:"Los concentrados de cobre chilenos tienen altas concentraciones de estos elementos. Las nuevas plantas deben capturar el 99% de estos gases para cumplir los estándares ambientales internacionales."},
-  {id:11,pregunta:"¿Qué elemento de aleación es esencial para que una pieza de acero mantenga su dureza e integridad estructural al trabajar en temperaturas extremas (como en un escape)?",opciones:["Wolframio (Tungsteno)","Manganeso como estabilizador de la austenita a alta temperatura","Magnesio para mejorar la resistencia a la oxidación superficial"],respuestaCorrecta:"Wolframio (Tungsteno)",justificacion:"El wolframio tiene uno de los puntos de fusión más altos de todos los metales, dándole al acero una resistencia excepcional a la deformación por calor (fluencia térmica)."},
-  {id:12,pregunta:"Un supervisor pide usar Líquidos Penetrantes (tintas) para buscar burbujas internas en una soldadura. ¿Cuál es el error técnico de esta petición?",opciones:["Las tintas penetrantes solo detectan fisuras que afloren a la superficie, no defectos internos","Las tintas penetrantes reaccionan con la soldadura oxidándola y creando nuevos defectos superficiales","Las tintas solo funcionan en materiales poliméricos y no son compatibles con superficies de acero soldado"],respuestaCorrecta:"Las tintas penetrantes solo detectan fisuras que afloren a la superficie, no defectos internos",justificacion:"El ensayo por líquidos penetrantes funciona por capilaridad; el líquido debe poder entrar en la grieta desde el exterior. Para ver el interior (burbujas), se requiere Ultrasonido o Radiografía."},
-  {id:13,pregunta:"¿Cuál es la principal ventaja operativa de utilizar Polímeros Termoplásticos frente a los Termoestables en la industria?",opciones:["Se pueden calentar, derretir y volver a moldear sin destruir su estructura","Soportan temperaturas superiores a 800°C manteniendo su geometría original intacta","Forman enlaces cruzados que los hacen indestructibles frente a impactos y esfuerzos de cizalle"],respuestaCorrecta:"Se pueden calentar, derretir y volver a moldear sin destruir su estructura",justificacion:"Los termoplásticos tienen cadenas lineales o ramificadas que se separan con el calor, permitiendo su reciclaje y remoldeo, a diferencia de los termoestables que se carbonizan."},
-  {id:14,pregunta:"Al diseñar un panel sometido a los 450°C del múltiple de escape de un camión, ¿qué tipo de material compuesto es el único seguro de usar?",opciones:["PMC con fibra de carbono y resina de poliimida de alta temperatura y bajo índice de ignición","MMC de aluminio reforzado con partículas de carburo de silicio de alta pureza","CMC (Material Compuesto de Matriz Cerámica)"],respuestaCorrecta:"CMC (Material Compuesto de Matriz Cerámica)",justificacion:"Las matrices poliméricas (PMC) se queman a los 300°C, y las metálicas de aluminio (MMC) se ablandan. Solo la matriz cerámica (CMC) mantiene sus propiedades a más de 450°C."},
-  {id:15,pregunta:"¿Qué mecanismo físico causa el 'Desgaste Abrasivo' en los componentes de una máquina para movimiento de tierras?",opciones:["Partículas duras externas rozan y arrancan material de la superficie como una lija","Dos superficies se microsueldan por falta de lubricación y se desgarran en cada ciclo de movimiento","El material sufre fatiga acumulada por impactos constantes hasta quebrarse por propagación de grieta"],respuestaCorrecta:"Partículas duras externas rozan y arrancan material de la superficie como una lija",justificacion:"La abrasión ocurre cuando un tercer cuerpo (como sílice, tierra o arena) es más duro que el acero de la herramienta y penetra la superficie durante el movimiento."},
-  {id:16,pregunta:"¿Cuál es el objetivo principal del tratamiento térmico de 'Templado' en el acero?",opciones:["Disminuir la dureza para facilitar el mecanizado posterior en torno o fresadora CNC","Obtener máxima dureza mediante enfriamiento brusco desde la temperatura de austenización","Aumentar la resistencia a la corrosión creando una capa pasivante estable de óxido superficial"],respuestaCorrecta:"Obtener máxima dureza mediante enfriamiento brusco desde la temperatura de austenización",justificacion:"El enfriamiento rápido (temple) atrapa el carbono en la estructura cristalina, formando martensita, la cual es extremadamente dura pero frágil."},
-  {id:17,pregunta:"En el diseño de pasadores y bujes, ¿por qué el buje siempre se fabrica de un material más blando (como bronce) que el pasador (acero)?",opciones:["Para que actúe como pieza de sacrificio y se desgaste en lugar del eje principal","Porque el bronce funde a mayor temperatura que el acero y reduce el riesgo de incendio por fricción severa","Para que el buje transmita eficientemente las vibraciones del motor hacia el pasador de acero"],respuestaCorrecta:"Para que actúe como pieza de sacrificio y se desgaste en lugar del eje principal",justificacion:"En tribología, se busca que el desgaste ocurra siempre en la pieza estática más pequeña, económica y reemplazable de un conjunto móvil."},
-  {id:18,pregunta:"¿Cuál es una limitación importante del proceso de Sinterizado (pulvimetalurgia) en la fabricación de repuestos pesados?",opciones:["Los materiales sinterizados son siempre más pesados y porosos que los fundidos en molde permanente","La imposibilidad técnica y económica de mezclar diferentes tipos de metales en el mismo componente sinterizado","Alto costo del polvo metálico y dificultad para compactar piezas muy grandes o de geometrías complejas"],respuestaCorrecta:"Alto costo del polvo metálico y dificultad para compactar piezas muy grandes o de geometrías complejas",justificacion:"El sinterizado requiere prensas inmensas para compactar el polvo. Hacer piezas gigantescas o con formas que impidan la presión uniforme es inviable técnica y económicamente."},
-  {id:19,pregunta:"En un Material Compuesto (ej. fibra de vidrio y resina), ¿cuál es la función exclusiva de la 'Matriz'?",opciones:["Soportar más del 90% de los esfuerzos de tracción directa aplicados sobre la pieza","Actuar como conductor eléctrico para los sistemas de sensórica e instrumentación avanzada","Mantener las fibras en posición, protegerlas del ambiente y transferirles las cargas mecánicas"],respuestaCorrecta:"Mantener las fibras en posición, protegerlas del ambiente y transferirles las cargas mecánicas",justificacion:"El refuerzo (las fibras) es el que soporta la fuerza bruta. La matriz es el 'pegamento' que les da forma, las protege del desgaste y distribuye el esfuerzo entre ellas."},
-  {id:20,pregunta:"¿Qué ventaja operativa crítica ofrece la integración de sensores (IoT) en el interior de materiales compuestos de nueva generación?",opciones:["Aumenta la dureza superficial del compuesto frente al desgaste abrasivo en condiciones de faena","Permite mantenimiento predictivo monitoreando el estado de la pieza en tiempo real","Disminuye el costo de fabricación de la resina epoxi al reducir el porcentaje de catalizador necesario"],respuestaCorrecta:"Permite mantenimiento predictivo monitoreando el estado de la pieza en tiempo real",justificacion:"El IoT integrado permite que las piezas 'avisen' sobre micro-deformaciones o cambios de temperatura antes de la rotura, evitando detenciones no programadas del equipo."},
-  {id:21,pregunta:"¿Qué resultado mecánico se busca al aplicar un tratamiento termoquímico de 'Cementado' a un engranaje?",opciones:["Ablandar toda la pieza para que pueda ser moldeada en frío mediante forja de precisión","Inyectar oxígeno en la superficie para generar una capa que inhiba la corrosión química intergranular","Crear capa exterior dura para resistir desgaste, conservando núcleo tenaz para soportar impactos"],respuestaCorrecta:"Crear capa exterior dura para resistir desgaste, conservando núcleo tenaz para soportar impactos",justificacion:"El cementado enriquece solo la superficie con carbono. Así, los dientes del engranaje no se desgastan, pero el centro del diente no se quiebra al recibir torque."},
-  {id:22,pregunta:"En un circuito hidráulico que pierde presión, revisas un sello O-ring y notas que no vuelve a su forma original al apretarlo. ¿Qué propiedad técnica perdió este elastómero?",opciones:["Su resiliencia y capacidad de deformación elástica","Su dureza Rockwell medida en la escala C con penetrador de diamante","Su conductividad térmica estructural para disipar el calor generado por la presión"],respuestaCorrecta:"Su resiliencia y capacidad de deformación elástica",justificacion:"Los elastómeros deben poder deformarse bajo compresión para sellar un espacio y recuperar casi el 100% de su forma inicial. Si se endurecen o aplanan, el sello falla."},
-  {id:23,pregunta:"En un ensayo de materiales, ¿cómo se define técnicamente la propiedad de 'Tenacidad'?",opciones:["La resistencia absoluta de una superficie a ser penetrada o rayada por un indentador de diamante calibrado","La capacidad de absorber energía y deformarse plásticamente antes de fracturar","La habilidad de un metal para recuperar su forma exacta después de retirar una carga de tracción aplicada"],respuestaCorrecta:"La capacidad de absorber energía y deformarse plásticamente antes de fracturar",justificacion:"Un material tenaz (como un acero aleado con manganeso) 'avisa' antes de romperse doblándose. Un material sin tenacidad es frágil (como el vidrio o la cerámica) y estalla de golpe."},
-  {id:24,pregunta:"Para identificar rápidamente en el taller si un pedazo de acero es de bajo, medio o alto carbono, ¿qué ensayo rápido y económico se utiliza?",opciones:["Ensayo de prueba de chispa usando un esmeril angular","Ensayo de tracción en máquina universal para obtener la curva esfuerzo-deformación completa","Análisis ferromagnético mediante ultrasonido de alta frecuencia con palpador de contacto"],respuestaCorrecta:"Ensayo de prueba de chispa usando un esmeril angular",justificacion:"Al acercar el acero a una piedra de esmeril, la forma, color y explosiones de las chispas cambian dramáticamente dependiendo del porcentaje de carbono aleado."},
-  {id:25,pregunta:"¿Cuál es la principal característica mecánica que diferencia a las Cerámicas Avanzadas (industriales) de los metales dúctiles?",opciones:["Poseen altísima tenacidad frente a impactos directos en faena de mina a cielo abierto","Pueden ser soldadas entre sí mediante arco eléctrico con electrodo de tungsteno no consumible","Carecen de deformación plástica; si superan su límite de resistencia, fracturan inmediatamente"],respuestaCorrecta:"Carecen de deformación plástica; si superan su límite de resistencia, fracturan inmediatamente",justificacion:"La cerámica es excelente contra el desgaste abrasivo y el calor, pero es su nula tenacidad lo que obliga a usarlas solo en lugares libres de golpes secos."},
-  {id:26,pregunta:"¿Qué información crítica entrega la gráfica de esfuerzo-deformación proveniente de un 'Ensayo de Tracción' destructivo?",opciones:["La concentración exacta de carbono y las impurezas de azufre y fósforo presentes en el acero ensayado","La vida útil restante del aceite hidráulico expresada en horas de funcionamiento continuo","Límite de fluencia elástica, resistencia máxima a la tracción y punto de ruptura"],respuestaCorrecta:"Límite de fluencia elástica, resistencia máxima a la tracción y punto de ruptura",justificacion:"La curva de tracción es el 'ADN mecánico' del material. Muestra exactamente hasta qué peso aguanta sin deformarse (zona elástica) y en qué punto se corta."},
-  {id:27,pregunta:"¿Cuál es la principal característica de las fibras de Aramida (como el Kevlar) utilizadas como refuerzo en polímeros?",opciones:["Son las fibras de menor costo del mercado y reemplazan a la fibra de vidrio en coberturas no estructurales","Enorme resistencia al impacto y al corte, usadas en protección balística y correas pesadas","Tienen peso bajísimo pero se degradan inmediatamente al contacto prolongado con agua salada o brumas"],respuestaCorrecta:"Enorme resistencia al impacto y al corte, usadas en protección balística y correas pesadas",justificacion:"Las aramidas son plásticos de altísimo rendimiento orientados molecularmente para absorber enormes cantidades de energía de impacto, superando al acero en la relación resistencia/peso."},
-  {id:28,pregunta:"¿Qué proceso industrial permite convertir el caucho natural (pegajoso y blando) en un elastómero comercial resistente y elástico para fabricar neumáticos?",opciones:["La vulcanización, que agrega azufre y calor para crear enlaces cruzados entre las cadenas","El normalizado en hornos de inducción magnética a temperatura controlada por termopar","La sinterización a alta presión en matrices de acero tungsteno con ciclos de veinticuatro horas"],respuestaCorrecta:"La vulcanización, que agrega azufre y calor para crear enlaces cruzados entre las cadenas",justificacion:"La vulcanización une químicamente las cadenas del caucho mediante puentes de azufre, otorgándole la resistencia al desgaste y la 'memoria' elástica."},
-  {id:29,pregunta:"Si un material compuesto indica las siglas PTFE (Teflón) en su especificación, ¿qué comportamiento se espera de esta superficie?",opciones:["Alta conductividad eléctrica superficial para sistemas de puesta a tierra del chasis","Dureza Mohs equivalente a la de un diamante industrial para resistencia extrema al rayado","Resistencia química extrema, baja fricción y tolerancia a altas temperaturas para un polímero"],respuestaCorrecta:"Resistencia química extrema, baja fricción y tolerancia a altas temperaturas para un polímero",justificacion:"Los polímeros fluorados como el PTFE son inertes a casi todos los solventes químicos y poseen uno de los coeficientes de fricción más bajos conocidos por la ingeniería."},
-  {id:30,pregunta:"Respecto a las nuevas tecnologías de fundiciones exigidas para cumplir estándares medioambientales, ¿qué solución se requiere para reemplazar las plantas antiguas obsoletas?",opciones:["Instalar filtros de carbón activado en las chimeneas de las fundiciones que operan actualmente en el país","Reemplazar el uso de carbón por polímeros termoestables reciclados durante la reducción del concentrado de cobre","Construcción de mega-fundiciones público-privadas con tecnología limpia de captura al 99%"],respuestaCorrecta:"Construcción de mega-fundiciones público-privadas con tecnología limpia de captura al 99%",justificacion:"Poner 'parches' a las fundiciones viejas es ineficiente técnica y financieramente. El salto tecnológico requiere nuevas plantas diseñadas desde cero con inversión mixta."},
-  {id:31,pregunta:"¿Qué técnica de Ensayos No Destructivos (END) es la más adecuada para detectar grietas internas y profundas en un eje de transmisión de acero macizo?",opciones:["Inspección por Ultrasonido industrial","Líquidos Penetrantes fluorescentes de alta sensibilidad aplicados con revelador en polvo seco","Inspección Visual directa con boroscopio de fibra óptica articulado"],respuestaCorrecta:"Inspección por Ultrasonido industrial",justificacion:"El ultrasonido envía ondas acústicas de alta frecuencia a través del material. Si las ondas chocan con una grieta interna, rebotan y muestran el defecto en la pantalla del equipo."},
-  {id:32,pregunta:"Para inspeccionar soldaduras en busca de fisuras superficiales en materiales ferromagnéticos, ¿qué END es el más rápido y efectivo?",opciones:["Partículas Magnéticas","Radiografía Industrial con Rayos X o isótopos radiactivos de alta energía","Análisis de Aceite mediante Ferrografía Analítica con microscopio de alta resolución"],respuestaCorrecta:"Partículas Magnéticas",justificacion:"Al magnetizar la pieza, cualquier fisura interrumpe el campo magnético. Las partículas de hierro rociadas se agrupan en esa interrupción, marcando la grieta de forma visible e inmediata."},
-  {id:33,pregunta:"¿Qué tipo de desgaste superficial se caracteriza por la formación de micro-cráteres o 'picaduras' (pitting) en los dientes de un engranaje debido a cargas cíclicas repetitivas?",opciones:["Desgaste por Fatiga Superficial","Desgaste Abrasivo de tres cuerpos por ingreso de partículas contaminantes al lubricante","Desgaste Corrosivo por reacción electroquímica del lubricante con la superficie del diente"],respuestaCorrecta:"Desgaste por Fatiga Superficial",justificacion:"La fatiga ocurre cuando el material soporta ciclos de carga y descarga constantes. Con el tiempo, se generan microfisuras debajo de la superficie que terminan desprendiendo pequeños trozos de metal."},
-  {id:34,pregunta:"En el monitoreo de condiciones mediante Termografía, ¿qué indica un 'punto caliente' asimétrico en el rodamiento de un motor eléctrico?",opciones:["Excelente funcionamiento del sistema de refrigeración líquida del motor eléctrico en faena","Aumento excesivo de fricción por falta de lubricación o desgaste incipiente","Que el material cambió su estructura cristalina a martensita por temple inducido térmicamente"],respuestaCorrecta:"Aumento excesivo de fricción por falta de lubricación o desgaste incipiente",justificacion:"La cámara térmica detecta la radiación infrarroja. Un aumento de temperatura focalizado significa que la energía mecánica se está perdiendo en forma de calor debido al roce anormal entre los componentes."},
-  {id:35,pregunta:"Al analizar el aceite de un motor diésel, se nota un aumento dramático en la viscosidad del fluido y un color negro opaco. ¿Cuál es el diagnóstico más probable?",opciones:["Dilución del aceite por mezcla directa con combustible diésel no quemado proveniente de inyectores defectuosos","Alta contaminación con hollín por combustión ineficiente o fugas de compresión","Reacción química del aceite con el recubrimiento de cromo de los cilindros del motor"],respuestaCorrecta:"Alta contaminación con hollín por combustión ineficiente o fugas de compresión",justificacion:"El hollín es un subproducto sólido de la combustión. Cuando los anillos del pistón fallan, el hollín pasa al cárter, saturando el aceite y volviéndolo espeso."},
-  {id:36,pregunta:"En la selección de polímeros para revestir el interior de la tolva de un camión que recibe impactos de rocas, ¿qué material es el indicado?",opciones:["Resina Epoxi pura (Termoestable) de alta resistencia a la compresión y adherencia a metales","PVC rígido con plastificante para aumentar su tenacidad frente a impactos de baja velocidad","Poliuretano de alta densidad (Elastómero)"],respuestaCorrecta:"Poliuretano de alta densidad (Elastómero)",justificacion:"El poliuretano es un elastómero extremadamente tenaz. Tiene la capacidad de absorber la energía del impacto de la roca deformándose elásticamente y recuperando su forma sin quebrarse."},
-  {id:51,pregunta:"¿Qué gran ventaja ofrece la Pulvimetalurgia (sinterizado) frente a la fundición tradicional al trabajar con metales como el Wolframio (Tungsteno)?",opciones:["Garantiza que la pieza final tenga 0% de porosidad interna y máxima densidad teórica del metal","Permite que el metal adquiera propiedades similares a un polímero termoestable al ser compactado","Permite fabricar piezas con metales de altísimo punto de fusión sin derretirlos por completo"],respuestaCorrecta:"Permite fabricar piezas con metales de altísimo punto de fusión sin derretirlos por completo",justificacion:"Metales como el wolframio funden a más de 3400°C, lo cual destruiría cualquier molde convencional. El sinterizado permite compactar su polvo a temperaturas mucho más bajas."},
-  {id:52,pregunta:"En un ensayo de Líquidos Penetrantes, ¿cuál es el paso previo absolutamente crítico antes de aplicar la tinta sobre la soldadura?",opciones:["Limpiar y desengrasar la superficie perfectamente para no tapar las grietas","Calentar la pieza a 200°C para dilatar los poros y grietas del metal base antes de aplicar la tinta","Magnetizar la pieza usando un yugo electromagnético de corriente alterna para activar la superficie"],respuestaCorrecta:"Limpiar y desengrasar la superficie perfectamente para no tapar las grietas",justificacion:"Si la grieta está llena de aceite, pintura o escoria, el líquido penetrante no podrá entrar por capilaridad y el defecto pasará totalmente desapercibido."},
-  {id:53,pregunta:"En tribología, ¿qué condición define una 'Lubricación Hidrodinámica' perfecta en un descanso de motor?",opciones:["El aceite está en estado semisólido actuando como un rodamiento de bolas de grasa estructurada","Las dos superficies metálicas están completamente separadas por una película de aceite presurizada","Las crestas de ambas superficies rozan levemente pero el desgaste se mantiene controlado y predecible"],respuestaCorrecta:"Las dos superficies metálicas están completamente separadas por una película de aceite presurizada",justificacion:"En régimen hidrodinámico, la velocidad del eje 'arrastra' el aceite formando una cuña de presión tan fuerte que levanta el eje, logrando que el desgaste sea cero."},
-  {id:54,pregunta:"En un Material Compuesto (PMC), ¿cómo afecta la orientación en la que se instalan las fibras continuas?",opciones:["El material será 'anisotrópico': máxima resistencia solo en la dirección de las fibras","El material será 'isotrópico', resistiendo exactamente igual en cualquier dirección geométrica del espacio","La orientación de la fibra solo afecta el color del material y su conductividad eléctrica superficial"],respuestaCorrecta:"El material será 'anisotrópico': máxima resistencia solo en la dirección de las fibras",justificacion:"A diferencia de los metales tradicionales que resisten igual en todas direcciones (isotrópicos), los compuestos resisten los esfuerzos principalmente en el eje longitudinal de sus fibras."},
-  {id:55,pregunta:"A diferencia de la Fundición Gris, la 'Fundición Blanca' es extremadamente dura pero muy frágil. ¿A qué se debe esto a nivel microscópico?",opciones:["A que contiene un alto porcentaje de plomo y bismuto en su composición química base","A que su carbono forma carburo de hierro (cementita) en lugar de escamas de grafito","A que es enfriada lentamente al aire libre durante varios días hasta temperatura ambiente"],respuestaCorrecta:"A que su carbono forma carburo de hierro (cementita) en lugar de escamas de grafito",justificacion:"El enfriamiento rápido de la fundición blanca impide que el carbono precipite como grafito. En su lugar, forma cementita, un compuesto durísimo pero quebradizo."},
-  {id:56,pregunta:"¿Qué falla catastrófica ocurre si instalas un O-ring de caucho estándar (Nitrilo) en un sistema hidráulico que usa fluidos sintéticos ésteres de aviación?",opciones:["Incompatibilidad química: el caucho se hinchará y desintegrará","Cristalización: el O-ring se transformará en un termoestable reticulado que bloqueará el pistón","El fluido se gelificará alrededor del sello, atascando físicamente el cilindro telescópico"],respuestaCorrecta:"Incompatibilidad química: el caucho se hinchará y desintegrará",justificacion:"Los polímeros son altamente sensibles a la química del fluido. Un elastómero incompatible absorberá el fluido como una esponja, perdiendo toda su resistencia mecánica y capacidad de sellado."},
-  {id:57,pregunta:"En el Monitoreo de Condiciones por análisis de partículas (Ferrografía), ¿qué indica la presencia de partículas con forma 'esférica' microscópica?",opciones:["Desgaste abrasivo severo causado por ingreso de arena fina al cárter del sistema","Corrosión química activa en los engranajes de bronce de las cajas de reducción","Desgaste por fatiga o micro-picaduras (pitting) en los elementos rodantes del rodamiento"],respuestaCorrecta:"Desgaste por fatiga o micro-picaduras (pitting) en los elementos rodantes del rodamiento",justificacion:"Las partículas esféricas se forman cuando las micro-fisuras por fatiga liberan material que es 'amasado' y redondeado por las bolas del rodamiento bajo extrema presión."},
-  {id:58,pregunta:"¿Por qué las Cerámicas Industriales (como la Alúmina) son excelentes aislantes eléctricos y térmicos, a diferencia de los metales?",opciones:["Porque su alta porosidad permite que el aire circule por su interior actuando como aislante natural","Porque reaccionan con el oxígeno creando una capa magnética repulsiva a los electrones libres","Porque carecen de electrones libres; sus enlaces iónicos mantienen los electrones fijos a los átomos"],respuestaCorrecta:"Porque carecen de electrones libres; sus enlaces iónicos mantienen los electrones fijos a los átomos",justificacion:"En los metales, la 'nube' de electrones libres conduce el calor y la electricidad fácilmente. En las cerámicas, los electrones están fijos, bloqueando ambas transferencias."},
-  {id:59,pregunta:"En los tratamientos térmicos de ablandamiento, ¿cuál es la diferencia clave entre el 'Recocido' y el 'Normalizado' respecto a la velocidad de enfriamiento?",opciones:["El recocido se enfría lentamente dentro del horno; el normalizado se enfría al aire","El normalizado se enfría sumergiendo la pieza en agua con sal para lograr una martensita uniforme","El recocido utiliza nitrógeno líquido para el choque térmico y el normalizado usa gas argón inerte"],respuestaCorrecta:"El recocido se enfría lentamente dentro del horno; el normalizado se enfría al aire",justificacion:"El recocido (horno) busca el ablandamiento máximo. El normalizado (al aire) enfría más rápido, logrando un grano más fino y un acero ligeramente más resistente."},
-  {id:60,pregunta:"¿Cuál es el elemento de aleación que, al añadirse en al menos un 10.5%, convierte a un acero común en 'Acero Inoxidable'?",opciones:["Cromo","Níquel en combinación con Molibdeno para resistencia a la corrosión por cloruros","Cobre para mejorar la resistencia a la corrosión atmosférica en ambientes marinos"],respuestaCorrecta:"Cromo",justificacion:"El cromo reacciona instantáneamente con el oxígeno del ambiente para formar una capa invisible y auto-reparable de óxido de cromo que bloquea la corrosión del hierro subyacente."},
-  {id:61,pregunta:"En un ensayo de Ultrasonido Industrial, ¿para qué se utiliza obligatoriamente el 'acoplante' (gel o aceite) entre el palpador y la pieza?",opciones:["Para lubricar el palpador y evitar que la fricción raye y dañe el cristal piezoeléctrico del sensor","Para evitar que la pieza se oxide durante el tiempo que dura el ensayo no destructivo","Para eliminar la capa de aire entre palpador y pieza, ya que el sonido no viaja por el aire"],respuestaCorrecta:"Para eliminar la capa de aire entre palpador y pieza, ya que el sonido no viaja por el aire",justificacion:"El ultrasonido industrial requiere un medio denso para propagarse. Incluso una micra de aire refleja casi el 100% de la onda acústica, haciendo imposible el ensayo sin el gel."},
-  {id:62,pregunta:"¿Qué tipo de desgaste (conocido como 'Fretting') ocurre entre dos piezas fuertemente apernadas que sufren micro-vibraciones oscilatorias invisibles?",opciones:["Desgaste por Corrosión por Fricción (Fretting corrosion)","Desgaste Abrasivo de dos cuerpos por contacto directo de superficies bajo carga estática elevada","Cavitación ultrasónica por implosión de burbujas en la interfaz de contacto de las superficies"],respuestaCorrecta:"Desgaste por Corrosión por Fricción (Fretting corrosion)",justificacion:"Las micro-vibraciones rompen la capa de óxido pasivante, arrancan micro-partículas de metal que se oxidan inmediatamente (formando polvo rojo/negro) y actúan como lija atrapada entre las piezas."},
-  {id:63,pregunta:"En la creación de Materiales Compuestos de Matriz Metálica (MMC) aeroespaciales, ¿por qué se elegiría el Titanio como matriz en lugar del Aluminio?",opciones:["Porque el Titanio es más fácil de fundir y requiere menos energía para el proceso de colada","Porque el Aluminio reacciona de forma explosiva al combinarse con fibras de carbono a alta temperatura","Porque el Titanio soporta temperaturas mucho más altas y posee mayor resistencia mecánica"],respuestaCorrecta:"Porque el Titanio soporta temperaturas mucho más altas y posee mayor resistencia mecánica",justificacion:"El aluminio pierde fuerza rápidamente por encima de los 200°C. El titanio mantiene sus excelentes propiedades mecánicas a temperaturas donde el aluminio ya se ablandó por completo."},
-  {id:64,pregunta:"Si sospechas de conexiones eléctricas sueltas o desbalance de fases en el tablero de control de una chancadora, ¿qué tecnología de monitoreo predictivo utilizas?",opciones:["Termografía Infrarroja","Análisis de Vibraciones con acelerómetros triaxiales de alta frecuencia de muestreo","Líquidos Penetrantes fluorescentes aplicados en las terminales del tablero"],respuestaCorrecta:"Termografía Infrarroja",justificacion:"Una conexión eléctrica floja aumenta la resistencia al paso de la corriente (Efecto Joule), generando calor inmediato. La cámara térmica permite ver este 'punto caliente' a distancia y sin detener el equipo."},
-  {id:65,pregunta:"Durante la fabricación de un filtro metálico mediante Sinterización, ¿es posible controlar qué tan porosa quedará la pieza final?",opciones:["No, la porosidad final es siempre del 50% y resulta completamente aleatoria e incontrolable","Sí, controlando la presión de compactación y el tamaño de los granos del polvo metálico","Sí, pero solo inyectando oxígeno líquido durante el horneado para expandir los poros"],respuestaCorrecta:"Sí, controlando la presión de compactación y el tamaño de los granos del polvo metálico",justificacion:"A menor presión de compactación y polvo de mayor tamaño, quedarán huecos más grandes entre las partículas. Esto permite fabricar filtros metálicos a medida para líquidos o gases."},
-  {id:66,pregunta:"¿Cuál es uno de los agentes ambientales más destructivos que causa fragilización, micro-grietas y decoloración en plásticos de ingeniería expuestos al exterior?",opciones:["La radiación Ultravioleta (UV) del sol","El gas Argón presente en la atmósfera en concentraciones de 0.93% que degrada los polímeros polares","Los cambios cíclicos de presión barométrica durante los frentes de mal tiempo en zonas de cordillera"],respuestaCorrecta:"La radiación Ultravioleta (UV) del sol",justificacion:"Los fotones de la luz UV tienen la energía suficiente para romper los enlaces químicos de las cadenas poliméricas (foto-degradación), volviendo al plástico extremadamente frágil con el tiempo."},
-  {id:67,pregunta:"¿Qué propiedad tribológica fundamental tiene el 'Metal Babbitt' (metal blanco) utilizado para recubrir el interior de cojinetes lisos grandes?",opciones:["Es el metal con mayor dureza Rockwell de la industria pesada, superior incluso al acero herramienta","Alcanza el punto de fusión a los 1500°C, superando la resistencia térmica del acero de alta aleación","Es suficientemente blando para que las partículas duras del aceite se incrusten en él sin rayar el eje"],respuestaCorrecta:"Es suficientemente blando para que las partículas duras del aceite se incrusten en él sin rayar el eje",justificacion:"La propiedad de 'incrustabilidad' es vital. Si entra arena al rodamiento, el metal blanco la absorbe en su matriz blanda en lugar de dejarla rozar y destruir el cigüeñal."},
-  {id:68,pregunta:"¿Qué proceso de tratamiento térmico superficial utiliza una bobina de cobre con corriente alterna de alta frecuencia para calentar solo el exterior de un eje en segundos?",opciones:["Temple por Inducción","Cementación Gaseosa en atmósfera de propano o butano a temperatura de austenización","Nitruración líquida en baño de sales fundidas a temperatura controlada por termocupla"],respuestaCorrecta:"Temple por Inducción",justificacion:"El campo electromagnético de alta frecuencia induce corrientes parásitas superficiales que calientan la 'piel' del eje instantáneamente, permitiendo un temple ultra rápido mediante una ducha de agua."},
-  {id:69,pregunta:"En estructuras compuestas, ¿qué objetivo mecánico cumple el uso de un núcleo tipo 'panal de abeja' (Honeycomb) entre dos láminas finas?",opciones:["Actuar como conductor térmico rápido para disipar el calor hacia el exterior de la estructura","Permitir la visibilidad parcial a través del panel para aplicaciones de señalética industrial","Aumentar drásticamente la rigidez a la flexión manteniendo un peso total extremadamente bajo"],respuestaCorrecta:"Aumentar drásticamente la rigidez a la flexión manteniendo un peso total extremadamente bajo",justificacion:"El núcleo Honeycomb separa las láminas externas aumentando el espesor del panel sin sumar masa, actuando bajo el mismo principio que una viga doble T."},
-  {id:70,pregunta:"¿Bajo qué condición extrema se debe preferir el uso de lubricantes sólidos (como el Disulfuro de Molibdeno o Grafito) por sobre los aceites líquidos?",opciones:["En sistemas de bombas hidráulicas de alta velocidad donde se requiere también efecto refrigerante","Cuando se busca enfriar activamente los engranajes de un reductor de alta velocidad en servicio continuo","En alto vacío o temperaturas extremas donde el aceite se evaporaría o quemaría"],respuestaCorrecta:"En alto vacío o temperaturas extremas donde el aceite se evaporaría o quemaría",justificacion:"Los lubricantes sólidos son ideales para hornos, ambiente espacial o polvo extremo. Proveen deslizamiento sin riesgo de evaporación térmica."},
-  {id:71,pregunta:"¿Qué limitación física fundamental tienen las Partículas Magnéticas al intentar inspeccionar el bloque de un motor de Aluminio?",opciones:["Las partículas magnéticas rayarán la superficie blanda del aluminio durante la aplicación del campo","El aluminio disipará la tinta fluorescente por su alta conductividad antes de que pueda magnetizarse","El ensayo es inútil porque el aluminio no es ferromagnético y no retiene el campo magnético"],respuestaCorrecta:"El ensayo es inútil porque el aluminio no es ferromagnético y no retiene el campo magnético",justificacion:"Las partículas magnéticas exigen que el material pueda ser magnetizado (como el hierro, acero al carbono o fundición). Materiales como el aluminio, cobre o acero inoxidable austenítico no sirven para este END."},
-  {id:72,pregunta:"¿Qué modificación se le hace a la Fundición Gris para transformarla en 'Fundición Nodular' (o Dúctil)?",opciones:["Se somete a un proceso de sinterizado a 1200°C durante 48 horas en atmósfera reductora de hidrógeno","Se elimina completamente el carbono de su estructura mediante decarburización en horno de vacío","Se le añade Magnesio que obliga al grafito a formar esferas en lugar de escamas"],respuestaCorrecta:"Se le añade Magnesio que obliga al grafito a formar esferas en lugar de escamas",justificacion:"Las escamas de grafito en la fundición gris actúan como micro-grietas que la hacen frágil. Al volver el grafito esférico mediante magnesio, se eliminan esos puntos de tensión y el material gana muchísima ductilidad."},
-  {id:73,pregunta:"En tribología, ¿qué significa que un rodamiento esté operando en régimen de 'Lubricación Límite' (Boundary Lubrication)?",opciones:["La separación entre piezas es total y perfecta, sin ningún tipo de contacto metal con metal","El rodamiento opera en vacío absoluto sin ningún fluido entre las superficies en movimiento","La película de aceite es tan delgada que las asperezas de ambas superficies chocan generando alto desgaste"],respuestaCorrecta:"La película de aceite es tan delgada que las asperezas de ambas superficies chocan generando alto desgaste",justificacion:"La lubricación límite ocurre típicamente durante el arranque o parada del equipo, o si el aceite perdió viscosidad. Al no haber presión suficiente para separar las piezas, el metal roza con el metal."},
-  {id:74,pregunta:"¿Qué fenómeno físico, conocido como 'Choque Térmico', causa que una pieza de Cerámica Industrial estalle si se enfría de golpe?",opciones:["La cerámica absorbe el agua de refrigeración expandiéndose como una esponja hasta la presión de fractura","Sus electrones libres se congelan deteniendo la vibración molecular y creando presión interna","Baja conductividad térmica y nula ductilidad hacen que la superficie se contraiga mientras el interior sigue dilatado"],respuestaCorrecta:"Baja conductividad térmica y nula ductilidad hacen que la superficie se contraiga mientras el interior sigue dilatado",justificacion:"A diferencia de los metales que distribuyen el calor rápido y se pueden deformar, las cerámicas no distribuyen el calor y no se pueden estirar. La diferencia de temperatura literal parte la pieza."},
-  {id:75,pregunta:"En el proceso de Pulvimetalurgia, ¿cómo se le llama a la pieza que acaba de salir de la prensa compactadora pero que AÚN NO ha sido horneada?",opciones:["Pieza en verde (Green compact), extremadamente frágil","Matriz martensítica con dureza final adquirida por la presión de compactación en la prensa hidráulica","Termoestable reticulado, listo para su uso inmediato en la línea de producción industrial"],respuestaCorrecta:"Pieza en verde (Green compact), extremadamente frágil",justificacion:"Antes del horneado (sinterización), los polvos metálicos solo están unidos por la presión mecánica, como si fuera arena mojada aplastada. El calor del horno es lo que soldará las partículas definitivamente."},
-  {id:76,pregunta:"¿Cuál es la regla de oro en la metalurgia respecto a la relación entre la Dureza y la Tenacidad?",opciones:["Son directamente proporcionales: un acero más duro siempre soportará mayores impactos sin romperse","No tienen relación directa: la tenacidad depende exclusivamente del tipo de recubrimiento superficial del metal","Son inversamente proporcionales: a mayor dureza, menor tenacidad (mayor fragilidad)"],respuestaCorrecta:"Son inversamente proporcionales: a mayor dureza, menor tenacidad (mayor fragilidad)",justificacion:"Aumentar la dureza (ej. mediante templado) bloquea el movimiento cristalino, lo que impide que el metal se deforme plásticamente ante un golpe. Al no poder deformarse para absorber energía, se quiebra."},
-  {id:77,pregunta:"Si un reporte de Monitoreo de Aceite indica alta contaminación con 'Agua' en un sistema hidráulico, ¿qué aspecto visual tendrá el fluido y qué daño causará?",opciones:["Se volverá completamente transparente y aumentará la presión de trabajo de las bombas del sistema","Tomará color negro opaco y mejorará temporalmente la lubricación hidrodinámica en arranque frío","Aspecto lechoso (emulsión) y causará corrosión interna además de romper la película lubricante"],respuestaCorrecta:"Aspecto lechoso (emulsión) y causará corrosión interna además de romper la película lubricante",justificacion:"El agua batida a alta presión con el aceite forma una emulsión blanquecina. Esta mezcla no soporta las cargas de presión, permitiendo el contacto metal-metal y oxidando los componentes internos."},
-  {id:78,pregunta:"En el contexto de las fundiciones de cobre y la Minería Verde, ¿qué producto de valor comercial se fabrica a partir del gas tóxico (SO2) capturado por los filtros?",opciones:["Carbón activado para uso en sistemas de filtración de agua potable domiciliaria e industrial","Grafito industrial para la fabricación de lubricantes sólidos de alta temperatura para hornos","Ácido Sulfúrico, reutilizado en los procesos de lixiviación de la industria minera"],respuestaCorrecta:"Ácido Sulfúrico, reutilizado en los procesos de lixiviación de la industria minera",justificacion:"El Dióxido de Azufre (SO2) capturado para evitar la contaminación atmosférica se procesa en plantas de contacto para producir ácido sulfúrico, cerrando el ciclo productivo y generando un subproducto útil."},
-  {id:79,pregunta:"En un Análisis de Vibraciones, si además del pico en 1X RPM aparecen picos altos en 2X y 3X RPM (armónicos), ¿cuál es la falla mecánica más clásica que se diagnostica?",opciones:["Cavitación severa en el interior del fluido hidráulico de la bomba de alta presión","Falta de aceite en el cárter del reductor por rotura del tapón de nivel inferior","Desalineamiento angular o paralelo entre el eje del motor y la máquina conducida"],respuestaCorrecta:"Desalineamiento angular o paralelo entre el eje del motor y la máquina conducida",justificacion:"El desalineamiento genera esfuerzos que 'tiran y empujan' el eje múltiples veces por revolución a través del acoplamiento, lo que se refleja en el espectro como altos niveles de vibración en el segundo y tercer armónico."},
-  {id:80,pregunta:"En la fabricación de polímeros elastómeros (como los neumáticos), ¿qué es el fenómeno de 'Histéresis'?",opciones:["La capacidad del neumático para resistir el ataque del ozono y los rayos UV en faena exterior","El proceso donde el azufre se separa del carbono a altas velocidades de rodado en pista","Energía perdida como calor cuando el caucho se deforma y recupera cíclicamente su forma al rodar"],respuestaCorrecta:"Energía perdida como calor cuando el caucho se deforma y recupera cíclicamente su forma al rodar",justificacion:"Ningún elastómero es 100% elástico. Una pequeña fracción de la energía usada para aplastarlo no se recupera, sino que se transforma en calor interno. Si la histéresis es alta, un neumático pesado puede incendiarse por dentro."},
-  {id:81,pregunta:"¿Qué ocurre mecánicamente con la resina matriz de un PMC (Material Compuesto) cuando absorbe humedad ambiente de manera prolongada?",opciones:["Aumenta su dureza superficial creando una capa de óxido polimérico compacto e impenetrable","Se transforma espontáneamente en un material de matriz cerámica (CMC) por reacción hidrolítica","Se plastifica, disminuyendo su temperatura de transición vítrea y reduciendo su resistencia estructural"],respuestaCorrecta:"Se plastifica, disminuyendo su temperatura de transición vítrea y reduciendo su resistencia estructural",justificacion:"El agua actúa como un plastificante en muchas resinas epóxicas. Se infiltra entre las cadenas moleculares, separándolas y volviendo a la matriz más blanda y menos capaz de soportar cargas a temperaturas normales."},
-  {id:82,pregunta:"Al reparar una pieza con gran desgaste abrasivo (ej. los dientes de una excavadora), se usa el proceso 'Hardfacing'. ¿En qué consiste?",opciones:["Enfriar la pieza con nitrógeno líquido hasta que recupere sus dimensiones originales por contracción térmica","Sumergir el diente en un baño de cromo líquido electrolítico durante varios días de proceso","Aplicar cordones de soldadura con electrodos de carburos especiales creando costra dura sobre el metal gastado"],respuestaCorrecta:"Aplicar cordones de soldadura con electrodos de carburos especiales creando costra dura sobre el metal gastado",justificacion:"El recubrimiento duro o 'hardfacing' es la forma más económica de recuperar geometría y dar resistencia extrema al desgaste. Se depositan metales muy duros solo en la zona que sufrirá la abrasión."},
-  {id:83,pregunta:"¿Cuál es la principal ventaja de utilizar Fibra de Vidrio en lugar de Fibra de Carbono en la fabricación de paneles para maquinaria agrícola?",opciones:["Soporta temperaturas de hasta 1500°C sin degradar su matriz polimérica a diferencia del carbono","Es el mejor conductor de electricidad disponible para sistemas de puesta a tierra y blindaje EMI","Costo muchísimo menor manteniendo buena resistencia a la corrosión y flexibilidad"],respuestaCorrecta:"Costo muchísimo menor manteniendo buena resistencia a la corrosión y flexibilidad",justificacion:"Aunque la fibra de carbono es superior en fuerza y peso, es extremadamente costosa y frágil. La fibra de vidrio ofrece el mejor equilibrio costo-beneficio para coberturas que no soportan cargas estructurales críticas."},
-  {id:84,pregunta:"Para que un tratamiento térmico de Templado funcione en un acero, ¿qué fase cristalina debe alcanzarse primero calentando la pieza en el horno?",opciones:["Austenita (Temperatura de Austenización)","Martensita a temperatura criogénica mediante inmersión en nitrógeno líquido controlado","Grafito esferoidal mediante tratamiento isotérmico prolongado en sales fundidas"],respuestaCorrecta:"Austenita (Temperatura de Austenización)",justificacion:"El acero debe superar su temperatura crítica (generalmente sobre 727°C) para transformarse en Austenita. En esta fase, los átomos de carbono pueden disolverse en la estructura. El enfriamiento rápido atrapa ese carbono, creando la dureza."},
-  {id:85,pregunta:"En las tendencias modernas de Materiales Compuestos, ¿cuál es la solución que investiga la industria para resolver el grave problema de reciclaje de los plásticos termoestables?",opciones:["Quemar obligatoriamente los materiales compuestos en las fundiciones de cobre como combustible alternativo","Enterrar los compuestos en depósitos oceánicos profundos para evitar la contaminación por carbono","Reemplazar resinas termoestables por resinas Termoplásticas de alto rendimiento, que sí pueden remoldearse"],respuestaCorrecta:"Reemplazar resinas termoestables por resinas Termoplásticas de alto rendimiento, que sí pueden remoldearse",justificacion:"Dado que las resinas epoxi termoestables no se pueden derretir, los investigadores están creando matrices termoplásticas avanzadas. Al final de su vida útil, estas piezas se calientan, la matriz se funde, y se puede recuperar tanto el plástico como la fibra."},
-  {id:86,pregunta:"¿Qué ensayo de END utiliza una bobina electromagnética para inducir corrientes en una pieza de aluminio y detectar fisuras superficiales observando variaciones en la impedancia?",opciones:["Ensayo por Corrientes Inducidas (Eddy Current)","Ensayo de Tintas Penetrantes Fluorescentes con revelador en polvo blanco no acuoso","Análisis Espectrográfico de Chispa para identificar la aleación y sus impurezas"],respuestaCorrecta:"Ensayo por Corrientes Inducidas (Eddy Current)",justificacion:"A diferencia de las partículas magnéticas, las corrientes de Eddy (Foucault) funcionan en metales no ferromagnéticos pero conductores (como el aluminio o titanio). Una grieta interrumpe el flujo de electrones en la superficie, delatando el defecto."},
-  {id:87,pregunta:"¿Qué propiedad del Cobre lo hace el material absoluto en la fabricación de bobinados para motores eléctricos de maquinaria?",opciones:["Su altísima dureza superficial frente al desgaste abrasivo en el entrehierro del rotor","Su capacidad para soportar 2000°C sin derretirse en el estator del motor trifásico","Su excepcional conductividad eléctrica, solo superada comercialmente por la plata"],respuestaCorrecta:"Su excepcional conductividad eléctrica, solo superada comercialmente por la plata",justificacion:"El cobre ofrece la menor resistencia al paso de electrones a un costo viable. Aunque es muy blando, su rol en un motor eléctrico no es estructural, sino asegurar la máxima eficiencia en la generación del campo electromagnético."},
-  {id:88,pregunta:"En tribología, el 'Índice de Viscosidad' (IV) de un aceite lubricante indica su resistencia a:",opciones:["Mezclarse con el agua de refrigeración en caso de una fuga en los empaques del motor","Evaporarse cuando entra en contacto con el polvo y las altas temperaturas de la faena minera","Perder o cambiar su viscosidad al aumentar o disminuir la temperatura de operación"],respuestaCorrecta:"Perder o cambiar su viscosidad al aumentar o disminuir la temperatura de operación",justificacion:"Un aceite con un Índice de Viscosidad alto mantiene su 'espesor' relativamente estable sin importar si el motor está frío en la mañana o trabajando a máxima temperatura al mediodía."},
-  {id:89,pregunta:"¿Qué mecanismo de degradación sufren los polímeros al someterse a tensiones mecánicas constantes a temperatura ambiente durante mucho tiempo (ej. una tubería plástica bajo presión)?",opciones:["Templado espontáneo que aumenta la dureza pero genera fragilidad como el vidrio con el tiempo","Desgaste por cavitación inducida en la capa más externa en contacto con el fluido a presión","Termofluencia en frío (Creep), deformándose plásticamente y alargándose hasta fallar"],respuestaCorrecta:"Termofluencia en frío (Creep), deformándose plásticamente y alargándose hasta fallar",justificacion:"Los metales usualmente solo sufren Creep a altísimas temperaturas. Los polímeros, debido a sus enlaces moleculares más débiles, pueden deformarse y estirarse lentamente a lo largo de los meses incluso a temperatura ambiente."},
-  {id:90,pregunta:"¿Qué técnica de mantenimiento predictivo es la más efectiva para inspeccionar el estado de aislamiento térmico en cañerías o reactores de alta temperatura?",opciones:["Análisis de Ferrografía Analítica del aceite interno del reactor para detectar partículas metálicas","Líquidos Penetrantes fluorescentes rociados sobre la superficie exterior de la lana de vidrio","Termografía Infrarroja, que revela visualmente las zonas sin aislante como puntos calientes"],respuestaCorrecta:"Termografía Infrarroja, que revela visualmente las zonas sin aislante como puntos calientes",justificacion:"La cámara térmica escanea grandes áreas en segundos. Si el aislante interno de un reactor o tubería está dañado, la cámara mostrará una fuga masiva de calor en esa sección específica de la coraza externa."},
-  {id:91,pregunta:"¿Qué técnica de END se utiliza para inspeccionar visualmente el interior de los cilindros de un motor diésel sin tener que desarmar la culata?",opciones:["Inspección Visual mediante Boroscopio (o Videoscopio)","Inspección por Partículas Magnéticas Fluorescentes aplicadas a través del orificio del inyector","Radiografía Industrial con Isótopos de Iridio-192 introducidos en la cámara de combustión"],respuestaCorrecta:"Inspección Visual mediante Boroscopio (o Videoscopio)",justificacion:"El boroscopio es una cámara articulada introducida por el orificio del inyector o la bujía, permitiendo ver rayaduras, válvulas quemadas o depósitos de carbón en la cámara de combustión ahorrando horas de desarme."},
-  {id:92,pregunta:"¿Qué tipo de corrosión ocurre cuando dos metales de diferente nobleza (ej. aluminio y acero inoxidable) se conectan físicamente en presencia de agua salada o barro?",opciones:["Corrosión Galvánica","Corrosión por Cavitación generada por colapso de burbujas en la interfaz de contacto bimetálico","Oxidación a Alta Temperatura por diferencial de potencial térmico entre los dos metales unidos"],respuestaCorrecta:"Corrosión Galvánica",justificacion:"Al juntar metales distintos con un líquido conductor, se forma una 'pila' microscópica. El metal más débil (ánodo) se sacrifica y se disuelve rápidamente para proteger al más noble."},
-  {id:93,pregunta:"En rodamientos sometidos a altísimas RPM y riesgo de corrientes eléctricas parásitas (como en motores de tracción mineros), ¿qué material cerámico avanzado se utiliza para las bolas?",opciones:["Nitruro de Silicio (Si3N4)","Carburo de Tungsteno sinterizado con cobalto como aglomerante en porcentaje del 6%","Fibra de Carbono trenzada con matriz de resina epóxica de alta temperatura"],respuestaCorrecta:"Nitruro de Silicio (Si3N4)",justificacion:"El nitruro de silicio es más ligero y duro que el acero, reduciendo la fricción a altas velocidades. Además, al ser cerámica, es aislante eléctrico, evitando que las chispas internas fundan las pistas del rodamiento."},
-  {id:94,pregunta:"¿Qué información vital nos permite obtener el equipo de Ultrasonido al apoyar el palpador contra el casco de una tolva o tubería vieja?",opciones:["Medir la dureza superficial del acero en la escala Rockwell C de forma no destructiva","Detectar el tipo exacto de aleación de la placa y su porcentaje de carbono equivalente","Medir el espesor restante para calcular cuánto se ha desgastado por corrosión o abrasión"],respuestaCorrecta:"Medir el espesor restante para calcular cuánto se ha desgastado por corrosión o abrasión",justificacion:"Sabiendo la velocidad a la que el sonido viaja en el acero, el equipo mide cuánto tarda la onda en rebotar en el fondo. Esto da la medida exacta del grosor del metal sin tener que perforarlo."},
-  {id:95,pregunta:"En un Análisis de Aceite de un motor, los niveles de Sílice (Silicio) se disparan bruscamente. ¿Qué falla de mantenimiento básico delata este indicador?",opciones:["Desgaste excesivo de los metales antifricción del cigüeñal y los semicojinetes de bancada","Ruptura, saturación o mala instalación del filtro de aire permitiendo ingreso de polvo al motor","Fuga de líquido refrigerante hacia el interior del cárter por falla de la junta de culata"],respuestaCorrecta:"Ruptura, saturación o mala instalación del filtro de aire permitiendo ingreso de polvo al motor",justificacion:"El sílice es el componente principal de la tierra y la arena. Si hay sílice en el aceite, significa que el motor está 'respirando' polvo, el cual actuará como una lija destruyendo anillos y cilindros."},
-  {id:96,pregunta:"¿Por qué las resinas Epóxicas (Termoestables) son la opción dominante como 'matriz' en la fabricación de materiales compuestos estructurales?",opciones:["Porque son las únicas resinas que pueden ser fundidas y recicladas repetidas veces sin perder propiedades","Porque son completamente inmunes a la radiación UV y nunca experimentan foto-degradación exterior","Por su excelente adhesión a las fibras, alta resistencia mecánica y estabilidad dimensional al curar"],respuestaCorrecta:"Por su excelente adhesión a las fibras, alta resistencia mecánica y estabilidad dimensional al curar",justificacion:"Las resinas epoxi actúan como un pegamento estructural insuperable. Al reticularse (curar), se vuelven extremadamente rígidas y no se contraen, asegurando que la fibra transfiera la fuerza perfectamente."},
-  {id:97,pregunta:"En el taller se habla de realizar un tratamiento térmico de 'Bonificado' a un eje forjado. ¿A qué combinación exacta de procesos se refiere este término?",opciones:["A un Recocido seguido de un Normalizado al aire con grano refinado y estructura perlítica homogénea","A la aplicación de un recubrimiento de Cromo duro galvánico sobre la superficie del eje terminado","Al proceso de Templado seguido inmediatamente de un Revenido"],respuestaCorrecta:"Al proceso de Templado seguido inmediatamente de un Revenido",justificacion:"El bonificado es la receta clásica para piezas de maquinaria pesada. El temple da la máxima dureza y fuerza, mientras que el revenido le quita la fragilidad de vidrio, logrando un eje tenaz y resistente."},
-  {id:98,pregunta:"¿Cuál es la función del recubrimiento de Cloruro de Polivinilo (PVC) en el cableado eléctrico de la maquinaria?",opciones:["Aumentar la resistencia mecánica a la tracción del cable de cobre para que no se corte al tensarlo","Disipar hacia el exterior el calor generado por efecto Joule en el conductor de cobre","Actuar como aislante dieléctrico flexible protegiendo el cobre del chasis y la humedad"],respuestaCorrecta:"Actuar como aislante dieléctrico flexible protegiendo el cobre del chasis y la humedad",justificacion:"El PVC es un termoplástico con excelentes propiedades aislantes y flexibilidad. Impide los cortocircuitos al evitar que la corriente del cobre salte hacia el acero del chasis del equipo."},
-  {id:99,pregunta:"Un O-ring de un cilindro telescópico falló porque se 'mordió' a sí mismo torciéndose en espiral dentro de su ranura. ¿Cómo se llama esta falla?",opciones:["Falla por Torsión o Fallo en Espiral (Spiral failure)","Falla por Extrusión de holgura excesiva entre el vástago y la guía del cilindro hidráulico","Falla por descompresión explosiva causada por rápida reducción de la presión del sistema"],respuestaCorrecta:"Falla por Torsión o Fallo en Espiral (Spiral failure)",justificacion:"Ocurre principalmente en sellos dinámicos de carrera larga. Si el sello no está bien lubricado o el vástago tiene rayas, la fricción 'frena' un lado del O-ring mientras el resto rueda, torciéndolo como un resorte hasta cortarlo."},
-  {id:100,pregunta:"Al finalizar la vida útil de los neumáticos gigantes de los CAEX, ¿qué proceso térmico se utiliza para descomponer el caucho vulcanizado sin quemarlo, recuperando aceite, acero y negro de humo?",opciones:["Sinterización de alta presión en autoclave industrial con ciclos de presurización controlada","Fusión termoplástica a 500°C en hornos rotativos con atmósfera de vapor de agua","Pirólisis (descomposición térmica en ausencia de oxígeno)"],respuestaCorrecta:"Pirólisis (descomposición térmica en ausencia de oxígeno)",justificacion:"Al calentar el neumático en un horno sin oxígeno, el caucho no se incendia, sino que sus enlaces químicos se rompen, separando el material de vuelta en sus componentes originales para ser reutilizados en la industria."}
+/* ---------- utilidades ---------- */
+function rndOf(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function fmt(n){
+  if (Math.abs(n - Math.round(n)) < 1e-9) return Math.round(n).toString();
+  return (Math.round(n*100)/100).toString().replace('.',',');
+}
+function close(a,b,tol=0.05){ return Math.abs(a-b) <= Math.max(tol, Math.abs(b)*0.01); }
+function sgn(n){ return n>=0 ? '+ '+fmt(n) : '- '+fmt(Math.abs(n)); }
+
+/* ---------- generadores de problemas (10 tipos) ---------- */
+const GENERATORS = [
+
+// 1. EL GRANJERO
+function granjero(){
+  const C = rndOf([800,1000,1200,1400,1600,1800,2000]);
+  const x = C/4, y = C/2, A = x*y;
+  return {
+    tag:"ÁREA · CERCA CONTRA EL RÍO",
+    statement:`Un granjero tiene <b>${C}</b> metros de cerca y desea rodear una zona rectangular que limita con un río recto, sin necesitar cercar a lo largo del río (dos lados <b>x</b> perpendiculares al río y un lado <b>y</b> paralelo a él). Calcula <b>x</b>, <b>y</b> y el área máxima.`,
+    fields:[
+      {key:'x',label:'Valor de x (m)',ans:x},
+      {key:'y',label:'Valor de y (m)',ans:y},
+      {key:'A',label:'Área máxima (m²)',ans:A},
+    ],
+    manual:[
+      {t:"Plantea la restricción", b:`La cerca total cubre 2 lados x y 1 lado y: <span class="math">2x + y = ${C}</span>. Despeja y: <span class="math">y = ${C} - 2x</span>.`},
+      {t:"Escribe lo que quieres maximizar en UNA sola variable", b:`El área es A = x·y. Reemplaza y: <span class="math">A(x) = x(${C}-2x) = ${C}x - 2x²</span>.`},
+      {t:"Deriva A(x) término por término", b:`Usando la chuleta: derivada de <b>${C}x</b> (regla c·x) es <b>${C}</b>. Derivada de <b>-2x²</b> (regla c·xⁿ, aquí n=2) es <b>-2·2·x = -4x</b>.<br>Entonces: <span class="math">A'(x) = ${C} - 4x</span>.`},
+      {t:"Iguala la derivada a cero y despeja x", b:`<span class="math">${C} - 4x = 0</span>  →  <span class="math">4x = ${C}</span>  →  <span class="math">x = ${fmt(x)}</span> metros. Este es el valor que hace que la pendiente de A(x) sea cero, es decir, el punto más alto (máximo) de la parábola.`},
+      {t:"Calcula la variable que falta (y)", b:`Reemplaza x en la restricción: <span class="math">y = ${C} - 2(${fmt(x)}) = ${fmt(y)}</span> metros.`},
+      {t:"Calcula el valor máximo pedido", b:`<span class="math">A = x·y = ${fmt(x)} × ${fmt(y)} = ${fmt(A)}</span> m².`},
+    ],
+    steps:[
+      {code:`f(x) = ${C} - 2x`, res:`(condición despejada: y)`},
+      {code:`g(x) = x · f(x)`, res:`= x(${C}-2x)`},
+      {code:`A = Extremo(g)`, res:`= (${fmt(x)} , ${fmt(A)})`},
+      {code:`f(x(A))`, res:`= ${fmt(y)}  (valor de y)`},
+    ],
+    note:"x e y salen directo del punto A: la 1ª componente es x, la 2ª es el área máxima. y se obtiene evaluando f en x(A)."
+  };
+},
+
+// 2. UTILIDAD MÁXIMA
+function utilidad(){
+  const p = rndOf([8000,9600,11600,13200,15000]);
+  const a = rndOf([150,200,250,300]);
+  const b = rndOf([1200,1500,1700,2000]);
+  const c = rndOf([10000,12000,15000,18000]);
+  const xstar = (p-b)/(2*a);
+  const Ux = p*xstar - (a*xstar*xstar + b*xstar + c);
+  return {
+    tag:"INGRESO − COSTO · UTILIDAD",
+    statement:`Una empresa vende un producto. El ingreso es <b>I(x) = ${p}x</b> y el costo es <b>C(x) = ${a}x² + ${b}x + ${c}</b>, con x = unidades vendidas. Calcula cuántas unidades maximizan la utilidad y cuál es esa utilidad máxima.`,
+    fields:[
+      {key:'x',label:'Unidades para utilidad máx.',ans:xstar},
+      {key:'U',label:'Utilidad máxima ($)',ans:Ux},
+    ],
+    manual:[
+      {t:"Recuerda la fórmula base", b:`Siempre que digan "utilidad", es <span class="math">U(x) = Ingreso(x) - Costo(x)</span>.`},
+      {t:"Reemplaza y simplifica", b:`<span class="math">U(x) = ${p}x - (${a}x² + ${b}x + ${c})</span>. Distribuye el signo negativo: <span class="math">U(x) = -${a}x² + ${sgn(p-b)}x - ${c}</span>.`},
+      {t:"Deriva término por término", b:`Derivada de <b>-${a}x²</b> es <b>-${2*a}x</b> (regla c·xⁿ con n=2). Derivada de <b>${sgn(p-b)}x</b> es la misma constante <b>${sgn(p-b)}</b> (regla c·x). Derivada de la constante <b>-${c}</b> es <b>0</b>.<br><span class="math">U'(x) = -${2*a}x ${sgn(p-b)}</span>.`},
+      {t:"Iguala a cero y despeja x", b:`<span class="math">-${2*a}x ${sgn(p-b)} = 0</span>  →  <span class="math">x = ${fmt(p-b)} / ${2*a} = ${fmt(xstar)}</span> unidades.`},
+      {t:"Reemplaza ese x en U(x) para hallar la utilidad máxima", b:`<span class="math">U(${fmt(xstar)}) = ${fmt(Ux)}</span> pesos.`},
+    ],
+    steps:[
+      {code:`f(x) = ${p}x`, res:`(ingreso I(x))`},
+      {code:`h(x) = ${a}x^2+${b}x+${c}`, res:`(costo C(x))`},
+      {code:`g(x) = f(x) - h(x)`, res:`(utilidad U(x))`},
+      {code:`A = Extremo(g)`, res:`= (${fmt(xstar)} , ${fmt(Ux)})`},
+    ],
+    note:"U(x) = I(x) − C(x) siempre. El extremo de esa resta es directamente la cantidad óptima y la utilidad máxima."
+  };
+},
+
+// 3. CAJA DE BASE CUADRADA (cortes en las esquinas)
+function cajaCuadrada(){
+  const L = rndOf([24,30,36,48,54,60,66,72]);
+  const xmax = L/6, xmin = L/2;
+  const Vmax = xmax*Math.pow(L-2*xmax,2);
+  const c3=4, c2=-4*L, c1=L*L;
+  return {
+    tag:"VOLUMEN · CORTES EN ESQUINAS",
+    statement:`De un cartón cuadrado de lado <b>a = ${L}</b> cm se cortan cuadrados de lado <b>x</b> en cada esquina, formando una caja. Encuentra V(x), los valores críticos, y el valor de x que da el volumen <b>máximo</b> (y ese volumen).`,
+    fields:[
+      {key:'xc1',label:'Valor crítico menor',ans:xmax},
+      {key:'xc2',label:'Valor crítico mayor',ans:xmin},
+      {key:'xmax',label:'x para volumen máximo',ans:xmax},
+      {key:'Vmax',label:'Volumen máximo (cm³)',ans:Vmax},
+    ],
+    manual:[
+      {t:"Plantea el volumen", b:`La base mide (a-2x) por (a-2x) y la altura es x: <span class="math">V(x) = x(${L}-2x)²</span>.`},
+      {t:"Expande el cuadrado y multiplica", b:`<span class="math">(${L}-2x)² = ${L*L} - ${4*L}x + 4x²</span>. Multiplicando por x: <span class="math">V(x) = ${c3}x³ ${sgn(c2)}x² ${sgn(c1)}x</span>.`},
+      {t:"Deriva término por término", b:`Derivada de <b>${c3}x³</b> es <b>${3*c3}x²</b> (n=3). Derivada de <b>${sgn(c2)}x²</b> es <b>${sgn(2*c2)}x</b> (n=2). Derivada de <b>${sgn(c1)}x</b> es <b>${sgn(c1)}</b> (constante).<br><span class="math">V'(x) = ${3*c3}x² ${sgn(2*c2)}x ${sgn(c1)}</span>.`},
+      {t:"Iguala a cero: te queda una ecuación cuadrática", b:`<span class="math">${3*c3}x² ${sgn(2*c2)}x ${sgn(c1)} = 0</span>. Usa la fórmula general <span class="math">x = [-b ± √(b²-4ac)] / 2a</span> con a=${3*c3}, b=${2*c2}, c=${c1}.`},
+      {t:"Resuelve la ecuación cuadrática", b:`<span class="math">x = [${fmt(-2*c2)} ± √(${fmt((2*c2)*(2*c2))} - 4·${3*c3}·${c1})] / (2·${3*c3})</span>. Al resolver, las dos soluciones son <b>x = ${fmt(xmax)}</b> y <b>x = ${fmt(xmin)}</b> (los valores críticos).`},
+      {t:"Decide cuál es el máximo", b:`x = ${fmt(xmin)} = a/2 hace que la base mida 0 (caja aplastada) → volumen 0 → es el <b>mínimo</b>. x = ${fmt(xmax)} = a/6 da el volumen real más grande → es el <b>máximo</b>.`},
+      {t:"Calcula el volumen máximo", b:`<span class="math">V(${fmt(xmax)}) = ${fmt(xmax)} · (${L}-2·${fmt(xmax)})² = ${fmt(Vmax)}</span> cm³.`},
+    ],
+    steps:[
+      {code:`g(x) = x(${L}-2x)^2`, res:`(volumen V(x))`},
+      {code:`Extremo(g)`, res:`devuelve AMBOS puntos críticos (lista)`},
+      {code:`→ x = ${fmt(xmax)}`, res:`máximo  → V = ${fmt(Vmax)}`},
+      {code:`→ x = ${fmt(xmin)}`, res:`mínimo (borde) → V = 0`},
+    ],
+    note:"Como V(x) es cúbica, Extremo(g) entrega una LISTA con el máximo y el mínimo local. El menor valor de x suele ser el máximo de volumen; el mayor (a/2) da volumen 0."
+  };
+},
+
+// 4. CAJA SIN TAPA, ÁREA DE CARTÓN FIJA (base 2x · x)
+function cajaSinTapa(){
+  const candidates=[600,1014,1500,2058,2646,3000,3750];
+  const Afix = Math.round(rndOf(candidates)/6)*6;
+  const x = Math.sqrt(Afix/6);
+  const h = (Afix - 2*x*x)/(6*x);
+  const V = 2*x*x*h;
+  return {
+    tag:"VOLUMEN · CARTÓN LIMITADO",
+    statement:`Una caja <b>sin tapa</b>, de base 2x · x, se construye con <b>${fmt(Afix)} cm²</b> de cartón. Encuentra x, h y el volumen máximo.`,
+    fields:[
+      {key:'x',label:'Valor de x (cm)',ans:x},
+      {key:'h',label:'Valor de h (cm)',ans:h},
+      {key:'V',label:'Volumen máximo (cm³)',ans:V},
+    ],
+    manual:[
+      {t:"Plantea el área total de cartón (sin tapa)", b:`Base (2x·x) + 2 caras largas (2x·h cada una) + 2 caras cortas (x·h cada una): <span class="math">2x² + 4xh + 2xh = 2x² + 6xh = ${fmt(Afix)}</span>.`},
+      {t:"Despeja h de esa restricción", b:`<span class="math">6xh = ${fmt(Afix)} - 2x²</span>  →  <span class="math">h = (${fmt(Afix)} - 2x²)/(6x)</span>.`},
+      {t:"Escribe el volumen en función de x", b:`<span class="math">V = 2x²·h = 2x²·(${fmt(Afix)}-2x²)/(6x)</span>. Simplifica cancelando una x: <span class="math">V(x) = (${fmt(Afix)}/3)x - (2/3)x³</span>.`},
+      {t:"Deriva término por término", b:`Derivada de <b>(${fmt(Afix)}/3)x</b> es la constante <b>${fmt(Afix/3)}</b>. Derivada de <b>-(2/3)x³</b> es <b>-(2/3)·3·x² = -2x²</b>.<br><span class="math">V'(x) = ${fmt(Afix/3)} - 2x²</span>.`},
+      {t:"Iguala a cero y despeja x", b:`<span class="math">2x² = ${fmt(Afix/3)}</span>  →  <span class="math">x² = ${fmt(Afix/6)}</span>  →  <span class="math">x = √${fmt(Afix/6)} = ${fmt(x)}</span> cm.`},
+      {t:"Reemplaza para hallar h", b:`<span class="math">h = (${fmt(Afix)} - 2·${fmt(x*x)})/(6·${fmt(x)}) = ${fmt(h)}</span> cm.`},
+      {t:"Calcula el volumen máximo", b:`<span class="math">V = 2x²h = ${fmt(V)}</span> cm³.`},
+    ],
+    steps:[
+      {code:`f(x) = (${fmt(Afix)}-2x^2)/(6x)`, res:`(h despejada del área total)`},
+      {code:`g(x) = 2x^2 · f(x)`, res:`(volumen V(x))`},
+      {code:`A = Extremo(g)`, res:`= (${fmt(x)} , ${fmt(V)})`},
+      {code:`f(x(A))`, res:`= ${fmt(h)}  (valor de h)`},
+    ],
+    note:"Área = base + 4 caras laterales = 2x² + 6xh = Afijo → de ahí se despeja h en función de x."
+  };
+},
+
+// 5. EL CARTEL (márgenes verticales y horizontales)
+function cartel(){
+  const tv = rndOf([3,4,5]);
+  const th = rndOf([2,3,4]);
+  const S = rndOf([800,900,1000,1014,1100,1200,1300]);
+  const x = Math.sqrt(tv*S/th);
+  const y = S/x;
+  const Amax = (x-tv)*(y-th);
+  return {
+    tag:"ÁREA IMPRESA · CARTEL CON MÁRGENES",
+    statement:`Un cartel rectangular de dimensiones <b>x</b> (vertical) e <b>y</b> (horizontal), de área <b>${S} cm²</b>, debe contener un área impresa con márgenes que suman ${tv} cm en sentido vertical y ${th} cm en sentido horizontal. Encuentra x, y y el área impresa máxima.`,
+    fields:[
+      {key:'x',label:'Valor de x (cm)',ans:x},
+      {key:'y',label:'Valor de y (cm)',ans:y},
+      {key:'A',label:'Área impresa máxima (cm²)',ans:Amax},
+    ],
+    manual:[
+      {t:"Plantea la restricción (área total del cartel)", b:`<span class="math">x·y = ${S}</span>  →  despeja y: <span class="math">y = ${S}/x</span>.`},
+      {t:"Escribe el área impresa", b:`El área impresa siempre es (ancho - márgenes verticales)(alto - márgenes horizontales): <span class="math">A = (x-${tv})(y-${th})</span>. Reemplaza y: <span class="math">A(x) = (x-${tv})(${S}/x - ${th})</span>.`},
+      {t:"Expande la multiplicación", b:`<span class="math">A(x) = ${S} - ${th}x - ${tv}·${S}/x + ${tv*th}</span>, es decir <span class="math">A(x) = -${th}x - ${tv*S}/x + ${S+tv*th}</span>.`},
+      {t:"Deriva término por término", b:`Derivada de <b>-${th}x</b> es <b>-${th}</b> (constante). Derivada de <b>-${tv*S}/x</b> (o sea -${tv*S}·x⁻¹) usa la regla c/x → <b>+${tv*S}/x²</b>. La constante ${S+tv*th} se anula.<br><span class="math">A'(x) = -${th} + ${tv*S}/x²</span>.`},
+      {t:"Iguala a cero y despeja x", b:`<span class="math">${tv*S}/x² = ${th}</span>  →  <span class="math">x² = ${tv*S}/${th} = ${fmt(tv*S/th)}</span>  →  <span class="math">x = ${fmt(x)}</span> cm.`},
+      {t:"Reemplaza para hallar y y el área máxima", b:`<span class="math">y = ${S}/${fmt(x)} = ${fmt(y)}</span> cm. <span class="math">A = (${fmt(x)}-${tv})(${fmt(y)}-${th}) = ${fmt(Amax)}</span> cm².`},
+    ],
+    steps:[
+      {code:`f(x) = ${S}/x`, res:`(y despejada de x·y=${S})`},
+      {code:`g(x) = (x-${tv})·(f(x)-${th})`, res:`(área impresa)`},
+      {code:`A = Extremo(g)`, res:`= (${fmt(x)} , ${fmt(Amax)})`},
+      {code:`f(x(A))`, res:`= ${fmt(y)}  (valor de y)`},
+    ],
+    note:"El área impresa siempre es (x − margen_vertical_total)(y − margen_horizontal_total). El área total del cartel es la restricción (xy = S)."
+  };
+},
+
+// 6. DEPÓSITO DE BASURA (base cuadrada x·x, altura y, cordón = 5x+4y)
+function deposito(){
+  const mode = rndOf(['volumen','cordon']);
+  if (mode === 'volumen'){
+    const V = rndOf([10,15,20.48,25,30,40]);
+    const x = Math.cbrt(8*V/5);
+    const y = V/(x*x);
+    const L = 5*x+4*y;
+    return {
+      tag:"PRISMA · CORDÓN DE SOLDADURA MÍNIMO",
+      statement:`Un depósito en forma de prisma de base cuadrada x·x y altura y tiene volumen fijo de <b>${fmt(V)} m³</b>. El cordón de soldadura es L = 5x+4y (4 bordes base + 4 verticales + 1 borde superior; el otro borde superior lleva bisagra). Encuentra x, y y la longitud mínima de soldadura.`,
+      fields:[
+        {key:'x',label:'Valor de x (m)',ans:x},
+        {key:'y',label:'Valor de y (m)',ans:y},
+        {key:'L',label:'Longitud mínima (m)',ans:L},
+      ],
+      manual:[
+        {t:"Despeja y de la restricción de volumen", b:`<span class="math">V = x²y = ${fmt(V)}</span>  →  <span class="math">y = ${fmt(V)}/x²</span>.`},
+        {t:"Escribe la función a MINIMIZAR (el cordón)", b:`<span class="math">L(x) = 5x + 4y = 5x + 4·${fmt(V)}/x² = 5x + ${fmt(4*V)}/x²</span>.`},
+        {t:"Deriva término por término", b:`Derivada de <b>5x</b> es <b>5</b>. Derivada de <b>${fmt(4*V)}/x²</b> (o sea ${fmt(4*V)}x⁻²) es <b>-${fmt(8*V)}x⁻³ = -${fmt(8*V)}/x³</b> (regla c·xⁿ con n=-2 → -2·c·x⁻³).<br><span class="math">L'(x) = 5 - ${fmt(8*V)}/x³</span>.`},
+        {t:"Iguala a cero y despeja x", b:`<span class="math">5 = ${fmt(8*V)}/x³</span>  →  <span class="math">x³ = ${fmt(8*V/5)}</span>  →  <span class="math">x = ∛${fmt(8*V/5)} = ${fmt(x)}</span> m.`},
+        {t:"Reemplaza para hallar y y la longitud mínima", b:`<span class="math">y = ${fmt(V)}/${fmt(x*x)} = ${fmt(y)}</span> m. <span class="math">L = 5(${fmt(x)})+4(${fmt(y)}) = ${fmt(L)}</span> m.`},
+      ],
+      steps:[
+        {code:`f(x) = ${fmt(V)}/x^2`, res:`(y despejada del volumen)`},
+        {code:`g(x) = 5x + 4·f(x)`, res:`(longitud del cordón)`},
+        {code:`A = Extremo(g)`, res:`= (${fmt(x)} , ${fmt(L)})`},
+        {code:`f(x(A))`, res:`= ${fmt(y)}  (valor de y)`},
+      ],
+      note:"Aquí se MINIMIZA: Extremo(g) en una función con forma de copa (mínimo) igual entrega el punto más bajo de la curva."
+    };
+  } else {
+    const L0 = rndOf([6,9,12,15]);
+    const x = 2*L0/15, y=(L0-5*x)/4;
+    const V = x*x*y;
+    return {
+      tag:"PRISMA · VOLUMEN MÁXIMO CON CORDÓN FIJO",
+      statement:`El mismo depósito (base x·x, altura y), pero ahora el cordón de soldadura es fijo: <b>5x+4y = ${L0}</b> metros. Encuentra x, y y el volumen máximo.`,
+      fields:[
+        {key:'x',label:'Valor de x (m)',ans:x},
+        {key:'y',label:'Valor de y (m)',ans:y},
+        {key:'V',label:'Volumen máximo (m³)',ans:V},
+      ],
+      manual:[
+        {t:"Despeja y de la restricción del cordón", b:`<span class="math">5x+4y=${L0}</span>  →  <span class="math">y = (${L0}-5x)/4</span>.`},
+        {t:"Escribe el volumen en función de x", b:`<span class="math">V(x) = x²y = x²·(${L0}-5x)/4 = (${L0}x² - 5x³)/4 = ${fmt(L0/4)}x² - ${fmt(5/4)}x³</span>.`},
+        {t:"Deriva término por término", b:`Derivada de <b>${fmt(L0/4)}x²</b> es <b>${fmt(2*L0/4)}x</b>. Derivada de <b>-${fmt(5/4)}x³</b> es <b>-${fmt(15/4)}x²</b>.<br><span class="math">V'(x) = ${fmt(L0/2)}x - ${fmt(15/4)}x²</span>.`},
+        {t:"Iguala a cero y factoriza x", b:`<span class="math">x(${fmt(L0/2)} - ${fmt(15/4)}x) = 0</span>. Descartamos x=0 (no hay caja). Entonces: <span class="math">${fmt(15/4)}x = ${fmt(L0/2)}</span>  →  <span class="math">x = ${fmt(x)}</span> m.`},
+        {t:"Reemplaza para hallar y y el volumen máximo", b:`<span class="math">y = (${L0}-5·${fmt(x)})/4 = ${fmt(y)}</span> m. <span class="math">V = x²y = ${fmt(V)}</span> m³.`},
+      ],
+      steps:[
+        {code:`f(x) = (${L0}-5x)/4`, res:`(y despejada del cordón fijo)`},
+        {code:`g(x) = x^2 · f(x)`, res:`(volumen V(x))`},
+        {code:`A = Extremo(g)`, res:`= (${fmt(x)} , ${fmt(V)})`},
+        {code:`f(x(A))`, res:`= ${fmt(y)}  (valor de y)`},
+      ],
+      note:"Cuando la restricción fija es el perímetro/cordón, se despeja y de ahí, y se maximiza el volumen sustituido."
+    };
+  }
+},
+
+// 7. CILINDRO DE VOLUMEN MÁXIMO
+function cilindro(){
+  const At = rndOf([400,500,600,800,1000,1200]);
+  const PI = 3.14;
+  const r = Math.sqrt(At/(6*PI));
+  const h = At/(2*PI*r) - r;
+  const V = PI*r*r*h;
+  return {
+    tag:"CILINDRO · ÁREA TOTAL FIJA",
+    statement:`Se desea construir un recipiente cilíndrico con tapa, área total <b>${At} cm²</b> (usa π = 3,14). Encuentra r, h y el volumen máximo.`,
+    fields:[
+      {key:'r',label:'Valor de r (cm)',ans:r},
+      {key:'h',label:'Valor de h (cm)',ans:h},
+      {key:'V',label:'Volumen máximo (cm³)',ans:V},
+    ],
+    manual:[
+      {t:"Plantea el área total", b:`<span class="math">At = 2πr² + 2πrh = ${At}</span>. Despeja h: <span class="math">h = ${At}/(2πr) - r</span>.`},
+      {t:"Escribe el volumen en función de r", b:`<span class="math">V(r) = πr²h = πr²·[${At}/(2πr) - r]</span>. Simplifica cancelando: <span class="math">V(r) = (${At}/2)r - πr³</span>.`},
+      {t:"Deriva término por término", b:`Derivada de <b>(${At}/2)r</b> es la constante <b>${fmt(At/2)}</b>. Derivada de <b>-πr³</b> es <b>-3πr²</b>.<br><span class="math">V'(r) = ${fmt(At/2)} - 3π·r²</span>, y con π=3,14: <span class="math">V'(r) = ${fmt(At/2)} - ${fmt(3*PI)}r²</span>.`},
+      {t:"Iguala a cero y despeja r", b:`<span class="math">${fmt(3*PI)}r² = ${fmt(At/2)}</span>  →  <span class="math">r² = ${fmt(At/(6*PI))}</span>  →  <span class="math">r = √${fmt(At/(6*PI))} = ${fmt(r)}</span> cm.`},
+      {t:"Reemplaza para hallar h y el volumen máximo", b:`<span class="math">h = ${At}/(2·3,14·${fmt(r)}) - ${fmt(r)} = ${fmt(h)}</span> cm. <span class="math">V = π r² h = ${fmt(V)}</span> cm³.`},
+    ],
+    steps:[
+      {code:`f(r) = ${At}/(2·3.14·r) - r`, res:`(h despejada del área total)`},
+      {code:`g(r) = 3.14·r^2 · f(r)`, res:`(volumen V(r))`},
+      {code:`A = Extremo(g)`, res:`= (${fmt(r)} , ${fmt(V)})`},
+      {code:`f(x(A))`, res:`= ${fmt(h)}  (valor de h)`},
+    ],
+    note:"At = 2πr² + 2πrh → despeja h. La variable acá se llama r en vez de x, pero el procedimiento en GeoGebra es idéntico."
+  };
+},
+
+// 8. HERENCIA (terreno dividido en n parcelas)
+function herencia(){
+  const n = rndOf([3,4,5,6]);
+  const S = rndOf([20000,30000,40000,58800,72000]);
+  const x = Math.sqrt((n+1)*S/(2*n*n));
+  const y = S/(n*x);
+  const P = (n+1)*y + 2*n*x;
+  return {
+    tag:"PERÍMETRO MÍNIMO · PARCELAS IGUALES",
+    statement:`<b>${n}</b> hermanos heredan una parcela rectangular de <b>${S} m²</b> que se divide en ${n} franjas iguales (ancho x, alto y cada una). Si se debe gastar lo menos posible en cercar todas las divisiones, encuentra x, y y el perímetro mínimo de cerca.`,
+    fields:[
+      {key:'x',label:'Valor de x (m)',ans:x},
+      {key:'y',label:'Valor de y (m)',ans:y},
+      {key:'P',label:'Perímetro mínimo (m)',ans:P},
+    ],
+    manual:[
+      {t:"Plantea el área total y despeja y", b:`Hay ${n} franjas de ancho x y alto y: <span class="math">${n}·x·y = ${S}</span>  →  <span class="math">y = ${S}/(${n}x)</span>.`},
+      {t:"Cuenta cuánta cerca se necesita", b:`Hay ${n+1} líneas verticales (los bordes y las ${n-1} divisiones internas) de largo y, y 2 líneas horizontales (arriba y abajo) de largo ${n}x: <span class="math">P = ${2*n}x + ${n+1}y</span>.`},
+      {t:"Sustituye y para tener P en función de x", b:`<span class="math">P(x) = ${2*n}x + ${n+1}·${S}/(${n}x) = ${2*n}x + ${fmt((n+1)*S/n)}/x</span>.`},
+      {t:"Deriva término por término", b:`Derivada de <b>${2*n}x</b> es <b>${2*n}</b>. Derivada de <b>${fmt((n+1)*S/n)}/x</b> es <b>-${fmt((n+1)*S/n)}/x²</b>.<br><span class="math">P'(x) = ${2*n} - ${fmt((n+1)*S/n)}/x²</span>.`},
+      {t:"Iguala a cero y despeja x", b:`<span class="math">${fmt((n+1)*S/n)}/x² = ${2*n}</span>  →  <span class="math">x² = ${fmt((n+1)*S/(2*n*n))}</span>  →  <span class="math">x = ${fmt(x)}</span> m.`},
+      {t:"Reemplaza para hallar y y el perímetro mínimo", b:`<span class="math">y = ${S}/(${n}·${fmt(x)}) = ${fmt(y)}</span> m. <span class="math">P = ${2*n}(${fmt(x)}) + ${n+1}(${fmt(y)}) = ${fmt(P)}</span> m.`},
+    ],
+    steps:[
+      {code:`f(x) = ${S}/(${n}x)`, res:`(y despejada del área total)`},
+      {code:`g(x) = ${2*n}x + ${n+1}·f(x)`, res:`(cerca total: ${n+1} líneas verticales + 2 horizontales de ${n}x)`},
+      {code:`A = Extremo(g)`, res:`= (${fmt(x)} , ${fmt(P)})`},
+      {code:`f(x(A))`, res:`= ${fmt(y)}  (valor de y)`},
+    ],
+    note:`Con ${n} parcelas hay ${n+1} líneas verticales (incluye los 2 bordes) de largo y, y 2 líneas horizontales de largo ${n}·x.`
+  };
+},
+
+// 9. CASA Y PATIO
+function casaPatio(){
+  const P0 = rndOf([56,64,68,72,80,88]);
+  const y = P0/8, x = 3*P0/8;
+  const A = (x+y)*y;
+  return {
+    tag:"ÁREA MÁXIMA · CASA + PATIO ABIERTO",
+    statement:`Se cierra el perímetro de una casa y su patio abierto (el patio no tiene cierre por delante) usando solo <b>${P0} metros</b> de pandereta. El esquema tiene 5 tramos de longitud y (lados + divisoria + frente casa) y un tramo x (frente del patio). Encuentra x, y y el área total máxima (casa+patio).`,
+    fields:[
+      {key:'x',label:'Valor de x (m)',ans:x},
+      {key:'y',label:'Valor de y (m)',ans:y},
+      {key:'A',label:'Área máxima (m²)',ans:A},
+    ],
+    manual:[
+      {t:"Plantea la restricción de pandereta", b:`Son 5 tramos de largo y y 1 tramo de largo x: <span class="math">x + 5y = ${P0}</span>  →  <span class="math">x = ${P0} - 5y</span>.`},
+      {t:"Escribe el área total en función de y", b:`El área total (casa+patio) es un rectángulo de ancho (x+y) y alto y: <span class="math">A = (x+y)y</span>. Reemplaza x: <span class="math">A(y) = (${P0}-5y+y)y = (${P0}-4y)y = ${P0}y - 4y²</span>.`},
+      {t:"Deriva término por término", b:`Derivada de <b>${P0}y</b> es <b>${P0}</b>. Derivada de <b>-4y²</b> es <b>-8y</b>.<br><span class="math">A'(y) = ${P0} - 8y</span>.`},
+      {t:"Iguala a cero y despeja y", b:`<span class="math">${P0} - 8y = 0</span>  →  <span class="math">y = ${P0}/8 = ${fmt(y)}</span> m.`},
+      {t:"Reemplaza para hallar x y el área máxima", b:`<span class="math">x = ${P0} - 5(${fmt(y)}) = ${fmt(x)}</span> m. <span class="math">A = (${fmt(x)}+${fmt(y)})(${fmt(y)}) = ${fmt(A)}</span> m².`},
+    ],
+    manualNote:"Ojo: aquí derivamos respecto a y, no a x, porque la restricción se despeja más fácil en términos de x. La derivada funciona igual sea cual sea la letra de la variable.",
+    steps:[
+      {code:`f(y) = ${P0} - 5y`, res:`(x despejada de la restricción)`},
+      {code:`g(y) = (f(y)+y)·y`, res:`(área total: (x+y)·y)`},
+      {code:`A = Extremo(g)`, res:`= (${fmt(y)} , ${fmt(A)})  ← la 1ª componente es y`},
+      {code:`f(x(A))`, res:`= ${fmt(x)}  (valor de x)`},
+    ],
+    note:"Conviene maximizar en función de y (no de x), porque x = P0-5y es la condición más simple de despejar."
+  };
+},
+
+// 10. UTILIDAD CON RAÍZ (importador)
+function utilidadRaiz(){
+  const p = rndOf([20000,25000,30000,35000]);
+  const a = rndOf([250,300,350]);
+  const b = rndOf([8000,9500,11000,12500]);
+  function Uprime(x){ return p - 2*a*x + b/(2*Math.sqrt(x)); }
+  let lo=0.01, hi=500;
+  for(let i=0;i<80;i++){ const mid=(lo+hi)/2; if (Uprime(mid)>0) lo=mid; else hi=mid; }
+  const x = (lo+hi)/2;
+  const U = p*x - a*x*x + b*Math.sqrt(x);
+  return {
+    tag:"UTILIDAD CON COSTOS DE ESCALA (RAÍZ)",
+    statement:`Un importador tiene ingreso <b>I(x) = ${p}x</b> y costo <b>C(x) = ${a}x² − ${b}√x</b>. Encuentra (aprox. al entero) cuántos artículos x maximizan la utilidad, y cuál es esa utilidad máxima.`,
+    fields:[
+      {key:'x',label:'Artículos (entero más cercano)',ans:Math.round(x)},
+      {key:'U',label:'Utilidad máxima ($)',ans:U},
+    ],
+    manual:[
+      {t:"Plantea la utilidad", b:`<span class="math">U(x) = I(x)-C(x) = ${p}x - (${a}x² - ${b}√x) = ${p}x - ${a}x² + ${b}√x</span>.`},
+      {t:"Deriva término por término (aquí aparece la raíz)", b:`Derivada de <b>${p}x</b> es <b>${p}</b>. Derivada de <b>-${a}x²</b> es <b>-${2*a}x</b>. Derivada de <b>${b}√x</b> (regla √x) es <b>${b}/(2√x)</b>.<br><span class="math">U'(x) = ${p} - ${2*a}x + ${b}/(2√x)</span>.`},
+      {t:"Iguala a cero", b:`<span class="math">${p} - ${2*a}x + ${b}/(2√x) = 0</span>. Esta ecuación mezcla x y √x, así que <b>no se puede despejar a mano con álgebra simple</b>.`},
+      {t:"Resuélvela numéricamente (aquí SÍ usas GeoGebra o calculadora)", b:`Al graficar g(x)=U(x) y pedir <span class="math">Extremo(g)</span>, GeoGebra resuelve esa ecuación por ti de forma numérica y entrega directamente el punto máximo.`},
+      {t:"Resultado", b:`<span class="math">x ≈ ${fmt(x)}</span> artículos (redondea al entero: <b>${Math.round(x)}</b>). <span class="math">U(${Math.round(x)}) ≈ ${fmt(U)}</span> pesos.`},
+    ],
+    manualNote:"Este es justamente el tipo de problema donde a mano te costaría mucho más — por eso GeoGebra es tan útil: el método (derivar e igualar a 0) es el mismo, pero la resolución de la ecuación se la dejas a la máquina.",
+    steps:[
+      {code:`f(x) = ${p}x`, res:`(ingreso)`},
+      {code:`h(x) = ${a}x^2-${b}sqrt(x)`, res:`(costo)`},
+      {code:`g(x) = f(x)-h(x)`, res:`(utilidad)`},
+      {code:`A = Extremo(g)`, res:`≈ (${fmt(x)} , ${fmt(U)})`},
+    ],
+    note:"Con raíces, GeoGebra resuelve el extremo numéricamente igual con Extremo(g); no necesitas despejar nada a mano."
+  };
+},
+
 ];
 
-// ══════════════════════════════════════════════════════════════
-//  ESTADO DEL JUEGO
-// ══════════════════════════════════════════════════════════════
-const TOTAL_PER_SESSION = 25;
-const MAX_LIVES = 3;
+const TITLES = [
+ "1. El granjero (área junto al río)",
+ "2. Utilidad máxima (ingreso−costo)",
+ "3. Caja de base cuadrada (cortes)",
+ "4. Caja sin tapa (cartón limitado)",
+ "5. El cartel (márgenes)",
+ "6. Depósito de basura",
+ "7. Cilindro de volumen máximo",
+ "8. Herencia (parcelas iguales)",
+ "9. Casa y patio",
+ "10. Utilidad con raíz cuadrada",
+];
 
-let questions = [];
-let idx = 0;
-let lives = MAX_LIVES;
-let score = 0;
-let userAnswers = [];
-let answered = false;
-let currentShuffled = [];
-let correctShuffledIdx = -1;
+/* ---------- estado del juego ---------- */
+let lives, score, survival, current, order, orderIdx;
 
-// ══════════════════════════════════════════════════════════════
-//  UTILIDADES
-// ══════════════════════════════════════════════════════════════
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-function updateProgress() {
-  const pct = (idx / TOTAL_PER_SESSION) * 100;
-  document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('tb-score').textContent = score + '/' + idx;
-}
-
-function updateLivesUI() {
-  const hearts = ['h1','h2','h3'];
-  hearts.forEach((hid, i) => {
-    const el = document.getElementById(hid);
-    el.classList.toggle('lost', i >= lives);
-    el.textContent = i < lives ? '❤️' : '🖤';
+function buildMenu(){
+  const m = document.getElementById('menuButtons');
+  m.innerHTML = '';
+  const survBtn = document.createElement('button');
+  survBtn.className='survival';
+  survBtn.textContent = '⚔ MODO SUPERVIVENCIA — 3 vidas, las 10 preguntas mezcladas';
+  survBtn.onclick = ()=>startGame(true);
+  m.appendChild(survBtn);
+  TITLES.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.textContent = t;
+    b.onclick = ()=>startGame(false,i);
+    m.appendChild(b);
   });
 }
+buildMenu();
 
-// ══════════════════════════════════════════════════════════════
-//  INICIO
-// ══════════════════════════════════════════════════════════════
-function startExam() {
-  questions = shuffle(BANK).slice(0, TOTAL_PER_SESSION);
-  idx = 0; score = 0; lives = MAX_LIVES; userAnswers = []; answered = false;
-  showScreen('screen-question');
-  document.getElementById('lives-display').classList.add('show');
-  document.getElementById('topbar-score').style.display = 'flex';
-  updateLivesUI();
-  updateProgress();
-  renderQuestion();
-}
-
-// ══════════════════════════════════════════════════════════════
-//  RENDER PREGUNTA
-// ══════════════════════════════════════════════════════════════
-function renderQuestion() {
-  answered = false;
-  const q = questions[idx];
-  document.getElementById('q-counter').textContent = 'Pregunta ' + (idx + 1) + ' de ' + TOTAL_PER_SESSION;
-  document.getElementById('q-num-tag').textContent = '— Pregunta #' + q.id + ' del banco —';
-  document.getElementById('q-text').textContent = q.pregunta;
-
-  const indexedOpts = q.opciones.map((text, i) => ({ text, i }));
-  currentShuffled = shuffle(indexedOpts);
-  const correctOrigIdx = q.opciones.indexOf(q.respuestaCorrecta);
-  correctShuffledIdx = currentShuffled.findIndex(o => o.i === correctOrigIdx);
-
-  const letters = ['A', 'B', 'C', 'D', 'E'];
-  const cont = document.getElementById('options-container');
-  cont.innerHTML = '';
-  currentShuffled.forEach((opt, i) => {
-    const div = document.createElement('div');
-    div.className = 'option';
-    div.innerHTML = '<div class="opt-key">' + letters[i] + '</div><div class="opt-text">' + opt.text + '</div>';
-    div.addEventListener('click', () => pickOption(i, div));
-    cont.appendChild(div);
-  });
-
-  updateProgress();
-  document.getElementById('feedback-popup').classList.remove('show','correct-pop','wrong-pop');
-}
-
-// ══════════════════════════════════════════════════════════════
-//  SELECCIÓN Y CONFIRMACIÓN
-// ══════════════════════════════════════════════════════════════
-function pickOption(i, el) {
-  if (answered) return;
-  answered = true;
-
-  const isCorrect = (i === correctShuffledIdx);
-  const selectedText = currentShuffled[i].text;
-
-  const opts = document.querySelectorAll('.option');
-  opts.forEach(o => o.classList.add('disabled'));
-  opts[correctShuffledIdx].classList.add('correct');
-  if (!isCorrect) {
-    el.classList.add('wrong');
-    lives--;
-    updateLivesUI();
+function startGame(isSurvival, fixedIndex){
+  survival = isSurvival;
+  lives = 3; score = 0;
+  document.getElementById('menu').style.display='none';
+  document.getElementById('cheat').style.display='none';
+  document.getElementById('endscreen').style.display='none';
+  document.getElementById('game').style.display='block';
+  document.getElementById('hud').style.display='flex';
+  if (survival){
+    order = [...Array(10).keys()];
+    for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+    orderIdx = 0;
+    loadProblem(order[orderIdx]);
   } else {
-    score++;
+    loadProblem(fixedIndex, true);
   }
-
-  const q = questions[idx];
-  userAnswers.push({ q, selectedText, isCorrect });
-
-  updateProgress();
-  showFeedbackPopup(q, isCorrect);
-
-  if (lives <= 0) {
-    setTimeout(() => {
-      document.getElementById('feedback-popup').classList.remove('show','correct-pop','wrong-pop');
-      showGameOver();
-    }, 2600);
-  }
+  renderHud();
 }
 
-// ══════════════════════════════════════════════════════════════
-//  FEEDBACK POP-UP
-// ══════════════════════════════════════════════════════════════
-function showFeedbackPopup(q, isCorrect) {
-  const popup = document.getElementById('feedback-popup');
-  popup.classList.remove('correct-pop','wrong-pop','show');
+function renderHud(){
+  const lv = document.getElementById('lives');
+  lv.innerHTML = '';
+  for(let i=0;i<3;i++){
+    const d=document.createElement('div');
+    d.className = 'pt'+(i<lives?'':' dead');
+    lv.appendChild(d);
+  }
+  document.getElementById('score').textContent = score;
+}
 
-  document.getElementById('fp-icon').textContent = isCorrect ? '✅' : '❌';
-  document.getElementById('fp-verdict').textContent = isCorrect
-    ? '¡Correcto!'
-    : '¡Error! — Aquí está la clave:';
+function loadProblem(idx, freeMode){
+  current = GENERATORS[idx]();
+  current._freeMode = !!freeMode;
+  current._idx = idx;
+  current._revealed = 0;
+  renderProblem();
+}
 
-  document.getElementById('fp-justif').textContent = q.justificacion;
-  document.getElementById('fp-trap').style.display = 'none';
-  document.getElementById('fp-fact').style.display = 'none';
+function renderProblem(){
+  const card = document.getElementById('problemCard');
+  card.innerHTML = '';
+  const tag = document.createElement('div'); tag.className='tag'; tag.textContent = current.tag;
+  const st = document.createElement('div'); st.className='statement'; st.innerHTML = current.statement;
+  card.appendChild(tag); card.appendChild(st);
 
-  popup.classList.add(isCorrect ? 'correct-pop' : 'wrong-pop');
-
-  const nextBtn = document.getElementById('fp-next-btn');
-  const isLast = (idx >= TOTAL_PER_SESSION - 1);
-  nextBtn.textContent = isLast ? 'Ver resultados →' : 'Siguiente pregunta →';
-  nextBtn.style.display = lives <= 0 ? 'none' : 'block';
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => popup.classList.add('show'));
+  const fields = document.createElement('div'); fields.className='fields';
+  current.fields.forEach(f=>{
+    const row=document.createElement('div'); row.className='field';
+    const lab=document.createElement('label'); lab.textContent=f.label;
+    const inp=document.createElement('input'); inp.type='text'; inp.id='in_'+f.key; inp.placeholder='—';
+    row.appendChild(lab); row.appendChild(inp);
+    fields.appendChild(row);
   });
+  card.appendChild(fields);
+
+  const actions=document.createElement('div'); actions.className='actions';
+  const verifyBtn=document.createElement('button'); verifyBtn.className='primary'; verifyBtn.textContent='Verificar';
+  verifyBtn.onclick = verify;
+  const manualBtn=document.createElement('button'); manualBtn.className='ghost'; manualBtn.textContent='📝 Resolver paso a paso (a mano)';
+  manualBtn.onclick = ()=>{ document.getElementById('manualBox').style.display='block'; revealNextStep(); };
+  const ggbBtn=document.createElement('button'); ggbBtn.className='ghost blue'; ggbBtn.textContent='⚡ Atajo en GeoGebra';
+  ggbBtn.onclick = ()=>{ document.getElementById('console').style.display='block'; };
+  actions.appendChild(verifyBtn); actions.appendChild(manualBtn); actions.appendChild(ggbBtn);
+  card.appendChild(actions);
+
+  const fb=document.createElement('div'); fb.className='feedback'; fb.id='feedback';
+  card.appendChild(fb);
+
+  /* ---- caja de explicación manual (paso a paso, revelado progresivo) ---- */
+  const manualBox=document.createElement('div'); manualBox.className='manual'; manualBox.id='manualBox';
+  current.manual.forEach((s,i)=>{
+    const st2=document.createElement('div'); st2.className='step hidden'; st2.id='manstep_'+i;
+    st2.innerHTML = `<div><span class="stepnum">${i+1}</span><span class="stitle">${s.t}</span></div><div class="sbody">${s.b}</div>`;
+    manualBox.appendChild(st2);
+  });
+  const revealRow=document.createElement('div'); revealRow.className='revealMore'; revealRow.id='revealRow';
+  const revealBtn=document.createElement('button'); revealBtn.className='ghost'; revealBtn.textContent='Ver siguiente paso ↓';
+  revealBtn.onclick = revealNextStep;
+  revealRow.appendChild(revealBtn);
+  manualBox.appendChild(revealRow);
+  if (current.manualNote){
+    const mn=document.createElement('div'); mn.className='note'; mn.textContent = current.manualNote;
+    manualBox.appendChild(mn);
+  }
+  card.appendChild(manualBox);
+
+  /* ---- consola geogebra (atajo) ---- */
+  const cons=document.createElement('div'); cons.className='console'; cons.id='console';
+  const lead=document.createElement('div'); lead.className='lead'; lead.textContent='BARRA DE ENTRADA · GEOGEBRA CLÁSICO (atajo, sin derivar a mano)';
+  cons.appendChild(lead);
+  current.steps.forEach((s,i)=>{
+    const line=document.createElement('div'); line.className='cmdline';
+    line.innerHTML = `<span class="n">${i+1}.</span><span class="code">${s.code}</span><span class="res">${s.res}</span>`;
+    cons.appendChild(line);
+  });
+  const note=document.createElement('div'); note.className='note'; note.textContent = current.note;
+  cons.appendChild(note);
+  card.appendChild(cons);
+
+  const nextRow=document.createElement('div'); nextRow.className='actions'; nextRow.style.display='none'; nextRow.id='nextRow';
+  const nextBtn=document.createElement('button'); nextBtn.className='primary'; nextBtn.textContent= survival ? 'Siguiente desafío →' : 'Generar otro número →';
+  nextBtn.onclick = nextProblem;
+  nextRow.appendChild(nextBtn);
+  card.appendChild(nextRow);
 }
 
-function closeFeedbackAndNext() {
-  const popup = document.getElementById('feedback-popup');
-  popup.classList.remove('show');
-  setTimeout(() => {
-    popup.classList.remove('correct-pop','wrong-pop');
-    idx++;
-    if (idx >= TOTAL_PER_SESSION) {
-      showResults();
-    } else {
-      renderQuestion();
+function revealNextStep(){
+  const n = current.manual.length;
+  if (current._revealed < n){
+    document.getElementById('manstep_'+current._revealed).classList.remove('hidden');
+    current._revealed++;
+  }
+  if (current._revealed >= n){
+    document.getElementById('revealRow').style.display='none';
+  }
+}
+
+function verify(){
+  let allOk = true;
+  current.fields.forEach(f=>{
+    const raw = document.getElementById('in_'+f.key).value.trim().replace(',','.');
+    const val = parseFloat(raw);
+    if (isNaN(val) || !close(val, f.ans)) allOk = false;
+  });
+  const fb = document.getElementById('feedback');
+  fb.style.display='block';
+  document.getElementById('console').style.display='block';
+  document.getElementById('manualBox').style.display='block';
+  for(let i=0;i<current.manual.length;i++){
+    document.getElementById('manstep_'+i).classList.remove('hidden');
+  }
+  document.getElementById('revealRow').style.display='none';
+  document.getElementById('nextRow').style.display='flex';
+  if (allOk){
+    fb.className='feedback ok';
+    fb.textContent = '✓ Correcto. Revisa de igual modo el paso a paso para afianzar el método.';
+    score += 10;
+  } else {
+    fb.className='feedback bad';
+    fb.textContent = '✗ No coincide. Sigue el paso a paso de abajo con calma — ahí está el detalle de dónde puede estar la diferencia.';
+    if (survival) lives -= 1;
+  }
+  renderHud();
+  if (survival && lives<=0){
+    setTimeout(endGame, 900);
+  }
+}
+
+function nextProblem(){
+  if (survival){
+    orderIdx = (orderIdx+1) % order.length;
+    if (orderIdx===0){
+      for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
     }
-  }, 420);
+    loadProblem(order[orderIdx]);
+  } else {
+    loadProblem(current._idx, true);
+  }
 }
 
-// ══════════════════════════════════════════════════════════════
-//  GAME OVER
-// ══════════════════════════════════════════════════════════════
-function showGameOver() {
-  document.getElementById('gameover-stat').textContent =
-    'Llegaste a la pregunta ' + (idx + 1) + ' de ' + TOTAL_PER_SESSION +
-    ' — ' + score + ' respuestas correctas';
-  document.getElementById('gameover-overlay').classList.add('show');
+function endGame(){
+  document.getElementById('game').style.display='none';
+  document.getElementById('hud').style.display='none';
+  document.getElementById('endscreen').style.display='block';
+  document.getElementById('finalScore').textContent = score;
 }
-
-// ══════════════════════════════════════════════════════════════
-//  RESULTADOS
-// ══════════════════════════════════════════════════════════════
-function showResults() {
-  document.getElementById('lives-display').classList.remove('show');
-  document.getElementById('topbar-score').style.display = 'none';
-  document.getElementById('prog-fill').style.width = '100%';
-  showScreen('screen-results');
-
-  const total = userAnswers.length;
-  const correct = userAnswers.filter(a => a.isCorrect).length;
-  const wrong = total - correct;
-  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
-  const nota = total > 0 ? ((correct / total) * 7).toFixed(1) : '0.0';
-
-  document.getElementById('score-big').textContent = correct;
-  document.getElementById('rs-correct').textContent = correct;
-  document.getElementById('rs-wrong').textContent = wrong;
-  document.getElementById('rs-lives').textContent = lives;
-  document.getElementById('rs-nota').textContent = nota;
-
-  const circumference = 389.6;
-  const offset = circumference - (pct / 100) * circumference;
-  setTimeout(() => {
-    const arc = document.getElementById('ring-arc');
-    arc.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)';
-    arc.style.strokeDashoffset = offset;
-  }, 120);
-
-  let title, msg;
-  if (pct >= 88) { title = '🏆 Listo para el examen'; msg = 'Dominas el contenido. Las vidas que conservaste demuestran que vas sólido en la materia.'; }
-  else if (pct >= 70) { title = '✅ Buen nivel — afina detalles'; msg = 'Sólida base técnica. Refuerza los tecnicismos de temperatura (Tg, Tm, 70–90% Tm) y diferencias de aleantes.'; }
-  else if (pct >= 50) { title = '⚡ En desarrollo — estudia más'; msg = 'Repasa cada mecanismo de falla: abrasión vs adhesivo vs fatiga. El banco tiene 100 preguntas, sigue practicando.'; }
-  else { title = '📚 Hay que estudiar más'; msg = 'Vuelve a los conceptos base: aleantes (Cr/Mn/C), tratamientos térmicos y tipos de polímeros. Inténtalo de nuevo.'; }
-
-  document.getElementById('result-title').textContent = title;
-  document.getElementById('result-msg').textContent = msg;
-
-  const list = document.getElementById('review-list');
-  list.innerHTML = '';
-  userAnswers.forEach(a => {
-    const div = document.createElement('div');
-    div.className = 'review-item';
-    const icon = a.isCorrect ? '✅' : '❌';
-    const qShort = a.q.pregunta.substring(0, 80) + '…';
-    const ansShort = a.isCorrect
-      ? 'Correcto: "' + a.selectedText.substring(0, 60) + '"'
-      : 'Tu resp.: "' + a.selectedText.substring(0, 50) + '" · Correcta: "' + a.q.respuestaCorrecta.substring(0, 50) + '"';
-    div.innerHTML = '<div class="ri-icon">' + icon + '</div><div><div class="ri-q">' + qShort + '</div><div class="ri-ans">' + ansShort + '</div></div>';
-    list.appendChild(div);
-  });
-}
-
-// ══════════════════════════════════════════════════════════════
-//  NAVEGACIÓN
-// ══════════════════════════════════════════════════════════════
-function goHome() {
-  document.getElementById('gameover-overlay').classList.remove('show');
-  document.getElementById('feedback-popup').classList.remove('show','correct-pop','wrong-pop');
-  document.getElementById('lives-display').classList.remove('show');
-  document.getElementById('topbar-score').style.display = 'none';
-  document.getElementById('prog-fill').style.width = '0%';
-  const arc = document.getElementById('ring-arc');
-  arc.style.transition = 'none';
-  arc.style.strokeDashoffset = '389.6';
-  showScreen('screen-intro');
-}
-
-function retryExam() {
-  document.getElementById('gameover-overlay').classList.remove('show');
-  startExam();
+function backToMenu(){
+  document.getElementById('endscreen').style.display='none';
+  document.getElementById('menu').style.display='block';
+  document.getElementById('cheat').style.display='block';
 }
 </script>
 </body>
