@@ -180,6 +180,7 @@ a.btn-ggb:hover{background:#1559b3;transform:translateY(-1px);}
       <tr><td class="f">d/dx ( c·xⁿ )</td><td class="d">= c·n·x^(n-1)</td></tr>
       <tr><td class="f">d/dx ( c/x ) = d/dx ( c·x⁻¹ )</td><td class="d">= -c·x⁻² = -c/x²</td></tr>
       <tr><td class="f">d/dx ( √x ) = d/dx ( x^(1/2) )</td><td class="d">= 1/(2√x)</td></tr>
+      <tr><td class="f">d/dx ( ln(x) )</td><td class="d">= 1/x</td></tr>
     </table>
     <div class="ex">
       Eso es literalmente TODO lo que necesitas. En cada problema vas a: (1) escribir la función con una sola variable,
@@ -229,11 +230,16 @@ const GENERATORS = [
 
 // 1. EL GRANJERO
 function granjero(){
-  const C = rndOf([800,1000,1200,1400,1600,1800,2000]);
+  const C = rndOf([800,1000,1200,1400,1600,1800,2000,65,150]);
   const x = C/4, y = C/2, A = x*y;
+  const escenario = rndOf([
+    {texto:`Un granjero tiene <b>${C}</b> metros de cerca y desea rodear una zona rectangular que limita con un río recto, sin necesitar cercar a lo largo del río (dos lados <b>x</b> perpendiculares al río y un lado <b>y</b> paralelo a él).`},
+    {texto:`Se quiere hacer un corral para gallinas de forma rectangular con <b>una abertura</b> (no se necesita madera en ese lado). Si se cuenta con <b>${C}</b> metros lineales de madera para las paredes (dos lados <b>x</b> y un lado <b>y</b>), encuentra el área máxima del corral.`},
+    {texto:`Se dispone de una barra de hierro de <b>${C}</b> metros para construir una portería (dos postes de largo <b>x</b> y un larguero de largo <b>y</b>), de manera que tenga la máxima superficie interior posible.`},
+  ]);
   return {
-    tag:"ÁREA · CERCA CONTRA EL RÍO",
-    statement:`Un granjero tiene <b>${C}</b> metros de cerca y desea rodear una zona rectangular que limita con un río recto, sin necesitar cercar a lo largo del río (dos lados <b>x</b> perpendiculares al río y un lado <b>y</b> paralelo a él). Calcula <b>x</b>, <b>y</b> y el área máxima.`,
+    tag:"ÁREA · RESTRICCIÓN 2x+y (UN LADO LIBRE)",
+    statement:`${escenario.texto} Calcula <b>x</b>, <b>y</b> y el área máxima.`,
     fields:[
       {key:'x',label:'Valor de x (m)',ans:x},
       {key:'y',label:'Valor de y (m)',ans:y},
@@ -583,6 +589,166 @@ function utilidadRaiz(){
   };
 },
 
+
+// 11. TERRENO CERCADO POR COMPLETO (perímetro total, sin lado abierto)
+function cercadoCompleto(){
+  const C = rndOf([40,48,60,72,80,100]);
+  const x = C/4, y = C/4, A = x*y;
+  const escenario = rndOf([
+    {obj:"un terreno rectangular o cuadrado", unidad:"malla metálica", verbo:"cercar"},
+    {obj:"un patio rectangular o cuadrado", unidad:"reja", verbo:"cercar"},
+  ]);
+  return {
+    tag:"ÁREA MÁXIMA · PERÍMETRO COMPLETO (4 LADOS)",
+    statement:`Se quiere ${escenario.verbo} ${escenario.obj} de forma rectangular (puede ser cuadrada) de manera que su área sea máxima. Para ello se cuenta con <b>${C} metros</b> lineales de ${escenario.unidad} para los <b>4 lados</b> (a diferencia del problema del río, aquí NO hay lado libre). Encuentra x, y y el área máxima.`,
+    fields:[
+      {key:'x',label:'Valor de x (m)',ans:x},
+      {key:'y',label:'Valor de y (m)',ans:y},
+      {key:'A',label:'Área máxima (m²)',ans:A},
+    ],
+    manual:[
+      {t:"Plantea la restricción (perímetro completo)", b:`Esta vez se cercan los 4 lados: <span class="math">2x + 2y = ${C}</span>. Despeja y: <span class="math">y = (${C}-2x)/2 = ${fmt(C/2)} - x</span>.`},
+      {t:"Escribe el área en función de x", b:`<span class="math">A(x) = x·y = x(${fmt(C/2)} - x) = ${fmt(C/2)}x - x²</span>.`},
+      {t:"Deriva término por término", b:`Derivada de <b>${fmt(C/2)}x</b> es <b>${fmt(C/2)}</b>. Derivada de <b>-x²</b> es <b>-2x</b>.<br><span class="math">A'(x) = ${fmt(C/2)} - 2x</span>.`},
+      {t:"Iguala a cero y despeja x", b:`<span class="math">${fmt(C/2)} - 2x = 0</span>  →  <span class="math">x = ${fmt(C/4)} = ${fmt(x)}</span> metros.`},
+      {t:"Calcula y y observa algo importante", b:`<span class="math">y = ${fmt(C/2)} - ${fmt(x)} = ${fmt(y)}</span> metros. Nota que <b>x = y</b>: cuando se cercan los 4 lados completos, la figura de área máxima SIEMPRE es un cuadrado.`},
+      {t:"Verifica con la segunda derivada (criterio de la 2ª derivada)", b:`<span class="math">A''(x) = -2</span>, que es constante y negativa. Como <b>A''(x₀) &lt; 0</b>, confirmamos que x₀=${fmt(x)} es un <b>máximo</b> (criterio: si A''(x₀)&gt;0 es mínimo, si A''(x₀)&lt;0 es máximo).`},
+      {t:"Calcula el área máxima", b:`<span class="math">A = x·y = ${fmt(x)} × ${fmt(y)} = ${fmt(A)}</span> m².`},
+    ],
+    manualNote:"Ojo con la diferencia clave: en 'El granjero' (río) la restricción es 2x+y=C (un lado libre). Aquí, al cercar los 4 lados, es 2x+2y=C. Confundir estas dos restricciones es el error más común en este tipo de problema.",
+    steps:[
+      {code:`f(x) = (${C}-2x)/2`, res:`(y despejada del perímetro completo)`},
+      {code:`g(x) = x · f(x)`, res:`(área A(x))`},
+      {code:`A = Extremo(g)`, res:`= (${fmt(x)} , ${fmt(A)})`},
+      {code:`g''(x(A))`, res:`= -2  (negativo → confirma máximo)`},
+      {code:`f(x(A))`, res:`= ${fmt(y)}  (valor de y)`},
+    ],
+    note:"Cuando el perímetro cercado es completo (4 lados), el rectángulo de área máxima siempre resulta ser un cuadrado: x = y."
+  };
+},
+
+// 12. UTILIDAD CON LOGARITMO NATURAL (costo con ln(x))
+function utilidadLog(){
+  const p = rndOf([29000,35000,40000,50000]);
+  const a = rndOf([700,850,900,1000]);
+  const k = rndOf([10000,11000,12000,15000]);
+  const A_ = -2*a, B_ = p, C_ = k;
+  const disc = B_*B_ - 4*A_*C_;
+  const r1 = (-B_ + Math.sqrt(disc))/(2*A_);
+  const r2 = (-B_ - Math.sqrt(disc))/(2*A_);
+  const xreal = Math.max(r1,r2);
+  const xround = Math.round(xreal);
+  const segunda = -2*a - k/(xround*xround);
+  const U = p*xround - a*xround*xround + k*Math.log(xround);
+  return {
+    tag:"UTILIDAD CON COSTO LOGARÍTMICO",
+    statement:`Un negocio tiene ingreso <b>I(x) = ${p}x</b> y costo <b>C(x) = ${a}x² − ${fmt(k)}·ln(x)</b>, donde x es la cantidad de unidades. Encuentra (aproximando al entero) la cantidad x que maximiza la utilidad, comprueba con el criterio de la segunda derivada, y calcula esa utilidad máxima.`,
+    fields:[
+      {key:'x',label:'Cantidad (entero más cercano)',ans:xround},
+      {key:'U',label:'Utilidad máxima ($)',ans:U},
+    ],
+    manual:[
+      {t:"Plantea la utilidad", b:`<span class="math">U(x) = I(x)-C(x) = ${p}x - (${a}x² - ${fmt(k)}ln(x)) = ${p}x - ${a}x² + ${fmt(k)}ln(x)</span>.`},
+      {t:"Deriva término por término (aquí aparece ln(x))", b:`Derivada de <b>${p}x</b> es <b>${p}</b>. Derivada de <b>-${a}x²</b> es <b>-${2*a}x</b>. Derivada de <b>${fmt(k)}ln(x)</b> (regla ln(x) → 1/x) es <b>${fmt(k)}/x</b>.<br><span class="math">U'(x) = ${p} - ${2*a}x + ${fmt(k)}/x</span>.`},
+      {t:"Iguala a cero: aparece una fracción, así que multiplica TODO por x", b:`<span class="math">${p} - ${2*a}x + ${fmt(k)}/x = 0</span>. Multiplicando cada término por x para eliminar el denominador: <span class="math">${p}x - ${2*a}x² + ${fmt(k)} = 0</span>, es decir <span class="math">-${2*a}x² + ${p}x + ${fmt(k)} = 0</span>.`},
+      {t:"Resuelve la ecuación cuadrática con la fórmula general", b:`Con a=${A_}, b=${B_}, c=${C_}: <span class="math">x = [-${B_} ± √(${B_}² - 4(${A_})(${C_}))] / (2·${A_})</span>. Esto da dos soluciones: una negativa (se descarta, no puede haber cantidades negativas) y <b>x ≈ ${fmt(xreal)}</b>.`},
+      {t:"Aproxima al entero más cercano", b:`<span class="math">x ≈ ${Math.round(xreal)}</span> unidades.`},
+      {t:"Comprueba con el criterio de la segunda derivada", b:`<span class="math">U''(x) = -${2*a} - ${fmt(k)}/x²</span>. Evaluando en x=${xround}: <span class="math">U''(${xround}) = ${fmt(segunda)}</span>, que es <b>negativo</b>. Por el criterio de la 2ª derivada (f''(x₀)&lt;0 → máximo), confirmamos que x=${xround} es efectivamente un <b>máximo</b>.`},
+      {t:"Calcula la utilidad máxima", b:`<span class="math">U(${xround}) = ${p}(${xround}) - ${a}(${xround})² + ${fmt(k)}ln(${xround}) = ${fmt(U)}</span>.`},
+    ],
+    manualNote:"Truco clave: cuando la derivada queda con una x en el denominador (por una raíz o un logaritmo), multiplica toda la ecuación por x para convertirla en una ecuación cuadrática que sí puedes resolver con la fórmula general.",
+    steps:[
+      {code:`f(x) = ${p}x`, res:`(ingreso)`},
+      {code:`h(x) = ${a}x^2-${fmt(k)}ln(x)`, res:`(costo)`},
+      {code:`g(x) = f(x)-h(x)`, res:`(utilidad)`},
+      {code:`A = Extremo(g)`, res:`≈ (${fmt(xreal)} , ${fmt(U)})`},
+      {code:`g''(x(A))`, res:`= ${fmt(segunda)}  (negativo → confirma máximo)`},
+    ],
+    note:"GeoGebra resuelve directamente con Extremo(g), incluso con logaritmos. A mano, el truco es multiplicar por x para quitar la fracción y obtener una cuadrática."
+  };
+},
+
+// 13. RECIPIENTE DE COSTO MÍNIMO (base x por 3x, altura y)
+function recipienteCostoMinimo(){
+  const V0 = rndOf([24,30,36,48,60,72]);
+  const a = rndOf([4000,5000,6000]);
+  const b = rndOf([2000,3000,3500]);
+  const x = Math.cbrt(4*b*V0/(9*a));
+  const y = V0/(3*x*x);
+  const Cmin = 3*a*x*x + 8*b*x*y;
+  const segunda = 6*a + (16*b*V0)/(3*Math.pow(x,3));
+  return {
+    tag:"COSTO MÍNIMO · RECIPIENTE BASE x·3x",
+    statement:`Se construye un recipiente metálico de base rectangular x por 3x, altura y, sin tapa, con volumen fijo de <b>${V0} m³</b>. El material de la base cuesta $${fmt(a)} el m² y el de las 4 caras laterales cuesta $${fmt(b)} el m². Encuentra x, y y el costo mínimo.`,
+    fields:[
+      {key:'x',label:'Valor de x (m)',ans:x},
+      {key:'y',label:'Valor de y (m)',ans:y},
+      {key:'C',label:'Costo mínimo ($)',ans:Cmin},
+    ],
+    manual:[
+      {t:"Plantea el volumen y despeja y", b:`Base x·3x, altura y: <span class="math">V = 3x²y = ${V0}</span>  →  <span class="math">y = ${V0}/(3x²)</span>.`},
+      {t:"Calcula el área de la base y de las caras laterales", b:`Área base = <span class="math">3x²</span>. Las 4 caras laterales: dos caras de x·y (2xy) y dos caras de 3x·y (6xy), total <span class="math">2xy+6xy=8xy</span>.`},
+      {t:"Escribe el costo total en función de x e y", b:`<span class="math">C = (costo base)(área base) + (costo lateral)(área lateral) = ${a}·3x² + ${b}·8xy = ${3*a}x² + ${8*b}xy</span>.`},
+      {t:"Sustituye y para tener C en función de x", b:`<span class="math">C(x) = ${3*a}x² + ${8*b}x·${V0}/(3x²) = ${3*a}x² + ${fmt(8*b*V0/3)}/x</span>.`},
+      {t:"Deriva término por término", b:`Derivada de <b>${3*a}x²</b> es <b>${6*a}x</b>. Derivada de <b>${fmt(8*b*V0/3)}/x</b> (regla c/x) es <b>-${fmt(8*b*V0/3)}/x²</b>.<br><span class="math">C'(x) = ${6*a}x - ${fmt(8*b*V0/3)}/x²</span>.`},
+      {t:"Iguala a cero y despeja x", b:`<span class="math">${6*a}x = ${fmt(8*b*V0/3)}/x²</span>  →  <span class="math">x³ = ${fmt(8*b*V0/3)}/${6*a} = ${fmt((8*b*V0/3)/(6*a))}</span>  →  <span class="math">x = ∛${fmt((8*b*V0/3)/(6*a))} = ${fmt(x)}</span> m.`},
+      {t:"Verifica con la segunda derivada", b:`<span class="math">C''(x) = ${6*a} + ${fmt(16*b*V0/3)}/x³</span>, que con valores positivos siempre da un número <b>positivo</b> (${fmt(segunda)}). Como C''(x₀)&gt;0, confirmamos que es un <b>mínimo</b> (justo lo que buscábamos: costo mínimo).`},
+      {t:"Reemplaza para hallar y y el costo mínimo", b:`<span class="math">y = ${V0}/(3·${fmt(x*x)}) = ${fmt(y)}</span> m. <span class="math">C = ${3*a}(${fmt(x*x)}) + ${8*b}(${fmt(x)})(${fmt(y)}) = ${fmt(Cmin)}</span> pesos.`},
+    ],
+    manualNote:"Este es el problema 'Recipiente de costo mínimo' de tu PDF — aquí SIEMPRE hay que verificar con la 2ª derivada que sea mínimo (no máximo), porque el objetivo es minimizar costos.",
+    steps:[
+      {code:`f(x) = ${V0}/(3x^2)`, res:`(y despejada del volumen)`},
+      {code:`g(x) = ${3*a}x^2 + ${8*b}x·f(x)`, res:`(costo total C(x))`},
+      {code:`A = Extremo(g)`, res:`= (${fmt(x)} , ${fmt(Cmin)})`},
+      {code:`g''(x(A))`, res:`= ${fmt(segunda)}  (positivo → confirma mínimo)`},
+      {code:`f(x(A))`, res:`= ${fmt(y)}  (valor de y)`},
+    ],
+    note:"Costo = (costo m² base)(área base) + (costo m² lateral)(área lateral). El área lateral aquí es 8xy porque la base es x·3x, no x·x."
+  };
+},
+
+
+// 14. RECIPIENTE CON TAPA (volumen fijo, área total mínima × precio por m²)
+function recipienteAreaMinima(){
+  const V0 = rndOf([20,24,28,31,36,40]);
+  const precio = rndOf([1800,2200,2500,2900,3200]);
+  const x = Math.cbrt((3*V0)/4);
+  const y = V0/(2*x*x);
+  const Amin = 2*x*x + (3*V0)/x;
+  const Cmin = Amin*precio;
+  const segunda = 4 + (6*V0)/Math.pow(x,3);
+  return {
+    tag:"ÁREA MÍNIMA → COSTO MÍNIMO · RECIPIENTE 2x·x",
+    statement:`Se desea construir un recipiente rectangular (base 2x · x, altura y) con volumen fijo de <b>${V0} m³</b>. El material (incluye base y las 4 caras, todo al mismo precio) cuesta $${fmt(precio)} el m². Encuentra x, y, el área mínima necesaria y el costo mínimo del recipiente.`,
+    fields:[
+      {key:'x',label:'Valor de x (m)',ans:x},
+      {key:'y',label:'Valor de y (m)',ans:y},
+      {key:'A',label:'Área mínima (m²)',ans:Amin},
+      {key:'C',label:'Costo mínimo ($)',ans:Cmin},
+    ],
+    manual:[
+      {t:"Plantea el volumen y despeja y", b:`Base 2x·x, altura y: <span class="math">V = 2x²y = ${V0}</span>  →  <span class="math">y = ${V0}/(2x²)</span>.`},
+      {t:"Plantea el área total a cubrir con material", b:`Área = base (2x²) + 4 caras laterales: dos de 2x·y (4xy en total) y dos de x·y (2xy en total) → lateral = 6xy. <span class="math">A = 2x² + 6xy</span>.`},
+      {t:"Sustituye y para tener A en función de x", b:`<span class="math">A(x) = 2x² + 6x·${V0}/(2x²) = 2x² + ${fmt(3*V0)}/x</span>.`},
+      {t:"Deriva término por término", b:`Derivada de <b>2x²</b> es <b>4x</b>. Derivada de <b>${fmt(3*V0)}/x</b> (regla c/x) es <b>-${fmt(3*V0)}/x²</b>.<br><span class="math">A'(x) = 4x - ${fmt(3*V0)}/x²</span>.`},
+      {t:"Iguala a cero y despeja x", b:`<span class="math">4x = ${fmt(3*V0)}/x²</span>  →  <span class="math">x³ = ${fmt(3*V0)}/4 = ${fmt(3*V0/4)}</span>  →  <span class="math">x = ∛${fmt(3*V0/4)} = ${fmt(x)}</span> m.`},
+      {t:"Verifica con la segunda derivada", b:`<span class="math">A''(x) = 4 + ${fmt(6*V0)}/x³</span>, que con valores positivos siempre da <b>positivo</b> (${fmt(segunda)}). Como A''(x₀)&gt;0, confirmamos un <b>mínimo</b>.`},
+      {t:"Reemplaza para hallar y y el área mínima", b:`<span class="math">y = ${V0}/(2·${fmt(x*x)}) = ${fmt(y)}</span> m. <span class="math">A = 2(${fmt(x*x)}) + ${fmt(3*V0)}/${fmt(x)} = ${fmt(Amin)}</span> m².`},
+      {t:"Calcula el costo mínimo", b:`Multiplica el área mínima por el precio del m²: <span class="math">C = ${fmt(Amin)} × ${fmt(precio)} = ${fmt(Cmin)}</span> pesos.`},
+    ],
+    manualNote:"Este problema es distinto al 'recipiente de costo mínimo' anterior: aquí TODO el material cuesta lo mismo por m² (no hay precio distinto para base y caras), así que primero minimizas el ÁREA total y luego simplemente la multiplicas por el precio único.",
+    steps:[
+      {code:`f(x) = ${V0}/(2x^2)`, res:`(y despejada del volumen)`},
+      {code:`g(x) = 2x^2 + 6x·f(x)`, res:`(área total A(x))`},
+      {code:`A = Extremo(g)`, res:`= (${fmt(x)} , ${fmt(Amin)})`},
+      {code:`g''(x(A))`, res:`= ${fmt(segunda)}  (positivo → confirma mínimo)`},
+      {code:`f(x(A))`, res:`= ${fmt(y)}  (valor de y)`},
+      {code:`y(A) * ${precio}`, res:`= ${fmt(Cmin)}  (costo mínimo, área × precio)`},
+    ],
+    note:"Primero minimiza el ÁREA con Extremo(g). El costo mínimo se obtiene multiplicando esa área mínima por el precio del m² — ese último paso ya no es de GeoGebra, es una simple multiplicación."
+  };
+},
+
 ];
 
 const TITLES = [
@@ -596,6 +762,10 @@ const TITLES = [
  "8. Herencia (parcelas iguales)",
  "9. Casa y patio",
  "10. Utilidad con raíz cuadrada",
+ "11. Terreno cercado completo (4 lados)",
+ "12. Utilidad con logaritmo natural",
+ "13. Recipiente de costo mínimo (base x·3x)",
+ "14. Recipiente con tapa (área → costo mínimo)",
 ];
 
 /* ---------- estado del juego ---------- */
