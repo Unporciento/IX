@@ -3,1571 +3,1235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GeoGebra · Optimización INACAP</title>
+<title>Optimización · Guía GeoGebra</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
-:root {
-  --ink: #0a0a0f;
-  --paper: #f5f2eb;
-  --cream: #ede9df;
-  --rule: #d4cfc4;
-  --accent: #c84b2f;
-  --accent2: #2d6a4f;
-  --accent3: #1a4080;
-  --gold: #b8860b;
-  --muted: #7a7060;
-  --ggb-bg: #1a1a2e;
-  --ggb-border: #e94560;
-  --ggb-blue: #0f3460;
-  --ggb-accent: #16213e;
-  --ggb-text: #e0e0e0;
-  --ggb-green: #4ecca3;
-  --ggb-yellow: #ffd369;
+:root{
+  --bg:#101314;
+  --panel:#171b1d;
+  --panel2:#1d2224;
+  --line:#2a3032;
+  --paper:#f6f3ec;
+  --ink:#13151a;
+  --chalk:#cfd6d4;
+  --dim:#7e8a8a;
+  --signal:#ffb255;
+  --go:#5ec9a0;
+  --bad:#e8694f;
+  --wire:#5ba3c9;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: 'Space Grotesk', sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ── HEADER ── */
-.masthead {
-  background: var(--ink);
-  color: var(--paper);
-  padding: 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 3px solid var(--accent);
-}
-.masthead-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 28px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-.masthead-logo {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-.masthead-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-.masthead-sub {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.65rem;
-  color: #888;
-  letter-spacing: 0.1em;
+body{
+  background:var(--bg);
+  color:var(--chalk);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
 }
 
-/* ── TABS ── */
-.tab-bar {
-  background: var(--ink);
-  display: flex;
-  gap: 0;
-  padding: 0 28px;
-  max-width: 1200px;
-  margin: 0 auto;
-  border-top: 1px solid #222;
+/* ============ HEADER ============ */
+.top{
+  position:sticky; top:0; z-index:50;
+  background:var(--bg);
+  border-bottom:1px solid var(--line);
 }
-.tab-btn {
-  background: none;
-  border: none;
-  color: #666;
-  font-family: 'Space Mono', monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  transition: all 0.2s;
+.top-inner{
+  max-width:980px; margin:0 auto;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 22px;
 }
-.tab-btn:hover { color: #aaa; }
-.tab-btn.active {
-  color: var(--paper);
-  border-bottom-color: var(--accent);
+.brand{
+  display:flex; align-items:baseline; gap:10px;
+}
+.brand-mark{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:0.62rem; letter-spacing:0.22em;
+  color:var(--signal); text-transform:uppercase;
+}
+.brand-name{
+  font-family:'Fraunces',serif; font-size:1.15rem; font-weight:600;
+  color:var(--paper);
+}
+.modeswitch{ display:flex; gap:2px; background:var(--panel); border:1px solid var(--line); border-radius:7px; padding:3px; }
+.modeswitch button{
+  font-family:'IBM Plex Mono',monospace; font-size:0.66rem; letter-spacing:0.08em;
+  text-transform:uppercase; background:none; border:none; color:var(--dim);
+  padding:7px 13px; border-radius:5px; cursor:pointer; transition:.15s;
+}
+.modeswitch button.on{ background:var(--signal); color:#1a1306; font-weight:600; }
+
+.wrap{ max-width:980px; margin:0 auto; padding:28px 22px 90px; }
+
+/* ============ VIEWS ============ */
+.view{ display:none; }
+.view.active{ display:block; }
+
+/* ============ INTRO ============ */
+.intro{
+  background:linear-gradient(160deg,#1c2120,#14171a);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:30px 30px 26px;
+  margin-bottom:26px;
+  position:relative;
+  overflow:hidden;
+}
+.intro::after{
+  content:'f(x)';
+  position:absolute; right:18px; top:8px;
+  font-family:'Fraunces',serif; font-size:5.5rem; font-weight:600;
+  color:rgba(255,178,85,0.045);
+  pointer-events:none;
+}
+.intro-eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:0.64rem; letter-spacing:0.25em; color:var(--signal); text-transform:uppercase; margin-bottom:10px; }
+.intro h1{ font-family:'Fraunces',serif; font-size:1.85rem; color:var(--paper); font-weight:600; line-height:1.15; margin-bottom:10px; max-width:520px;}
+.intro p{ color:var(--dim); font-size:0.88rem; line-height:1.6; max-width:480px; }
+
+.recipe{
+  display:flex; gap:0; margin-top:20px; border-top:1px solid var(--line);
+}
+.recipe-step{ flex:1; padding:16px 16px 0; border-right:1px solid var(--line); }
+.recipe-step:last-child{ border-right:none; }
+.recipe-step b{ display:block; font-family:'IBM Plex Mono',monospace; font-size:0.64rem; letter-spacing:0.12em; color:var(--signal); text-transform:uppercase; margin-bottom:5px;}
+.recipe-step span{ font-size:0.78rem; color:var(--chalk); line-height:1.5; }
+@media(max-width:700px){ .recipe{flex-direction:column;} .recipe-step{border-right:none;border-bottom:1px solid var(--line); padding-bottom:14px;} }
+
+/* ============ MENU GRID ============ */
+.grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:18px 20px;
+  cursor:pointer;
+  transition:.15s;
+}
+.card:hover{ border-color:var(--signal); background:var(--panel2); }
+.card-tag{ font-family:'IBM Plex Mono',monospace; font-size:0.6rem; letter-spacing:0.14em; color:var(--wire); text-transform:uppercase; margin-bottom:7px;}
+.card-title{ font-family:'Fraunces',serif; font-size:1.05rem; color:var(--paper); font-weight:600; margin-bottom:5px;}
+.card-sub{ font-size:0.76rem; color:var(--dim); }
+.card.full{ grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(120deg,#2a1f14,#1d1812); border-color:#3d2f1a; }
+.card.full:hover{ border-color:var(--signal); }
+.card.full .card-tag{ color:var(--signal); }
+.card.full .arrow{ font-family:'IBM Plex Mono',monospace; font-size:1.3rem; color:var(--signal); }
+
+.sectiontitle{
+  font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.22em;
+  color:var(--dim); text-transform:uppercase;
+  margin:30px 0 12px; padding-bottom:9px; border-bottom:1px solid var(--line);
 }
 
-/* ── LAYOUT ── */
-.main-wrap {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 32px 28px 80px;
+/* ============ PROBLEM VIEW ============ */
+.pb-head{ display:flex; align-items:center; gap:14px; margin-bottom:6px; }
+.pb-back{ font-family:'IBM Plex Mono',monospace; font-size:0.66rem; letter-spacing:0.08em; color:var(--dim); background:none; border:1px solid var(--line); border-radius:6px; padding:6px 12px; cursor:pointer; }
+.pb-back:hover{ color:var(--paper); border-color:var(--dim); }
+.pb-tag{ font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.14em; color:var(--wire); text-transform:uppercase; }
+.pb-title{ font-family:'Fraunces',serif; font-size:1.6rem; color:var(--paper); font-weight:600; margin:8px 0 4px;}
+.pb-pts{ font-size:0.78rem; color:var(--dim); margin-bottom:18px;}
+
+.statement, .qz-statement{
+  background:var(--paper); color:var(--ink);
+  border-radius:10px; padding:20px 22px;
+  font-size:0.92rem; line-height:1.65;
+  margin-bottom:22px;
+}
+.statement b, .qz-statement b{ color:#8a3a1f; }
+.statement img, .qz-statement img{ max-width:100%; }
+.statement .fig, .qz-statement .fig{
+  background:#eae5d8; border:1px solid #d8d2c2; border-radius:6px;
+  padding:14px; margin:12px 0; font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:#444; text-align:center; white-space:pre;
 }
 
-/* ── SECTION VIEWS ── */
-.view { display: none; }
-.view.active { display: block; }
+/* progress dots for letters */
+.letterbar{ display:flex; gap:6px; margin-bottom:20px; flex-wrap:wrap; }
+.letterdot{
+  font-family:'IBM Plex Mono',monospace; font-size:0.7rem; font-weight:600;
+  width:30px; height:30px; border-radius:7px; border:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center; color:var(--dim);
+  background:var(--panel); cursor:pointer; transition:.15s;
+}
+.letterdot.active{ background:var(--signal); color:#1a1306; border-color:var(--signal); }
+.letterdot.done{ background:var(--go); color:#0a1f15; border-color:var(--go); }
 
-/* ── HERO BANNER ── */
-.hero {
-  background: var(--ink);
-  color: var(--paper);
-  padding: 48px 40px;
-  margin-bottom: 32px;
-  position: relative;
-  overflow: hidden;
+/* ============ LETTER BLOCK ============ */
+.letter-block{
+  background:var(--panel); border:1px solid var(--line); border-radius:12px;
+  margin-bottom:16px; overflow:hidden;
 }
-.hero::before {
-  content: 'OPTIMIZACIÓN';
-  position: absolute;
-  right: -10px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-family: 'Space Mono', monospace;
-  font-size: 5rem;
-  font-weight: 700;
-  color: rgba(255,255,255,0.04);
-  white-space: nowrap;
-  pointer-events: none;
+.letter-block-head{
+  display:flex; align-items:center; gap:12px;
+  padding:14px 20px; background:var(--panel2); border-bottom:1px solid var(--line);
 }
-.hero-eyebrow {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 16px;
+.letter-badge{
+  font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:0.85rem;
+  width:30px; height:30px; border-radius:7px;
+  background:var(--signal); color:#1a1306;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
 }
-.hero h1 {
-  font-size: 2.4rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-  margin-bottom: 12px;
-}
-.hero p {
-  color: #888;
-  font-size: 0.9rem;
-  max-width: 500px;
-  line-height: 1.6;
-}
-.hero-divider {
-  width: 60px;
-  height: 3px;
-  background: var(--accent);
-  margin: 20px 0;
-}
+.letter-q{ font-size:0.92rem; color:var(--paper); font-weight:600; }
+.letter-body{ padding:18px 20px 20px; }
 
-/* ── MENU GRID ── */
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  margin-top: 24px;
+.ggb-line{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  background:#0d2230; border:1px solid #1d3a4d; border-radius:8px;
+  padding:11px 14px; margin-bottom:10px;
 }
-.menu-card {
-  background: white;
-  border: 1.5px solid var(--rule);
-  padding: 20px 22px;
-  cursor: pointer;
-  transition: all 0.15s;
-  position: relative;
+.ggb-line .lbl{ font-family:'IBM Plex Mono',monospace; font-size:0.6rem; color:var(--wire); text-transform:uppercase; letter-spacing:0.1em; flex-shrink:0; width:62px;}
+.ggb-line .code{
+  font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:0.92rem;
+  background:#fff; color:#0d2230; padding:6px 11px; border-radius:5px;
+  letter-spacing:0.01em;
 }
-.menu-card::after {
-  content: '→';
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--rule);
-  font-size: 1.2rem;
-  transition: all 0.15s;
+.ggb-line .arrowres{ font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--go); margin-left:auto; }
+.copybtn{
+  font-family:'IBM Plex Mono',monospace; font-size:0.6rem; letter-spacing:0.08em;
+  background:none; border:1px solid #2a4a5c; color:var(--wire); border-radius:5px;
+  padding:5px 9px; cursor:pointer; text-transform:uppercase; flex-shrink:0;
 }
-.menu-card:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 4px 4px 0 var(--accent);
-}
-.menu-card:hover::after {
-  color: var(--accent);
-  right: 16px;
-}
-.menu-card-num {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-.menu-card-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-.menu-card-sub {
-  font-size: 0.78rem;
-  color: var(--muted);
-  margin-top: 4px;
-}
-.menu-card.survival {
-  background: var(--ink);
-  color: var(--paper);
-  border-color: var(--accent);
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 22px 28px;
-}
-.menu-card.survival::after { color: var(--accent); }
-.menu-card.survival:hover {
-  box-shadow: 4px 4px 0 var(--accent);
-}
-.menu-card.survival .menu-card-num { color: var(--accent); }
-.menu-card.survival .menu-card-sub { color: #888; }
+.copybtn:hover{ background:#1d3a4d; }
 
-/* ── HUD ── */
-.hud {
-  display: none;
-  align-items: center;
-  gap: 24px;
-  background: var(--ink);
-  color: var(--paper);
-  padding: 12px 22px;
-  margin-bottom: 24px;
-  border-left: 4px solid var(--accent);
-}
-.hud.active { display: flex; }
-.hud-lives { display: flex; gap: 6px; }
-.hud-heart {
-  width: 12px; height: 12px;
-  background: var(--accent);
-  clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
-  transition: 0.3s;
-}
-.hud-heart.off { background: #333; }
-.hud-score { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #888; }
-.hud-score span { color: var(--paper); font-weight: 700; }
-.hud-back { margin-left: auto; background: none; border: 1px solid #444; color: #888; padding: 6px 14px; font-family: 'Space Mono', monospace; font-size: 0.65rem; cursor: pointer; letter-spacing: 0.1em; }
-.hud-back:hover { border-color: #888; color: var(--paper); }
+.why{ font-size:0.84rem; color:var(--chalk); line-height:1.6; margin:8px 0 14px; padding-left:2px; }
+.why b{ color:var(--signal); }
+.why .tip{ color:var(--dim); }
 
-/* ── PROBLEM CARD ── */
-#problemView { display: none; }
-#problemView.active { display: block; }
+.answerline{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  background:#101a14; border:1px solid #1f3a26; border-radius:8px;
+  padding:13px 16px; margin-top:6px;
+}
+.answerline .lbl2{ font-size:0.82rem; color:var(--dim); }
+.answerline .val{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:1.05rem; color:var(--go); }
+.answerline .unit{ font-size:0.78rem; color:var(--dim); }
+.answerline .copyans{
+  margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:0.6rem; letter-spacing:0.08em;
+  background:none; border:1px solid #2a5538; color:var(--go); border-radius:5px;
+  padding:5px 9px; cursor:pointer; text-transform:uppercase;
+}
+.answerline .copyans:hover{ background:#1a3322; }
 
-.prob-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
-  margin-bottom: 28px;
-}
-.prob-num {
-  font-family: 'Space Mono', monospace;
-  font-size: 3rem;
-  font-weight: 700;
-  color: var(--rule);
-  line-height: 1;
-  flex-shrink: 0;
-}
-.prob-meta {}
-.prob-tag {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 6px;
-}
-.prob-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 6px;
-}
-.prob-pts {
-  font-size: 0.78rem;
-  color: var(--muted);
+.note-box{
+  background:#2a1d10; border:1px solid #4a3318; border-radius:8px;
+  padding:12px 14px; font-size:0.82rem; color:var(--signal); line-height:1.55; margin-top:10px;
 }
 
-.prob-statement {
-  background: white;
-  border: 1.5px solid var(--rule);
-  border-left: 4px solid var(--accent3);
-  padding: 20px 24px;
-  font-size: 0.95rem;
-  line-height: 1.7;
-  margin-bottom: 24px;
+.nav-row{ display:flex; gap:10px; margin-top:24px; flex-wrap:wrap; }
+.btn{
+  font-family:'IBM Plex Mono',monospace; font-size:0.72rem; letter-spacing:0.08em;
+  text-transform:uppercase; padding:11px 20px; border-radius:8px; border:none;
+  cursor:pointer; transition:.15s; text-decoration:none; display:inline-flex; align-items:center; gap:6px;
 }
-.prob-statement b { color: var(--accent); }
+.btn-main{ background:var(--signal); color:#1a1306; font-weight:600; }
+.btn-main:hover{ filter:brightness(1.08); }
+.btn-ghost{ background:none; border:1px solid var(--line); color:var(--chalk); }
+.btn-ghost:hover{ border-color:var(--dim); }
+.btn-ggb{ background:var(--wire); color:#06131c; font-weight:600; }
+.btn-ggb:hover{ filter:brightness(1.1); }
 
-/* ── TWO COLUMN LAYOUT ── */
-.two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 24px;
+/* ============ SURVIVAL MODE ============ */
+.hud{
+  display:none; align-items:center; gap:18px;
+  background:var(--panel); border:1px solid var(--line); border-radius:10px;
+  padding:11px 18px; margin-bottom:20px;
 }
-@media(max-width: 720px){ .two-col { grid-template-columns: 1fr; } }
+.hud.active{ display:flex; }
+.hud-hearts{ display:flex; gap:5px; }
+.heart{ width:11px; height:11px; background:var(--bad); clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%); }
+.heart.off{ background:#333; }
+.hud-score{ font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--dim); }
+.hud-score b{ color:var(--paper); }
+.hud-exit{ margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:0.64rem; background:none; border:1px solid var(--line); color:var(--dim); padding:6px 12px; border-radius:6px; cursor:pointer; }
 
-/* ── STEPS PANEL ── */
-.panel {
-  border: 1.5px solid var(--rule);
-  background: white;
-}
-.panel-header {
-  background: var(--ink);
-  color: var(--paper);
-  padding: 12px 18px;
-  font-family: 'Space Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.panel-header .ph-icon { color: var(--accent); }
-.panel-body { padding: 16px; }
 
-.step-item {
-  display: flex;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--cream);
+.qz-fields{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin-bottom:16px; }
+.qz-field{ display:flex; align-items:center; gap:12px; margin-bottom:11px; flex-wrap:wrap; }
+.qz-field label{ font-size:0.84rem; color:var(--chalk); min-width:230px; }
+.qz-field input{
+  font-family:'IBM Plex Mono',monospace; font-size:0.95rem; background:var(--bg);
+  border:1.5px solid var(--line); color:var(--paper); border-radius:6px; padding:8px 12px; width:130px; outline:none;
 }
-.step-item:last-child { border-bottom: none; }
-.step-n {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.65rem;
-  color: white;
-  background: var(--accent);
-  width: 20px; height: 20px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-.step-content {}
-.step-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 3px;
-}
-.step-body {
-  font-size: 0.85rem;
-  line-height: 1.6;
-  color: var(--ink);
-}
-.step-body b { color: var(--accent3); }
-.math-inline {
-  font-family: 'Space Mono', monospace;
-  background: var(--cream);
-  padding: 2px 6px;
-  font-size: 0.85em;
-  border-radius: 2px;
-}
+.qz-field input:focus{ border-color:var(--wire); }
+.qz-field input.ok{ border-color:var(--go); background:#0e1c14; }
+.qz-field input.bad{ border-color:var(--bad); background:#241211; }
+.qz-unit{ font-size:0.78rem; color:var(--dim); }
+.qz-feedback{ display:none; padding:13px 16px; border-radius:8px; font-size:0.85rem; margin-top:10px; }
+.qz-feedback.ok{ background:#0e1c14; border:1px solid #1f3a26; color:var(--go); }
+.qz-feedback.bad{ background:#241211; border:1px solid #4a2520; color:var(--bad); }
 
-/* ── GGB PANEL ── */
-.ggb-panel {
-  background: var(--ggb-bg);
-  border: 1.5px solid var(--ggb-border);
-}
-.ggb-panel .panel-header {
-  background: var(--ggb-blue);
-  border-bottom: 1px solid var(--ggb-border);
-}
-.ggb-panel .panel-body { padding: 14px; }
+.endcard{ display:none; text-align:center; padding:60px 20px; }
+.endcard.active{ display:block; }
+.endcard .big{ font-family:'Fraunces',serif; font-size:4rem; color:var(--paper); font-weight:600; }
+.endcard p{ color:var(--dim); margin:14px 0 26px; font-size:0.95rem; }
 
-.ggb-step {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 6px;
-  padding: 12px 14px;
-  margin-bottom: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.ggb-step:last-child { margin-bottom: 0; }
-.ggb-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.ggb-n {
-  background: var(--ggb-border);
-  color: white;
-  font-family: 'Space Mono', monospace;
-  font-size: 0.65rem;
-  font-weight: 700;
-  width: 22px; height: 22px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  border-radius: 2px;
-}
-.ggb-typebox {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.88rem;
-  font-weight: 700;
-  background: white;
-  color: var(--ggb-bg);
-  padding: 5px 10px;
-  border-radius: 4px;
-  letter-spacing: 0;
-}
-.ggb-result {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.78rem;
-  color: var(--ggb-green);
-  margin-left: auto;
-}
-.ggb-why {
-  font-size: 0.78rem;
-  color: #888;
-  line-height: 1.5;
-  padding-left: 32px;
-}
-.ggb-note {
-  background: rgba(255,211,105,0.08);
-  border: 1px solid rgba(255,211,105,0.2);
-  border-radius: 4px;
-  padding: 10px 12px;
-  font-size: 0.78rem;
-  color: var(--ggb-yellow);
-  line-height: 1.5;
-  margin-top: 8px;
-}
-
-/* ── ANSWER INPUTS ── */
-.answer-zone {
-  background: white;
-  border: 1.5px solid var(--rule);
-  padding: 22px 24px;
-  margin-bottom: 20px;
-}
-.answer-zone-title {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--cream);
-}
-.field-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-.field-label {
-  font-size: 0.85rem;
-  color: var(--muted);
-  min-width: 200px;
-  flex-shrink: 0;
-}
-.field-label b { color: var(--ink); }
-.field-input {
-  font-family: 'Space Mono', monospace;
-  font-size: 1rem;
-  border: 2px solid var(--rule);
-  background: var(--paper);
-  color: var(--ink);
-  padding: 8px 14px;
-  width: 130px;
-  transition: border-color 0.15s;
-  outline: none;
-}
-.field-input:focus { border-color: var(--accent3); }
-.field-input.ok { border-color: var(--accent2); background: #f0fff4; }
-.field-input.bad { border-color: var(--accent); background: #fff5f5; }
-
-.actions-row {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-.btn {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 11px 22px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-decoration: none;
-  display: inline-block;
-}
-.btn-primary {
-  background: var(--ink);
-  color: var(--paper);
-}
-.btn-primary:hover {
-  background: var(--accent);
-}
-.btn-secondary {
-  background: transparent;
-  color: var(--ink);
-  border: 2px solid var(--rule);
-}
-.btn-secondary:hover {
-  border-color: var(--ink);
-}
-.btn-ggb {
-  background: var(--ggb-blue);
-  color: var(--paper);
-}
-.btn-ggb:hover { background: var(--ggb-border); }
-
-.feedback-box {
-  padding: 14px 18px;
-  border-left: 4px solid;
-  margin-top: 12px;
-  font-size: 0.9rem;
-  display: none;
-}
-.feedback-box.ok { border-color: var(--accent2); background: #f0fff4; color: var(--accent2); }
-.feedback-box.bad { border-color: var(--accent); background: #fff5f5; color: var(--accent); }
-
-/* ── END SCREEN ── */
-.end-screen {
-  display: none;
-  text-align: center;
-  padding: 80px 40px;
-}
-.end-screen.active { display: block; }
-.end-big {
-  font-size: 5rem;
-  font-family: 'Space Mono', monospace;
-  font-weight: 700;
-  color: var(--rule);
-  line-height: 1;
-}
-.end-label {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 8px;
-}
-.end-msg { font-size: 1.1rem; color: var(--muted); margin: 16px 0 32px; }
-
-/* ── CHULETA ── */
-.cheat-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-@media(max-width: 720px) { .cheat-grid { grid-template-columns: 1fr; } }
-
-.cheat-section {
-  background: white;
-  border: 1.5px solid var(--rule);
-}
-.cheat-section-header {
-  background: var(--ink);
-  color: var(--paper);
-  padding: 10px 16px;
-  font-family: 'Space Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-.cheat-section-header span { color: var(--accent); margin-right: 8px; }
-.cheat-section-body { padding: 14px 16px; }
-
-.cheat-rule {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 7px 0;
-  border-bottom: 1px solid var(--cream);
-  gap: 12px;
-}
-.cheat-rule:last-child { border-bottom: none; }
-.cheat-fn {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.8rem;
-  color: var(--accent3);
-}
-.cheat-der {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.8rem;
-  color: var(--accent2);
-  font-weight: 700;
-}
-
-.cheat-type-card {
-  background: white;
-  border: 1.5px solid var(--rule);
-  margin-bottom: 14px;
-  break-inside: avoid;
-}
-.ctc-header {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  border-bottom: 1px solid var(--cream);
-}
-.ctc-num {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.65rem;
-  font-weight: 700;
-  background: var(--accent);
-  color: white;
-  padding: 10px 14px;
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-}
-.ctc-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 10px 14px;
-  color: var(--ink);
-}
-.ctc-body {
-  padding: 12px 16px;
-  font-size: 0.82rem;
-  line-height: 1.7;
-  color: var(--muted);
-}
-.ctc-code {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.76rem;
-  background: var(--cream);
-  border: 1px solid var(--rule);
-  padding: 10px 12px;
-  margin-top: 8px;
-  line-height: 1.8;
-  color: var(--ink);
-  white-space: pre;
-  overflow-x: auto;
-}
-.ctc-warn {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.72rem;
-  color: var(--accent);
-  margin-top: 8px;
-  padding: 6px 10px;
-  background: #fff5f5;
-  border-left: 3px solid var(--accent);
-}
-
-.method-box {
-  background: white;
-  border: 1.5px solid var(--rule);
-  border-left: 4px solid var(--accent3);
-  padding: 22px 24px;
-  margin-bottom: 28px;
-}
-.method-title {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent3);
-  margin-bottom: 14px;
-}
-.method-steps {
-  display: flex;
-  gap: 0;
-  counter-reset: mstep;
-}
-@media(max-width:600px){ .method-steps { flex-direction: column; } }
-.method-step {
-  flex: 1;
-  padding: 14px 18px;
-  border-right: 1px solid var(--cream);
-  counter-increment: mstep;
-  position: relative;
-}
-.method-step:last-child { border-right: none; }
-.method-step::before {
-  content: counter(mstep);
-  font-family: 'Space Mono', monospace;
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--cream);
-  display: block;
-  line-height: 1;
-  margin-bottom: 8px;
-}
-.method-step p {
-  font-size: 0.82rem;
-  line-height: 1.5;
-  color: var(--ink);
-}
-.method-step p b { color: var(--accent3); }
-.method-step p em { color: var(--accent); font-style: normal; font-weight: 600; }
-
-.errors-box {
-  background: #fff5f5;
-  border: 1.5px solid var(--accent);
-  border-left: 4px solid var(--accent);
-  padding: 20px 24px;
-  margin-top: 28px;
-}
-.errors-title {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 14px;
-}
-.error-item {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-  font-size: 0.85rem;
-  line-height: 1.5;
-}
-.error-item::before { content: '✕'; color: var(--accent); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
-.error-item:last-child { margin-bottom: 0; }
-
-/* SCROLLBAR */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--cream); }
-::-webkit-scrollbar-thumb { background: var(--rule); }
-
-/* RESPONSIVE */
-@media(max-width: 600px) {
-  .masthead-inner { padding: 10px 16px; }
-  .main-wrap { padding: 20px 16px 60px; }
-  .hero { padding: 30px 20px; }
-  .hero h1 { font-size: 1.7rem; }
-  .tab-bar { padding: 0 16px; overflow-x: auto; }
-}
-
-.section-label {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 18px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--rule);
+@media(max-width:600px){
+  .top-inner{ padding:12px 16px; }
+  .wrap{ padding:18px 14px 70px; }
+  .intro{ padding:22px 20px; }
+  .intro h1{ font-size:1.5rem; }
+  .qz-field label{ min-width:0; width:100%; }
 }
 </style>
 </head>
 <body>
 
-<div class="masthead">
-  <div class="masthead-inner">
-    <div class="masthead-logo">INACAP · 2026</div>
-    <div style="text-align:center">
-      <div class="masthead-title">GeoGebra · Optimización</div>
-      <div class="masthead-sub">Actividad Formativa Online — 10 Preguntas</div>
+<div class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <span class="brand-mark">INACAP · AAI</span>
+      <span class="brand-name">Optimización</span>
     </div>
-    <div style="text-align:right; font-family:'Space Mono',monospace; font-size:0.65rem; color:#888;">
-      AAI
-    </div>
-  </div>
-  <div style="max-width:1200px; margin:0 auto;">
-    <div class="tab-bar">
-      <button class="tab-btn active" onclick="showTab('menu')">Ejercicios</button>
-      <button class="tab-btn" onclick="showTab('chuleta')">Chuleta</button>
+    <div class="modeswitch">
+      <button id="btnGuia" class="on" onclick="goMode('guia')">Guía</button>
+      <button id="btnJuego" onclick="goMode('juego')">Juego</button>
     </div>
   </div>
 </div>
 
-<div class="main-wrap">
+<div class="wrap">
 
-  <!-- ═══ TAB: MENU ═══ -->
-  <div id="tab-menu" class="view active">
+  <!-- ============ MODO GUÍA ============ -->
+  <div id="view-guia" class="view active">
 
-    <!-- HUD supervivencia -->
-    <div class="hud" id="hud">
-      <div class="hud-lives" id="lives"></div>
-      <div class="hud-score">Puntos: <span id="score">0</span></div>
-      <button class="hud-back" onclick="backToMenu()">← Menú</button>
-    </div>
-
-    <!-- MENU principal -->
-    <div id="menuSection">
-      <div class="hero">
-        <div class="hero-eyebrow">Modo Estudio</div>
-        <h1>Practica cada<br>tipo de problema</h1>
-        <div class="hero-divider"></div>
-        <p>Cada ejercicio muestra exactamente qué escribir en GeoGebra, paso a paso. Idéntico al examen real.</p>
-      </div>
-
-      <div class="section-label">Selecciona un ejercicio o activa el modo supervivencia</div>
-      <div class="menu-grid" id="menuGrid"></div>
-    </div>
-
-    <!-- PROBLEMA -->
-    <div id="problemView">
-      <div class="prob-header">
-        <div class="prob-num" id="probNum">01</div>
-        <div class="prob-meta">
-          <div class="prob-tag" id="probTag">TIPO 1</div>
-          <div class="prob-title" id="probTitle">El Granjero</div>
-          <div class="prob-pts" id="probPts">20 puntos</div>
+    <div id="guia-menu">
+      <div class="intro">
+        <div class="intro-eyebrow">Modo Guía</div>
+        <h1>Qué escribir en GeoGebra, en orden, para cada pregunta.</h1>
+        <p>Elige una pregunta. Te muestro exactamente qué comando escribir en la barra de entrada, qué te va a aparecer, y en qué casillero del examen va cada número. Los números de cada pregunta son distintos a los de tu examen — la estructura es la misma, así que sigues los mismos pasos con tus propios números.</p>
+        <div class="recipe">
+          <div class="recipe-step"><b>1 · Restricción</b><span>El dato fijo (perímetro, área, volumen). Se despeja una variable: <i>f(x)</i></span></div>
+          <div class="recipe-step"><b>2 · Objetivo</b><span>Lo que quieres maximizar o minimizar, usando f(x): <i>g(x)</i></span></div>
+          <div class="recipe-step"><b>3 · Extremo</b><span>Escribes <i>Extremo(g)</i> y aparece el punto con la respuesta</span></div>
+          <div class="recipe-step"><b>4 · La otra variable</b><span>Si falta, escribes <i>f(x(A))</i> para obtenerla</span></div>
         </div>
       </div>
 
-      <div class="prob-statement" id="probStatement"></div>
+      <div class="sectiontitle">Las 10 preguntas del examen</div>
+      <div class="grid" id="guiaGrid"></div>
+    </div>
 
-      <div class="answer-zone">
-        <div class="answer-zone-title">✎ Tus respuestas</div>
-        <div id="fields"></div>
-        <div class="actions-row">
-          <button class="btn btn-primary" onclick="verify()">Verificar</button>
-          <a href="https://www.geogebra.org/classic" target="_blank" class="btn btn-ggb">Abrir GeoGebra ↗</a>
-          <button class="btn btn-secondary" onclick="nextProblem()" id="nextBtn">Siguiente →</button>
-        </div>
-        <div class="feedback-box" id="feedback"></div>
+    <div id="guia-problem" style="display:none;"></div>
+
+  </div>
+
+  <!-- ============ MODO JUEGO ============ -->
+  <div id="view-juego" class="view">
+
+    <div id="juego-menu">
+      <div class="intro">
+        <div class="intro-eyebrow">Modo Supervivencia</div>
+        <h1>Pon a prueba lo que aprendiste en la guía.</h1>
+        <p>3 vidas. Preguntas mezcladas con números nuevos cada vez. Si te equivocas, pierdes una vida — pero te muestro igual el camino correcto en GeoGebra para que no te quedes pegado.</p>
       </div>
-
-      <div class="two-col">
-        <div class="panel">
-          <div class="panel-header"><span class="ph-icon">✎</span> RESOLUCIÓN PASO A PASO</div>
-          <div class="panel-body" id="manualSteps"></div>
-        </div>
-        <div class="panel ggb-panel">
-          <div class="panel-header"><span class="ph-icon">▶</span> ESCRIBE EN GEOGEBRA (en orden)</div>
-          <div class="panel-body" id="ggbSteps"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- END SCREEN -->
-    <div class="end-screen" id="endScreen">
-      <div class="end-label">Fin del intento</div>
-      <div class="end-big" id="finalScore">0</div>
-      <p style="font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);margin-top:4px;">puntos</p>
-      <p class="end-msg">Se agotaron las vidas. ¡Repasa la chuleta y vuelve a intentarlo!</p>
-      <button class="btn btn-primary" onclick="backToMenu()">Volver al menú</button>
-    </div>
-
-  </div><!-- /tab-menu -->
-
-  <!-- ═══ TAB: CHULETA ═══ -->
-  <div id="tab-chuleta" class="view">
-
-    <div class="hero">
-      <div class="hero-eyebrow">Referencia Rápida</div>
-      <h1>La Chuleta<br>Completa</h1>
-      <div class="hero-divider"></div>
-      <p>Todo lo que necesitas recordar para el examen, en un solo lugar.</p>
-    </div>
-
-    <!-- MÉTODO UNIVERSAL -->
-    <div class="section-label">El método — siempre es el mismo</div>
-    <div class="method-box">
-      <div class="method-title">⬡ Los 4 pasos de GeoGebra</div>
-      <div class="method-steps">
-        <div class="method-step">
-          <p><b>Restricción</b><br>Escribe la condición fija (perímetro, volumen, área…) y despeja una variable → eso es <em>f(x)</em></p>
-        </div>
-        <div class="method-step">
-          <p><b>Objetivo</b><br>Escribe lo que quieres max/min, reemplazando la variable despejada → eso es <em>g(x)</em></p>
-        </div>
-        <div class="method-step">
-          <p><b>Extremo</b><br>Escribe <em>Extremo(g)</em> → da el punto A = (x óptimo, valor máximo/mínimo)</p>
-        </div>
-        <div class="method-step">
-          <p><b>Segunda variable</b><br>Si falta la otra variable escribe <em>f(x(A))</em> para obtenerla</p>
+      <div class="sectiontitle">Empezar</div>
+      <div class="grid">
+        <div class="card full" onclick="startSurvival()">
+          <div><div class="card-tag">⚔ Supervivencia</div><div class="card-title">Las 10 preguntas mezcladas</div><div class="card-sub">3 vidas · puntaje acumulado</div></div>
+          <div class="arrow">→</div>
         </div>
       </div>
+      <div class="sectiontitle">O practica una sola</div>
+      <div class="grid" id="juegoGrid"></div>
     </div>
 
-    <!-- DERIVADAS -->
-    <div class="section-label">Reglas de derivadas</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;">
-      <div class="cheat-section">
-        <div class="cheat-section-header"><span>d/dx</span> Reglas básicas</div>
-        <div class="cheat-section-body">
-          <div class="cheat-rule"><span class="cheat-fn">c (número solo)</span><span class="cheat-der">= 0</span></div>
-          <div class="cheat-rule"><span class="cheat-fn">c · x</span><span class="cheat-der">= c</span></div>
-          <div class="cheat-rule"><span class="cheat-fn">c · x²</span><span class="cheat-der">= 2c · x</span></div>
-          <div class="cheat-rule"><span class="cheat-fn">c · x³</span><span class="cheat-der">= 3c · x²</span></div>
-        </div>
+    <div id="juego-problem" style="display:none;">
+      <div class="hud" id="hud">
+        <div class="hud-hearts" id="lives"></div>
+        <div class="hud-score">Puntos: <b id="score">0</b></div>
+        <button class="hud-exit" onclick="exitSurvival()">Salir</button>
       </div>
-      <div class="cheat-section">
-        <div class="cheat-section-header"><span>d/dx</span> Funciones especiales</div>
-        <div class="cheat-section-body">
-          <div class="cheat-rule"><span class="cheat-fn">c / x</span><span class="cheat-der">= -c / x²</span></div>
-          <div class="cheat-rule"><span class="cheat-fn">√x</span><span class="cheat-der">= 1 / (2√x)</span></div>
-          <div class="cheat-rule"><span class="cheat-fn">ln(x)</span><span class="cheat-der">= 1 / x</span></div>
-          <div class="cheat-rule"><span class="cheat-fn">max/min</span><span class="cheat-der">f'(x) = 0</span></div>
-        </div>
-      </div>
+      <div id="juego-content"></div>
     </div>
 
-    <!-- TIPOS -->
-    <div class="section-label">Los 10 tipos de problemas del examen</div>
-    <div style="columns:2;column-gap:16px;" id="tiposContainer"></div>
-
-    <!-- ERRORES COMUNES -->
-    <div class="errors-box">
-      <div class="errors-title">⚠ Errores más comunes (léelos antes del examen)</div>
-      <div class="error-item">Confundir <b>2x + y</b> (un lado libre, río) con <b>2x + 2y</b> (4 lados, cercado completo)</div>
-      <div class="error-item">Asumir que la 1ª componente de Extremo() siempre es "x" — en Tipo 8 (Casa y Patio) es "y"</div>
-      <div class="error-item">En la caja cúbica (Tipo 3), Extremo(g) devuelve DOS puntos: elegir el que dé mayor volumen real</div>
-      <div class="error-item">En Tipo 12, el costo NO sale de Extremo(): primero minimizas el ÁREA, luego multiplicas × precio a mano</div>
-      <div class="error-item">En el cilindro, usar la variable "r" en f(r) y g(r), no "x"</div>
-      <div class="error-item">Olvidar redondear al entero más próximo en problemas con logaritmos o raíces (Tipos 10)</div>
+    <div class="endcard" id="endcard">
+      <div class="big" id="finalScore">0</div>
+      <p>puntos · se agotaron las vidas. Vuelve a la Guía para repasar el paso a paso y vuelve a intentarlo.</p>
+      <button class="btn btn-main" onclick="backJuegoMenu()">Volver al menú</button>
     </div>
 
-  </div><!-- /tab-chuleta -->
+  </div>
 
-</div><!-- /main-wrap -->
+</div>
 
 <script>
-/* ===================== UTILS ===================== */
-function rndOf(a){ return a[Math.floor(Math.random()*a.length)]; }
-function fmt(n){
-  if(!isFinite(n)) return '?';
-  if(Math.abs(n-Math.round(n))<1e-5) return Math.round(n).toString();
-  return (Math.round(n*100)/100).toFixed(2).replace('.',',');
-}
-function close(a,b){ return Math.abs(a-b)<=Math.max(0.06,Math.abs(b)*0.015); }
+/* =====================================================================
+   DATA.JS — Las 10 preguntas del examen, con números aleatorios
+   y guía letra-por-letra de qué escribir en GeoGebra.
+   Cada vez que se recarga la página, los números cambian,
+   pero la estructura (y por lo tanto, los pasos) es siempre la misma.
+   ===================================================================== */
 
-/* ===================== DATOS DEL EXAMEN ===================== */
+function fmt(n, dec){
+  dec = dec===undefined?2:dec;
+  if(!isFinite(n)) return '?';
+  if(Math.abs(n-Math.round(n))<1e-6) return Math.round(n).toString();
+  return n.toFixed(dec).replace('.',',');
+}
+function rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+/* Cada problema = { num, tag, title, pts, gen() }
+   gen() devuelve:
+     statement: HTML del enunciado con los números de esta corrida
+     letters: [ { id:'a', question:'...', ggb:[ {cmd, say, result} ], answer:{label,value,unit} } , ... ]
+     note: opcional, advertencia general
+     quiz: { fields:[{key,label,unit,ans,tol}], summary } -> usado en modo juego
+*/
 
 var PROBLEMS = [
 
-/* P1: EL GRANJERO — valores aleatorios de C */
+/* ============================================================
+   P1 — EL GRANJERO (río, 3 lados: 2x + y = C)
+   ============================================================ */
 {
-  num:'01', tag:'TIPO 1 · Río / 3 lados', title:'El Granjero', pts:'20 puntos',
-  gen: function(){
-    var C=rndOf([400,600,800,1000,1200]);
-    var x=C/4, y=C/2, A=x*y;
+  num:'01', tag:'Cercado junto a un río', title:'El Granjero', pts:'20 puntos',
+  gen:function(){
+    var C = rnd([300,400,500,600,800,1000]);
+    var x = C/4, y = C/2, A = x*y;
+    var statement =
+      'Un granjero tiene <b>'+C+' metros</b> de cerca y desea rodear una zona rectangular <b>A</b> que limita con un río recto, '+
+      'no necesitando cercar el lado que da al río. Los dos lados perpendiculares al río miden <b>x</b> cada uno, y el lado paralelo al río mide <b>y</b>.'+
+      '<div class="fig">río\n┌────────y────────┐\nx│        A        │x\n└──────────────────┘\n≈≈≈≈≈≈ río ≈≈≈≈≈≈≈≈≈</div>'+
+      'Si al cercar la zona rectangular A se debe obtener el área mayor posible, calcula x, y, y el área máxima.';
     return {
-      statement:'Un granjero tiene <b>'+C+' metros</b> de cerca y desea rodear una zona rectangular <b>A</b> que limita con un río recto, <b>no necesitando cercar</b> el lado que da al río. Los dos lados perpendiculares miden x y el lado paralelo al río mide y. Si al cercar la zona se debe obtener el área mayor posible, calcula x, y y el área máxima.',
-      fields:[
-        {key:'x',label:'El valor de x es',unit:'metros',ans:x},
-        {key:'y',label:'El valor de y es',unit:'metros',ans:y},
-        {key:'A',label:'Área máxima',unit:'m²',ans:A},
+      statement: statement,
+      letters:[
+        { id:'a', question:'Calcula el valor de x para que el área sea máxima.',
+          ggb:[
+            {cmd:'f(x)='+C+'-2x', say:'Esto sale de la restricción: como hay '+C+' metros de cerca en total y se reparten en 2 lados x y un lado y, entonces 2x+y='+C+'. Despejando y, queda y='+C+'-2x. <b>f(x)</b> representa ese lado y.'},
+            {cmd:'g(x)=x*f(x)', say:'El área del rectángulo es siempre (lado)×(lado) = x·y. Como ya tenemos y en función de x (que es f(x)), el área queda <b>g(x) = x·f(x)</b>.'},
+            {cmd:'Extremo(g)', say:'GeoGebra te muestra un punto, por ejemplo A=('+fmt(x)+', '+fmt(A)+'). La <b>primera coordenada</b> de ese punto es el valor de x que hace máxima el área.', result:'A=('+fmt(x)+', '+fmt(A)+')'},
+          ],
+          answer:{label:'El valor de x es', value:fmt(x), unit:'metros'} },
+        { id:'b', question:'Calcula el valor de y para que el área sea máxima.',
+          ggb:[
+            {cmd:'f(x(A))', say:'Como ya tienes el punto A del paso anterior, x(A) extrae la primera coordenada de A (el x óptimo) y se la mete a f. Eso te devuelve directamente el valor de y.', result:fmt(y)},
+          ],
+          answer:{label:'El valor de y es', value:fmt(y), unit:'metros'} },
+        { id:'c', question:'¿Cuál es esa área máxima?',
+          ggb:[
+            {cmd:'y(A)', say:'La <b>segunda coordenada</b> del punto A (que ya tienes de la letra a) es directamente el área máxima. No necesitas calcular nada más.', result:fmt(A)},
+          ],
+          answer:{label:'El área máxima es', value:fmt(A), unit:'m²'} },
       ],
-      manual:[
-        {t:'Restricción (3 lados)',b:'2x + y = '+C+'  →  y = '+C+' − 2x'},
-        {t:'Función a maximizar',b:'Área = x · y. Sustituimos y:  A(x) = x('+C+'−2x) = '+C+'x − 2x²'},
-        {t:'Derivamos e igualamos a 0',b:"A'(x) = "+C+" − 4x = 0  →  x = "+fmt(x)},
-        {t:'Calculamos y',b:'y = '+C+' − 2('+fmt(x)+') = '+fmt(y)},
-        {t:'Área máxima',b:'A = '+fmt(x)+' × '+fmt(y)+' = '+fmt(A)+' m²'},
-      ],
-      ggb:[
-        {type:'f(x)='+C+'-2x',say:'Esto es y, despejada de la restricción (lado paralelo al río).'},
-        {type:'g(x)=x*f(x)',say:'Esto es el Área en función de x.'},
-        {type:'Extremo(g)',say:'Aparece el punto A = ('+fmt(x)+', '+fmt(A)+'). La x óptima y el área máxima.',result:'A=('+fmt(x)+', '+fmt(A)+')'},
-        {type:'f(x(A))',say:'Te da el valor de y.',result:fmt(y)},
-      ]
+      note:'En este tipo de problema (un lado libre, sin cercar) la restricción siempre es <b>2x + y = (cerca total)</b>, nunca 2x+2y. Si el río se cercara también, ahí sí sería 2x+2y.',
+      quiz:{
+        fields:[
+          {key:'x',label:'El valor de x es',unit:'metros',ans:x},
+          {key:'y',label:'El valor de y es',unit:'metros',ans:y},
+          {key:'A',label:'Área máxima',unit:'m²',ans:A},
+        ]
+      }
     };
   }
 },
 
-/* P2: UTILIDAD MÁXIMA — Manza Pizza, valores aleatorios */
+/* ============================================================
+   P2 — UTILIDAD MÁXIMA (Manza-Pizza)
+   ============================================================ */
 {
-  num:'02', tag:'TIPO 2 · Utilidad = Ingreso − Costo', title:'Manza-Pizza · Utilidad Máxima', pts:'20 puntos',
-  gen: function(){
-    var p=rndOf([12000,15160,18000,20000]);
-    var a=rndOf([200,270,300,350]);
-    var b=rndOf([1500,1900,2200]);
-    var c=rndOf([15000,18000,22000]);
-    var x=(p-b)/(2*a);
-    var U=p*x-(a*x*x+b*x+c);
-    var x28=28;
-    var U28=p*x28-(a*x28*x28+b*x28+c);
+  num:'02', tag:'Utilidad = Ingreso − Costo', title:'Manza-Pizza · Utilidad Máxima', pts:'20 puntos',
+  gen:function(){
+    var p = rnd([12000,15160,18000,20000,22500]);
+    var a = rnd([200,225,270,300]);
+    var b = rnd([1500,1700,1900,2200]);
+    var c = rnd([15000,18000,20000,22000]);
+    var nventa = rnd([20,24,28,32]);
+    var x = (p-b)/(2*a);
+    var Un = function(xx){ return p*xx - (a*xx*xx+b*xx+c); };
+    var Uventa = Un(nventa);
+    var Umax = Un(x);
+    var statement =
+      'La pizzería <b>"MANZA-PIZZA"</b> vende su mejor creación en formato XXXL. Los ingresos y costos (en pesos) dependen de <b>x</b>, el número de pizzas que produce y vende:<br>'+
+      '<div class="fig">Ingreso o Venta:  '+p+' · x\nCosto:            '+c+' + '+b+'·x + '+a+'·x²</div>'+
+      'Si UTILIDAD = INGRESO − COSTO, responde lo siguiente.';
     return {
-      statement:'La pizzería <b>"MANZA-PIZZA"</b> vende pizzas XXXL. Ingreso: <b>I(x) = '+p+'x</b>. Costo: <b>C(x) = '+c+' + '+b+'x + '+a+'x²</b>, donde x es el número de pizzas. Con UTILIDAD = INGRESO − COSTO:<br><br>a) ¿Cuál es la expresión de I(x)? b) ¿Cuál es la expresión de C(x)? c) ¿Cuál es la utilidad si se venden 28 pizzas? d) ¿Cuántas pizzas dan utilidad máxima? f) ¿Cuál es esa utilidad máxima?',
-      fields:[
-        {key:'Ix',label:'I(x) =',unit:'(expresión)',ans:p+'x',text:true},
-        {key:'Cx',label:'C(x) =',unit:'(expresión)',ans:c+'+'+b+'x+'+a+'x^2',text:true},
-        {key:'U28',label:'Utilidad si venden 28 pizzas',unit:'pesos',ans:U28},
-        {key:'xopt',label:'Pizzas para utilidad máxima',unit:'pizzas',ans:x},
-        {key:'Umax',label:'Utilidad máxima',unit:'pesos',ans:U},
+      statement: statement,
+      letters:[
+        { id:'a', question:'¿Cuál es la expresión algebraica que modela el Ingreso o Venta I(x)?',
+          ggb:[
+            {cmd:'f(x)='+p+'x', say:'Tal cual aparece en la tabla del enunciado: el ingreso es '+p+' multiplicado por x. No hay que despejar nada, es directo.'},
+          ],
+          answer:{label:'I(x) =', value:p+'x', unit:'', isText:true} },
+        { id:'b', question:'¿Cuál es la expresión algebraica que modela el Costo C(x)?',
+          ggb:[
+            {cmd:'h(x)='+c+'+'+b+'x+'+a+'x^2', say:'También directo de la tabla: el costo fijo más '+b+' por cada pizza, más '+a+' por x al cuadrado. El símbolo ^ es para el exponente.'},
+          ],
+          answer:{label:'C(x) =', value:c+'+'+b+'x+'+a+'x^2', unit:'', isText:true} },
+        { id:'c', question:'¿Cuál es la utilidad si se venden '+nventa+' pizzas?',
+          ggb:[
+            {cmd:'g(x)=f(x)-h(x)', say:'La utilidad es ingreso menos costo, tal como dice el enunciado. Defínela una sola vez como g(x).'},
+            {cmd:'g('+nventa+')', say:'Para saber la utilidad con '+nventa+' pizzas, simplemente evalúas g en '+nventa+'. GeoGebra te entrega el número directo.', result:fmt(Uventa)},
+          ],
+          answer:{label:'La utilidad es', value:fmt(Uventa), unit:'pesos'} },
+        { id:'d', question:'¿Cuántas pizzas aproximadamente se deben vender para que la utilidad sea máxima?',
+          ggb:[
+            {cmd:'Extremo(g)', say:'GeoGebra muestra un punto, por ejemplo A=('+fmt(x)+', '+fmt(Umax)+'). La <b>primera coordenada</b> es la cantidad de pizzas que conviene vender.', result:'A=('+fmt(x)+', '+fmt(Umax)+')'},
+          ],
+          answer:{label:'Se deben vender', value:fmt(x), unit:'pizzas'} },
+        { id:'e', question:'¿Cuál es esa utilidad máxima?',
+          ggb:[
+            {cmd:'y(A)', say:'La <b>segunda coordenada</b> del mismo punto A es la utilidad máxima en pesos.', result:fmt(Umax)},
+          ],
+          answer:{label:'La utilidad máxima es', value:fmt(Umax), unit:'pesos'} },
       ],
-      manual:[
-        {t:'Modelos',b:'I(x) = '+p+'x  |  C(x) = '+c+' + '+b+'x + '+a+'x²'},
-        {t:'Utilidad para x=28',b:'U(28) = '+p+'(28) − ['+c+' + '+b+'(28) + '+a+'(28²)] = '+fmt(U28)+' pesos'},
-        {t:'Función utilidad general',b:'U(x) = '+p+'x − '+c+' − '+b+'x − '+a+'x² = −'+a+'x² + '+(p-b)+'x − '+c},
-        {t:'Derivamos e igualamos a 0',b:"U'(x) = −"+(2*a)+"x + "+(p-b)+" = 0  →  x = "+fmt(x)+' pizzas'},
-        {t:'Utilidad máxima',b:'U('+fmt(x)+') = '+fmt(U)+' pesos'},
-      ],
-      ggb:[
-        {type:'f(x)='+p+'x',say:'Ingreso I(x).'},
-        {type:'h(x)='+c+'+'+b+'x+'+a+'x^2',say:'Costo C(x). Usa ^ para el exponente.'},
-        {type:'g(x)=f(x)-h(x)',say:'Utilidad U(x).'},
-        {type:'g(28)',say:'Te da la utilidad al vender 28 pizzas.',result:fmt(U28)},
-        {type:'Extremo(g)',say:'Te da ('+fmt(x)+', '+fmt(U)+'): pizzas óptimas y utilidad máxima.',result:'A=('+fmt(x)+', '+fmt(U)+')'},
-      ]
+      note:'Si el enunciado te da la tabla con números distintos a estos, solo reemplaza los coeficientes (el precio por pizza, y los 3 números del costo) en f(x) y h(x). El resto de los pasos es idéntico.',
+      quiz:{
+        fields:[
+          {key:'Uv',label:'Utilidad al vender '+nventa+' pizzas',unit:'pesos',ans:Uventa},
+          {key:'x',label:'Pizzas para utilidad máxima',unit:'pizzas',ans:x},
+          {key:'U',label:'Utilidad máxima',unit:'pesos',ans:Umax},
+        ]
+      }
     };
   }
 },
 
-/* P3: CAJA SIN TAPA — base 2x·x, área aleatoria */
+/* ============================================================
+   P3 — CAJA SIN TAPA (base 2x · x, área fija)
+   ============================================================ */
 {
-  num:'03', tag:'TIPO · Caja sin tapa (área fija)', title:'Caja de Volumen Máximo', pts:'20 puntos',
-  gen: function(){
-    var At=rndOf([3000,3750,4873.5,5400,6000]);
-    var x=Math.sqrt(At/6);
-    var h=(At-2*x*x)/(6*x);
-    var V=2*x*x*h;
+  num:'03', tag:'Caja sin tapa · área fija', title:'Caja de Volumen Máximo', pts:'20 puntos',
+  gen:function(){
+    var At = rnd([3600,4050,4500,4873.5,5400,6000]);
+    var x = Math.sqrt(At/6);
+    var h = At/(6*x) - x/3;
+    var V = 2*x*x*h;
+    var statement =
+      'Una caja <b>sin tapa</b> se debe construir con <b>'+fmt(At)+' cm²</b> de cartón corrugado. La base de la caja mide <b>2x</b> por <b>x</b>, y su altura es <b>h</b>.'+
+      '<div class="fig">     2x\n  ┌───────┐\n h │       │ h\n  └───────┘\n     x  (base, sin tapa arriba)</div>'+
+      'Encuentra los valores de x y h para que la caja sea de volumen máximo, y calcula ese volumen.';
     return {
-      statement:'Una caja <b>sin tapa</b> se debe construir con <b>'+fmt(At)+' cm²</b> de cartón corrugado. La figura muestra las dimensiones: base <b>2x · x</b> y altura <b>h</b>. Encuentra los valores de x y h para que el volumen sea máximo, y calcula ese volumen máximo.',
-      fields:[
-        {key:'x',label:'El valor de x es',unit:'cm',ans:x},
-        {key:'h',label:'El valor de h es',unit:'cm',ans:h},
-        {key:'V',label:'Volumen máximo',unit:'cm³',ans:V},
+      statement: statement,
+      letters:[
+        { id:'a-x', question:'Calcula el valor de x para volumen máximo.',
+          ggb:[
+            {cmd:'f(x)=('+fmt(At)+'-2x^2)/(6x)', say:'El área total de la caja (sin tapa) es: la base (2x·x = 2x²) más las 4 caras laterales (2 caras de 2x·h y 2 caras de x·h, que suman 6x·h). Esa suma es igual a '+fmt(At)+'. Despejando h, queda esta fórmula. <b>f(x)</b> es la altura h en función de x.'},
+            {cmd:'g(x)=2x^2*f(x)', say:'El volumen de la caja es (área de la base)×(altura) = 2x²·h. Como h ya es f(x), el volumen queda <b>g(x)=2x²·f(x)</b>.'},
+            {cmd:'Extremo(g)', say:'Aparece un punto A=('+fmt(x)+', '+fmt(V)+'). La <b>primera coordenada</b> es el x que da volumen máximo.', result:'A=('+fmt(x)+', '+fmt(V)+')'},
+          ],
+          answer:{label:'El valor de x es', value:fmt(x), unit:'cm'} },
+        { id:'a-h', question:'Calcula el valor de h para volumen máximo.',
+          ggb:[
+            {cmd:'f(x(A))', say:'x(A) saca la primera coordenada de A (el x óptimo) y la mete en f, que es la altura. Así obtienes h directamente.', result:fmt(h)},
+          ],
+          answer:{label:'El valor de h es', value:fmt(h), unit:'cm'} },
+        { id:'b', question:'¿Cuál es ese volumen máximo?',
+          ggb:[
+            {cmd:'y(A)', say:'La <b>segunda coordenada</b> del punto A es directamente el volumen máximo, ya calculado en el paso anterior.', result:fmt(V)},
+          ],
+          answer:{label:'El volumen máximo es', value:fmt(V), unit:'cm³'} },
       ],
-      manual:[
-        {t:'Área total (sin tapa)',b:'Área = base (2x·x) + 4 caras laterales = 2x² + 6xh = '+fmt(At)},
-        {t:'Restricción → despejar h',b:'h = ('+fmt(At)+' − 2x²) / (6x)'},
-        {t:'Función volumen',b:'V(x) = 2x²·h = 2x²·('+fmt(At)+'−2x²)/(6x) = x('+fmt(At)+'−2x²)/3'},
-        {t:'Derivar e igualar a 0',b:"V'(x) = ("+fmt(At)+" − 6x²)/3 = 0  →  x² = "+fmt(At/6)+"  →  x = "+fmt(x)},
-        {t:'Calcular h y V',b:'h = '+fmt(h)+' cm,  V = '+fmt(V)+' cm³'},
-      ],
-      ggb:[
-        {type:'f(x)=('+At+'-2x^2)/(6x)',say:'Esto es h, despejada del área total.'},
-        {type:'g(x)=2x^2*f(x)',say:'Esto es el Volumen en función de x.'},
-        {type:'Extremo(g)',say:'Te da ('+fmt(x)+', '+fmt(V)+'): el x óptimo y el volumen máximo.',result:'A=('+fmt(x)+', '+fmt(V)+')'},
-        {type:'f(x(A))',say:'Te da el valor de h.',result:fmt(h)},
-      ]
+      note:'El área total de una caja SIN TAPA con base 2x·x es: 2x² (la base) + 6xh (las 4 paredes). Si la caja tuviera tapa, sumarías otro 2x² más.',
+      quiz:{
+        fields:[
+          {key:'x',label:'El valor de x es',unit:'cm',ans:x},
+          {key:'h',label:'El valor de h es',unit:'cm',ans:h},
+          {key:'V',label:'Volumen máximo',unit:'cm³',ans:V},
+        ]
+      }
     };
   }
 },
 
-/* P4: EL CARTEL — valores aleatorios de S, tv, th */
+/* ============================================================
+   P4 — EL CARTEL (con márgenes)
+   ============================================================ */
 {
-  num:'04', tag:'TIPO 4 · Cartel con márgenes', title:'El Cartel', pts:'20 puntos',
-  gen: function(){
-    var S=rndOf([600,726,800,900,1000]);
-    var tv=rndOf([3,4,5]);
-    var th=rndOf([2,3,4]);
-    var x=Math.sqrt(tv*S/th);
-    var y=S/x;
-    var Amax=(x-tv)*(y-th);
+  num:'04', tag:'Cartel con márgenes', title:'El Cartel', pts:'20 puntos',
+  gen:function(){
+    var S = rnd([600,726,800,900,968,1050]);
+    var topm=2, botm=1, sidem=1; // márgenes individuales como en el original
+    var tv = topm+botm; // margen vertical total = 3
+    var th = sidem*2;   // margen horizontal total = 2
+    var x = Math.sqrt(S*tv/th);
+    var y = S/x;
+    var Amax = (x-tv)*(y-th);
+    var statement =
+      'Un cartel rectangular de dimensiones <b>x</b> (vertical) e <b>y</b> (horizontal), cuya área total es <b>'+S+' cm²</b>, debe contener un área impresa con los márgenes que se muestran en la figura: '+
+      topm+' cm arriba, '+botm+' cm abajo, '+sidem+' cm a cada lado.'+
+      '<div class="fig">┌────────y────────┐\n│   ↕'+topm+'cm           │\n│ ↔'+sidem+' ┌────────┐ ↔'+sidem+'│ x\n│   │ impresa│   │\n│   └────────┘   │\n│   ↕'+botm+'cm           │\n└──────────────────┘</div>'+
+      'Encuentra los valores de x e y, y la mayor área impresa posible.';
     return {
-      statement:'Un cartel rectangular de dimensiones <b>x</b> (vertical) e <b>y</b> (horizontal) de área total <b>'+S+' cm²</b> debe contener un área impresa con los siguientes márgenes: <b>'+(tv-1)+' cm</b> arriba, <b>1 cm</b> abajo, <b>'+(th/2)+' cm</b> a cada lado. Encuentra x, y y el área impresa máxima.',
-      fields:[
-        {key:'x',label:'El valor de x es',unit:'cm',ans:x},
-        {key:'y',label:'El valor de y es',unit:'cm',ans:y},
-        {key:'A',label:'Área impresa máxima',unit:'cm²',ans:Amax},
+      statement: statement,
+      letters:[
+        { id:'a-x', question:'Calcula el valor de x para área impresa máxima.',
+          ggb:[
+            {cmd:'f(x)='+S+'/x', say:'El área total del cartel es x·y='+S+', entonces y='+S+'/x. <b>f(x)</b> representa el lado y del cartel completo (no el impreso).'},
+            {cmd:'g(x)=(x-'+tv+')*(f(x)-'+th+')', say:'El área impresa es (x menos el margen vertical total) por (y menos el margen horizontal total). El margen vertical total es '+topm+'+'+botm+'='+tv+' cm, y el horizontal total es '+sidem+'+'+sidem+'='+th+' cm.'},
+            {cmd:'Extremo(g)', say:'Aparece A=('+fmt(x)+', '+fmt(Amax)+'). La <b>primera coordenada</b> es el x óptimo.', result:'A=('+fmt(x)+', '+fmt(Amax)+')'},
+          ],
+          answer:{label:'El valor de x es', value:fmt(x), unit:'cm'} },
+        { id:'a-y', question:'Calcula el valor de y para área impresa máxima.',
+          ggb:[
+            {cmd:'f(x(A))', say:'Metes la x óptima (primera coordenada de A) dentro de f, y te da el y del cartel completo.', result:fmt(y)},
+          ],
+          answer:{label:'El valor de y es', value:fmt(y), unit:'cm'} },
+        { id:'b', question:'¿Cuál es esa área máxima (impresa)?',
+          ggb:[
+            {cmd:'y(A)', say:'La <b>segunda coordenada</b> de A es el área impresa máxima.', result:fmt(Amax)},
+          ],
+          answer:{label:'El área máxima es', value:fmt(Amax), unit:'cm²'} },
       ],
-      manual:[
-        {t:'Restricción (área total)',b:'x · y = '+S+'  →  y = '+S+'/x'},
-        {t:'Márgenes',b:'Vertical total: '+tv+' cm.  Horizontal total: '+th+' cm.'},
-        {t:'Área impresa',b:'A = (x−'+tv+')(y−'+th+'). Sustituimos y = '+S+'/x'},
-        {t:'Derivamos e igualamos a 0',b:"A'(x) = 0  →  x = "+fmt(x)+' cm'},
-        {t:'Calculamos y y el área',b:'y = '+S+'/'+fmt(x)+' = '+fmt(y)+',  A = '+fmt(Amax)+' cm²'},
-      ],
-      ggb:[
-        {type:'f(x)='+S+'/x',say:'Esto es y (lado horizontal), despejada del área total.'},
-        {type:'g(x)=(x-'+tv+')*(f(x)-'+th+')',say:'Esto es el área impresa en función de x.'},
-        {type:'Extremo(g)',say:'Te da el punto A. Primera coordenada = x, segunda = área impresa máxima.',result:'A=('+fmt(x)+', '+fmt(Amax)+')'},
-        {type:'f(x(A))',say:'Te da el valor de y.',result:fmt(y)},
-      ]
+      note:'Revisa SIEMPRE los márgenes de tu figura: si arriba y abajo suman distinto, o los lados son distintos a este ejemplo, cambia los números '+tv+' y '+th+' en g(x) por los de tu enunciado — el resto del procedimiento es igual.',
+      quiz:{
+        fields:[
+          {key:'x',label:'El valor de x es',unit:'cm',ans:x},
+          {key:'y',label:'El valor de y es',unit:'cm',ans:y},
+          {key:'A',label:'Área máxima',unit:'cm²',ans:Amax},
+        ]
+      }
     };
   }
 },
 
-/* P5: DEPÓSITO DE BASURA — valores aleatorios */
+/* ============================================================
+   P5 — DEPÓSITO DE BASURA (dos partes)
+   ============================================================ */
 {
-  num:'05', tag:'TIPO 5 · Minimizar cordón (volumen fijo)', title:'Depósito de Basura', pts:'25 puntos',
-  gen: function(){
-    var V=rndOf([20,25,29.16,32,40]);
-    var L2=rndOf([8,10.5,12,15]);
-    // P1: L=5x+4y, V=x²y → y=V/x² → L=5x+4V/x²
-    // dL/dx=5-8V/x³=0 → x=∛(8V/5)
-    var x=Math.cbrt(8*V/5);
-    var y=V/(x*x);
-    var L=5*x+4*y;
-    // P2: 5x+4y=L2 → y=(L2-5x)/4
-    // V=x²y=x²(L2-5x)/4
-    // dV/dx=(2x(L2-5x)-5x²)/4=(2xL2-15x²)/4=0 → x=2L2/15
-    var x2=2*L2/15;
-    var y2=(L2-5*x2)/4;
-    var V2=x2*x2*y2;
+  num:'05', tag:'Volumen y cordón de soldadura', title:'Depósito de Basura', pts:'25 puntos',
+  gen:function(){
+    var V = rnd([20,25,29.16,32,36]);
+    var L2 = rnd([8,10.5,12,15]);
+    var x1 = Math.cbrt(8*V/5);
+    var y1 = V/(x1*x1);
+    var L1 = 5*x1+4*y1;
+    var x2 = 2*L2/15;
+    var y2 = (L2-5*x2)/4;
+    var V2 = x2*x2*y2;
+    var statement =
+      '<b>PARTE 1 (volumen constante).</b> La empresa DEP.BAS Ltda fabrica depósitos de basura con forma de prisma de <b>base cuadrada</b> (x por x) y altura <b>y</b>, de <b>'+fmt(V)+' m³</b> de volumen.'+
+      '<div class="fig">     ___\n    /  /|\n y |/__/ |\n   |   | | y\n   |___|/\n    x  x</div>'+
+      'El volumen es <b>V = x²·y</b>. El cordón de soldadura se aplica en los bordes marcados y mide <b>L = 5x + 4y</b>.<br><br>'+
+      '<b>PARTE 2 (cordón constante).</b> Ahora se debe usar exactamente <b>'+fmt(L2)+' metros</b> de cordón de soldadura. ¿Qué dimensiones hacen máximo el volumen?';
     return {
-      statement:'<b>PARTE 1:</b> La empresa DEP.BAS Ltda fabrica depósitos de basura de base cuadrada con <b>'+fmt(V)+' m³</b> de volumen (base x·x, altura y). El cordón de soldadura TIG se aplica en los bordes. La expresión del volumen es <b>V = x²·y</b> y la del cordón es <b>L = 5x + 4y</b>.<br><br>a) Expresión del volumen. b) Expresión del cordón. c) Valor de x e y para cordón mínimo. d) Longitud mínima.<br><br><b>PARTE 2:</b> Se usan exactamente <b>'+fmt(L2)+' m</b> de cordón. e) Valor de x e y para volumen máximo. g) Volumen máximo.',
-      fields:[
-        {key:'Vexpr',label:'Expresión del volumen',unit:'',ans:'x2y',text:true,options:['x2y','x3','2xy','x*y2']},
-        {key:'Lexpr',label:'Expresión del cordón',unit:'',ans:'5x+4y',text:true,options:['5x+4y','4x+5y','8x+4y','4x+4y']},
-        {key:'x1',label:'[P1] Valor de x',unit:'metros',ans:x},
-        {key:'y1',label:'[P1] Valor de y',unit:'metros',ans:y},
-        {key:'Lmin',label:'[P1] Longitud mínima',unit:'metros',ans:L},
-        {key:'x2',label:'[P2] Valor de x',unit:'metros',ans:x2},
-        {key:'y2v',label:'[P2] Valor de y',unit:'metros',ans:y2},
-        {key:'V2',label:'[P2] Volumen máximo',unit:'m³',ans:V2},
+      statement: statement,
+      letters:[
+        { id:'p1a', question:'[Parte 1] Encuentra el valor de x para que el cordón sea mínimo.',
+          ggb:[
+            {cmd:'f(x)='+V+'/x^2', say:'El volumen está fijo en '+fmt(V)+' m³, y V=x²y, entonces y='+fmt(V)+'/x². <b>f(x)</b> es esa altura y.'},
+            {cmd:'g(x)=5x+4*f(x)', say:'El cordón total es L=5x+4y. Como y ya es f(x), el cordón queda g(x)=5x+4·f(x). Queremos el MÍNIMO de esta función (no el máximo).'},
+            {cmd:'Extremo(g)', say:'Aparece A=('+fmt(x1)+', '+fmt(L1)+'). Aunque se llame "Extremo", también detecta mínimos. La <b>primera coordenada</b> es el x que da menos cordón.', result:'A=('+fmt(x1)+', '+fmt(L1)+')'},
+          ],
+          answer:{label:'[P1] El valor de x es', value:fmt(x1), unit:'metros'} },
+        { id:'p1b', question:'[Parte 1] Encuentra el valor de y para cordón mínimo.',
+          ggb:[
+            {cmd:'f(x(A))', say:'Metes la x óptima dentro de f y te da y.', result:fmt(y1)},
+          ],
+          answer:{label:'[P1] El valor de y es', value:fmt(y1), unit:'metros'} },
+        { id:'p1c', question:'[Parte 1] ¿Cuál es esa longitud mínima de cordón?',
+          ggb:[
+            {cmd:'y(A)', say:'La <b>segunda coordenada</b> de A es la longitud mínima de cordón.', result:fmt(L1)},
+          ],
+          answer:{label:'[P1] Longitud mínima', value:fmt(L1), unit:'metros'} },
+        { id:'p2a', question:'[Parte 2] Encuentra el valor de x para que el volumen sea máximo (con '+fmt(L2)+' m de cordón fijo).',
+          ggb:[
+            {cmd:'f2(x)=('+fmt(L2)+'-5x)/4', say:'Ahora la restricción cambia: el cordón está fijo en '+fmt(L2)+' m, es decir 5x+4y='+fmt(L2)+'. Despejando y, queda esta fórmula. Usa un nombre distinto (f2) para no pisar la f del paso anterior.'},
+            {cmd:'g2(x)=x^2*f2(x)', say:'El volumen es x²·y. Como y ahora es f2(x), el volumen es g2(x)=x²·f2(x). Esta vez queremos el MÁXIMO.'},
+            {cmd:'Extremo(g2)', say:'Aparece B=('+fmt(x2)+', '+fmt(V2)+'). La <b>primera coordenada</b> es el x que da volumen máximo.', result:'B=('+fmt(x2)+', '+fmt(V2)+')'},
+          ],
+          answer:{label:'[P2] El valor de x es', value:fmt(x2), unit:'metros'} },
+        { id:'p2b', question:'[Parte 2] Encuentra el valor de y para volumen máximo.',
+          ggb:[
+            {cmd:'f2(x(B))', say:'Metes la x óptima de esta segunda parte dentro de f2, y te da el y correspondiente.', result:fmt(y2)},
+          ],
+          answer:{label:'[P2] El valor de y es', value:fmt(y2), unit:'metros'} },
+        { id:'p2c', question:'[Parte 2] ¿Cuál es ese volumen máximo?',
+          ggb:[
+            {cmd:'y(B)', say:'La <b>segunda coordenada</b> de B es el volumen máximo.', result:fmt(V2)},
+          ],
+          answer:{label:'[P2] Volumen máximo', value:fmt(V2), unit:'m³'} },
       ],
-      manual:[
-        {t:'[P1] Restricción de volumen',b:'V = x²y = '+fmt(V)+'  →  y = '+fmt(V)+'/x²'},
-        {t:'[P1] Función a minimizar',b:'L(x) = 5x + 4y = 5x + '+fmt(4*V)+'/x². Derivamos: L\'(x) = 5 − '+fmt(8*V)+'/x³ = 0'},
-        {t:'[P1] x óptimo',b:'x³ = '+fmt(8*V/5)+'  →  x = ∛'+fmt(8*V/5)+' = '+fmt(x)+' m'},
-        {t:'[P1] y y longitud mínima',b:'y = '+fmt(V)+'/'+fmt(x)+'² = '+fmt(y)+' m,  L = '+fmt(L)+' m'},
-        {t:'[P2] Restricción de cordón',b:'5x + 4y = '+fmt(L2)+'  →  y = ('+fmt(L2)+'−5x)/4'},
-        {t:'[P2] Volumen en función de x',b:'V(x) = x²·('+fmt(L2)+'−5x)/4. Derivamos e igualamos a 0:  x = '+fmt(x2)+' m'},
-        {t:'[P2] y y volumen máximo',b:'y = ('+fmt(L2)+'−5·'+fmt(x2)+')/4 = '+fmt(y2)+' m,  V = '+fmt(V2)+' m³'},
-      ],
-      ggb:[
-        {type:'f(x)='+V+'/x^2',say:'[P1] y despejada del volumen fijo.'},
-        {type:'g(x)=5x+4*f(x)',say:'[P1] Longitud del cordón en función de x.'},
-        {type:'Extremo(g)',say:'[P1] Mínimo: x y longitud mínima.',result:'A=('+fmt(x)+', '+fmt(L)+')'},
-        {type:'f(x(A))',say:'[P1] Valor de y.',result:fmt(y)},
-        {type:'f2(x)=('+L2+'-5x)/4',say:'[P2] y despejada del cordón constante = '+fmt(L2)+' m.'},
-        {type:'g2(x)=x^2*f2(x)',say:'[P2] Volumen en función de x.'},
-        {type:'Extremo(g2)',say:'[P2] Máximo de volumen.',result:'B=('+fmt(x2)+', '+fmt(V2)+')'},
-        {type:'f2(x(B))',say:'[P2] Valor de y para el volumen máximo.',result:fmt(y2)},
-      ]
+      note:'Ojo: en la Parte 1 minimizas el CORDÓN con el volumen fijo. En la Parte 2 maximizas el VOLUMEN con el cordón fijo. Es la situación inversa — por eso usa nombres distintos (f y f2, g y g2) en GeoGebra para no confundir tus resultados.',
+      quiz:{
+        fields:[
+          {key:'x1',label:'[P1] Valor de x',unit:'metros',ans:x1},
+          {key:'y1',label:'[P1] Valor de y',unit:'metros',ans:y1},
+          {key:'L1',label:'[P1] Longitud mínima',unit:'metros',ans:L1},
+          {key:'x2',label:'[P2] Valor de x',unit:'metros',ans:x2},
+          {key:'y2',label:'[P2] Valor de y',unit:'metros',ans:y2},
+          {key:'V2',label:'[P2] Volumen máximo',unit:'m³',ans:V2},
+        ]
+      }
     };
   }
 },
 
-/* P6: CILINDRO — At aleatorio, π=3.14, 3 decimales */
+/* ============================================================
+   P6 — CILINDRO DE VOLUMEN MÁXIMO
+   ============================================================ */
 {
-  num:'06', tag:'TIPO 6 · Cilindro (área total fija)', title:'Cilindro de Volumen Máximo', pts:'20 puntos',
-  gen: function(){
-    var At=rndOf([400,480,560,600,720]);
-    var PI=3.14;
-    var r=Math.sqrt(At/(6*PI));
-    var h=At/(2*PI*r)-r;
-    var V=PI*r*r*h;
+  num:'06', tag:'Cilindro · área total fija', title:'Cilindro de Volumen Máximo', pts:'20 puntos',
+  gen:function(){
+    var At = rnd([400,480,560,600,680,720]);
+    var PI = 3.14;
+    var r = Math.sqrt(At/(6*PI));
+    var h = At/(2*PI*r) - r;
+    var V = PI*r*r*h;
+    var statement =
+      'Se desea construir un recipiente <b>cilíndrico metálico con tapa</b> que tenga un área total de <b>'+At+' cm²</b>. Usa <b>π = 3,14</b>.'+
+      '<div class="fig">  ___\n ╱   ╲   r: radio\n│     │  h: altura\n│  h  │  Área lateral: Al=2πrh\n│     │  Área de la base: Ab=πr²\n ╲___╱   Área total: At=2Ab+Al</div>'+
+      'Encuentra r, h y el volumen máximo (redondea a 3 decimales).';
     return {
-      statement:'Se desea construir un recipiente <b>cilíndrico metálico con tapa</b> que tenga un área total de <b>'+At+' cm²</b>. Considera <b>π = 3,14</b>. Las fórmulas del cilindro son: Al = 2πrh, Ab = πr², At = 2Ab + Al. Encuentra r, h y el volumen máximo. (Redondea a <b>3 decimales</b>.)',
-      fields:[
-        {key:'r',label:'El valor de r es',unit:'cm',ans:r},
-        {key:'h',label:'El valor de h es',unit:'cm',ans:h},
-        {key:'V',label:'Volumen máximo',unit:'cm³',ans:V},
+      statement: statement,
+      letters:[
+        { id:'a-r', question:'Calcula el valor de r para volumen máximo.',
+          ggb:[
+            {cmd:'f(r)='+At+'/(2*3.14*r)-r', say:'El área total es At=2πr²+2πrh='+At+'. Despejando h: h = At/(2πr) − r. <b>Usa la letra r, no x</b>, porque la variable de este problema es el radio.'},
+            {cmd:'g(r)=3.14*r^2*f(r)', say:'El volumen del cilindro es πr²h. Reemplazando h por f(r), queda g(r)=3,14·r²·f(r).'},
+            {cmd:'Extremo(g)', say:'Aparece A=('+fmt(r,3)+', '+fmt(V,3)+'). La <b>primera coordenada</b> es el radio óptimo.', result:'A=('+fmt(r,3)+', '+fmt(V,3)+')'},
+          ],
+          answer:{label:'El valor de r es', value:fmt(r,3), unit:'cm'} },
+        { id:'a-h', question:'Calcula el valor de h para volumen máximo.',
+          ggb:[
+            {cmd:'f(x(A))', say:'Aunque la variable se llame r, GeoGebra igual usa x(A) para sacar la primera coordenada del punto A. Esto te da h.', result:fmt(h,3)},
+          ],
+          answer:{label:'El valor de h es', value:fmt(h,3), unit:'cm'} },
+        { id:'b', question:'¿Cuál es ese volumen máximo?',
+          ggb:[
+            {cmd:'y(A)', say:'La <b>segunda coordenada</b> de A es el volumen máximo.', result:fmt(V,3)},
+          ],
+          answer:{label:'El volumen máximo es', value:fmt(V,3), unit:'cm³'} },
       ],
-      manual:[
-        {t:'Restricción (área total)',b:'2πr² + 2πrh = '+At+'  →  h = '+At+'/(2πr) − r = '+(At/2)+'/(πr) − r'},
-        {t:'Volumen en función de r',b:'V(r) = πr²h = πr²['+(At/2)+'/(πr)−r] = '+(At/2)+'r − πr³'},
-        {t:'Derivamos e igualamos a 0',b:"V'(r) = "+(At/2)+" − 3πr² = 0  →  r² = "+(At/2)+"/(3π) = "+fmt(At/(6*PI))+"  →  r = "+fmt(r)+' cm'},
-        {t:'Calculamos h y V',b:'h = '+fmt(h)+' cm,  V = '+fmt(V)+' cm³'},
-      ],
-      ggb:[
-        {type:'f(r)='+At+'/(2*3.14*r)-r',say:'OJO: variable r, no x. Esto es h despejada del área total.'},
-        {type:'g(r)=3.14*r^2*f(r)',say:'Esto es el Volumen en función de r.'},
-        {type:'Extremo(g)',say:'Te da el r óptimo y el volumen máximo.',result:'A=('+fmt(r)+', '+fmt(V)+')'},
-        {type:'f(x(A))',say:'Te da el valor de h (aunque diga x(A) funciona igual).',result:fmt(h)},
-      ]
+      note:'Este problema pide 3 decimales (no 2 como los demás) — revisa siempre la indicación de tu enunciado. Y recuerda: la variable es r, no x.',
+      quiz:{
+        fields:[
+          {key:'r',label:'El valor de r es',unit:'cm',ans:r},
+          {key:'h',label:'El valor de h es',unit:'cm',ans:h},
+          {key:'V',label:'Volumen máximo',unit:'cm³',ans:V},
+        ]
+      }
     };
   }
 },
 
-/* P7: CAJA BASE CUADRADA — lado aleatorio */
+/* ============================================================
+   P7 — CAJA DE BASE CUADRADA (cúbica, con cortes)
+   ============================================================ */
 {
-  num:'07', tag:'TIPO 3 · Caja con cortes (cúbica)', title:'Caja de Base Cuadrada', pts:'20 puntos',
-  gen: function(){
-    var a=rndOf([48,54,60,66,72]);
-    var xmax=a/6, xmin=a/2;
-    var Vmax=xmax*Math.pow(a-2*xmax,2);
-    var Vmin=xmin*Math.pow(a-2*xmin,2);
-    var coefA=4, coefB=-4*a, coefC=a*a;
+  num:'07', tag:'Caja con cortes en las esquinas', title:'Caja de Base Cuadrada', pts:'20 puntos',
+  gen:function(){
+    var a = rnd([48,54,60,66,72]);
+    var xmax = a/6, xmin = a/2;
+    var Vmax = xmax*Math.pow(a-2*xmax,2);
+    var Vmin = xmin*Math.pow(a-2*xmin,2);
+    var c3=4, c2=-4*a, c1=a*a;
+    var statement =
+      'A un trozo cuadrado de cartón de lado <b>a = '+a+' cm</b> se le corta en cada esquina un cuadrado de lado <b>x</b>, obteniendo una caja al doblar los lados hacia arriba.'+
+      '<div class="fig">┌──┐      ┌──┐\n└──┘a-2x  └──┘\n  ┌────────┐\n  │ a-2x   │\n  └────────┘\n┌──┐      ┌──┐\n└──┘  x   └──┘</div>'+
+      'Encuentra la expresión del volumen V(x), sus valores críticos, y para qué x el volumen es mínimo y máximo.';
     return {
-      statement:'A un trozo cuadrado de cartón de lado <b>a = '+a+' cm</b> se le cortan de cada esquina cuadrados de lado <b>x</b>, obteniendo una caja al doblar los lados.<br><br>a) Encuentra la expresión del volumen V(x) en forma <b>ax³ + bx² + cx</b>. b) ¿Cuáles son los valores críticos de V(x)? c) ¿Para qué x el volumen es mínimo y cuál es ese mínimo? e) ¿Para qué x el volumen es máximo y cuál es ese máximo?',
-      fields:[
-        {key:'a3',label:'Coeficiente de x³',unit:'',ans:4},
-        {key:'b2',label:'Coeficiente de x²',unit:'',ans:coefB},
-        {key:'c1',label:'Coeficiente de x',unit:'',ans:coefC},
-        {key:'xmin',label:'x para volumen mínimo',unit:'cm',ans:xmin},
-        {key:'Vmin',label:'Volumen mínimo',unit:'cm³',ans:Vmin},
-        {key:'xmax',label:'x para volumen máximo',unit:'cm',ans:xmax},
-        {key:'Vmax',label:'Volumen máximo',unit:'cm³',ans:Vmax},
+      statement: statement,
+      letters:[
+        { id:'a', question:'Encuentra la expresión algebraica del volumen V(x) en la forma ax³+bx²+cx.',
+          ggb:[
+            {cmd:'g(x)=x*('+a+'-2x)^2', say:'El volumen es (lado del corte)×(lado de la base resultante)². La base que queda, después de cortar x en cada esquina, mide (a−2x) por (a−2x). No necesitas expandir a mano: GeoGebra lo hace, pero si el examen pide la forma expandida, multiplica: x·('+a+'−2x)² = 4x³ '+(c2>=0?'+':'')+c2+'x² '+(c1>=0?'+':'')+c1+'x.'},
+          ],
+          answer:{label:'Coeficientes (x³, x², x)', value:'4 , '+c2+' , '+c1, unit:''} },
+        { id:'b', question:'¿Cuáles son los valores críticos de V(x)?',
+          ggb:[
+            {cmd:'Extremo(g)', say:'Para esta función cúbica, Extremo(g) entrega DOS puntos (porque hay un máximo y un mínimo locales). Aparecerán algo como A=('+fmt(xmax)+', '+fmt(Vmax)+') y B=('+fmt(xmin)+', '+fmt(Vmin)+'). Los valores críticos son las primeras coordenadas de ambos puntos, ordenadas de menor a mayor.', result:'x='+fmt(xmax)+' y x='+fmt(xmin)},
+          ],
+          answer:{label:'Valores críticos (de menor a mayor)', value:fmt(xmax)+' , '+fmt(xmin), unit:''} },
+        { id:'c', question:'¿Para qué valor de x el volumen es mínimo, y cuál es ese volumen?',
+          ggb:[
+            {cmd:'(revisa los puntos)', say:'De los dos puntos que te dio Extremo(g), el que tiene menor volumen (segunda coordenada más chica, y que tenga sentido físico) es el mínimo. En este caso es x='+fmt(xmin)+'.', result:'V='+fmt(Vmin)},
+          ],
+          answer:{label:'x para mínimo / Volumen mínimo', value:fmt(xmin)+' cm / '+fmt(Vmin)+' cm³', unit:''} },
+        { id:'d', question:'¿Para qué valor de x el volumen es máximo, y cuál es ese volumen?',
+          ggb:[
+            {cmd:'(revisa los puntos)', say:'El otro punto, con mayor volumen real, es el máximo: x='+fmt(xmax)+'.', result:'V='+fmt(Vmax)},
+          ],
+          answer:{label:'x para máximo / Volumen máximo', value:fmt(xmax)+' cm / '+fmt(Vmax)+' cm³', unit:''} },
       ],
-      manual:[
-        {t:'Volumen sin expandir',b:'V(x) = x·('+a+'−2x)² = x·('+coefC+coefB+'x+4x²)'},
-        {t:'Expandido',b:'V(x) = 4x³ + '+coefB+'x² + '+coefC+'x  → coefs: 4, '+coefB+', '+coefC},
-        {t:'Valores críticos (derivada = 0)',b:"V'(x) = 12x² + "+(2*coefB)+"x + "+coefC+" = 0  →  x = "+fmt(xmax)+" y x = "+fmt(xmin)},
-        {t:'¿Cuál es máximo y cuál mínimo?',b:'V('+fmt(xmax)+') = '+fmt(Vmax)+' cm³ (máximo real).  V('+fmt(xmin)+') = '+fmt(Vmin)+' (mínimo).'},
-        {t:'Resumen',b:'x='+fmt(xmin)+' → V='+fmt(Vmin)+' cm³ (mínimo)  |  x='+fmt(xmax)+' → V='+fmt(Vmax)+' cm³ (máximo)'},
-      ],
-      ggb:[
-        {type:'g(x)=x*('+a+'-2x)^2',say:'Función volumen. No necesita f(x) auxiliar.'},
-        {type:'Extremo(g)',say:'Devuelve DOS puntos. El de mayor volumen positivo es el máximo real.',result:'x='+fmt(xmax)+' → V='+fmt(Vmax)},
-      ],
-      note:'Extremo(g) puede dar {A=('+fmt(xmax)+', '+fmt(Vmax)+'), B=('+fmt(xmin)+', '+fmt(Vmin)+')}. El máximo real es el que da mayor volumen positivo.'
+      note:'Este es el problema donde más se equivocan: Extremo(g) da DOS puntos en una lista, no uno. El x MÁS PEQUEÑO (a/6) suele ser el máximo real, y el x más grande (a/2) da un "mínimo" que en la práctica ni siquiera forma una caja válida — aun así, así lo pide el examen.',
+      quiz:{
+        fields:[
+          {key:'xmin',label:'x para volumen mínimo',unit:'cm',ans:xmin},
+          {key:'Vmin',label:'Volumen mínimo',unit:'cm³',ans:Vmin},
+          {key:'xmax',label:'x para volumen máximo',unit:'cm',ans:xmax},
+          {key:'Vmax',label:'Volumen máximo',unit:'cm³',ans:Vmax},
+        ]
+      }
     };
   }
 },
 
-/* P8: LA HERENCIA — S aleatorio, n=5 fijo */
+/* ============================================================
+   P8 — LA HERENCIA (parcelas iguales)
+   ============================================================ */
 {
-  num:'08', tag:'TIPO 7 · Parcelas iguales (perímetro mínimo)', title:'La Herencia', pts:'15 puntos',
-  gen: function(){
-    var n=5, S=rndOf([14400,19200,24000,28800]);
-    // dP/dx=0: 2n - (n+1)·S/(n·x²)=0 → x²=(n+1)·S/(2n²)
-    var x=Math.sqrt((n+1)*S/(2*n*n));
-    var y=S/(n*x);
-    var P=2*n*x+(n+1)*y;
+  num:'08', tag:'Parcelas iguales · perímetro mínimo', title:'La Herencia', pts:'15 puntos',
+  gen:function(){
+    var n = 5, S = rnd([14400,16200,19200,21600,24000]);
+    var x = Math.sqrt((n+1)*S/(2*n*n));
+    var y = S/(n*x);
+    var P = 2*n*x+(n+1)*y;
+    var statement =
+      'Cinco hermanos heredan de su padre una parcela rectangular de <b>'+S+' m²</b> que deben dividirse en <b>5 partes iguales</b>, como muestra la figura (5 franjas verticales, cada una de ancho x y alto y).'+
+      '<div class="fig">x x x x x\n┌┬┬┬┬┬┐\n│││││y│\n└┴┴┴┴┴┘\nx x x x x</div>'+
+      'Si al cercar las 5 parcelas se debe gastar lo menos posible, calcula x, y, y el perímetro mínimo de cerca total.';
     return {
-      statement:'Cinco hermanos heredan de su padre una parcela rectangular de <b>'+S+' m²</b> que debe dividirse en <b>5 partes iguales</b> como muestra la figura (5 columnas, con separadores verticales internos). El ancho de cada franja es x y su alto es y. Si al cercar las 5 parcelas se debe gastar lo menos posible, calcula x, y y el perímetro mínimo de cerca.',
-      fields:[
-        {key:'x',label:'El valor de x es',unit:'metros',ans:x},
-        {key:'y',label:'El valor de y es',unit:'metros',ans:y},
-        {key:'P',label:'Perímetro mínimo',unit:'metros',ans:P},
+      statement: statement,
+      letters:[
+        { id:'a-x', question:'Calcula el valor de x para que la cerca total sea mínima.',
+          ggb:[
+            {cmd:'f(x)='+(S/n)+'/x', say:'El área total se reparte en 5 partes iguales de x·y cada una, entonces 5·x·y='+S+', es decir cada franja mide x·y='+(S/n)+'. Despejando, y=('+(S/n)+')/x.'},
+            {cmd:'g(x)=10x+6*f(x)', say:'La cerca tiene 6 segmentos verticales de largo y (las 5 divisiones internas más los 2 bordes... en este caso son 6 líneas de largo y) y 2 segmentos horizontales de largo 5x cada uno (arriba y abajo), dando 10x en total. Por eso: cerca total = 10x + 6y = 10x + 6·f(x).'},
+            {cmd:'Extremo(g)', say:'Aparece A=('+fmt(x)+', '+fmt(P)+'). La <b>primera coordenada</b> es el x que minimiza la cerca.', result:'A=('+fmt(x)+', '+fmt(P)+')'},
+          ],
+          answer:{label:'El valor de x es', value:fmt(x), unit:'metros'} },
+        { id:'a-y', question:'Calcula el valor de y para cerca mínima.',
+          ggb:[
+            {cmd:'f(x(A))', say:'Metes la x óptima dentro de f y obtienes y.', result:fmt(y)},
+          ],
+          answer:{label:'El valor de y es', value:fmt(y), unit:'metros'} },
+        { id:'b', question:'¿Cuál es el perímetro (cerca) mínimo?',
+          ggb:[
+            {cmd:'y(A)', say:'La <b>segunda coordenada</b> de A es la longitud mínima de cerca.', result:fmt(P)},
+          ],
+          answer:{label:'El perímetro mínimo es', value:fmt(P), unit:'metros'} },
       ],
-      manual:[
-        {t:'Restricción de área',b:'5 · x · y = '+S+'  →  y = '+(S/n)+'/x'},
-        {t:'Cerca total',b:'Hay 6 líneas verticales de largo y y 2 horizontales de largo 5x:  P = 10x + 6y'},
-        {t:'Sustituimos y',b:'P(x) = 10x + 6('+(S/n)+'/x) = 10x + '+fmt(6*S/n)+'/x'},
-        {t:'Derivamos e igualamos a 0',b:"P'(x) = 10 − "+fmt(6*S/n)+"/x² = 0  →  x² = "+fmt(6*S/(10*n))+"  →  x = "+fmt(x)+' m'},
-        {t:'Calculamos y y P mínimo',b:'y = '+(S/n)+'/'+fmt(x)+' = '+fmt(y)+' m,  P = '+fmt(P)+' m'},
-      ],
-      ggb:[
-        {type:'f(x)='+(S/n)+'/x',say:'y despejada del área total ('+S+'/5 = '+(S/n)+').'},
-        {type:'g(x)=10x+6*f(x)',say:'Perímetro total de cerca en función de x.'},
-        {type:'Extremo(g)',say:'Mínimo de cerca: x y perímetro mínimo.',result:'A=('+fmt(x)+', '+fmt(P)+')'},
-        {type:'f(x(A))',say:'Valor de y.',result:fmt(y)},
-      ]
+      note:'Cuenta bien las líneas de tu figura: si son 5 franjas hay 6 líneas verticales (no 5), por eso es 6y y no 5y. Si tu examen tiene un número distinto de hermanos, cambia el "5", el "6" y el "10" según cuántas líneas veas en tu propia figura.',
+      quiz:{
+        fields:[
+          {key:'x',label:'El valor de x es',unit:'metros',ans:x},
+          {key:'y',label:'El valor de y es',unit:'metros',ans:y},
+          {key:'P',label:'Perímetro mínimo',unit:'metros',ans:P},
+        ]
+      }
     };
   }
 },
 
-/* P9: CASA Y PATIO — P0 aleatorio */
+/* ============================================================
+   P9 — CASA Y PATIO
+   ============================================================ */
 {
-  num:'09', tag:'TIPO 8 · Casa + patio abierto', title:'Casa y Patio', pts:'20 puntos',
-  gen: function(){
-    var P0=rndOf([56,64,72,80,88]);
-    // restricción x + 5y = P0 → x = P0 - 5y
-    // A = (x+y)·y = (P0-4y)·y = P0·y - 4y²
-    // dA/dy = P0 - 8y = 0 → y = P0/8
-    var y=P0/8, x=P0*3/8;
-    var A=(x+y)*y;
+  num:'09', tag:'Casa + patio · variable libre es y', title:'Casa y Patio', pts:'20 puntos',
+  gen:function(){
+    var P0 = rnd([56,64,72,80,88,96]);
+    var y = P0/8, x = P0*3/8;
+    var A = (x+y)*y;
+    var statement =
+      'Se desea hacer un cierre perimetral de una casa y su patio abierto, considerando sólo <b>'+P0+' metros</b> de pandereta (la parte de adelante del patio queda abierta, sin cerrar).'+
+      '<div class="fig">    Y         Y\n┌────────┬────────┐\n│ PATIO  │  CASA  │ y\nY│        │Y       │Y\n└────────┴────────┘\n    x         Y</div>'+
+      'El patio tiene ancho x, la casa tiene ancho y, y ambos comparten la misma altura y. La pandereta cubre: el frente del patio (x), la pared compartida y las 3 paredes restantes de y. Encuentra x e y para que la suma de áreas (casa + patio) sea máxima.';
     return {
-      statement:'Se desea hacer un cierre perimetral de una <b>casa y su patio abierto</b> (como muestra la figura) considerando sólo <b>'+P0+' metros</b> de pandereta. El patio tiene ancho x y la casa ancho y, ambos de altura y. La restricción de pandereta es: <b>x + 5y = '+P0+'</b>. ¿Cuáles deben ser los valores de x e y para que la suma de las áreas de la casa y del patio sea máxima?',
-      fields:[
-        {key:'x',label:'El valor de x es',unit:'metros',ans:x},
-        {key:'y',label:'El valor de y es',unit:'metros',ans:y},
-        {key:'A',label:'Área máxima',unit:'m²',ans:A},
+      statement: statement,
+      letters:[
+        { id:'a-x', question:'Calcula el valor de x para área total máxima.',
+          ggb:[
+            {cmd:'f(y)='+P0+'-5y', say:'Contando los tramos de pandereta de la figura: 1 tramo x (frente del patio) + 5 tramos de largo y (las 3 paredes de la casa más las 2 paredes laterales del patio) = '+P0+'. Es decir x+5y='+P0+'. Despejando: x='+P0+'−5y. <b>Ojo: aquí f está en función de y, no de x</b>, porque conviene trabajar con y como variable libre.'},
+            {cmd:'g(y)=(f(y)+y)*y', say:'El área total es (ancho del patio + ancho de la casa) × altura = (x+y)·y. Como x es f(y), queda g(y)=(f(y)+y)·y.'},
+            {cmd:'Extremo(g)', say:'Aparece un punto, por ejemplo A=('+fmt(y)+', '+fmt(A)+'). <b>¡Atención! Como definiste todo en función de y, la primera coordenada de A es el valor de Y, no de x.</b>', result:'A=('+fmt(y)+', '+fmt(A)+')  ← esto es (y, Área)'},
+            {cmd:'f(x(A))', say:'Para obtener x, metes esa "primera coordenada" (que en realidad es y) dentro de f. Esto te da el valor de x.', result:fmt(x)},
+          ],
+          answer:{label:'El valor de x es', value:fmt(x), unit:'metros'} },
+        { id:'a-y', question:'Calcula el valor de y para área total máxima.',
+          ggb:[
+            {cmd:'x(A)', say:'La primera coordenada del punto A, que ya calculaste arriba, ES directamente el valor de y (no de x, aunque GeoGebra la llame x(A)).', result:fmt(y)},
+          ],
+          answer:{label:'El valor de y es', value:fmt(y), unit:'metros'} },
+        { id:'b', question:'¿Cuál es esa área máxima?',
+          ggb:[
+            {cmd:'y(A)', say:'La segunda coordenada de A es el área máxima.', result:fmt(A)},
+          ],
+          answer:{label:'El área máxima es', value:fmt(A), unit:'m²'} },
       ],
-      manual:[
-        {t:'Restricción',b:'x + 5y = '+P0+'  →  x = '+P0+' − 5y'},
-        {t:'Área total',b:'A = (x+y)·y = ('+P0+'−5y+y)·y = ('+P0+'−4y)·y = '+P0+'y − 4y²'},
-        {t:'Derivamos e igualamos a 0 (respecto a y)',b:"A'(y) = "+P0+" − 8y = 0  →  y = "+fmt(y)+' m'},
-        {t:'Calculamos x y el área',b:'x = '+P0+' − 5('+fmt(y)+') = '+fmt(x)+' m,  A = '+fmt(A)+' m²'},
-      ],
-      ggb:[
-        {type:'f(y)='+P0+'-5y',say:'OJO: variable libre es y, no x. Esto es x despejada de la restricción.'},
-        {type:'g(y)=(f(y)+y)*y',say:'Área total en función de y.'},
-        {type:'Extremo(g)',say:'¡La 1ª componente del punto es Y (no X)! No confundas.',result:'A=('+fmt(y)+', '+fmt(A)+')'},
-        {type:'f(x(A))',say:'Te da el valor de x.',result:fmt(x)},
-      ],
-      note:'⚠ Atención: la variable libre es y, así que la 1ª coordenada del punto Extremo es y = '+fmt(y)+', no x.'
+      note:'Este es el problema "trampa" más común del examen: la variable que GeoGebra pone como primera coordenada del punto Extremo es la que TÚ elegiste al escribir f(y) y g(y) — en este caso es y, no x. Lee siempre cuál variable usaste antes de copiar el resultado al casillero equivocado.',
+      quiz:{
+        fields:[
+          {key:'x',label:'El valor de x es',unit:'metros',ans:x},
+          {key:'y',label:'El valor de y es',unit:'metros',ans:y},
+          {key:'A',label:'Área máxima',unit:'m²',ans:A},
+        ]
+      }
     };
   }
 },
 
-/* P10: UTILIDAD CON RAÍZ — valores aleatorios */
+/* ============================================================
+   P10 — UTILIDAD CON RAÍZ (artículos de cocina)
+   ============================================================ */
 {
-  num:'10', tag:'TIPO · Utilidad con raíz cuadrada', title:'Utilidad Máxima · Artículos de Cocina', pts:'20 puntos',
-  gen: function(){
-    var p=rndOf([20000,28000,35000]);
-    var a=rndOf([200,265,300]);
-    var k=rndOf([8000,10000,12000]);
-    // U(x) = px - ax² + k√x
-    // U'(x) = p - 2ax + k/(2√x) = 0
-    function U(x){ return p*x - a*x*x + k*Math.sqrt(x); }
-    function Up(x){ return p - 2*a*x + k/(2*Math.sqrt(x)); }
-    // Newton-Raphson
-    var xopt=Math.round(p/(2*a)); // rough start
-    for(var i=0;i<200;i++){
-      var upval=Up(xopt);
-      var upp= -2*a - k/(4*Math.pow(xopt,1.5));
-      var nx=xopt - upval/upp;
-      if(nx<=0) nx=0.1;
-      if(Math.abs(nx-xopt)<0.0001) { xopt=nx; break; }
-      xopt=nx;
+  num:'10', tag:'Utilidad con raíz cuadrada', title:'Utilidad Máxima · Artículos de Cocina', pts:'20 puntos',
+  gen:function(){
+    var p = rnd([20000,24000,28000,32000]);
+    var a = rnd([200,230,265,300]);
+    var k = rnd([8000,9000,10000,12000]);
+    function U(xx){ return p*xx - a*xx*xx + k*Math.sqrt(xx); }
+    function Up(xx){ return p - 2*a*xx + k/(2*Math.sqrt(xx)); }
+    var xopt = p/(2*a);
+    for(var i=0;i<300;i++){
+      var upv = Up(xopt);
+      var upp = -2*a - k/(4*Math.pow(xopt,1.5));
+      var nx = xopt - upv/upp;
+      if(nx<=0) nx=0.5;
+      if(Math.abs(nx-xopt)<0.00001){ xopt=nx; break; }
+      xopt = nx;
     }
-    xopt=Math.round(xopt);
-    var Umax=U(xopt);
-    var I15=p*15;
-    var C25=a*25*25-k*Math.sqrt(25);
-    var U16=p*16-a*16*16+k*Math.sqrt(16);
-    // Find xbreak where U(x)<0 (second zero crossing)
-    var xbreak=xopt;
-    for(var j=0;j<5000;j++){
-      xbreak++;
-      if(U(xbreak)<0) break;
-    }
+    xopt = Math.round(xopt);
+    var Umax = U(xopt);
+    var n1 = 15, n2 = 25, n3 = 16;
+    var I1 = p*n1;
+    var C2 = a*n2*n2 - k*Math.sqrt(n2);
+    var U3 = p*n3 - a*n3*n3 + k*Math.sqrt(n3);
+    var xbreak = xopt;
+    for(var j=0;j<8000;j++){ xbreak++; if(U(xbreak)<0) break; }
+    var statement =
+      'Rodrigo importa artículos de cocina. El ingreso y el costo (en pesos), donde x es el número de artículos importados, son:'+
+      '<div class="fig">Ingreso o Venta:  '+p+' · x\nCosto:            '+a+' · x² − '+k+' · √x</div>'+
+      'Si UTILIDAD = INGRESO − COSTO, responde lo siguiente.';
     return {
-      statement:'Rodrigo importa artículos de cocina. Ingreso: <b>I(x) = '+p+'x</b>. Costo: <b>C(x) = '+a+'x² − '+k+'√x</b>.<br><br>a) Ingreso al vender 15 artículos. b) Costo al vender 25 artículos. c) Utilidad al vender 16 artículos. d) ¿Cuántos artículos dan la utilidad máxima? (aproxima al entero). e) Utilidad máxima. f) ¿Cuántos artículos se deben vender para que la importación <b>no sea rentable</b>?',
-      fields:[
-        {key:'I15',label:'Ingreso si venden 15 artículos',unit:'pesos',ans:I15},
-        {key:'C25',label:'Costo al vender 25 artículos',unit:'pesos',ans:C25},
-        {key:'U16',label:'Utilidad al vender 16 artículos',unit:'pesos',ans:U16},
-        {key:'xopt',label:'Artículos para utilidad máxima',unit:'artículos',ans:xopt},
-        {key:'Umax',label:'Utilidad máxima',unit:'pesos',ans:Umax},
-        {key:'xbreak',label:'Artículos para que no sea rentable',unit:'artículos',ans:xbreak},
+      statement: statement,
+      letters:[
+        { id:'a', question:'¿Cuál es el ingreso si se venden '+n1+' artículos?',
+          ggb:[
+            {cmd:'f(x)='+p+'x', say:'El ingreso, tal como aparece en el enunciado.'},
+            {cmd:'f('+n1+')', say:'Evalúas el ingreso en x='+n1+'.', result:fmt(I1)},
+          ],
+          answer:{label:'El ingreso es', value:fmt(I1), unit:'pesos'} },
+        { id:'b', question:'¿Cuál es el costo al vender '+n2+' artículos?',
+          ggb:[
+            {cmd:'h(x)='+a+'x^2-'+k+'*sqrt(x)', say:'El costo incluye una raíz cuadrada: escribe sqrt(x) en GeoGebra (no √x).'},
+            {cmd:'h('+n2+')', say:'Evalúas el costo en x='+n2+'.', result:fmt(C2)},
+          ],
+          answer:{label:'El costo es', value:fmt(C2), unit:'pesos'} },
+        { id:'c', question:'¿Cuál es la utilidad al vender '+n3+' artículos?',
+          ggb:[
+            {cmd:'g(x)=f(x)-h(x)', say:'La utilidad es ingreso menos costo.'},
+            {cmd:'g('+n3+')', say:'Evalúas la utilidad en x='+n3+'.', result:fmt(U3)},
+          ],
+          answer:{label:'La utilidad es', value:fmt(U3), unit:'pesos'} },
+        { id:'d', question:'¿Cuántos artículos hay que vender para que la utilidad sea máxima? (aproxima al entero)',
+          ggb:[
+            {cmd:'Extremo(g)', say:'Aparece un punto con decimales, por ejemplo A=('+xopt+'..., '+fmt(Umax)+'...). El enunciado pide redondear la primera coordenada al entero más cercano.', result:'A≈('+xopt+', '+fmt(Umax)+')'},
+          ],
+          answer:{label:'Habrá que vender', value:xopt, unit:'artículos'} },
+        { id:'e', question:'¿Cuál es esa utilidad máxima?',
+          ggb:[
+            {cmd:'g('+xopt+')', say:'Como ya redondeaste x al entero, mejor evaluar g directamente en ese entero para tener la utilidad "real" del examen (no la del punto decimal exacto).', result:fmt(Umax)},
+          ],
+          answer:{label:'La utilidad máxima es', value:fmt(Umax), unit:'pesos'} },
+        { id:'f', question:'¿Cuántos artículos se deben vender para que la importación NO sea rentable?',
+          ggb:[
+            {cmd:'Raíz(g,'+(xopt+10)+')', say:'"No rentable" significa que la utilidad vuelve a cero y se hace negativa. Busca dónde la curva g cruza el eje X después del máximo: el comando Raíz(función, valor cercano) busca un cero cerca del segundo argumento. Si no te resulta, también puedes mover el gráfico y ver visualmente dónde g(x) cruza el eje X.', result:'x≈'+xbreak},
+          ],
+          answer:{label:'Se deben vender (no rentable, más de)', value:xbreak, unit:'artículos'} },
       ],
-      manual:[
-        {t:'Modelos',b:'I(x) = '+p+'x  |  C(x) = '+a+'x² − '+k+'√x'},
-        {t:'Evaluaciones directas',b:'I(15) = '+p+'·15 = '+fmt(I15)+'.  C(25) = '+a+'·625 − '+k+'·5 = '+fmt(C25)+'.  U(16) = '+p+'·16 − '+a+'·256 + '+k+'·4 = '+fmt(U16)},
-        {t:'Función utilidad',b:'U(x) = '+p+'x − '+a+'x² + '+k+'√x'},
-        {t:'GeoGebra da el máximo',b:'Extremo(g) → x ≈ '+xopt+' artículos (redondear al entero)'},
-        {t:'Importación no rentable',b:'U(x) < 0 → vender más de ≈ '+xbreak+' artículos. Buscar dónde U(x)=0 en GeoGebra.'},
-      ],
-      ggb:[
-        {type:'f(x)='+p+'x',say:'Ingreso I(x).'},
-        {type:'h(x)='+a+'x^2-'+k+'*sqrt(x)',say:'Costo C(x). Escribe sqrt(x) para la raíz cuadrada.'},
-        {type:'g(x)=f(x)-h(x)',say:'Utilidad U(x).'},
-        {type:'g(15)',say:'Utilidad a x=15. Para ingreso: f(15). Para costo: h(25).',result:fmt(I15)},
-        {type:'Extremo(g)',say:'Máximo de utilidad. Redondea la primera coordenada al entero más próximo.',result:'A≈('+xopt+', '+fmt(Umax)+')'},
-        {type:'g(x(A))',say:'Utilidad exacta en el entero redondeado.',result:fmt(Umax)},
-      ],
-      note:'Para "no rentable": observa dónde la curva g(x) cruza el eje X por segunda vez. Ese es el punto donde U=0 y luego se vuelve negativa. Puedes hacer Cero(g) en GeoGebra.'
+      note:'Para la raíz cuadrada en GeoGebra siempre se escribe sqrt( ) y no el símbolo √. Y recuerda: "utilidad máxima" usa Extremo(g), pero "ya no es rentable" busca dónde g vuelve a cruzar cero — son preguntas distintas, no confundirlas.',
+      quiz:{
+        fields:[
+          {key:'I1',label:'Ingreso al vender '+n1+' artículos',unit:'pesos',ans:I1},
+          {key:'C2',label:'Costo al vender '+n2+' artículos',unit:'pesos',ans:C2},
+          {key:'U3',label:'Utilidad al vender '+n3+' artículos',unit:'pesos',ans:U3},
+          {key:'xopt',label:'Artículos para utilidad máxima',unit:'artículos',ans:xopt,tol:1},
+          {key:'Umax',label:'Utilidad máxima',unit:'pesos',ans:Umax},
+          {key:'xbreak',label:'Artículos para que no sea rentable',unit:'artículos',ans:xbreak,tol:3},
+        ]
+      }
     };
   }
 },
 
 ];
 
-/* ===================== TIPOS PARA CHULETA ===================== */
-var TIPOS_CHULETA = [
-  {n:'T1',title:'Río / 3 lados (2x+y=C)',desc:'Un lado libre (río, pared). Restricción: 2x+y=C',code:'f(x)=C-2x\ng(x)=x*f(x)\nExtremo(g)  → x, Área\nf(x(A))    → y'},
-  {n:'T2',title:'Utilidad = Ingreso − Costo',desc:'I(x)=px, C(x)=ax²+bx+c',code:'f(x)=p*x\nh(x)=a*x^2+b*x+c\ng(x)=f(x)-h(x)\nExtremo(g)  → x, Utilidad'},
-  {n:'T3',title:'Caja con cortes (cúbica)',desc:'Cartón cuadrado lado a, corte x en esquinas',code:'g(x)=x*(a-2x)^2\nExtremo(g)  → LISTA de 2 puntos\n⚠ El menor x = máximo real'},
-  {n:'T4',title:'Cartel con márgenes',desc:'Área total S, márgenes tv (vertical) y th (horizontal)',code:'f(x)=S/x\ng(x)=(x-tv)*(f(x)-th)\nExtremo(g)  → x, Área impresa\nf(x(A))    → y'},
-  {n:'T5',title:'Minimizar cordón (volumen fijo)',desc:'Base cuadrada, V=x²y, L=5x+4y (revisar enunciado)',code:'f(x)=V/x^2\ng(x)=5x+4*f(x)\nExtremo(g)  → x, L mínima\nf(x(A))    → y'},
-  {n:'T6',title:'Cilindro (área fija)',desc:'Usa π=3,14. At = 2πr² + 2πrh. Variable: r',code:'f(r)=At/(2*3.14*r)-r\ng(r)=3.14*r^2*f(r)\nExtremo(g)  → r, V máximo\nf(x(A))    → h'},
-  {n:'T7',title:'Parcelas iguales (n hermanos)',desc:'n parcelas, área S, minimizar cerca total',code:'f(x)=S/(n*x)\ng(x)=2n*x+(n+1)*f(x)\nExtremo(g)  → x, P mínimo\nf(x(A))    → y'},
-  {n:'T8',title:'Casa + patio abierto',desc:'Restricción x+5y=P0. ¡Variable libre es y!',code:'f(y)=P0-5y\ng(y)=(f(y)+y)*y\nExtremo(g)  → ⚠ 1ª coord=Y\nf(x(A))    → x'},
-  {n:'T9',title:'Cercado 4 lados (2x+2y=C)',desc:'Sin lado libre. Siempre sale cuadrado (x=y)',code:'f(x)=(C-2x)/2\ng(x)=x*f(x)\nExtremo(g)  → x, Área\nf(x(A))    → y (= x)'},
-  {n:'T10',title:'Utilidad con ln o √x',desc:'Costo incluye ln(x) o √x. Redondear al entero',code:'f(x)=p*x\nh(x)=a*x^2-k*ln(x)\ng(x)=f(x)-h(x)\nExtremo(g)  → redondear x'},
-];
+</script>
+<script>
+/* =====================================================================
+   APP.JS — Lógica de interfaz: modo Guía y modo Juego (Supervivencia)
+   ===================================================================== */
 
-/* ===================== ESTADO ===================== */
-var lives=3, score=0, survival=false, current=null, currentIdx=0, order=[];
-
-/* ===================== TABS ===================== */
-function showTab(t){
-  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
-  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
-  document.getElementById('tab-'+t).classList.add('active');
-  event.target.classList.add('active');
+function esc(s){ return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function close(a,b,tol){
+  var t = tol!==undefined ? tol : Math.max(0.06, Math.abs(b)*0.015);
+  return Math.abs(a-b) <= t;
 }
 
-/* ===================== MENU ===================== */
-function buildMenu(){
-  var g = document.getElementById('menuGrid');
+/* ===================== MODE SWITCH ===================== */
+function goMode(m){
+  document.getElementById('view-guia').classList.toggle('active', m==='guia');
+  document.getElementById('view-juego').classList.toggle('active', m==='juego');
+  document.getElementById('btnGuia').classList.toggle('on', m==='guia');
+  document.getElementById('btnJuego').classList.toggle('on', m==='juego');
+}
+
+/* ===================== GUÍA: MENU ===================== */
+function buildGuiaMenu(){
+  var g = document.getElementById('guiaGrid');
   g.innerHTML = '';
-  // supervivencia
-  var sb = document.createElement('div');
-  sb.className = 'menu-card survival';
-  sb.innerHTML = '<div><div class="menu-card-num">⚔ MODO SUPERVIVENCIA</div><div class="menu-card-title">Todos los problemas mezclados</div><div class="menu-card-sub">3 vidas · puntos acumulados · orden aleatorio</div></div>';
-  sb.onclick = function(){ startSurvival(); };
-  g.appendChild(sb);
-  // individuales
   PROBLEMS.forEach(function(p, i){
     var c = document.createElement('div');
-    c.className = 'menu-card';
-    c.innerHTML = '<div class="menu-card-num">Pregunta '+p.num+' · '+p.pts+'</div><div class="menu-card-title">'+p.title+'</div><div class="menu-card-sub">'+p.tag+'</div>';
-    c.onclick = (function(idx){ return function(){ startSingle(idx); }; })(i);
+    c.className = 'card';
+    c.innerHTML = '<div class="card-tag">Pregunta '+p.num+' · '+p.pts+'</div>'+
+                  '<div class="card-title">'+esc(p.title)+'</div>'+
+                  '<div class="card-sub">'+esc(p.tag)+'</div>';
+    c.onclick = (function(idx){ return function(){ openGuiaProblem(idx); }; })(i);
     g.appendChild(c);
   });
 }
 
-function startSingle(idx){
-  survival=false; lives=3; score=0;
-  currentIdx=idx;
-  showHud(false);
-  loadProblem(idx);
+var guiaCurrent = null;
+var guiaLetterIdx = 0;
+
+function openGuiaProblem(idx){
+  guiaCurrent = PROBLEMS[idx].gen();
+  guiaCurrent._prob = PROBLEMS[idx];
+  guiaCurrent._idx = idx;
+  guiaLetterIdx = 0;
+  document.getElementById('guia-menu').style.display='none';
+  document.getElementById('guia-problem').style.display='block';
+  renderGuiaProblem();
+}
+
+function backGuiaMenu(){
+  document.getElementById('guia-menu').style.display='block';
+  document.getElementById('guia-problem').style.display='none';
+}
+
+function renderGuiaProblem(){
+  var p = guiaCurrent, pm = guiaCurrent._prob;
+  var html = '';
+  html += '<div class="pb-head"><button class="pb-back" onclick="backGuiaMenu()">← Volver</button><span class="pb-tag">'+esc(pm.tag)+'</span></div>';
+  html += '<div class="pb-title">'+esc(pm.title)+'</div>';
+  html += '<div class="pb-pts">'+esc(pm.pts)+' · Pregunta '+esc(pm.num)+'</div>';
+  html += '<div class="statement">'+p.statement+'</div>';
+
+  // letter bar
+  html += '<div class="letterbar" id="letterbar"></div>';
+
+  // letter content
+  html += '<div id="letterContent"></div>';
+
+  if(p.note){
+    html += '<div class="note-box">💡 '+p.note+'</div>';
+  }
+
+  html += '<div class="nav-row">'+
+          '<button class="btn btn-ghost" onclick="reGenerateGuia()">🔄 Otros números (mismo tipo)</button>'+
+          '<a href="https://www.geogebra.org/classic" target="_blank" class="btn btn-ggb">Abrir GeoGebra ↗</a>'+
+          '</div>';
+
+  document.getElementById('guia-problem').innerHTML = html;
+  renderLetterBar();
+  renderLetter();
+}
+
+function renderLetterBar(){
+  var bar = document.getElementById('letterbar');
+  bar.innerHTML = '';
+  guiaCurrent.letters.forEach(function(L, i){
+    var d = document.createElement('div');
+    d.className = 'letterdot'+(i===guiaLetterIdx?' active':(i<guiaLetterIdx?' done':''));
+    d.textContent = (i+1);
+    d.title = L.question;
+    d.onclick = (function(idx){ return function(){ guiaLetterIdx=idx; renderLetterBar(); renderLetter(); }; })(i);
+    bar.appendChild(d);
+  });
+}
+
+function renderLetter(){
+  var L = guiaCurrent.letters[guiaLetterIdx];
+  var html = '<div class="letter-block">';
+  html += '<div class="letter-block-head"><div class="letter-badge">'+(guiaLetterIdx+1)+'</div><div class="letter-q">'+esc(L.question)+'</div></div>';
+  html += '<div class="letter-body">';
+
+  L.ggb.forEach(function(g, i){
+    var isRealCmd = g.cmd.indexOf('(revisa')===-1;
+    html += '<div class="ggb-line">';
+    html += '<span class="lbl">'+(isRealCmd?'Escribe':'Mira')+'</span>';
+    html += '<span class="code" id="code_'+guiaLetterIdx+'_'+i+'">'+esc(g.cmd)+'</span>';
+    if(isRealCmd){ html += '<button class="copybtn" onclick="copyCode(\''+guiaLetterIdx+'_'+i+'\')">copiar</button>'; }
+    if(g.result){ html += '<span class="arrowres">→ '+esc(g.result)+'</span>'; }
+    html += '</div>';
+    html += '<div class="why">'+g.say+'</div>';
+  });
+
+  html += '<div class="answerline">'+
+          '<span class="lbl2">'+esc(L.answer.label)+'</span>'+
+          '<span class="val">'+esc(L.answer.value)+'</span>'+
+          (L.answer.unit?'<span class="unit">'+esc(L.answer.unit)+'</span>':'')+
+          '<button class="copyans" onclick="copyAns(this,\''+esc(L.answer.value)+'\')">copiar</button>'+
+          '</div>';
+
+  html += '</div></div>';
+
+  // nav buttons within letter
+  html += '<div class="nav-row">';
+  if(guiaLetterIdx>0){ html += '<button class="btn btn-ghost" onclick="prevLetter()">← Anterior</button>'; }
+  if(guiaLetterIdx<guiaCurrent.letters.length-1){ html += '<button class="btn btn-main" onclick="nextLetter()">Siguiente letra →</button>'; }
+  else { html += '<button class="btn btn-main" onclick="backGuiaMenu()">✓ Listo, volver al menú</button>'; }
+  html += '</div>';
+
+  document.getElementById('letterContent').innerHTML = html;
+}
+
+function nextLetter(){ guiaLetterIdx++; renderLetterBar(); renderLetter(); window.scrollTo({top:0,behavior:'smooth'}); }
+function prevLetter(){ guiaLetterIdx--; renderLetterBar(); renderLetter(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+function reGenerateGuia(){
+  var idx = guiaCurrent._idx;
+  openGuiaProblem(idx);
+}
+
+function copyCode(key){
+  var el = document.getElementById('code_'+key);
+  var text = el.textContent;
+  navigator.clipboard && navigator.clipboard.writeText(text).catch(function(){});
+  el.style.background = '#cfe8ff';
+  setTimeout(function(){ el.style.background='#fff'; }, 300);
+}
+function copyAns(btn, text){
+  navigator.clipboard && navigator.clipboard.writeText(text.replace(/,/g,'.')).catch(function(){});
+  var old = btn.textContent;
+  btn.textContent = '✓';
+  setTimeout(function(){ btn.textContent = old; }, 900);
+}
+
+/* ===================== JUEGO: MENU ===================== */
+function buildJuegoMenu(){
+  var g = document.getElementById('juegoGrid');
+  g.innerHTML = '';
+  PROBLEMS.forEach(function(p, i){
+    var c = document.createElement('div');
+    c.className = 'card';
+    c.innerHTML = '<div class="card-tag">Pregunta '+p.num+'</div>'+
+                  '<div class="card-title">'+esc(p.title)+'</div>'+
+                  '<div class="card-sub">'+esc(p.tag)+'</div>';
+    c.onclick = (function(idx){ return function(){ startSingleQuiz(idx); }; })(i);
+    g.appendChild(c);
+  });
+}
+
+var lives=3, score=0, survival=false, quizCurrent=null, quizIdx=0, quizOrder=[];
+
+function shuffleArr(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } }
+
+function startSingleQuiz(idx){
+  survival = false; lives=3; score=0;
+  quizIdx = idx;
+  document.getElementById('hud').classList.remove('active');
+  document.getElementById('juego-menu').style.display='none';
+  document.getElementById('juego-problem').style.display='block';
+  document.getElementById('endcard').classList.remove('active');
+  loadQuiz(idx);
 }
 
 function startSurvival(){
-  survival=true; lives=3; score=0;
-  order=PROBLEMS.map(function(_,i){return i;});
-  shuffle(order);
-  currentIdx=0;
-  showHud(true);
+  survival = true; lives=3; score=0;
+  quizOrder = PROBLEMS.map(function(_,i){ return i; });
+  shuffleArr(quizOrder);
+  quizIdx = 0;
+  document.getElementById('hud').classList.add('active');
+  document.getElementById('juego-menu').style.display='none';
+  document.getElementById('juego-problem').style.display='block';
+  document.getElementById('endcard').classList.remove('active');
   renderHud();
-  loadProblem(order[0]);
+  loadQuiz(quizOrder[0]);
 }
 
-function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t; } }
+function exitSurvival(){ backJuegoMenu(); }
 
-function showHud(on){
-  document.getElementById('hud').classList.toggle('active', on);
+function backJuegoMenu(){
+  document.getElementById('juego-menu').style.display='block';
+  document.getElementById('juego-problem').style.display='none';
+  document.getElementById('endcard').classList.remove('active');
+  document.getElementById('hud').classList.remove('active');
 }
 
 function renderHud(){
-  var lv=document.getElementById('lives');
-  lv.innerHTML='';
+  var lv = document.getElementById('lives');
+  lv.innerHTML = '';
   for(var i=0;i<3;i++){
-    var h=document.createElement('div');
-    h.className='hud-heart'+(i<lives?' ':' off');
+    var h = document.createElement('div');
+    h.className = 'heart'+(i<lives?'':' off');
     lv.appendChild(h);
   }
-  document.getElementById('score').textContent=score;
+  document.getElementById('score').textContent = score;
 }
 
-function backToMenu(){
-  document.getElementById('menuSection').style.display='';
-  document.getElementById('problemView').style.display='none';
-  document.getElementById('endScreen').classList.remove('active');
-  showHud(false);
-  lives=3; score=0;
+function loadQuiz(idx){
+  quizCurrent = PROBLEMS[idx].gen();
+  quizCurrent._prob = PROBLEMS[idx];
+  quizCurrent._idx = idx;
+  renderQuiz();
 }
 
-/* ===================== CARGAR PROBLEMA ===================== */
-function loadProblem(idx){
-  current = PROBLEMS[idx].gen();
-  current._prob = PROBLEMS[idx];
-  current._idx = idx;
-  document.getElementById('menuSection').style.display='none';
-  document.getElementById('endScreen').classList.remove('active');
-  document.getElementById('problemView').style.display='block';
-  renderProblem();
+function renderQuiz(){
+  var q = quizCurrent, pm = quizCurrent._prob;
+  var html = '';
+  html += '<div class="pb-tag">'+esc(pm.tag)+'</div>';
+  html += '<div class="pb-title">'+esc(pm.title)+'</div>';
+  html += '<div class="pb-pts">'+esc(pm.pts)+'</div>';
+  html += '<div class="qz-statement">'+q.statement+'</div>';
+  html += '<div class="qz-fields">';
+  q.quiz.fields.forEach(function(f){
+    html += '<div class="qz-field">'+
+            '<label>'+esc(f.label)+' =</label>'+
+            '<input type="text" id="qz_'+f.key+'" placeholder="?">'+
+            (f.unit?'<span class="qz-unit">'+esc(f.unit)+'</span>':'')+
+            '</div>';
+  });
+  html += '</div>';
+  html += '<div class="nav-row">'+
+          '<button class="btn btn-main" onclick="verifyQuiz()">Verificar</button>'+
+          '<a href="https://www.geogebra.org/classic" target="_blank" class="btn btn-ggb">Abrir GeoGebra ↗</a>'+
+          '<button class="btn btn-ghost" onclick="nextQuiz()">Siguiente →</button>'+
+          '</div>';
+  html += '<div class="qz-feedback" id="qzFeedback"></div>';
+  document.getElementById('juego-content').innerHTML = html;
 }
 
-function renderProblem(){
-  var p=current, pm=current._prob;
-  document.getElementById('probNum').textContent=pm.num;
-  document.getElementById('probTag').textContent=pm.tag;
-  document.getElementById('probTitle').textContent=pm.title;
-  document.getElementById('probPts').textContent=pm.pts;
-  document.getElementById('probStatement').innerHTML=p.statement;
-
-  // Fields
-  var fd=document.getElementById('fields');
-  fd.innerHTML='';
-  p.fields.forEach(function(f){
-    var row=document.createElement('div');
-    row.className='field-row';
-    var lbl=document.createElement('div');
-    lbl.className='field-label';
-    lbl.textContent=f.label+' =';
-    var inp=document.createElement('input');
-    inp.className='field-input';
-    inp.id='inp_'+f.key;
-    inp.placeholder='?';
-    inp.type='text';
-    var unit=document.createElement('div');
-    unit.style.cssText='font-size:0.8rem;color:var(--muted);';
-    unit.textContent=f.unit||'';
-    row.appendChild(lbl);
-    row.appendChild(inp);
-    if(f.unit) row.appendChild(unit);
-    fd.appendChild(row);
+function verifyQuiz(){
+  var q = quizCurrent;
+  var allOk = true;
+  q.quiz.fields.forEach(function(f){
+    var inp = document.getElementById('qz_'+f.key);
+    var raw = (inp.value||'').trim().replace(',','.');
+    var val = parseFloat(raw);
+    var ok = !isNaN(val) && close(val, f.ans, f.tol);
+    inp.classList.remove('ok','bad');
+    inp.classList.add(ok?'ok':'bad');
+    if(!ok) allOk=false;
   });
-
-  // Feedback
-  var fb=document.getElementById('feedback');
-  fb.style.display='none';
-  fb.className='feedback-box';
-
-  // Next button text
-  document.getElementById('nextBtn').textContent=survival?'Siguiente →':'Otro igual →';
-
-  // Manual steps
-  var ms=document.getElementById('manualSteps');
-  ms.innerHTML='';
-  p.manual.forEach(function(s,i){
-    var item=document.createElement('div');
-    item.className='step-item';
-    item.innerHTML='<div class="step-n">'+(i+1)+'</div><div class="step-content"><div class="step-label">'+s.t+'</div><div class="step-body">'+s.b+'</div></div>';
-    ms.appendChild(item);
-  });
-
-  // GGB steps
-  var gs=document.getElementById('ggbSteps');
-  gs.innerHTML='';
-  p.ggb.forEach(function(g,i){
-    var step=document.createElement('div');
-    step.className='ggb-step';
-    var top=document.createElement('div');
-    top.className='ggb-top';
-    top.innerHTML='<div class="ggb-n">'+(i+1)+'</div><div class="ggb-typebox">'+escHtml(g.type)+'</div>'+(g.result?'<div class="ggb-result">→ '+escHtml(g.result)+'</div>':'');
-    var why=document.createElement('div');
-    why.className='ggb-why';
-    why.textContent=g.say;
-    step.appendChild(top);
-    step.appendChild(why);
-    gs.appendChild(step);
-  });
-  if(p.note){
-    var nt=document.createElement('div');
-    nt.className='ggb-note';
-    nt.textContent='💡 '+p.note;
-    gs.appendChild(nt);
-  }
-}
-
-function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-/* ===================== VERIFICAR ===================== */
-function verify(){
-  var allOk=true;
-  current.fields.forEach(function(f){
-    var inp=document.getElementById('inp_'+f.key);
-    if(f.text){
-      inp.classList.remove('ok','bad');
-      inp.classList.add('ok');
-    } else {
-      var raw=(inp.value||'').trim().replace(',','.');
-      var val=parseFloat(raw);
-      var ok=!isNaN(val)&&close(val,f.ans);
-      inp.classList.remove('ok','bad');
-      inp.classList.add(ok?'ok':'bad');
-      if(!ok) allOk=false;
-    }
-  });
-  var fb=document.getElementById('feedback');
-  fb.style.display='block';
+  var fb = document.getElementById('qzFeedback');
+  fb.style.display = 'block';
   if(allOk){
-    fb.className='feedback-box ok';
-    fb.textContent='✓ ¡Correcto! Revisa igualmente el procedimiento GeoGebra de abajo para reforzar.';
-    score+=10;
+    fb.className = 'qz-feedback ok';
+    fb.textContent = '✓ ¡Correcto! Así se vería en GeoGebra: revisa la Guía si quieres ver el paso a paso de este tipo de problema.';
+    score += 10;
   } else {
-    fb.className='feedback-box bad';
-    fb.textContent='✗ Algún valor no coincide. Sigue los pasos de GeoGebra de abajo con calma — la respuesta exacta está ahí.';
-    if(survival){ lives-=1; }
+    fb.className = 'qz-feedback bad';
+    fb.textContent = '✗ Algo no coincide. Ve al modo Guía → "'+q._prob.title+'" para ver exactamente qué escribir en GeoGebra, paso a paso.';
+    if(survival) lives -= 1;
   }
-  if(survival){ renderHud(); }
-  if(survival&&lives<=0){ setTimeout(endGame,800); }
-}
-
-function nextProblem(){
   if(survival){
-    currentIdx=(currentIdx+1)%order.length;
-    if(currentIdx===0) shuffle(order);
-    loadProblem(order[currentIdx]);
-  } else {
-    loadProblem(current._idx);
+    renderHud();
+    if(lives<=0){ setTimeout(endSurvival, 700); }
   }
 }
 
-function endGame(){
-  document.getElementById('problemView').style.display='none';
-  document.getElementById('endScreen').classList.add('active');
-  document.getElementById('finalScore').textContent=score;
-  showHud(false);
+function nextQuiz(){
+  if(survival){
+    quizIdx = (quizIdx+1) % quizOrder.length;
+    if(quizIdx===0) shuffleArr(quizOrder);
+    loadQuiz(quizOrder[quizIdx]);
+  } else {
+    loadQuiz(quizCurrent._idx);
+  }
 }
 
-/* ===================== CHULETA TIPOS ===================== */
-function buildTipos(){
-  var c=document.getElementById('tiposContainer');
-  c.innerHTML='';
-  TIPOS_CHULETA.forEach(function(t){
-    var card=document.createElement('div');
-    card.className='cheat-type-card';
-    card.innerHTML='<div class="ctc-header"><div class="ctc-num">'+t.n+'</div><div class="ctc-title">'+t.title+'</div></div>'
-      +'<div class="ctc-body">'+t.desc+'<div class="ctc-code">'+escHtml(t.code)+'</div></div>';
-    c.appendChild(card);
-  });
+function endSurvival(){
+  document.getElementById('juego-problem').style.display='none';
+  document.getElementById('endcard').classList.add('active');
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('hud').classList.remove('active');
 }
 
 /* ===================== INIT ===================== */
-buildMenu();
-buildTipos();
+buildGuiaMenu();
+buildJuegoMenu();
+
 </script>
 </body>
 </html>
