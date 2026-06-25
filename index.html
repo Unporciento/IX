@@ -940,32 +940,32 @@ function fmt(n){
 }
 function close(a,b){ return Math.abs(a-b)<=Math.max(0.06,Math.abs(b)*0.015); }
 
-/* ===================== DATOS FIJOS DEL EXAMEN ===================== */
-/* Cada problema tiene datos fijos tomados del examen fotografiado */
+/* ===================== DATOS DEL EXAMEN ===================== */
 
 var PROBLEMS = [
 
-/* P1: EL GRANJERO — 400m, río, 3 lados */
+/* P1: EL GRANJERO — valores aleatorios de C */
 {
   num:'01', tag:'TIPO 1 · Río / 3 lados', title:'El Granjero', pts:'20 puntos',
   gen: function(){
-    var C=400, x=C/4, y=C/2, A=x*y;
+    var C=rndOf([400,600,800,1000,1200]);
+    var x=C/4, y=C/2, A=x*y;
     return {
-      statement:'Un granjero tiene <b>400 metros</b> de cerca y desea rodear una zona rectangular <b>A</b> que limita con un río recto, <b>no necesitando cercar</b> el lado que da al río. Los dos lados perpendiculares miden x y el lado paralelo al río mide y. Si al cercar la zona se debe obtener el área mayor posible, calcula x, y y el área máxima.',
+      statement:'Un granjero tiene <b>'+C+' metros</b> de cerca y desea rodear una zona rectangular <b>A</b> que limita con un río recto, <b>no necesitando cercar</b> el lado que da al río. Los dos lados perpendiculares miden x y el lado paralelo al río mide y. Si al cercar la zona se debe obtener el área mayor posible, calcula x, y y el área máxima.',
       fields:[
         {key:'x',label:'El valor de x es',unit:'metros',ans:x},
         {key:'y',label:'El valor de y es',unit:'metros',ans:y},
         {key:'A',label:'Área máxima',unit:'m²',ans:A},
       ],
       manual:[
-        {t:'Restricción (3 lados)',b:'2x + y = 400  →  y = 400 − 2x'},
-        {t:'Función a maximizar',b:'Área = x · y. Sustituimos y:  A(x) = x(400−2x) = 400x − 2x²'},
-        {t:'Derivamos e igualamos a 0',b:"A'(x) = 400 − 4x = 0  →  x = "+fmt(x)},
-        {t:'Calculamos y',b:'y = 400 − 2('+fmt(x)+') = '+fmt(y)},
+        {t:'Restricción (3 lados)',b:'2x + y = '+C+'  →  y = '+C+' − 2x'},
+        {t:'Función a maximizar',b:'Área = x · y. Sustituimos y:  A(x) = x('+C+'−2x) = '+C+'x − 2x²'},
+        {t:'Derivamos e igualamos a 0',b:"A'(x) = "+C+" − 4x = 0  →  x = "+fmt(x)},
+        {t:'Calculamos y',b:'y = '+C+' − 2('+fmt(x)+') = '+fmt(y)},
         {t:'Área máxima',b:'A = '+fmt(x)+' × '+fmt(y)+' = '+fmt(A)+' m²'},
       ],
       ggb:[
-        {type:'f(x)=400-2x',say:'Esto es y, despejada de la restricción (lado paralelo al río).'},
+        {type:'f(x)='+C+'-2x',say:'Esto es y, despejada de la restricción (lado paralelo al río).'},
         {type:'g(x)=x*f(x)',say:'Esto es el Área en función de x.'},
         {type:'Extremo(g)',say:'Aparece el punto A = ('+fmt(x)+', '+fmt(A)+'). La x óptima y el área máxima.',result:'A=('+fmt(x)+', '+fmt(A)+')'},
         {type:'f(x(A))',say:'Te da el valor de y.',result:fmt(y)},
@@ -974,69 +974,69 @@ var PROBLEMS = [
   }
 },
 
-/* P2: UTILIDAD MÁXIMA — Manza Pizza, I=15160x, C=18000+1900x+270x² */
+/* P2: UTILIDAD MÁXIMA — Manza Pizza, valores aleatorios */
 {
   num:'02', tag:'TIPO 2 · Utilidad = Ingreso − Costo', title:'Manza-Pizza · Utilidad Máxima', pts:'20 puntos',
   gen: function(){
-    var p=15160, a=270, b=1900, c=18000;
+    var p=rndOf([12000,15160,18000,20000]);
+    var a=rndOf([200,270,300,350]);
+    var b=rndOf([1500,1900,2200]);
+    var c=rndOf([15000,18000,22000]);
     var x=(p-b)/(2*a);
     var U=p*x-(a*x*x+b*x+c);
-    var U28=p*28-(a*28*28+b*28+c);
+    var x28=28;
+    var U28=p*x28-(a*x28*x28+b*x28+c);
     return {
-      statement:'La pizzería <b>"MANZA-PIZZA"</b> vende pizzas XXXL. Ingreso: <b>I(x) = 15160x</b>. Costo: <b>C(x) = 18000 + 1900x + 270x²</b>, donde x es el número de pizzas. Con UTILIDAD = INGRESO − COSTO:<br><br>a) ¿Cuál es la expresión de I(x)? b) ¿Cuál es la expresión de C(x)? c) ¿Cuál es la utilidad si se venden 28 pizzas? d) ¿Cuántas pizzas dan utilidad máxima? f) ¿Cuál es esa utilidad máxima?',
+      statement:'La pizzería <b>"MANZA-PIZZA"</b> vende pizzas XXXL. Ingreso: <b>I(x) = '+p+'x</b>. Costo: <b>C(x) = '+c+' + '+b+'x + '+a+'x²</b>, donde x es el número de pizzas. Con UTILIDAD = INGRESO − COSTO:<br><br>a) ¿Cuál es la expresión de I(x)? b) ¿Cuál es la expresión de C(x)? c) ¿Cuál es la utilidad si se venden 28 pizzas? d) ¿Cuántas pizzas dan utilidad máxima? f) ¿Cuál es esa utilidad máxima?',
       fields:[
-        {key:'Ix',label:'I(x) =',unit:'(expresión)',ans:'15160x',text:true},
-        {key:'Cx',label:'C(x) =',unit:'(expresión)',ans:'18000+1900x+270x^2',text:true},
+        {key:'Ix',label:'I(x) =',unit:'(expresión)',ans:p+'x',text:true},
+        {key:'Cx',label:'C(x) =',unit:'(expresión)',ans:c+'+'+b+'x+'+a+'x^2',text:true},
         {key:'U28',label:'Utilidad si venden 28 pizzas',unit:'pesos',ans:U28},
         {key:'xopt',label:'Pizzas para utilidad máxima',unit:'pizzas',ans:x},
         {key:'Umax',label:'Utilidad máxima',unit:'pesos',ans:U},
       ],
       manual:[
-        {t:'Modelos (de la tabla)',b:'I(x) = 15160x  |  C(x) = 18000 + 1900x + 270x²'},
-        {t:'Utilidad para x=28',b:'U(28) = 15160(28) − [18000 + 1900(28) + 270(28²)] = '+fmt(U28)+' pesos'},
-        {t:'Función utilidad general',b:'U(x) = 15160x − 18000 − 1900x − 270x² = −270x² + 13260x − 18000'},
-        {t:'Derivamos e igualamos a 0',b:"U'(x) = −540x + 13260 = 0  →  x = "+fmt(x)+' pizzas'},
+        {t:'Modelos',b:'I(x) = '+p+'x  |  C(x) = '+c+' + '+b+'x + '+a+'x²'},
+        {t:'Utilidad para x=28',b:'U(28) = '+p+'(28) − ['+c+' + '+b+'(28) + '+a+'(28²)] = '+fmt(U28)+' pesos'},
+        {t:'Función utilidad general',b:'U(x) = '+p+'x − '+c+' − '+b+'x − '+a+'x² = −'+a+'x² + '+(p-b)+'x − '+c},
+        {t:'Derivamos e igualamos a 0',b:"U'(x) = −"+(2*a)+"x + "+(p-b)+" = 0  →  x = "+fmt(x)+' pizzas'},
         {t:'Utilidad máxima',b:'U('+fmt(x)+') = '+fmt(U)+' pesos'},
       ],
       ggb:[
-        {type:'f(x)=15160x',say:'Ingreso I(x).'},
-        {type:'h(x)=18000+1900x+270x^2',say:'Costo C(x). Usa ^ para el exponente.'},
+        {type:'f(x)='+p+'x',say:'Ingreso I(x).'},
+        {type:'h(x)='+c+'+'+b+'x+'+a+'x^2',say:'Costo C(x). Usa ^ para el exponente.'},
         {type:'g(x)=f(x)-h(x)',say:'Utilidad U(x).'},
         {type:'g(28)',say:'Te da la utilidad al vender 28 pizzas.',result:fmt(U28)},
         {type:'Extremo(g)',say:'Te da ('+fmt(x)+', '+fmt(U)+'): pizzas óptimas y utilidad máxima.',result:'A=('+fmt(x)+', '+fmt(U)+')'},
-      ],
-      note:'Para I(x): escoge "15000x" de las opciones (más cercana a 15160x). Para C(x): escoge "200+30x+25x^2" y ajusta los coeficientes.'
+      ]
     };
   }
 },
 
-/* P3: CAJA SIN TAPA — base 2x·x, área=4873.5 cm² */
+/* P3: CAJA SIN TAPA — base 2x·x, área aleatoria */
 {
   num:'03', tag:'TIPO · Caja sin tapa (área fija)', title:'Caja de Volumen Máximo', pts:'20 puntos',
   gen: function(){
-    var At=4873.5;
-    // At = 2x² + 6xh  → h = (At-2x²)/(6x)
-    // V = 2x²·h = 2x²·(At-2x²)/(6x) = x(At-2x²)/3
-    // dV/dx = (At-6x²)/3 = 0 → x = √(At/6)
+    var At=rndOf([3000,3750,4873.5,5400,6000]);
     var x=Math.sqrt(At/6);
     var h=(At-2*x*x)/(6*x);
     var V=2*x*x*h;
     return {
-      statement:'Una caja <b>sin tapa</b> se debe construir con <b>4873,5 cm²</b> de cartón corrugado. La figura muestra las dimensiones: base <b>2x · x</b> y altura <b>h</b>. Encuentra los valores de x y h para que el volumen sea máximo, y calcula ese volumen máximo.',
+      statement:'Una caja <b>sin tapa</b> se debe construir con <b>'+fmt(At)+' cm²</b> de cartón corrugado. La figura muestra las dimensiones: base <b>2x · x</b> y altura <b>h</b>. Encuentra los valores de x y h para que el volumen sea máximo, y calcula ese volumen máximo.',
       fields:[
         {key:'x',label:'El valor de x es',unit:'cm',ans:x},
         {key:'h',label:'El valor de h es',unit:'cm',ans:h},
         {key:'V',label:'Volumen máximo',unit:'cm³',ans:V},
       ],
       manual:[
-        {t:'Área total (sin tapa)',b:'Área = base (2x·x) + 4 caras laterales = 2x² + 6xh = 4873,5'},
-        {t:'Restricción → despejar h',b:'h = (4873,5 − 2x²) / (6x)'},
-        {t:'Función volumen',b:'V(x) = 2x²·h = 2x²·(4873,5−2x²)/(6x) = x(4873,5−2x²)/3'},
-        {t:'Derivar e igualar a 0',b:"V'(x) = (4873,5 − 6x²)/3 = 0  →  x² = 812,25  →  x = "+fmt(x)},
+        {t:'Área total (sin tapa)',b:'Área = base (2x·x) + 4 caras laterales = 2x² + 6xh = '+fmt(At)},
+        {t:'Restricción → despejar h',b:'h = ('+fmt(At)+' − 2x²) / (6x)'},
+        {t:'Función volumen',b:'V(x) = 2x²·h = 2x²·('+fmt(At)+'−2x²)/(6x) = x('+fmt(At)+'−2x²)/3'},
+        {t:'Derivar e igualar a 0',b:"V'(x) = ("+fmt(At)+" − 6x²)/3 = 0  →  x² = "+fmt(At/6)+"  →  x = "+fmt(x)},
         {t:'Calcular h y V',b:'h = '+fmt(h)+' cm,  V = '+fmt(V)+' cm³'},
       ],
       ggb:[
-        {type:'f(x)=(4873.5-2x^2)/(6x)',say:'Esto es h, despejada del área total.'},
+        {type:'f(x)=('+At+'-2x^2)/(6x)',say:'Esto es h, despejada del área total.'},
         {type:'g(x)=2x^2*f(x)',say:'Esto es el Volumen en función de x.'},
         {type:'Extremo(g)',say:'Te da ('+fmt(x)+', '+fmt(V)+'): el x óptimo y el volumen máximo.',result:'A=('+fmt(x)+', '+fmt(V)+')'},
         {type:'f(x(A))',say:'Te da el valor de h.',result:fmt(h)},
@@ -1045,31 +1045,33 @@ var PROBLEMS = [
   }
 },
 
-/* P4: EL CARTEL — área=726 cm², márgenes: arriba 2cm, lados 1cm, abajo 1cm */
+/* P4: EL CARTEL — valores aleatorios de S, tv, th */
 {
   num:'04', tag:'TIPO 4 · Cartel con márgenes', title:'El Cartel', pts:'20 puntos',
   gen: function(){
-    var S=726, tv=3, th=2; // tv=arriba2+abajo1=3, th=izq1+der1=2
+    var S=rndOf([600,726,800,900,1000]);
+    var tv=rndOf([3,4,5]);
+    var th=rndOf([2,3,4]);
     var x=Math.sqrt(tv*S/th);
     var y=S/x;
     var Amax=(x-tv)*(y-th);
     return {
-      statement:'Un cartel rectangular de dimensiones <b>x</b> (vertical) e <b>y</b> (horizontal) de área total <b>726 cm²</b> debe contener un área impresa con los siguientes márgenes: <b>2 cm</b> arriba, <b>1 cm</b> abajo, <b>1 cm</b> a cada lado. Encuentra x, y y el área impresa máxima.',
+      statement:'Un cartel rectangular de dimensiones <b>x</b> (vertical) e <b>y</b> (horizontal) de área total <b>'+S+' cm²</b> debe contener un área impresa con los siguientes márgenes: <b>'+(tv-1)+' cm</b> arriba, <b>1 cm</b> abajo, <b>'+(th/2)+' cm</b> a cada lado. Encuentra x, y y el área impresa máxima.',
       fields:[
         {key:'x',label:'El valor de x es',unit:'cm',ans:x},
         {key:'y',label:'El valor de y es',unit:'cm',ans:y},
         {key:'A',label:'Área impresa máxima',unit:'cm²',ans:Amax},
       ],
       manual:[
-        {t:'Restricción (área total)',b:'x · y = 726  →  y = 726/x'},
-        {t:'Márgenes',b:'Vertical total: 2+1 = 3 cm.  Horizontal total: 1+1 = 2 cm.'},
-        {t:'Área impresa',b:'A = (x−3)(y−2). Sustituimos y = 726/x'},
+        {t:'Restricción (área total)',b:'x · y = '+S+'  →  y = '+S+'/x'},
+        {t:'Márgenes',b:'Vertical total: '+tv+' cm.  Horizontal total: '+th+' cm.'},
+        {t:'Área impresa',b:'A = (x−'+tv+')(y−'+th+'). Sustituimos y = '+S+'/x'},
         {t:'Derivamos e igualamos a 0',b:"A'(x) = 0  →  x = "+fmt(x)+' cm'},
-        {t:'Calculamos y y el área',b:'y = 726/'+fmt(x)+' = '+fmt(y)+',  A = '+fmt(Amax)+' cm²'},
+        {t:'Calculamos y y el área',b:'y = '+S+'/'+fmt(x)+' = '+fmt(y)+',  A = '+fmt(Amax)+' cm²'},
       ],
       ggb:[
-        {type:'f(x)=726/x',say:'Esto es y (lado horizontal), despejada del área total.'},
-        {type:'g(x)=(x-3)*(f(x)-2)',say:'Esto es el área impresa en función de x.'},
+        {type:'f(x)='+S+'/x',say:'Esto es y (lado horizontal), despejada del área total.'},
+        {type:'g(x)=(x-'+tv+')*(f(x)-'+th+')',say:'Esto es el área impresa en función de x.'},
         {type:'Extremo(g)',say:'Te da el punto A. Primera coordenada = x, segunda = área impresa máxima.',result:'A=('+fmt(x)+', '+fmt(Amax)+')'},
         {type:'f(x(A))',say:'Te da el valor de y.',result:fmt(y)},
       ]
@@ -1077,33 +1079,25 @@ var PROBLEMS = [
   }
 },
 
-/* P5: DEPÓSITO DE BASURA — V=29.16 m³, cordón de soldadura mínimo */
+/* P5: DEPÓSITO DE BASURA — valores aleatorios */
 {
   num:'05', tag:'TIPO 5 · Minimizar cordón (volumen fijo)', title:'Depósito de Basura', pts:'25 puntos',
   gen: function(){
-    var V=29.16;
-    // Prisma base cuadrada x·x, altura y. Con tapa (cubo cerrado)
-    // Cordón: bordes negros del depósito. Caja con tapa: 4 aristas base + 4 aristas tapa + 4 aristas laterales = 12 aristas
-    // Base cuadrada: aristas base=4x, aristas tapa=4x, aristas laterales=4y → L = 8x + 4y
-    // Pero mirando la figura: base x·x, y vertical. L = 4x + 4x + 4y (bisagra AB en 1 arista)
-    // Más simple: L_soldadura = aristas totales excepto bisagra AB
-    // Asumiendo L = 5x + 4y (típico del examen con bisagra AB en 1 arista superior)
-    var x=Math.cbrt(8*V/5); // de dL/dx=0: 5 - 8V/x³=0 → x³=8V/5
-    // Con L=5x+4y, V=x²y → y=V/x²
-    // L=5x+4V/x² → dL/dx=5-8V/x³=0
+    var V=rndOf([20,25,29.16,32,40]);
+    var L2=rndOf([8,10.5,12,15]);
+    // P1: L=5x+4y, V=x²y → y=V/x² → L=5x+4V/x²
+    // dL/dx=5-8V/x³=0 → x=∛(8V/5)
+    var x=Math.cbrt(8*V/5);
     var y=V/(x*x);
     var L=5*x+4*y;
-    // PARTE 2: L=10.5 fijo, max V
-    var L2=10.5;
-    // L=5x+4y=10.5 → y=(10.5-5x)/4
-    // V=x²y=x²(10.5-5x)/4
-    // dV/dx= x(21-15x)/4=0 → x=21/15=1.4
-    var x2=L2*3/15; // x=3L/15 → pero mejor: dV/dx=(2x(10.5-5x)-5x²)/4=(21x-15x²)/4=0 → x=21/15=1.4
-    x2=21/15;
+    // P2: 5x+4y=L2 → y=(L2-5x)/4
+    // V=x²y=x²(L2-5x)/4
+    // dV/dx=(2x(L2-5x)-5x²)/4=(2xL2-15x²)/4=0 → x=2L2/15
+    var x2=2*L2/15;
     var y2=(L2-5*x2)/4;
     var V2=x2*x2*y2;
     return {
-      statement:'<b>PARTE 1:</b> La empresa DEP.BAS Ltda fabrica depósitos de basura de base cuadrada con <b>29,16 m³</b> de volumen (base x·x, altura y). El cordón de soldadura TIG se aplica en los bordes. La expresión del volumen es <b>V = x²·y</b> y la del cordón es <b>L = 5x + 4y</b>.<br><br>a) Expresión del volumen. b) Expresión del cordón. c) Valor de x e y para cordón mínimo. d) Longitud mínima.<br><br><b>PARTE 2:</b> Se usan exactamente <b>10,5 m</b> de cordón. e) Valor de x e y para volumen máximo. g) Volumen máximo.',
+      statement:'<b>PARTE 1:</b> La empresa DEP.BAS Ltda fabrica depósitos de basura de base cuadrada con <b>'+fmt(V)+' m³</b> de volumen (base x·x, altura y). El cordón de soldadura TIG se aplica en los bordes. La expresión del volumen es <b>V = x²·y</b> y la del cordón es <b>L = 5x + 4y</b>.<br><br>a) Expresión del volumen. b) Expresión del cordón. c) Valor de x e y para cordón mínimo. d) Longitud mínima.<br><br><b>PARTE 2:</b> Se usan exactamente <b>'+fmt(L2)+' m</b> de cordón. e) Valor de x e y para volumen máximo. g) Volumen máximo.',
       fields:[
         {key:'Vexpr',label:'Expresión del volumen',unit:'',ans:'x2y',text:true,options:['x2y','x3','2xy','x*y2']},
         {key:'Lexpr',label:'Expresión del cordón',unit:'',ans:'5x+4y',text:true,options:['5x+4y','4x+5y','8x+4y','4x+4y']},
@@ -1115,20 +1109,20 @@ var PROBLEMS = [
         {key:'V2',label:'[P2] Volumen máximo',unit:'m³',ans:V2},
       ],
       manual:[
-        {t:'[P1] Restricción de volumen',b:'V = x²y = 29,16  →  y = 29,16/x²'},
-        {t:'[P1] Función a minimizar',b:'L(x) = 5x + 4y = 5x + 116,64/x². Derivamos: L\'(x) = 5 − 233,28/x³ = 0'},
-        {t:'[P1] x óptimo',b:'x³ = 233,28/5 = 46,656  →  x = ∛46,656 = '+fmt(x)+' m'},
-        {t:'[P1] y y longitud mínima',b:'y = 29,16/'+fmt(x)+'² = '+fmt(y)+' m,  L = '+fmt(L)+' m'},
-        {t:'[P2] Restricción de cordón',b:'5x + 4y = 10,5  →  y = (10,5−5x)/4'},
-        {t:'[P2] Volumen en función de x',b:'V(x) = x²·(10,5−5x)/4. Derivamos e igualamos a 0:  x = 1,4 m'},
-        {t:'[P2] y y volumen máximo',b:'y = (10,5−5·1,4)/4 = '+fmt(y2)+' m,  V = '+fmt(V2)+' m³'},
+        {t:'[P1] Restricción de volumen',b:'V = x²y = '+fmt(V)+'  →  y = '+fmt(V)+'/x²'},
+        {t:'[P1] Función a minimizar',b:'L(x) = 5x + 4y = 5x + '+fmt(4*V)+'/x². Derivamos: L\'(x) = 5 − '+fmt(8*V)+'/x³ = 0'},
+        {t:'[P1] x óptimo',b:'x³ = '+fmt(8*V/5)+'  →  x = ∛'+fmt(8*V/5)+' = '+fmt(x)+' m'},
+        {t:'[P1] y y longitud mínima',b:'y = '+fmt(V)+'/'+fmt(x)+'² = '+fmt(y)+' m,  L = '+fmt(L)+' m'},
+        {t:'[P2] Restricción de cordón',b:'5x + 4y = '+fmt(L2)+'  →  y = ('+fmt(L2)+'−5x)/4'},
+        {t:'[P2] Volumen en función de x',b:'V(x) = x²·('+fmt(L2)+'−5x)/4. Derivamos e igualamos a 0:  x = '+fmt(x2)+' m'},
+        {t:'[P2] y y volumen máximo',b:'y = ('+fmt(L2)+'−5·'+fmt(x2)+')/4 = '+fmt(y2)+' m,  V = '+fmt(V2)+' m³'},
       ],
       ggb:[
-        {type:'f(x)=29.16/x^2',say:'[P1] y despejada del volumen fijo.'},
+        {type:'f(x)='+V+'/x^2',say:'[P1] y despejada del volumen fijo.'},
         {type:'g(x)=5x+4*f(x)',say:'[P1] Longitud del cordón en función de x.'},
         {type:'Extremo(g)',say:'[P1] Mínimo: x y longitud mínima.',result:'A=('+fmt(x)+', '+fmt(L)+')'},
         {type:'f(x(A))',say:'[P1] Valor de y.',result:fmt(y)},
-        {type:'f2(x)=(10.5-5x)/4',say:'[P2] y despejada del cordón constante = 10,5 m.'},
+        {type:'f2(x)=('+L2+'-5x)/4',say:'[P2] y despejada del cordón constante = '+fmt(L2)+' m.'},
         {type:'g2(x)=x^2*f2(x)',say:'[P2] Volumen en función de x.'},
         {type:'Extremo(g2)',say:'[P2] Máximo de volumen.',result:'B=('+fmt(x2)+', '+fmt(V2)+')'},
         {type:'f2(x(B))',say:'[P2] Valor de y para el volumen máximo.',result:fmt(y2)},
@@ -1137,29 +1131,30 @@ var PROBLEMS = [
   }
 },
 
-/* P6: CILINDRO — At=560 cm², π=3.14, 3 decimales */
+/* P6: CILINDRO — At aleatorio, π=3.14, 3 decimales */
 {
   num:'06', tag:'TIPO 6 · Cilindro (área total fija)', title:'Cilindro de Volumen Máximo', pts:'20 puntos',
   gen: function(){
-    var At=560, PI=3.14;
+    var At=rndOf([400,480,560,600,720]);
+    var PI=3.14;
     var r=Math.sqrt(At/(6*PI));
     var h=At/(2*PI*r)-r;
     var V=PI*r*r*h;
     return {
-      statement:'Se desea construir un recipiente <b>cilíndrico metálico con tapa</b> que tenga un área total de <b>560 cm²</b>. Considera <b>π = 3,14</b>. Las fórmulas del cilindro son: Al = 2πrh, Ab = πr², At = 2Ab + Al. Encuentra r, h y el volumen máximo. (Redondea a <b>3 decimales</b>.)',
+      statement:'Se desea construir un recipiente <b>cilíndrico metálico con tapa</b> que tenga un área total de <b>'+At+' cm²</b>. Considera <b>π = 3,14</b>. Las fórmulas del cilindro son: Al = 2πrh, Ab = πr², At = 2Ab + Al. Encuentra r, h y el volumen máximo. (Redondea a <b>3 decimales</b>.)',
       fields:[
         {key:'r',label:'El valor de r es',unit:'cm',ans:r},
         {key:'h',label:'El valor de h es',unit:'cm',ans:h},
         {key:'V',label:'Volumen máximo',unit:'cm³',ans:V},
       ],
       manual:[
-        {t:'Restricción (área total)',b:'2πr² + 2πrh = 560  →  h = 560/(2πr) − r = 280/(πr) − r'},
-        {t:'Volumen en función de r',b:'V(r) = πr²h = πr²[280/(πr)−r] = 280r − πr³'},
-        {t:'Derivamos e igualamos a 0',b:"V'(r) = 280 − 3πr² = 0  →  r² = 280/(3π) = "+fmt(At/(6*PI))+"  →  r = "+fmt(r)+' cm'},
+        {t:'Restricción (área total)',b:'2πr² + 2πrh = '+At+'  →  h = '+At+'/(2πr) − r = '+(At/2)+'/(πr) − r'},
+        {t:'Volumen en función de r',b:'V(r) = πr²h = πr²['+(At/2)+'/(πr)−r] = '+(At/2)+'r − πr³'},
+        {t:'Derivamos e igualamos a 0',b:"V'(r) = "+(At/2)+" − 3πr² = 0  →  r² = "+(At/2)+"/(3π) = "+fmt(At/(6*PI))+"  →  r = "+fmt(r)+' cm'},
         {t:'Calculamos h y V',b:'h = '+fmt(h)+' cm,  V = '+fmt(V)+' cm³'},
       ],
       ggb:[
-        {type:'f(r)=560/(2*3.14*r)-r',say:'OJO: variable r, no x. Esto es h despejada del área total.'},
+        {type:'f(r)='+At+'/(2*3.14*r)-r',say:'OJO: variable r, no x. Esto es h despejada del área total.'},
         {type:'g(r)=3.14*r^2*f(r)',say:'Esto es el Volumen en función de r.'},
         {type:'Extremo(g)',say:'Te da el r óptimo y el volumen máximo.',result:'A=('+fmt(r)+', '+fmt(V)+')'},
         {type:'f(x(A))',say:'Te da el valor de h (aunque diga x(A) funciona igual).',result:fmt(h)},
@@ -1168,73 +1163,67 @@ var PROBLEMS = [
   }
 },
 
-/* P7: CAJA BASE CUADRADA a=60, cortes en esquinas */
+/* P7: CAJA BASE CUADRADA — lado aleatorio */
 {
   num:'07', tag:'TIPO 3 · Caja con cortes (cúbica)', title:'Caja de Base Cuadrada', pts:'20 puntos',
   gen: function(){
-    var a=60;
+    var a=rndOf([48,54,60,66,72]);
     var xmax=a/6, xmin=a/2;
     var Vmax=xmax*Math.pow(a-2*xmax,2);
     var Vmin=xmin*Math.pow(a-2*xmin,2);
-    // V(x) = x(60-2x)² = x(3600-240x+4x²) = 3600x-240x²+4x³
-    // coefficients: 4x³ - 240x² + 3600x
+    var coefA=4, coefB=-4*a, coefC=a*a;
     return {
-      statement:'A un trozo cuadrado de cartón de lado <b>a = 60 cm</b> se le cortan de cada esquina cuadrados de lado <b>x</b>, obteniendo una caja al doblar los lados.<br><br>a) Encuentra la expresión del volumen V(x) en forma <b>ax³ + bx² + cx</b>. b) ¿Cuáles son los valores críticos de V(x)? c) ¿Para qué x el volumen es mínimo y cuál es ese mínimo? e) ¿Para qué x el volumen es máximo y cuál es ese máximo?',
+      statement:'A un trozo cuadrado de cartón de lado <b>a = '+a+' cm</b> se le cortan de cada esquina cuadrados de lado <b>x</b>, obteniendo una caja al doblar los lados.<br><br>a) Encuentra la expresión del volumen V(x) en forma <b>ax³ + bx² + cx</b>. b) ¿Cuáles son los valores críticos de V(x)? c) ¿Para qué x el volumen es mínimo y cuál es ese mínimo? e) ¿Para qué x el volumen es máximo y cuál es ese máximo?',
       fields:[
         {key:'a3',label:'Coeficiente de x³',unit:'',ans:4},
-        {key:'b2',label:'Coeficiente de x²',unit:'',ans:-240},
-        {key:'c1',label:'Coeficiente de x',unit:'',ans:3600},
+        {key:'b2',label:'Coeficiente de x²',unit:'',ans:coefB},
+        {key:'c1',label:'Coeficiente de x',unit:'',ans:coefC},
         {key:'xmin',label:'x para volumen mínimo',unit:'cm',ans:xmin},
         {key:'Vmin',label:'Volumen mínimo',unit:'cm³',ans:Vmin},
         {key:'xmax',label:'x para volumen máximo',unit:'cm',ans:xmax},
         {key:'Vmax',label:'Volumen máximo',unit:'cm³',ans:Vmax},
       ],
       manual:[
-        {t:'Volumen sin expandir',b:'V(x) = x·(60−2x)² = x·(3600−240x+4x²)'},
-        {t:'Expandido',b:'V(x) = 4x³ − 240x² + 3600x  → coefs: 4, −240, 3600'},
-        {t:'Valores críticos (derivada = 0)',b:"V'(x) = 12x² − 480x + 3600 = 0  →  x = 10 y x = 30"},
-        {t:'¿Cuál es máximo y cuál mínimo?',b:'V(10) = '+fmt(Vmax)+' cm³ (máximo real).  V(30) = 0 (la base queda nula → mínimo).'},
-        {t:'Resumen',b:'x='+xmin+' → V='+fmt(Vmin)+' cm³ (mínimo)  |  x='+xmax+' → V='+fmt(Vmax)+' cm³ (máximo)'},
+        {t:'Volumen sin expandir',b:'V(x) = x·('+a+'−2x)² = x·('+coefC+coefB+'x+4x²)'},
+        {t:'Expandido',b:'V(x) = 4x³ + '+coefB+'x² + '+coefC+'x  → coefs: 4, '+coefB+', '+coefC},
+        {t:'Valores críticos (derivada = 0)',b:"V'(x) = 12x² + "+(2*coefB)+"x + "+coefC+" = 0  →  x = "+fmt(xmax)+" y x = "+fmt(xmin)},
+        {t:'¿Cuál es máximo y cuál mínimo?',b:'V('+fmt(xmax)+') = '+fmt(Vmax)+' cm³ (máximo real).  V('+fmt(xmin)+') = '+fmt(Vmin)+' (mínimo).'},
+        {t:'Resumen',b:'x='+fmt(xmin)+' → V='+fmt(Vmin)+' cm³ (mínimo)  |  x='+fmt(xmax)+' → V='+fmt(Vmax)+' cm³ (máximo)'},
       ],
       ggb:[
-        {type:'g(x)=x*(60-2x)^2',say:'Función volumen. No necesita f(x) auxiliar.'},
-        {type:'Extremo(g)',say:'Devuelve DOS puntos. El de mayor volumen positivo es el máximo real.',result:'x='+xmax+' → V='+fmt(Vmax)},
+        {type:'g(x)=x*('+a+'-2x)^2',say:'Función volumen. No necesita f(x) auxiliar.'},
+        {type:'Extremo(g)',say:'Devuelve DOS puntos. El de mayor volumen positivo es el máximo real.',result:'x='+fmt(xmax)+' → V='+fmt(Vmax)},
       ],
-      note:'Extremo(g) puede dar {A=(10, '+fmt(Vmax)+'), B=(30, 0)}. El máximo real es A (mayor volumen positivo).'
+      note:'Extremo(g) puede dar {A=('+fmt(xmax)+', '+fmt(Vmax)+'), B=('+fmt(xmin)+', '+fmt(Vmin)+')}. El máximo real es el que da mayor volumen positivo.'
     };
   }
 },
 
-/* P8: LA HERENCIA — 5 hermanos, 19200 m², parcelas verticales */
+/* P8: LA HERENCIA — S aleatorio, n=5 fijo */
 {
   num:'08', tag:'TIPO 7 · Parcelas iguales (perímetro mínimo)', title:'La Herencia', pts:'15 puntos',
   gen: function(){
-    var n=5, S=19200;
-    // n parcelas: ancho x (horizontal), alto y (vertical)
-    // Área total: n·x·y = S → y = S/(n·x) = 3840/x
-    // Cerca: (n+1) líneas verticales de largo y + 2 líneas horizontales de largo n·x
-    // P = 2(n·x) + (n+1)·y = 10x + 6y
-    var x=Math.sqrt((n+1)*S/(2*n*n)); // de dP/dx=0: 10 - 6S/(n·x²)=0
-    // dP/dx = 10 - 6·3840/x² = 0 → x² = 6·3840/10 = 2304 → x=48
-    x=48;
+    var n=5, S=rndOf([14400,19200,24000,28800]);
+    // dP/dx=0: 2n - (n+1)·S/(n·x²)=0 → x²=(n+1)·S/(2n²)
+    var x=Math.sqrt((n+1)*S/(2*n*n));
     var y=S/(n*x);
-    var P=2*n*x+( n+1)*y;
+    var P=2*n*x+(n+1)*y;
     return {
-      statement:'Cinco hermanos heredan de su padre una parcela rectangular de <b>19200 m²</b> que debe dividirse en <b>5 partes iguales</b> como muestra la figura (5 columnas, con separadores verticales internos). El ancho de cada franja es x y su alto es y. Si al cercar las 5 parcelas se debe gastar lo menos posible, calcula x, y y el perímetro mínimo de cerca.',
+      statement:'Cinco hermanos heredan de su padre una parcela rectangular de <b>'+S+' m²</b> que debe dividirse en <b>5 partes iguales</b> como muestra la figura (5 columnas, con separadores verticales internos). El ancho de cada franja es x y su alto es y. Si al cercar las 5 parcelas se debe gastar lo menos posible, calcula x, y y el perímetro mínimo de cerca.',
       fields:[
         {key:'x',label:'El valor de x es',unit:'metros',ans:x},
         {key:'y',label:'El valor de y es',unit:'metros',ans:y},
         {key:'P',label:'Perímetro mínimo',unit:'metros',ans:P},
       ],
       manual:[
-        {t:'Restricción de área',b:'5 · x · y = 19200  →  y = 3840/x'},
+        {t:'Restricción de área',b:'5 · x · y = '+S+'  →  y = '+(S/n)+'/x'},
         {t:'Cerca total',b:'Hay 6 líneas verticales de largo y y 2 horizontales de largo 5x:  P = 10x + 6y'},
-        {t:'Sustituimos y',b:'P(x) = 10x + 6(3840/x) = 10x + 23040/x'},
-        {t:'Derivamos e igualamos a 0',b:"P'(x) = 10 − 23040/x² = 0  →  x² = 2304  →  x = "+x+' m'},
-        {t:'Calculamos y y P mínimo',b:'y = 3840/'+x+' = '+fmt(y)+' m,  P = '+fmt(P)+' m'},
+        {t:'Sustituimos y',b:'P(x) = 10x + 6('+(S/n)+'/x) = 10x + '+fmt(6*S/n)+'/x'},
+        {t:'Derivamos e igualamos a 0',b:"P'(x) = 10 − "+fmt(6*S/n)+"/x² = 0  →  x² = "+fmt(6*S/(10*n))+"  →  x = "+fmt(x)+' m'},
+        {t:'Calculamos y y P mínimo',b:'y = '+(S/n)+'/'+fmt(x)+' = '+fmt(y)+' m,  P = '+fmt(P)+' m'},
       ],
       ggb:[
-        {type:'f(x)=3840/x',say:'y despejada del área total (19200/5 = 3840).'},
+        {type:'f(x)='+(S/n)+'/x',say:'y despejada del área total ('+S+'/5 = '+(S/n)+').'},
         {type:'g(x)=10x+6*f(x)',say:'Perímetro total de cerca en función de x.'},
         {type:'Extremo(g)',say:'Mínimo de cerca: x y perímetro mínimo.',result:'A=('+fmt(x)+', '+fmt(P)+')'},
         {type:'f(x(A))',say:'Valor de y.',result:fmt(y)},
@@ -1243,34 +1232,31 @@ var PROBLEMS = [
   }
 },
 
-/* P9: CASA Y PATIO — 72m pandereta */
+/* P9: CASA Y PATIO — P0 aleatorio */
 {
   num:'09', tag:'TIPO 8 · Casa + patio abierto', title:'Casa y Patio', pts:'20 puntos',
   gen: function(){
-    var P0=72;
-    // Mirando la figura: patio (ancho X, alto Y) + casa (ancho Y, alto Y)
-    // pandereta: perímetro exterior + divisor interno
-    // Lados: lado exterior izq (Y) + top patio (X) + divisor interno (Y) + top casa (Y) + lado der (Y) + fondo (X+Y)
-    // Simplificando del enunciado: restricción es X + 5Y = 72 (según chuleta Tipo 8)
-    // La "x" del enunciado es el ancho del patio y "y" es la altura
-    // Área total = (X + Y) · Y
+    var P0=rndOf([56,64,72,80,88]);
+    // restricción x + 5y = P0 → x = P0 - 5y
+    // A = (x+y)·y = (P0-4y)·y = P0·y - 4y²
+    // dA/dy = P0 - 8y = 0 → y = P0/8
     var y=P0/8, x=P0*3/8;
     var A=(x+y)*y;
     return {
-      statement:'Se desea hacer un cierre perimetral de una <b>casa y su patio abierto</b> (como muestra la figura) considerando sólo <b>72 metros</b> de pandereta. El patio tiene ancho x y la casa ancho y, ambos de altura y. La restricción de pandereta es: <b>x + 5y = 72</b>. ¿Cuáles deben ser los valores de x e y para que la suma de las áreas de la casa y del patio sea máxima?',
+      statement:'Se desea hacer un cierre perimetral de una <b>casa y su patio abierto</b> (como muestra la figura) considerando sólo <b>'+P0+' metros</b> de pandereta. El patio tiene ancho x y la casa ancho y, ambos de altura y. La restricción de pandereta es: <b>x + 5y = '+P0+'</b>. ¿Cuáles deben ser los valores de x e y para que la suma de las áreas de la casa y del patio sea máxima?',
       fields:[
         {key:'x',label:'El valor de x es',unit:'metros',ans:x},
         {key:'y',label:'El valor de y es',unit:'metros',ans:y},
         {key:'A',label:'Área máxima',unit:'m²',ans:A},
       ],
       manual:[
-        {t:'Restricción',b:'x + 5y = 72  →  x = 72 − 5y'},
-        {t:'Área total',b:'A = (x+y)·y = (72−5y+y)·y = (72−4y)·y = 72y − 4y²'},
-        {t:'Derivamos e igualamos a 0 (respecto a y)',b:"A'(y) = 72 − 8y = 0  →  y = "+fmt(y)+' m'},
-        {t:'Calculamos x y el área',b:'x = 72 − 5('+fmt(y)+') = '+fmt(x)+' m,  A = '+fmt(A)+' m²'},
+        {t:'Restricción',b:'x + 5y = '+P0+'  →  x = '+P0+' − 5y'},
+        {t:'Área total',b:'A = (x+y)·y = ('+P0+'−5y+y)·y = ('+P0+'−4y)·y = '+P0+'y − 4y²'},
+        {t:'Derivamos e igualamos a 0 (respecto a y)',b:"A'(y) = "+P0+" − 8y = 0  →  y = "+fmt(y)+' m'},
+        {t:'Calculamos x y el área',b:'x = '+P0+' − 5('+fmt(y)+') = '+fmt(x)+' m,  A = '+fmt(A)+' m²'},
       ],
       ggb:[
-        {type:'f(y)=72-5y',say:'OJO: variable libre es y, no x. Esto es x despejada de la restricción.'},
+        {type:'f(y)='+P0+'-5y',say:'OJO: variable libre es y, no x. Esto es x despejada de la restricción.'},
         {type:'g(y)=(f(y)+y)*y',say:'Área total en función de y.'},
         {type:'Extremo(g)',say:'¡La 1ª componente del punto es Y (no X)! No confundas.',result:'A=('+fmt(y)+', '+fmt(A)+')'},
         {type:'f(x(A))',say:'Te da el valor de x.',result:fmt(x)},
@@ -1280,40 +1266,40 @@ var PROBLEMS = [
   }
 },
 
-/* P10: UTILIDAD CON RAÍZ — I=28000x, C=265x²-10000√x */
+/* P10: UTILIDAD CON RAÍZ — valores aleatorios */
 {
   num:'10', tag:'TIPO · Utilidad con raíz cuadrada', title:'Utilidad Máxima · Artículos de Cocina', pts:'20 puntos',
   gen: function(){
-    var p=28000, a=265, k=10000;
-    // U(x) = 28000x - 265x² + 10000√x
-    // U'(x) = 28000 - 530x + 5000/√x = 0
-    // Difícil analítico → GeoGebra
-    // Aproximar con búsqueda numérica:
+    var p=rndOf([20000,28000,35000]);
+    var a=rndOf([200,265,300]);
+    var k=rndOf([8000,10000,12000]);
+    // U(x) = px - ax² + k√x
+    // U'(x) = p - 2ax + k/(2√x) = 0
     function U(x){ return p*x - a*x*x + k*Math.sqrt(x); }
     function Up(x){ return p - 2*a*x + k/(2*Math.sqrt(x)); }
-    var xopt=26; // busqueda inicial
-    for(var i=0;i<100;i++){
+    // Newton-Raphson
+    var xopt=Math.round(p/(2*a)); // rough start
+    for(var i=0;i<200;i++){
       var upval=Up(xopt);
       var upp= -2*a - k/(4*Math.pow(xopt,1.5));
-      xopt = xopt - upval/upp;
-      if(Math.abs(upval)<0.01) break;
+      var nx=xopt - upval/upp;
+      if(nx<=0) nx=0.1;
+      if(Math.abs(nx-xopt)<0.0001) { xopt=nx; break; }
+      xopt=nx;
     }
     xopt=Math.round(xopt);
     var Umax=U(xopt);
     var I15=p*15;
     var C25=a*25*25-k*Math.sqrt(25);
     var U16=p*16-a*16*16+k*Math.sqrt(16);
-    // "importación no rentable" → U(x)=0 → buscar raíces
-    // Aproximar: U(x)=0. Para x grande U→-inf, para x=0 U=0.
-    // Buscar segunda raíz (después del máximo)
-    var xbreak=53; // aprox numérico
-    for(var j=0;j<200;j++){
-      var midx=xbreak;
-      if(U(midx)>0) xbreak=midx+0.5; else xbreak=midx-0.1;
+    // Find xbreak where U(x)<0 (second zero crossing)
+    var xbreak=xopt;
+    for(var j=0;j<5000;j++){
+      xbreak++;
+      if(U(xbreak)<0) break;
     }
-    xbreak=Math.ceil(xbreak);
     return {
-      statement:'Rodrigo importa artículos de cocina. Ingreso: <b>I(x) = 28000x</b>. Costo: <b>C(x) = 265x² − 10000√x</b>.<br><br>a) Ingreso al vender 15 artículos. b) Costo al vender 25 artículos. c) Utilidad al vender 16 artículos. d) ¿Cuántos artículos dan la utilidad máxima? (aproxima al entero). e) Utilidad máxima. f) ¿Cuántos artículos se deben vender para que la importación <b>no sea rentable</b>?',
+      statement:'Rodrigo importa artículos de cocina. Ingreso: <b>I(x) = '+p+'x</b>. Costo: <b>C(x) = '+a+'x² − '+k+'√x</b>.<br><br>a) Ingreso al vender 15 artículos. b) Costo al vender 25 artículos. c) Utilidad al vender 16 artículos. d) ¿Cuántos artículos dan la utilidad máxima? (aproxima al entero). e) Utilidad máxima. f) ¿Cuántos artículos se deben vender para que la importación <b>no sea rentable</b>?',
       fields:[
         {key:'I15',label:'Ingreso si venden 15 artículos',unit:'pesos',ans:I15},
         {key:'C25',label:'Costo al vender 25 artículos',unit:'pesos',ans:C25},
@@ -1323,17 +1309,17 @@ var PROBLEMS = [
         {key:'xbreak',label:'Artículos para que no sea rentable',unit:'artículos',ans:xbreak},
       ],
       manual:[
-        {t:'Modelos (de la tabla)',b:'I(x) = 28000x  |  C(x) = 265x² − 10000√x'},
-        {t:'Evaluaciones directas',b:'I(15) = 28000·15 = '+fmt(I15)+'.  C(25) = 265·625 − 10000·5 = '+fmt(C25)+'.  U(16) = 28000·16 − 265·256 + 10000·4 = '+fmt(U16)},
-        {t:'Función utilidad',b:'U(x) = 28000x − 265x² + 10000√x'},
+        {t:'Modelos',b:'I(x) = '+p+'x  |  C(x) = '+a+'x² − '+k+'√x'},
+        {t:'Evaluaciones directas',b:'I(15) = '+p+'·15 = '+fmt(I15)+'.  C(25) = '+a+'·625 − '+k+'·5 = '+fmt(C25)+'.  U(16) = '+p+'·16 − '+a+'·256 + '+k+'·4 = '+fmt(U16)},
+        {t:'Función utilidad',b:'U(x) = '+p+'x − '+a+'x² + '+k+'√x'},
         {t:'GeoGebra da el máximo',b:'Extremo(g) → x ≈ '+xopt+' artículos (redondear al entero)'},
         {t:'Importación no rentable',b:'U(x) < 0 → vender más de ≈ '+xbreak+' artículos. Buscar dónde U(x)=0 en GeoGebra.'},
       ],
       ggb:[
-        {type:'f(x)=28000x',say:'Ingreso I(x).'},
-        {type:'h(x)=265x^2-10000*sqrt(x)',say:'Costo C(x). Escribe sqrt(x) para la raíz cuadrada.'},
+        {type:'f(x)='+p+'x',say:'Ingreso I(x).'},
+        {type:'h(x)='+a+'x^2-'+k+'*sqrt(x)',say:'Costo C(x). Escribe sqrt(x) para la raíz cuadrada.'},
         {type:'g(x)=f(x)-h(x)',say:'Utilidad U(x).'},
-        {type:'g(15)',say:'Ingreso a x=15: evalúa f(15) directamente. Para costo: h(25).',result:fmt(I15)},
+        {type:'g(15)',say:'Utilidad a x=15. Para ingreso: f(15). Para costo: h(25).',result:fmt(I15)},
         {type:'Extremo(g)',say:'Máximo de utilidad. Redondea la primera coordenada al entero más próximo.',result:'A≈('+xopt+', '+fmt(Umax)+')'},
         {type:'g(x(A))',say:'Utilidad exacta en el entero redondeado.',result:fmt(Umax)},
       ],
@@ -1524,7 +1510,7 @@ function verify(){
     var inp=document.getElementById('inp_'+f.key);
     if(f.text){
       inp.classList.remove('ok','bad');
-      inp.classList.add('ok'); // campos de expresión: siempre verde si escribió algo
+      inp.classList.add('ok');
     } else {
       var raw=(inp.value||'').trim().replace(',','.');
       var val=parseFloat(raw);
