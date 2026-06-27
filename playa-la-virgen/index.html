@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playa La Virgen · Sistema de Gestión Hídrica</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-drop">💧</span>
+    <span>Playa La Virgen</span>
+  </div>
+  <nav class="nav-tabs">
+    <button id="tab-comic" class="nav-tab active">📖 Problemática</button>
+    <button id="tab-3d" class="nav-tab">🏝️ Maqueta 3D</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ───────────── SECCIÓN COMIC / PROBLEMÁTICA ───────────── -->
+  <section id="section-comic" class="section active">
+    <div class="comic-wrap">
+      <h1>La Problemática</h1>
+      <p>
+        El Complejo Turístico Playa La Virgen depende de camiones aljibe y de una red
+        subterránea de tuberías HDPE que, al romperse, nadie detecta a tiempo: no se sabe
+        cuándo ocurrió la fuga, cuánta agua se perdió, ni en qué tramo está el daño.
+        Cada viaje de camión perdido por una fuga no detectada es agua y dinero que no vuelven.
+      </p>
+      <h2>La Solución</h2>
+      <p>
+        Sensores distribuidos en la red detectan caídas de presión en tiempo real, calculan
+        los litros perdidos y activan automáticamente una válvula de cierre que corta el
+        suministro al tramo afectado apenas se detecta la rotura — antes de que el daño escale.
+      </p>
+      <button class="cta" onclick="document.getElementById('tab-3d').click()">
+        Ver maqueta interactiva →
+      </button>
+    </div>
+  </section>
+
+  <!-- ───────────── SECCIÓN MAQUETA 3D ───────────── -->
+  <section id="section-3d" class="section">
+    <div class="canvas-wrap">
+
+      <canvas id="maqueta-canvas"></canvas>
+
+      <div id="canvas-tooltip" class="canvas-tooltip">
+        🖱️ Arrastra para rotar · Scroll para zoom · Click derecho para mover
+      </div>
+
+      <!-- Panel de cámaras -->
+      <div class="cam-panel">
+        <button id="btn-general" class="cam-btn active"><span class="cam-icon">🗺️</span> Vista General</button>
+        <button id="btn-plant"   class="cam-btn"><span class="cam-icon">🏭</span> Planta Desalinizadora</button>
+        <button id="btn-network" class="cam-btn"><span class="cam-icon">🚰</span> Red y Estanque</button>
+        <hr class="cam-sep">
+        <button id="btn-daynight" class="cam-btn"><span class="cam-icon">🌙</span> Modo Noche</button>
+        <button id="btn-xray"     class="cam-btn"><span class="cam-icon">🩻</span> Modo Radiografía</button>
+        <button id="btn-clean"    class="cam-btn"><span class="cam-icon">🧹</span> Modo Limpio</button>
+        <hr class="cam-sep">
+        <button id="btn-fuga" class="cam-btn btn-fuga"><span class="cam-icon">🚨</span> Simular Fuga</button>
+      </div>
+
+      <!-- Alerta de fuga -->
+      <div id="alerta-fuga" class="alerta-fuga">
+        <h3>🚨 Fuga Detectada</h3>
+        <p id="tipo-fuga">—</p>
+        <small>Válvula de corte activada automáticamente.</small>
+      </div>
+
+      <audio id="sonido-alerta" preload="auto"
+        src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+    </div>
+  </section>
+
+</main>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
