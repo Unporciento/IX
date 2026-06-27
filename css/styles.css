@@ -1,0 +1,252 @@
+:root {
+  --sand:     #e8d6a3;
+  --ocean:    #1f7fa3;
+  --ocean-d:  #0c4f6e;
+  --ink:      #1c2b33;
+  --paper:    #fdf8ee;
+  --accent:   #d4572c;
+  --alert:    #d62b2b;
+  --panel:    rgba(15, 25, 32, 0.82);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.clean-mode .cam-panel,
+.clean-mode .topbar,
+.clean-mode #leak-history-panel,
+.clean-mode #leak-timer-badge {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+/* ─── Topbar ─────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background: var(--ocean-d);
+  color: white;
+  transition: opacity 0.4s ease;
+}
+
+.brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.brand-drop { font-size: 1.4rem; }
+
+.nav-tabs { display: flex; gap: 10px; }
+
+.nav-tab {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.35);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+.nav-tab:hover { background: rgba(255,255,255,0.12); }
+.nav-tab.active { background: var(--accent); border-color: var(--accent); }
+
+/* ─── Secciones ──────────────────────────────────────────── */
+.section { display: none; }
+.section.active { display: block; }
+
+.comic-wrap {
+  max-width: 760px;
+  margin: 50px auto;
+  padding: 0 24px;
+  line-height: 1.6;
+}
+.comic-wrap h1 { font-size: 2rem; color: var(--ocean-d); }
+.comic-wrap h2 { color: var(--accent); margin-top: 28px; }
+.comic-wrap p { font-size: 1.05rem; }
+
+.cta {
+  margin-top: 24px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.cta:hover { background: #b8451e; }
+
+/* ─── Canvas 3D ──────────────────────────────────────────── */
+.canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 64px);
+  background: #aee3f5;
+  overflow: hidden;
+}
+
+#maqueta-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.canvas-tooltip {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: var(--panel);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  transition: opacity 0.3s;
+}
+.canvas-tooltip.hidden { opacity: 0; pointer-events: none; }
+
+/* ─── Panel de cámaras ───────────────────────────────────── */
+.cam-panel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 220px;
+  backdrop-filter: blur(4px);
+}
+
+.cam-sep {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  margin: 4px 0;
+}
+
+.cam-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid transparent;
+  color: white;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.15s;
+}
+.cam-btn:hover { background: rgba(255,255,255,0.15); }
+.cam-btn.active { background: var(--ocean); border-color: #6fcdf0; }
+.cam-icon { font-size: 1rem; }
+
+.btn-fuga { background: rgba(214,43,43,0.25); }
+.btn-fuga.fuga-activa { background: var(--alert); animation: pulse 1.2s infinite; }
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(214,43,43,0.6); }
+  50%      { box-shadow: 0 0 0 8px rgba(214,43,43,0); }
+}
+
+/* ─── Alerta de fuga ─────────────────────────────────────── */
+.alerta-fuga {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--alert);
+  color: white;
+  padding: 22px 30px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  transition: all 0.5s ease;
+  z-index: 20;
+}
+.alerta-fuga h3 { margin: 0 0 8px; font-size: 1.3rem; }
+.alerta-fuga p { margin: 0 0 4px; font-size: 0.95rem; }
+.alerta-fuga small { opacity: 0.85; }
+
+.alerta-fuga.esquina {
+  top: auto;
+  left: auto;
+  bottom: 16px;
+  right: 250px;
+  transform: none;
+  padding: 12px 18px;
+}
+.alerta-fuga.esquina h3 { font-size: 1rem; }
+.alerta-fuga.esquina small { display: none; }
+
+.alerta-fuga.resuelto { background: #2e8b57; }
+
+/* ─── Panel de historial de fugas ────────────────────────── */
+#leak-history-panel {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  width: 280px;
+  max-height: 220px;
+  background: var(--panel);
+  color: white;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 0.8rem;
+  overflow-y: auto;
+  backdrop-filter: blur(4px);
+}
+.lh-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  padding-bottom: 6px;
+}
+#lh-list { list-style: none; margin: 0; padding: 0; }
+.lh-empty { opacity: 0.6; padding: 4px 0; }
+.lh-item {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.lh-idx { opacity: 0.6; }
+.lh-item.auto .lh-dur { color: #8fd6a0; }
+.lh-item.manual .lh-dur { color: #f0c060; }
+
+/* ─── Timer badge ────────────────────────────────────────── */
+#leak-timer-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: var(--alert);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .cam-panel { width: 170px; font-size: 0.8rem; }
+  #leak-history-panel { width: 200px; }
+  .topbar { flex-direction: column; gap: 10px; padding: 12px; }
+}
