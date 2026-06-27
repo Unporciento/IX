@@ -10,7 +10,8 @@ let cloudGroup = [];
 let isNight = false;
 let isXray  = false;
 let isClean = false;
-let pipeGlowGroup;
+let pipesVisible = false;
+let pipeGroup, pipeGlowGroup;
 let threeInitDone = false;
 
 // ─── Punto de entrada ─────────────────────────────────────────────────────────
@@ -22,7 +23,7 @@ export function initThree() {
   scene  = new THREE.Scene();
   clock  = new THREE.Clock();
 
-  camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 500);
+  camera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.1, 500);
   camera.position.set(0, 30, 45);
 
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -35,6 +36,7 @@ export function initThree() {
   _buildLights();
   _buildOcean();
   _buildTerrain();
+  _buildRoads();
   _buildMountainAndTank();
   _buildPipeNetwork();
   _buildCasaPrincipal();
@@ -44,12 +46,12 @@ export function initThree() {
   _buildParkingYBanos();
   _buildPier();
   _buildDuchas();
+  _buildPalmTrees();
+  _buildVehicles();
   _buildClouds();
 
   initControls(camera, renderer.domElement);
-  initLeaks(scene);   // ← FIX: esto era lo que faltaba. Sin esto, simulateLeak()
-                      //   intentaba usar leakMarker/puddle/rippleRing antes de
-                      //   que existieran y la alarma no hacía nada.
+  initLeaks(scene);
 
   window.addEventListener('resize', _resize);
   _wireUI();
@@ -65,7 +67,7 @@ function _tick() {
   cloudGroup.forEach((c, i) => { c.position.x += 0.004 * (1 + i * 0.1); if (c.position.x > 110) c.position.x = -110; });
 
   if (pipeGlowGroup) pipeGlowGroup.children.forEach((m, i) => {
-    m.material.opacity = isXray ? (0.35 + Math.sin(t * 2 + i) * 0.15) : 0;
+    m.material.opacity = (isXray && pipesVisible) ? (0.35 + Math.sin(t * 2 + i) * 0.15) : 0;
   });
 
   updateControls();
@@ -84,8 +86,8 @@ function _resize() {
 
 // ─── Cielo ─────────────────────────────────────────────────────────────────────
 function _buildSky() {
-  scene.background = new THREE.Color(0xaee3f5);
-  scene.fog = new THREE.Fog(0xaee3f5, 70, 230);
+  scene.background = new THREE.Color(0xb9e6f2);
+  scene.fog = new THREE.Fog(0xb9e6f2, 80, 230);
 
   sun = new THREE.Mesh(
     new THREE.SphereGeometry(2.2, 24, 24),
@@ -105,7 +107,7 @@ function _buildSky() {
 
 function _buildClouds() {
   const mat = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: 0.9 });
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 6; i++) {
     const group = new THREE.Group();
     const puffs = 3 + Math.floor(Math.random() * 3);
     for (let j = 0; j < puffs; j++) {
@@ -123,10 +125,10 @@ function _buildClouds() {
 
 // ─── Luces ─────────────────────────────────────────────────────────────────────
 function _buildLights() {
-  hemiLight = new THREE.HemisphereLight(0xbfe3f5, 0xc9a876, 0.85);
+  hemiLight = new THREE.HemisphereLight(0xcdeaf5, 0xc9a876, 0.9);
   scene.add(hemiLight);
 
-  sunLight = new THREE.DirectionalLight(0xfff2cf, 1.4);
+  sunLight = new THREE.DirectionalLight(0xfff2cf, 1.35);
   sunLight.position.set(45, 42, -50);
   sunLight.castShadow = true;
   sunLight.shadow.mapSize.set(2048, 2048);
@@ -138,26 +140,26 @@ function _buildLights() {
   scene.add(sunLight);
 }
 
-// ─── Océano (franja propia, sin pisar la arena) ───────────────────────────────
-// LAYOUT DE PROFUNDIDAD (Z), de fondo a frente, sin superposiciones:
+// ─── Océano: gradiente suave, sin choppy pattern ──────────────────────────────
+// LAYOUT DE PROFUNDIDAD (Z), sin superposiciones:
 //   Z < -78        → océano
 //   Z -78  a  -22  → arena (playa)
 //   Z -22  a  +50  → pasto (zona de cabañas)
 function _buildOcean() {
-  const geo = new THREE.PlaneGeometry(260, 130, 80, 60);
+  const geo = new THREE.PlaneGeometry(260, 130, 60, 40);
   oceanMat = new THREE.ShaderMaterial({
     uniforms: {
       uTime:      { value: 0 },
-      uColorDeep: { value: new THREE.Color(0x0c4f6e) },
-      uColorTop:  { value: new THREE.Color(0x4fb8d6) },
+      uColorDeep: { value: new THREE.Color(0x1f6f86) },
+      uColorTop:  { value: new THREE.Color(0x4fc7d6) },
     },
     vertexShader: `
       uniform float uTime;
       varying float vH;
       void main() {
         vec3 p = position;
-        float h = sin(p.x * 0.18 + uTime * 1.1) * 0.18
-                + sin(p.y * 0.25 - uTime * 0.8) * 0.14;
+        float h = sin(p.x * 0.12 + uTime * 0.7) * 0.08
+                + sin(p.y * 0.18 - uTime * 0.5) * 0.06;
         p.z += h;
         vH = h;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
@@ -168,31 +170,27 @@ function _buildOcean() {
       uniform vec3 uColorTop;
       varying float vH;
       void main() {
-        vec3 c = mix(uColorDeep, uColorTop, smoothstep(-0.2, 0.3, vH));
+        vec3 c = mix(uColorDeep, uColorTop, smoothstep(-0.1, 0.15, vH));
         gl_FragColor = vec4(c, 1.0);
       }
     `,
   });
-  // El plano mide 130 de "alto" (eje Y local, pasa a Z al rotar) y lo
-  // centramos en Z=-143 → cubre Z=-208 a Z=-78. Así NO se mete en la arena.
   const ocean = new THREE.Mesh(geo, oceanMat);
   ocean.rotation.x = -Math.PI / 2;
   ocean.position.set(0, -0.05, -143);
   scene.add(ocean);
 }
 
-// ─── Terreno: arena + pasto, sin overlap (antes causaba z-fighting) ──────────
+// ─── Terreno: arena + pasto, sin overlap ──────────────────────────────────────
 function _buildTerrain() {
-  sandMat = new THREE.MeshLambertMaterial({ color: 0xe8d6a3 });
-  // Arena: cubre Z=-78 a Z=-22 (56 de profundidad)
+  sandMat = new THREE.MeshLambertMaterial({ color: 0xe9d8ab });
   const sand = new THREE.Mesh(new THREE.PlaneGeometry(260, 56), sandMat);
   sand.rotation.x = -Math.PI / 2;
   sand.position.set(0, 0, -50);
   sand.receiveShadow = true;
   scene.add(sand);
 
-  grassMat = new THREE.MeshLambertMaterial({ color: 0x6f9b4a });
-  // Pasto: cubre Z=-22 a Z=+50 (72 de profundidad) — arranca justo donde acaba la arena
+  grassMat = new THREE.MeshLambertMaterial({ color: 0x8fae5e });
   const grass = new THREE.Mesh(new THREE.PlaneGeometry(260, 72), grassMat);
   grass.rotation.x = -Math.PI / 2;
   grass.position.set(0, 0, 14);
@@ -200,64 +198,85 @@ function _buildTerrain() {
   scene.add(grass);
 }
 
-// ─── Montaña + Estanque de acumulación ─────────────────────────────────────────
-// Reubicada bien atrás y más angosta para que NO choque con la Casa Principal.
+// ─── Calles: avenida principal + transversal, con línea discontinua ─────────
+function _buildRoads() {
+  const roadMat = new THREE.MeshLambertMaterial({ color: 0x555a5e });
+  const lineMat = new THREE.MeshBasicMaterial({ color: 0xf2f2f2 });
+
+  // Avenida principal (eje Z, de la playa hacia las casitas)
+  const mainRoad = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 64), roadMat);
+  mainRoad.rotation.x = -Math.PI / 2;
+  mainRoad.position.set(0, 0.012, -2);
+  scene.add(mainRoad);
+  _dashedLine(0, -2, 60, 'z', lineMat);
+
+  // Calle transversal (eje X, frente a las casitas)
+  const crossRoad = new THREE.Mesh(new THREE.PlaneGeometry(34, 4), roadMat);
+  crossRoad.rotation.x = -Math.PI / 2;
+  crossRoad.position.set(-7, 0.012, -6);
+  scene.add(crossRoad);
+  _dashedLine(-7, -6, 32, 'x', lineMat);
+}
+
+function _dashedLine(cx, cz, length, axis, mat) {
+  const dashLen = 1.4, gap = 1.1;
+  const count = Math.floor(length / (dashLen + gap));
+  for (let i = 0; i < count; i++) {
+    const offset = -length / 2 + i * (dashLen + gap);
+    const dash = new THREE.Mesh(new THREE.PlaneGeometry(axis === 'z' ? 0.15 : dashLen, axis === 'z' ? dashLen : 0.15), mat);
+    dash.rotation.x = -Math.PI / 2;
+    if (axis === 'z') dash.position.set(cx, 0.018, cz + offset);
+    else dash.position.set(cx + offset, 0.018, cz);
+    scene.add(dash);
+  }
+}
+
+// ─── Cerro + Estanque (forma redondeada, domo, como la maqueta original) ────
 function _buildMountainAndTank() {
-  const mountainMat = new THREE.MeshLambertMaterial({ color: 0x8a7a5c, flatShading: true });
-  const mountain = new THREE.Mesh(new THREE.ConeGeometry(8.5, 11, 8), mountainMat);
-  mountain.position.set(-2, 5.5, -64);
+  const mountainMat = new THREE.MeshLambertMaterial({ color: 0xcdb988 });
+  // Icosaedro deformado en lugar de cono: da una silueta de duna/cerro redondeado
+  const mountain = new THREE.Mesh(new THREE.SphereGeometry(8.5, 24, 16, 0, Math.PI * 2, 0, Math.PI / 1.9), mountainMat);
+  mountain.scale.set(1, 0.62, 1);
+  mountain.position.set(-2, 0, -64);
   mountain.castShadow = true;
   mountain.receiveShadow = true;
   scene.add(mountain);
 
-  // Estanque circular en la cima
-  const tankBody = new THREE.Mesh(
-    new THREE.CylinderGeometry(2.6, 2.8, 2.2, 20),
-    new THREE.MeshStandardMaterial({ color: 0x9fb3bd, metalness: 0.4, roughness: 0.5 })
+  // Estanque: domo verde oscuro sobre el cerro (igual al diseño original)
+  const tankDome = new THREE.Mesh(
+    new THREE.SphereGeometry(3.4, 20, 14, 0, Math.PI * 2, 0, Math.PI / 1.8),
+    new THREE.MeshStandardMaterial({ color: 0x2f6b4f, metalness: 0.1, roughness: 0.6 })
   );
-  tankBody.position.set(-2, 12, -64);
-  tankBody.castShadow = true;
-  scene.add(tankBody);
+  tankDome.position.set(-2, 5.1, -64);
+  tankDome.castShadow = true;
+  scene.add(tankDome);
 
-  const water = new THREE.Mesh(
-    new THREE.CylinderGeometry(2.3, 2.3, 0.25, 20),
-    new THREE.MeshStandardMaterial({ color: 0x3a8fb8, metalness: 0.1, roughness: 0.2 })
+  const tankBase = new THREE.Mesh(
+    new THREE.CylinderGeometry(3.4, 3.5, 1, 20),
+    new THREE.MeshStandardMaterial({ color: 0x355c46, metalness: 0.1, roughness: 0.6 })
   );
-  water.position.set(-2, 13.15, -64);
-  scene.add(water);
+  tankBase.position.set(-2, 4.4, -64);
+  scene.add(tankBase);
 
-  // Válvula de salida en la base del estanque
-  const valve = new THREE.Mesh(
-    new THREE.SphereGeometry(0.3, 12, 12),
-    new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.7, roughness: 0.3 })
-  );
-  valve.position.set(-2, 10.9, -64);
-  scene.add(valve);
-
-  _label(scene, 'Estanque', -2, 15.6, -64);
+  _label(scene, 'Estanque', -2, 9.6, -64);
 }
 
-// ─── Red de tuberías (coincide con leaks.js pipePoints) ───────────────────────
-// Todas las tuberías van pegadas al suelo (y≈0.28) en vez de cruzar el aire en
-// diagonal — solo el tramo que baja de la montaña tiene una caída vertical real.
+// ─── Red de tuberías (oculta por defecto, se activa con el botón) ───────────
 function _buildPipeNetwork() {
+  pipeGroup     = new THREE.Group();
   pipeGlowGroup = new THREE.Group();
+  pipeGroup.visible = false;
+  scene.add(pipeGroup);
   scene.add(pipeGlowGroup);
 
-  const pipeMat = new THREE.MeshStandardMaterial({ color: 0x3d6f8f, metalness: 0.3, roughness: 0.5 });
+  const pipeMat = new THREE.MeshStandardMaterial({ color: 0x1f9e7a, emissive: 0x0c4f3c, emissiveIntensity: 0.4, metalness: 0.2, roughness: 0.4 });
 
-  // Bajada vertical desde la base de la montaña hasta el nivel del suelo
-  _addPipe(new THREE.Vector3(-2, 10.9, -64), new THREE.Vector3(-2, 0.28, -64), pipeMat);
-  // Tramo horizontal: pie de la montaña → Casa Principal
+  _addPipe(new THREE.Vector3(-2, 3.9, -64), new THREE.Vector3(-2, 0.28, -64), pipeMat);
   _addPipe(new THREE.Vector3(-2, 0.28, -64), new THREE.Vector3(0, 0.28, -64), pipeMat);
   _addPipe(new THREE.Vector3(0, 0.28, -64),  new THREE.Vector3(0, 0.28, -20), pipeMat);
-  // Casa Principal → colector bajo la calle
   _addPipe(new THREE.Vector3(0, 0.28, -18), new THREE.Vector3(0, 0.28, -6), pipeMat);
-  // Colector principal bajo la calle
   _addPipe(new THREE.Vector3(-7, 0.28, -6), new THREE.Vector3(5, 0.28, -6), pipeMat);
-  // Ramales hacia fila norte (casitas Z=4)
   [-10, -3, 5].forEach(x => _addPipe(new THREE.Vector3(x, 0.28, -6), new THREE.Vector3(x, 0.28, 0), pipeMat));
-  // Ramales hacia fila sur (casitas Z=13)
   [-10, -3].forEach(x => _addPipe(new THREE.Vector3(x, 0.28, -6), new THREE.Vector3(x, 0.28, 8), pipeMat));
 }
 
@@ -267,60 +286,58 @@ function _addPipe(a, b, mat) {
   if (len < 0.01) return;
   const mid = new THREE.Vector3().addVectors(a, b).multiplyScalar(0.5);
 
-  const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, len, 10), mat);
+  const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, len, 10), mat);
   tube.position.copy(mid);
   tube.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
   tube.castShadow = true;
-  scene.add(tube);
+  pipeGroup.add(tube);
 
-  // Halo para modo radiografía (solo visible cuando isXray = true)
   const glow = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.3, 0.3, len, 10),
-    new THREE.MeshBasicMaterial({ color: 0x3fd1ff, transparent: true, opacity: 0, depthTest: false })
+    new THREE.CylinderGeometry(0.32, 0.32, len, 10),
+    new THREE.MeshBasicMaterial({ color: 0x3fffc0, transparent: true, opacity: 0, depthTest: false })
   );
   glow.position.copy(mid);
   glow.quaternion.copy(tube.quaternion);
   pipeGlowGroup.add(glow);
 }
 
-// ─── Casa Principal (Z = -20, separada de la montaña) ─────────────────────────
+// ─── Casa Principal ────────────────────────────────────────────────────────────
 function _buildCasaPrincipal() {
-  const house = _house({ w: 6, h: 4, d: 5, wallColor: 0xf4e3c1, roofColor: 0x8a3b2e });
+  const house = _house({ w: 6, h: 4, d: 5, wallColor: 0xf4ede0, roofColor: 0x2f6b4f, windows: true });
   house.position.set(0, 0, -20);
   scene.add(house);
   _label(house, 'Casa Principal', 0, 6.2, 0);
 }
 
-// ─── Sala de Máquinas (junto a la calle, lejos de las tuberías) ───────────────
+// ─── Sala de Máquinas ──────────────────────────────────────────────────────────
 function _buildSalaDeMaquinas() {
-  const house = _house({ w: 4.5, h: 3, d: 4, wallColor: 0xb7bcc2, roofColor: 0x4a4a4a });
+  const house = _house({ w: 4.5, h: 3, d: 4, wallColor: 0xc7ccd1, roofColor: 0x454a4d, windows: true });
   house.position.set(11, 0, -9);
   scene.add(house);
 
-  const pipeMat = new THREE.MeshStandardMaterial({ color: 0x3d6f8f, metalness: 0.3, roughness: 0.5 });
+  const pipeMat = new THREE.MeshStandardMaterial({ color: 0x1f9e7a, emissive: 0x0c4f3c, emissiveIntensity: 0.4 });
   _addPipe(new THREE.Vector3(11, 0.28, -9), new THREE.Vector3(5, 0.28, -6), pipeMat);
 
   _label(house, 'Sala de Máquinas', 0, 5, 0);
 }
 
-// ─── Planta Desalinizadora (X ≈ 22, junto al mar, tanques pegados al edificio) ─
+// ─── Planta Desalinizadora ─────────────────────────────────────────────────────
 function _buildPlantaDesalinizadora() {
   const group = new THREE.Group();
 
   const base = new THREE.Mesh(
     new THREE.BoxGeometry(9, 4.5, 7),
-    new THREE.MeshStandardMaterial({ color: 0xd8dde2, metalness: 0.2, roughness: 0.6 })
+    new THREE.MeshStandardMaterial({ color: 0xd8dde2, metalness: 0.15, roughness: 0.65 })
   );
   base.position.set(0, 2.25, 0);
   base.castShadow = true;
   base.receiveShadow = true;
   group.add(base);
 
-  // Tanques cilíndricos adosados a la pared trasera del edificio (sin flotar)
   for (let i = 0; i < 3; i++) {
     const tank = new THREE.Mesh(
       new THREE.CylinderGeometry(0.9, 0.9, 4, 16),
-      new THREE.MeshStandardMaterial({ color: 0x8fa6b3, metalness: 0.5, roughness: 0.4 })
+      new THREE.MeshStandardMaterial({ color: 0x8fa6b3, metalness: 0.4, roughness: 0.45 })
     );
     tank.position.set(-2.6 + i * 2.6, 2, -4.4);
     tank.castShadow = true;
@@ -332,15 +349,15 @@ function _buildPlantaDesalinizadora() {
   _label(group, 'Planta Desalinizadora', 0, 6, 0);
 }
 
-// ─── Casitas (fila norte Z=4 y fila sur Z=13) ─────────────────────────────────
+// ─── Casitas con ventanas ───────────────────────────────────────────────────
 function _buildCasitas() {
   const xs = [-10, -3, 5];
   xs.forEach(x => {
-    const c1 = _house({ w: 3.2, h: 2.4, d: 3, wallColor: 0xfdf1de, roofColor: 0x3f7a63 });
+    const c1 = _house({ w: 3.2, h: 2.4, d: 3, wallColor: 0xf7f1e3, roofColor: 0x2f6b4f, windows: true });
     c1.position.set(x, 0, 4);
     scene.add(c1);
 
-    const c2 = _house({ w: 3.2, h: 2.4, d: 3, wallColor: 0xfdf1de, roofColor: 0x3f7a63 });
+    const c2 = _house({ w: 3.2, h: 2.4, d: 3, wallColor: 0xf7f1e3, roofColor: 0x2f6b4f, windows: true });
     c2.position.set(x, 0, 13);
     scene.add(c2);
   });
@@ -365,12 +382,10 @@ function _buildParkingYBanos() {
     scene.add(line);
   }
 
-  // Cabina de baño, a un costado del estacionamiento (sin chocar con las líneas)
-  const bath = _house({ w: 2.2, h: 2.1, d: 2, wallColor: 0xffffff, roofColor: 0x2f6f8f });
+  const bath = _house({ w: 2.2, h: 2.1, d: 2, wallColor: 0xffffff, roofColor: 0x2f6f8f, windows: false });
   bath.position.set(-24, 0, -8);
   scene.add(bath);
 
-  // Letrero de tarifas
   const sign = new THREE.Mesh(
     new THREE.BoxGeometry(2, 1.3, 0.08),
     new THREE.MeshStandardMaterial({ color: 0xffffff })
@@ -392,7 +407,7 @@ function _buildParkingYBanos() {
   _label(scene, 'Estacionamiento', -24, 0.6, 4);
 }
 
-// ─── Pier + duchas (dentro de la franja de arena, antes del océano) ──────────
+// ─── Pier + duchas ──────────────────────────────────────────────────────────────
 function _buildPier() {
   const pier = new THREE.Mesh(
     new THREE.BoxGeometry(3.2, 0.4, 18),
@@ -433,8 +448,90 @@ function _buildDuchas() {
   });
 }
 
+// ─── Palmeras: a lo largo de las calles y la playa ────────────────────────────
+function _buildPalmTrees() {
+  const spots = [];
+  // Bordeando la avenida principal
+  for (let z = -16; z <= 8; z += 5) {
+    spots.push([-3.6, z]);
+    spots.push([3.6, z]);
+  }
+  // Bordeando la calle transversal
+  for (let x = -18; x <= 4; x += 5) {
+    spots.push([x, -3.5]);
+  }
+  // Algunas en la playa, cerca del pier
+  [[10, -68], [6, -72], [22, -68]].forEach(p => spots.push(p));
+
+  spots.forEach(([x, z]) => _palmTree(x, z));
+}
+
+function _palmTree(x, z) {
+  const group = new THREE.Group();
+  const h = 2.6 + Math.random() * 1.2;
+
+  const trunk = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.1, 0.16, h, 6),
+    new THREE.MeshLambertMaterial({ color: 0x8a6a3f })
+  );
+  trunk.position.y = h / 2;
+  trunk.rotation.z = (Math.random() - 0.5) * 0.12;
+  trunk.castShadow = true;
+  group.add(trunk);
+
+  const frondMat = new THREE.MeshLambertMaterial({ color: 0x3f7a4a });
+  for (let i = 0; i < 6; i++) {
+    const frond = new THREE.Mesh(new THREE.ConeGeometry(0.18, 1.4, 4), frondMat);
+    frond.position.y = h;
+    frond.rotation.z = Math.PI / 2.4;
+    frond.rotation.y = (i / 6) * Math.PI * 2;
+    frond.translateY(0.5);
+    frond.castShadow = true;
+    group.add(frond);
+  }
+
+  group.position.set(x, 0, z);
+  scene.add(group);
+}
+
+// ─── Vehículos simples sobre las calles ───────────────────────────────────────
+function _buildVehicles() {
+  _car(2.3, -2, 0xc0392b);
+  _car(-7, 5, 0xc0392b, true);
+}
+
+function _car(x, z, color, isTruck = false) {
+  const group = new THREE.Group();
+  const body = new THREE.Mesh(
+    new THREE.BoxGeometry(isTruck ? 2.2 : 1.6, 0.6, isTruck ? 1.3 : 0.9),
+    new THREE.MeshStandardMaterial({ color, metalness: 0.3, roughness: 0.5 })
+  );
+  body.position.y = 0.5;
+  body.castShadow = true;
+  group.add(body);
+
+  const cabin = new THREE.Mesh(
+    new THREE.BoxGeometry(isTruck ? 0.9 : 0.9, 0.4, 0.8),
+    new THREE.MeshStandardMaterial({ color: 0x2c2c2c })
+  );
+  cabin.position.set(isTruck ? -0.5 : 0, 0.9, 0);
+  group.add(cabin);
+
+  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
+  [[-0.7, -0.4], [0.7, -0.4], [-0.7, 0.4], [0.7, 0.4]].forEach(([wx, wz]) => {
+    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.2, 12), wheelMat);
+    wheel.rotation.x = Math.PI / 2;
+    wheel.position.set(wx * (isTruck ? 1.1 : 0.9), 0.22, wz);
+    group.add(wheel);
+  });
+
+  group.position.set(x, 0, z);
+  group.rotation.y = Math.PI / 2;
+  scene.add(group);
+}
+
 // ─── Helpers de construcción ───────────────────────────────────────────────────
-function _house({ w, h, d, wallColor, roofColor }) {
+function _house({ w, h, d, wallColor, roofColor, windows }) {
   const group = new THREE.Group();
   const walls = new THREE.Mesh(
     new THREE.BoxGeometry(w, h, d),
@@ -444,6 +541,16 @@ function _house({ w, h, d, wallColor, roofColor }) {
   walls.castShadow = true;
   walls.receiveShadow = true;
   group.add(walls);
+
+  if (windows) {
+    const winMat = new THREE.MeshLambertMaterial({ color: 0x274656 });
+    const winSize = Math.min(0.55, h * 0.22);
+    [[1, 0], [-1, 0]].forEach(([side]) => {
+      const win = new THREE.Mesh(new THREE.PlaneGeometry(winSize, winSize), winMat);
+      win.position.set(side * w * 0.22, h * 0.55, d / 2 + 0.01);
+      group.add(win);
+    });
+  }
 
   const roof = new THREE.Mesh(
     new THREE.ConeGeometry(Math.max(w, d) * 0.72, h * 0.65, 4),
@@ -457,8 +564,6 @@ function _house({ w, h, d, wallColor, roofColor }) {
   return group;
 }
 
-// Etiqueta flotante: más grande, con fondo semitransparente y siempre
-// orientada para no recortarse como en la versión anterior.
 function _label(parent, text, x, y, z) {
   const canvas = document.createElement('canvas');
   canvas.width = 512; canvas.height = 96;
@@ -495,7 +600,7 @@ function _roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-// ─── Modos: día/noche, radiografía, limpio ────────────────────────────────────
+// ─── Modos: día/noche, radiografía, limpio, red de tuberías ──────────────────
 export function toggleDayNight() {
   isNight = !isNight;
   if (isNight) {
@@ -507,11 +612,11 @@ export function toggleDayNight() {
     sun.visible = false;
     moon.visible = true;
   } else {
-    scene.background.set(0xaee3f5);
-    scene.fog.color.set(0xaee3f5);
-    hemiLight.intensity = 0.85;
-    hemiLight.color.set(0xbfe3f5);
-    sunLight.intensity = 1.4;
+    scene.background.set(0xb9e6f2);
+    scene.fog.color.set(0xb9e6f2);
+    hemiLight.intensity = 0.9;
+    hemiLight.color.set(0xcdeaf5);
+    sunLight.intensity = 1.35;
     sun.visible = true;
     moon.visible = false;
   }
@@ -525,6 +630,7 @@ export function toggleXray() {
     m.transparent = isXray;
     m.opacity = isXray ? 0.35 : 1;
   });
+  if (isXray) pipeGroup.visible = true;
   return isXray;
 }
 
@@ -534,11 +640,18 @@ export function toggleCleanView() {
   return isClean;
 }
 
+export function togglePipes() {
+  pipesVisible = !pipesVisible;
+  pipeGroup.visible = pipesVisible || isXray;
+  return pipesVisible;
+}
+
 // ─── UI: conecta los botones nuevos ───────────────────────────────────────────
 function _wireUI() {
   const btnDayNight = document.getElementById('btn-daynight');
   const btnXray     = document.getElementById('btn-xray');
   const btnClean    = document.getElementById('btn-clean');
+  const btnPipes    = document.getElementById('btn-pipes');
 
   if (btnDayNight) btnDayNight.addEventListener('click', () => {
     const night = toggleDayNight();
@@ -555,5 +668,13 @@ function _wireUI() {
   if (btnClean) btnClean.addEventListener('click', () => {
     const clean = toggleCleanView();
     btnClean.classList.toggle('active', clean);
+  });
+
+  if (btnPipes) btnPipes.addEventListener('click', () => {
+    const visible = togglePipes();
+    btnPipes.classList.toggle('active', visible);
+    btnPipes.innerHTML = visible
+      ? '<span class="cam-icon">📐</span> Ocultar Red de Tuberías'
+      : '<span class="cam-icon">📐</span> Mostrar Red de Tuberías';
   });
 }
