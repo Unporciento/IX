@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { goToView, focusNode } from './controls.js';
 import * as L from './layout.js';
+import { setActiveLeakPosition, clearActiveLeakPosition, dispatchRepairTech, recallRepairTech } from './scene.js';
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 const NOMINAL_PRESSURE   = 4.5;   // bar — presión nominal de la red HDPE
@@ -188,6 +189,10 @@ export function simulateLeak(leakTypeIndex = null, pipePointIndex = null) {
     _showAlert(type, point);
     _playSound();
 
+    // Corte de flujo visual + despacho de técnico de reparación
+    setActiveLeakPosition(point.pos);
+    dispatchRepairTech(point.pos);
+
     // Cámara: ángulo aéreo sobre el punto de fuga
     const camOffset = new THREE.Vector3(6, 12, 9);
     goToView('custom',
@@ -337,6 +342,10 @@ function _deactivateLeak(wasAutoResolved) {
   _rippleRing.visible = false;
   _activeLeakPos      = null;
   _activeLeakSector   = null;
+
+  // Restaurar flujo visual de agua y llamar de vuelta al técnico
+  clearActiveLeakPosition();
+  recallRepairTech();
 
   // Restaurar presión de sensores
   _restoreSensorPressure();
