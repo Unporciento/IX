@@ -37,8 +37,8 @@ const VIEWS = {
 
   // Vista isométrica global — desde tierra adentro, mirando hacia el mar
   general: {
-    pos:    new THREE.Vector3(45, 32, 10),
-    target: new THREE.Vector3(-20, 0, 0),
+    pos:    new THREE.Vector3(35, 38, 38),
+    target: new THREE.Vector3(-18, 0, 0),
     label:  'Vista general',
   },
 
@@ -93,8 +93,8 @@ const VIEWS = {
 
   // Cenital — pájaro a alta altitud
   top: {
-    pos:    new THREE.Vector3(-15, 75, 0),
-    target: new THREE.Vector3(-15, 0, 0),
+    pos:    new THREE.Vector3(-17, 150, 0),
+    target: new THREE.Vector3(-17, 0, 0),
     label:  'Vista cenital',
   },
 };
