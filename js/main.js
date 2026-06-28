@@ -122,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
       _addLog('info', clean ? 'Vista limpia activada' : 'Vista limpia desactivada');
     });
   }
-  }
 
   // ── Cinematic tour ────────────────────────────────────────────────────────
   const btnTour = document.getElementById('btn-tour');
