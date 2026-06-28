@@ -1,7 +1,5 @@
 import * as THREE from 'three';
 import { goToView, focusNode } from './controls.js';
-import * as L from './layout.js';
-import { setActiveLeakPosition, clearActiveLeakPosition, dispatchRepairTech, recallRepairTech } from './scene.js';
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 const NOMINAL_PRESSURE   = 4.5;   // bar — presión nominal de la red HDPE
@@ -23,7 +21,6 @@ let _isLeakActive   = false;
 let _baseLeakSize   = 1;
 let _activeLeakPos  = null;
 let _activeLeakType = null;
-let _activeLeakSector = null;
 let _leakStartTime  = null;
 let _totalLeaks     = 0;
 let _leakHistory    = [];
@@ -45,42 +42,35 @@ const _valves = {
   V05: { name: 'Estanque → Red',     open: true,  sector: 'D' },
 };
 
-// Sensores: posiciones reales sobre la red de tuberías (layout lateral)
+// Sensores: posiciones y estados
 const _sensors = [
-  { id: 'S01', label: 'Colector central',  pos: new THREE.Vector3(L.COLLECTOR_X, 0.3, 0),                          pressure: 4.1, sector: 'A' },
-  { id: 'S02', label: 'Entrada planta',     pos: new THREE.Vector3(L.PLANTA_DESAL.x + 3.6, 0.3, L.PLANTA_DESAL.z),  pressure: 6.0, sector: 'A' },
-  { id: 'S03', label: 'Estanque mont.',     pos: new THREE.Vector3(L.ESTANQUE.x, 0.3, L.ESTANQUE.z),                pressure: 4.8, sector: 'D' },
-  { id: 'S04', label: 'Ramal norte oeste',  pos: new THREE.Vector3(-5.15, 0.3, L.HOUSE_ROWS_Z[0]),                  pressure: 4.0, sector: 'B' },
-  { id: 'S05', label: 'Ramal norte este',   pos: new THREE.Vector3( 5.15, 0.3, L.HOUSE_ROWS_Z[1]),                  pressure: 3.9, sector: 'B' },
-  { id: 'S06', label: 'Ramal sur oeste',    pos: new THREE.Vector3(-5.15, 0.3, L.HOUSE_ROWS_Z[4]),                  pressure: 3.8, sector: 'C' },
-  { id: 'S07', label: 'Ramal sur este',     pos: new THREE.Vector3( 5.15, 0.3, L.HOUSE_ROWS_Z[5]),                  pressure: 3.7, sector: 'C' },
-  { id: 'S08', label: 'Casa ppal.',         pos: new THREE.Vector3(5.15, 0.3, L.CASA_PRINCIPAL.z),                  pressure: 4.2, sector: 'D' },
-  { id: 'S09', label: 'Sala de máquinas',   pos: new THREE.Vector3(5.15, 0.3, L.SALA_MAQUINAS.z),                   pressure: 4.1, sector: 'A' },
+  { id: 'S01', label: 'Colector Z1',    pos: new THREE.Vector3( 0,  0.3, -6),  pressure: 4.1, sector: 'A' },
+  { id: 'S02', label: 'Entrada planta', pos: new THREE.Vector3(18,  0.3, -5),  pressure: 6.0, sector: 'A' },
+  { id: 'S03', label: 'Estanque mont.', pos: new THREE.Vector3( 0,  0.3,-28),  pressure: 4.8, sector: 'D' },
+  { id: 'S04', label: 'Ramal norte A',  pos: new THREE.Vector3(-10, 0.3,  0),  pressure: 4.0, sector: 'B' },
+  { id: 'S05', label: 'Ramal norte B',  pos: new THREE.Vector3(  5, 0.3,  0),  pressure: 3.9, sector: 'B' },
+  { id: 'S06', label: 'Ramal sur A',    pos: new THREE.Vector3(-10, 0.3,  8),  pressure: 3.8, sector: 'C' },
+  { id: 'S07', label: 'Ramal sur B',    pos: new THREE.Vector3(  5, 0.3,  8),  pressure: 3.7, sector: 'C' },
+  { id: 'S08', label: 'Casa ppal.',     pos: new THREE.Vector3(  0, 0.3,-16),  pressure: 4.2, sector: 'D' },
+  { id: 'S09', label: 'Distribución',   pos: new THREE.Vector3( -3, 0.3, -6),  pressure: 4.1, sector: 'A' },
 ];
 
-// Puntos de fuga posibles — sobre la red de tuberías real (layout lateral).
-// Cada fila de casitas aporta 2 nodos (ramal oeste y este); se reparten en
-// sectores B (norte) y C (sur) según la mitad de la lista de filas.
-const _pipePoints = [];
-{
-  const houseStopX = 3.4 / 2 + 0.15;
-  const westStop = L.HOUSE_SIDE_X.west + houseStopX;
-  const eastStop = L.HOUSE_SIDE_X.east - houseStopX;
-  const half = Math.ceil(L.HOUSE_ROWS_Z.length / 2);
-
-  _pipePoints.push({ pos: new THREE.Vector3(L.COLLECTOR_X, 0.28, L.HOUSE_ROWS_Z[0]), label: 'Colector — extremo norte', sector: 'A' });
-  _pipePoints.push({ pos: new THREE.Vector3(L.COLLECTOR_X, 0.28, 0), label: 'Colector central', sector: 'A' });
-  _pipePoints.push({ pos: new THREE.Vector3(L.COLLECTOR_X, 0.28, L.HOUSE_ROWS_Z[L.HOUSE_ROWS_Z.length - 1]), label: 'Colector — extremo sur', sector: 'A' });
-
-  L.HOUSE_ROWS_Z.forEach((z, i) => {
-    const sector = i < half ? 'B' : 'C';
-    _pipePoints.push({ pos: new THREE.Vector3(westStop, 0.28, z), label: `Ramal cabaña oeste — fila ${i + 1}`, sector });
-    _pipePoints.push({ pos: new THREE.Vector3(eastStop, 0.28, z), label: `Ramal cabaña este — fila ${i + 1}`, sector });
-  });
-
-  _pipePoints.push({ pos: new THREE.Vector3(eastStop, 0.28, L.CASA_PRINCIPAL.z), label: 'Acometida casa principal', sector: 'D' });
-  _pipePoints.push({ pos: new THREE.Vector3(eastStop, 0.28, L.SALA_MAQUINAS.z), label: 'Acometida sala de máquinas', sector: 'D' });
-}
+// Puntos de fuga posibles (sobre la red de tuberías real)
+const _pipePoints = [
+  // Colector principal bajo la calle
+  { pos: new THREE.Vector3(-7,  0.28, -6),  label: 'Colector Z1',          sector: 'A' },
+  { pos: new THREE.Vector3( 5,  0.28, -6),  label: 'Colector Z2',          sector: 'A' },
+  { pos: new THREE.Vector3( 0,  0.28, -6),  label: 'Colector central',     sector: 'A' },
+  // Ramal fila norte
+  { pos: new THREE.Vector3(-10, 0.28,  0),  label: 'Ramal norte – nodo 1', sector: 'B' },
+  { pos: new THREE.Vector3( -3, 0.28,  0),  label: 'Ramal norte – nodo 2', sector: 'B' },
+  { pos: new THREE.Vector3(  5, 0.28,  0),  label: 'Ramal norte – nodo 3', sector: 'B' },
+  // Ramal fila sur
+  { pos: new THREE.Vector3(-10, 0.28,  8),  label: 'Ramal sur – nodo 1',   sector: 'C' },
+  { pos: new THREE.Vector3( -3, 0.28,  8),  label: 'Ramal sur – nodo 2',   sector: 'C' },
+  // Tubería casa principal
+  { pos: new THREE.Vector3(  0, 0.28,-16),  label: 'Acometida casa ppal.', sector: 'D' },
+];
 
 // Tipos de fuga con severidad diferenciada
 const LEAK_TYPES = [
@@ -163,7 +153,6 @@ export function simulateLeak(leakTypeIndex = null, pipePointIndex = null) {
 
     _activeLeakPos  = point.pos;
     _activeLeakType = type;
-    _activeLeakSector = point.sector;
     _baseLeakSize   = type.size;
     _leakStartTime  = performance.now();
     _totalLeaks++;
@@ -187,11 +176,7 @@ export function simulateLeak(leakTypeIndex = null, pipePointIndex = null) {
 
     // UI
     _showAlert(type, point);
-    _playSound();
-
-    // Corte de flujo visual + despacho de técnico de reparación
-    setActiveLeakPosition(point.pos);
-    dispatchRepairTech(point.pos);
+    _playSound(type);
 
     // Cámara: ángulo aéreo sobre el punto de fuga
     const camOffset = new THREE.Vector3(6, 12, 9);
@@ -209,6 +194,7 @@ export function simulateLeak(leakTypeIndex = null, pipePointIndex = null) {
     }, type.resolveMs);
 
     _updateBtnState(true);
+    _addHistoryEntry(type, point, null); // abierto
 
   } else {
     _deactivateLeak(false);
@@ -311,7 +297,7 @@ export function updateLeaks() {
   // Marcadores de sensores: parpadeo en sector afectado
   if (_sensorGroup) {
     _sensorGroup.children.forEach((marker) => {
-      if (marker.userData.sector === _activeLeakSector) {
+      if (marker.userData.sector === _activeLeakType?.sector) {
         marker.material.color.setHex(
           Math.sin(time * 6) > 0 ? 0xff2222 : 0xff8800
         );
@@ -341,11 +327,6 @@ function _deactivateLeak(wasAutoResolved) {
   _puddle.visible     = false;
   _rippleRing.visible = false;
   _activeLeakPos      = null;
-  _activeLeakSector   = null;
-
-  // Restaurar flujo visual de agua y llamar de vuelta al técnico
-  clearActiveLeakPosition();
-  recallRepairTech();
 
   // Restaurar presión de sensores
   _restoreSensorPressure();
@@ -403,7 +384,6 @@ function _restoreSensorPressure() {
 }
 
 function _findSectorForPos(pos) {
-  if (_activeLeakSector) return _activeLeakSector;
   const match = _pipePoints.find(p => p.pos.equals(pos));
   return match?.sector ?? '?';
 }
@@ -447,7 +427,7 @@ function _injectUI() {
     const badge = document.createElement('div');
     badge.id = 'night-mode-badge';
     badge.textContent = '🌙 Modo nocturno activo';
-    badge.style.cssText = 'display:none;position:absolute;top:58px;left:50%;transform:translateX(-50%);background:rgba(10,30,55,.9);color:#7ad4ef;border:1px solid rgba(122,212,239,.4);border-radius:20px;padding:5px 14px;font-size:11px;letter-spacing:.5px;backdrop-filter:blur(8px);z-index:5';
+    badge.style.cssText = 'display:none;position:absolute;top:10px;right:10px;background:rgba(0,30,60,.9);color:#4af;border:1px solid #4af;border-radius:4px;padding:4px 10px;font-size:11px;letter-spacing:.5px';
     wrap.appendChild(badge);
   }
 
@@ -510,6 +490,9 @@ function _updateBtnState(active) {
 }
 
 // ─── Historial ────────────────────────────────────────────────────────────────
+function _addHistoryEntry(type, point, duration) {
+  // Solo actualiza el panel; el push real ocurre en _deactivateLeak
+}
 
 function _updateHistoryPanel() {
   const list  = document.getElementById('lh-list');
@@ -533,13 +516,119 @@ function _addLog(type, msg) {
 }
 
 // ─── Audio ────────────────────────────────────────────────────────────────────
-function _playSound() {
-  const el = document.getElementById('sonido-alerta');
-  if (el) el.play().catch(() => console.warn('Audio bloqueado por el navegador.'));
+// Antes: <audio id="sonido-alerta"> con un beep corto, una sola vez. Problema
+// real: ese <audio>.play() se llamaba ANTES de que el "desbloqueo" de audio
+// en main.js corriera (el listener de click del propio botón se dispara antes
+// que el listener de click puesto en document.body), así que en Safari/Brave
+// el navegador bloqueaba la reproducción la primera vez sin avisar — por eso
+// "no sonaba nada".
+//
+// Ahora: sirena generada 100% con Web Audio API (osciladores), que se crea y
+// arranca dentro del propio click de "Simular Fuga" (gesto de usuario real),
+// así el AudioContext nunca queda bloqueado. Suena en loop mientras la fuga
+// esté activa y su tono/intensidad escala con la severidad del tipo de fuga.
+let _audioCtx    = null;
+let _alarmNodes  = null;
+let _alarmActive = false;
+
+function _ensureAudioCtx() {
+  if (!_audioCtx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    _audioCtx = new AC();
+  }
+  if (_audioCtx.state === 'suspended') {
+    _audioCtx.resume().catch(() => {});
+  }
+  return _audioCtx;
 }
+
+function _playSound(type) {
+  _stopSound(); // por si quedó algo de una fuga anterior sin limpiar
+  const ctx = _ensureAudioCtx();
+  if (!ctx) return; // navegador sin soporte de Web Audio: degradar en silencio
+
+  const isCrit = type?.severity === 'crit';
+  const now = ctx.currentTime;
+
+  const master = ctx.createGain();
+  master.gain.setValueAtTime(0, now);
+  master.gain.linearRampToValueAtTime(isCrit ? 0.42 : 0.26, now + 0.18);
+  master.connect(ctx.destination);
+
+  // Tono base con barrido de frecuencia (efecto "wail" tipo sirena)
+  const carrier = ctx.createOscillator();
+  carrier.type = isCrit ? 'sawtooth' : 'sine';
+  carrier.frequency.value = isCrit ? 780 : 600;
+
+  const lfo = ctx.createOscillator();
+  lfo.type = 'sine';
+  lfo.frequency.value = isCrit ? 1.4 : 0.55;   // velocidad del barrido
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.value = isCrit ? 260 : 130;     // profundidad del barrido
+  lfo.connect(lfoGain);
+  lfoGain.connect(carrier.frequency);
+
+  const carrierGain = ctx.createGain();
+  carrierGain.gain.value = 0.7;
+  carrier.connect(carrierGain);
+
+  // Pulso de amplitud encima del wail (tipo "beep-beep" de alarma industrial)
+  const tremolo = ctx.createOscillator();
+  tremolo.type = 'square';
+  tremolo.frequency.value = isCrit ? 5 : 2.2;
+  const tremGain = ctx.createGain();
+  tremGain.gain.value = isCrit ? 0.2 : 0.12;
+  const tremFloor = ctx.createConstantSource();
+  tremFloor.offset.value = isCrit ? 0.8 : 0.88;
+
+  const ampNode = ctx.createGain();
+  ampNode.gain.value = 0; // el valor real lo aportan las dos fuentes sumadas abajo
+  tremolo.connect(tremGain);
+  tremGain.connect(ampNode.gain);
+  tremFloor.connect(ampNode.gain);
+
+  carrierGain.connect(ampNode);
+  ampNode.connect(master);
+
+  // Sobretono agudo extra solo en fugas críticas — refuerza la urgencia
+  let overtone = null;
+  if (isCrit) {
+    overtone = ctx.createOscillator();
+    overtone.type = 'square';
+    overtone.frequency.value = 1180;
+    const overtoneGain = ctx.createGain();
+    overtoneGain.gain.value = 0.05;
+    overtone.connect(overtoneGain).connect(master);
+    overtone.start();
+  }
+
+  carrier.start();
+  lfo.start();
+  tremolo.start();
+  tremFloor.start();
+
+  _alarmNodes  = { master, carrier, lfo, tremolo, tremFloor, overtone };
+  _alarmActive = true;
+}
+
 function _stopSound() {
-  const el = document.getElementById('sonido-alerta');
-  if (el) { el.pause(); el.currentTime = 0; }
+  if (!_alarmActive || !_alarmNodes || !_audioCtx) { _alarmActive = false; return; }
+  const ctx  = _audioCtx;
+  const now  = ctx.currentTime;
+  const { master, carrier, lfo, tremolo, tremFloor, overtone } = _alarmNodes;
+  try {
+    master.gain.cancelScheduledValues(now);
+    master.gain.setValueAtTime(master.gain.value, now);
+    master.gain.linearRampToValueAtTime(0, now + 0.22);
+    [carrier, lfo, tremolo, tremFloor, overtone].forEach(node => {
+      if (node) node.stop(now + 0.25);
+    });
+  } catch (e) {
+    // los nodos ya pudieron haber sido detenidos; no es un error real
+  }
+  _alarmActive = false;
+  _alarmNodes  = null;
 }
 
 // ─── Timer ────────────────────────────────────────────────────────────────────
