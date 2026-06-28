@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { initControls, updateControls } from './controls.js';
 import { initLeaks, updateLeaks } from './leaks.js';
 import * as L from './layout.js';
@@ -18,6 +19,7 @@ let lampLights = []; // { mesh, light } — luces reales de los postes
 let bigShipGroup = null;
 let bigShipTimer = 0;
 let fishGroup = null;
+let leakActivePos = null; // posición de la fuga activa, controlada por leaks.js
 
 // ─── Texturas procedurales (ruido value-noise + fbm) ─────────────────────────
 function _hash(x, y) { const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return n - Math.floor(n); }
@@ -51,6 +53,7 @@ function _makeSandTexture(rTint = 233, gTint = 210, bTint = 168, scale = 12) {
   const tex = new THREE.DataTexture(data, size, size);
   tex.needsUpdate = true;
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
 }
 
@@ -81,7 +84,7 @@ export function initThree() {
   camera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.1, 800);
   camera.position.set(45, 32, 10);
 
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, logarithmicDepthBuffer: true });
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, logarithmicDepthBuffer: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -143,9 +146,20 @@ function _tick() {
   }
   if (pipeFlowGroup) {
     pipeFlowGroup.children.forEach((m) => {
-      const visible = isXray && pipesVisible;
+      const visible = (isXray && pipesVisible) || leakActivePos !== null;
       m.visible = visible;
-      if (visible) {
+      if (!visible) return;
+
+      // Si el tramo está "corriente abajo" del punto de fuga activo, el
+      // flujo se detiene y se pone rojo (corte de suministro simulado).
+      const isAffected = leakActivePos !== null &&
+        m.userData.from.distanceTo(leakActivePos) < 4;
+
+      if (isAffected) {
+        m.material.color.setHex(0xff4433);
+        m.position.copy(m.userData.from); // se queda quieto, "estancado"
+      } else {
+        m.material.color.setHex(0x9fffe8);
         m.position.copy(m.userData.from).lerp(
           m.userData.to,
           (t * 0.5 + m.userData.offset) % 1
@@ -184,6 +198,7 @@ function _tick() {
   });
 
   _updateBigShip(dt, t);
+  _updateRepairTech(t, dt);
   _updateFish(t);
 
   updateControls();
@@ -727,7 +742,7 @@ function _buildDetailedHouse({ w, h, d, wallColor, roofColor, accentColor, hasTe
   // La "fachada" (dimensión que mira hacia la calle) es w; d es la profundidad.
   // Construimos en orientación local con la fachada en +X, luego rotamos el
   // grupo entero si facingSign === -1.
-  const walls = new THREE.Mesh(new THREE.BoxGeometry(d, h, w), wallMat);
+  const walls = new THREE.Mesh(new RoundedBoxGeometry(d, h, w, 2, 0.06), wallMat);
   walls.position.y = h / 2;
   walls.castShadow = true; walls.receiveShadow = true;
   group.add(walls);
@@ -1278,62 +1293,87 @@ function _buildVehicles() {
 function _buildCar(x, z, color, isPatrol) {
   const group = new THREE.Group();
   const bodyColor = isPatrol ? 0xffffff : color;
+
+  // Carrocería principal: caja redondeada baja y alargada (más orgánica que un cubo)
   const body = new THREE.Mesh(
-    new THREE.BoxGeometry(1.6, 0.6, 0.9),
-    new THREE.MeshStandardMaterial({ color: bodyColor, metalness: 0.4, roughness: 0.35 })
+    new RoundedBoxGeometry(1.7, 0.55, 0.92, 4, 0.12),
+    new THREE.MeshStandardMaterial({ color: bodyColor, metalness: 0.5, roughness: 0.28 })
   );
-  body.position.y = 0.5;
+  body.position.y = 0.42;
   body.castShadow = true;
   group.add(body);
 
   if (isPatrol) {
     const stripe = new THREE.Mesh(
-      new THREE.BoxGeometry(1.62, 0.18, 0.92),
+      new RoundedBoxGeometry(1.72, 0.16, 0.94, 2, 0.06),
       new THREE.MeshStandardMaterial({ color: 0x2e7d4f, metalness: 0.3, roughness: 0.4 })
     );
-    stripe.position.y = 0.5;
+    stripe.position.y = 0.42;
     group.add(stripe);
     const lightbar = new THREE.Mesh(
-      new THREE.BoxGeometry(0.5, 0.1, 0.3),
+      new RoundedBoxGeometry(0.5, 0.1, 0.3, 2, 0.04),
       new THREE.MeshStandardMaterial({ color: 0x222222 })
     );
-    lightbar.position.set(0, 0.85, 0);
+    lightbar.position.set(0, 0.76, 0);
     group.add(lightbar);
     [-0.12, 0.12].forEach((dz, i) => {
       const beacon = new THREE.Mesh(
-        new THREE.BoxGeometry(0.18, 0.08, 0.12),
+        new RoundedBoxGeometry(0.18, 0.08, 0.12, 2, 0.03),
         new THREE.MeshStandardMaterial({ color: i === 0 ? 0xff2020 : 0x2050ff, emissive: i === 0 ? 0xff2020 : 0x2050ff, emissiveIntensity: 0.6 })
       );
-      beacon.position.set(0, 0.92, dz);
+      beacon.position.set(0, 0.82, dz);
       group.add(beacon);
     });
   }
 
+  // Cabina: más angosta que la carrocería y con techo redondeado, da el
+  // efecto de "domo" en vez de bloque cúbico encima del cuerpo.
   const cabin = new THREE.Mesh(
-    new THREE.BoxGeometry(0.9, 0.4, 0.8),
-    new THREE.MeshStandardMaterial({ color: 0x2c2c2c, metalness: 0.2, roughness: 0.5 })
+    new RoundedBoxGeometry(0.95, 0.38, 0.78, 4, 0.16),
+    new THREE.MeshStandardMaterial({ color: 0x232323, metalness: 0.25, roughness: 0.45 })
   );
-  cabin.position.set(0, 0.9, 0);
+  cabin.position.set(-0.05, 0.78, 0);
+  cabin.scale.set(1, 1, 0.92);
   cabin.castShadow = true;
   group.add(cabin);
 
+  // Parabrisas inclinado (no vertical) — plano rotado para simular el rake real
+  const glassMat = new THREE.MeshStandardMaterial({
+    color: 0x9fd0e8, metalness: 0.3, roughness: 0.08, transparent: true, opacity: 0.72,
+  });
+  const windshield = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.34), glassMat);
+  windshield.position.set(0.42, 0.78, 0);
+  windshield.rotation.y = Math.PI / 2;
+  windshield.rotation.z = -0.32; // inclinación tipo parabrisas real
+  group.add(windshield);
+  const rearWindow = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.3), glassMat);
+  rearWindow.position.set(-0.52, 0.78, 0);
+  rearWindow.rotation.y = -Math.PI / 2;
+  rearWindow.rotation.z = 0.26;
+  group.add(rearWindow);
+
   const headlightMat = new THREE.MeshStandardMaterial({ color: 0xfff6cc, emissive: 0xfff6cc, emissiveIntensity: 0.3 });
-  [[-1, 0.25], [-1, -0.25]].forEach(([dx, dz]) => {
-    const hl = new THREE.Mesh(new THREE.CircleGeometry(0.06, 10), headlightMat);
-    hl.position.set(dx * 0.8, 0.5, dz * 0.7);
-    hl.rotation.y = -Math.PI / 2;
+  [[-1, 0.28], [-1, -0.28]].forEach(([dx, dz]) => {
+    const hl = new THREE.Mesh(new THREE.SphereGeometry(0.065, 10, 10), headlightMat);
+    hl.position.set(dx * 0.78, 0.42, dz * 0.85);
     group.add(hl);
   });
+  const taillightMat = new THREE.MeshStandardMaterial({ color: 0xaa1818, emissive: 0xaa1818, emissiveIntensity: 0.4 });
+  [[1, 0.28], [1, -0.28]].forEach(([dx, dz]) => {
+    const tl = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), taillightMat);
+    tl.position.set(dx * 0.78, 0.42, dz * 0.85);
+    group.add(tl);
+  });
 
-  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.7 });
-  const hubMat = new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.6, roughness: 0.3 });
-  [[-0.7, -0.4], [0.7, -0.4], [-0.7, 0.4], [0.7, 0.4]].forEach(([wx, wz]) => {
-    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.2, 16), wheelMat);
+  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.6 });
+  const hubMat = new THREE.MeshStandardMaterial({ color: 0x999999, metalness: 0.7, roughness: 0.25 });
+  [[-0.62, -0.42], [0.62, -0.42], [-0.62, 0.42], [0.62, 0.42]].forEach(([wx, wz]) => {
+    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.19, 20), wheelMat);
     wheel.rotation.x = Math.PI / 2;
-    wheel.position.set(wx, 0.22, wz);
+    wheel.position.set(wx, 0.24, wz);
     wheel.castShadow = true;
     group.add(wheel);
-    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.04, 10), hubMat);
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.04, 12), hubMat);
     hub.rotation.x = Math.PI / 2;
     hub.position.copy(wheel.position);
     hub.position.z += wz > 0 ? 0.1 : -0.1;
@@ -1527,6 +1567,156 @@ function _updateBigShip(dt, t) {
       scene.remove(bigShipGroup);
       bigShipGroup = null;
       bigShipTimer = 30 + Math.random() * 40;
+    }
+  }
+}
+
+// ─── Técnico de reparación — camioneta + figura humana que viajan a la fuga ──
+let repairGroup = null;
+let repairState = null; // null | 'driving_in' | 'working' | 'driving_out'
+let repairTarget = new THREE.Vector3();
+const REPAIR_BASE = new THREE.Vector3(L.PARKING.x, 0, L.PARKING.z); // sale del estacionamiento
+
+function _buildRepairTech() {
+  const group = new THREE.Group();
+
+  // Camioneta de servicio
+  const truck = new THREE.Group();
+  const truckBody = new THREE.Mesh(
+    new RoundedBoxGeometry(2.0, 0.8, 1.1, 4, 0.1),
+    new THREE.MeshStandardMaterial({ color: 0xe8a020, metalness: 0.35, roughness: 0.4 })
+  );
+  truckBody.position.y = 0.55;
+  truckBody.castShadow = true;
+  truck.add(truckBody);
+  const truckCabin = new THREE.Mesh(
+    new RoundedBoxGeometry(0.85, 0.5, 1.0, 4, 0.12),
+    new THREE.MeshStandardMaterial({ color: 0xf0f0f0, metalness: 0.2, roughness: 0.4 })
+  );
+  truckCabin.position.set(0.6, 1.0, 0);
+  truck.add(truckCabin);
+  const beaconMat = new THREE.MeshStandardMaterial({ color: 0xff8800, emissive: 0xff8800, emissiveIntensity: 0.7 });
+  const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 10), beaconMat);
+  beacon.position.set(0.6, 1.32, 0);
+  truck.add(beacon);
+  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.7 });
+  [[-0.7, -0.5], [0.7, -0.5], [-0.7, 0.5], [0.7, 0.5]].forEach(([wx, wz]) => {
+    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.22, 16), wheelMat);
+    wheel.rotation.x = Math.PI / 2;
+    wheel.position.set(wx, 0.26, wz);
+    truck.add(wheel);
+  });
+  truck.userData.beacon = beacon;
+  group.add(truck);
+  group.userData.truck = truck;
+
+  // Figura humana simple (low-poly, con casco y chaleco)
+  const tech = new THREE.Group();
+  const legMat = new THREE.MeshStandardMaterial({ color: 0x2a3a5a, roughness: 0.8 });
+  const vestMat = new THREE.MeshStandardMaterial({ color: 0xff8800, roughness: 0.7 });
+  const skinMat = new THREE.MeshStandardMaterial({ color: 0xd8a878, roughness: 0.8 });
+  const helmetMat = new THREE.MeshStandardMaterial({ color: 0xf0d020, roughness: 0.4, metalness: 0.2 });
+
+  [-0.08, 0.08].forEach(dx => {
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.5, 8), legMat);
+    leg.position.set(dx, 0.25, 0);
+    tech.add(leg);
+  });
+  const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.1, 0.4, 8), vestMat);
+  torso.position.y = 0.7;
+  tech.add(torso);
+  [-0.18, 0.18].forEach(dx => {
+    const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.38, 8), skinMat);
+    arm.position.set(dx, 0.65, 0);
+    arm.rotation.z = dx > 0 ? -0.15 : 0.15;
+    tech.add(arm);
+  });
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 12), skinMat);
+  head.position.y = 1.0;
+  tech.add(head);
+  const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 8, 0, Math.PI * 2, 0, Math.PI / 1.8), helmetMat);
+  helmet.position.y = 1.04;
+  tech.add(helmet);
+
+  // Herramienta (llave) que se anima durante la reparación
+  const tool = new THREE.Mesh(
+    new THREE.BoxGeometry(0.04, 0.22, 0.04),
+    new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.7, roughness: 0.3 })
+  );
+  tool.position.set(0.2, 0.45, 0.1);
+  tech.add(tool);
+  tech.userData.tool = tool;
+
+  tech.position.set(0.5, 0, 1.2);
+  group.add(tech);
+  group.userData.tech = tech;
+
+  group.visible = false;
+  scene.add(group);
+  return group;
+}
+
+// Llamado por leaks.js al activar/resolver una fuga: controla qué tramos
+// de tubería se muestran "cortados" (estancados, en rojo) visualmente.
+export function setActiveLeakPosition(pos) {
+  leakActivePos = pos ? pos.clone() : null;
+}
+export function clearActiveLeakPosition() {
+  leakActivePos = null;
+}
+
+// Llamado por leaks.js cuando se activa una fuga: despacha al técnico hacia
+// el punto exacto de la rotura.
+export function dispatchRepairTech(targetPos) {
+  if (!repairGroup) repairGroup = _buildRepairTech();
+  repairTarget.copy(targetPos).add(new THREE.Vector3(1.2, 0, 1.2));
+  repairGroup.position.copy(REPAIR_BASE);
+  repairGroup.rotation.y = Math.atan2(
+    repairTarget.x - REPAIR_BASE.x,
+    repairTarget.z - REPAIR_BASE.z
+  );
+  repairGroup.visible = true;
+  repairState = 'driving_in';
+}
+
+// Llamado por leaks.js cuando la fuga se resuelve: el técnico vuelve a la base.
+export function recallRepairTech() {
+  if (!repairGroup || !repairGroup.visible) return;
+  repairGroup.rotation.y = Math.atan2(
+    REPAIR_BASE.x - repairGroup.position.x,
+    REPAIR_BASE.z - repairGroup.position.z
+  );
+  repairState = 'driving_out';
+}
+
+function _updateRepairTech(t, dt) {
+  if (!repairGroup || !repairState) return;
+  const speed = 9;
+
+  if (repairState === 'driving_in') {
+    const dir = new THREE.Vector3().subVectors(repairTarget, repairGroup.position);
+    const dist = dir.length();
+    if (dist < 0.3) {
+      repairState = 'working';
+    } else {
+      dir.normalize();
+      repairGroup.position.addScaledVector(dir, speed * dt);
+    }
+  } else if (repairState === 'working') {
+    // Animación de la herramienta trabajando
+    const tool = repairGroup.userData.tech?.userData.tool;
+    if (tool) tool.rotation.z = Math.sin(t * 14) * 0.5;
+    const beacon = repairGroup.userData.truck?.userData.beacon;
+    if (beacon) beacon.material.emissiveIntensity = 0.5 + Math.sin(t * 10) * 0.4;
+  } else if (repairState === 'driving_out') {
+    const dir = new THREE.Vector3().subVectors(REPAIR_BASE, repairGroup.position);
+    const dist = dir.length();
+    if (dist < 0.5) {
+      repairGroup.visible = false;
+      repairState = null;
+    } else {
+      dir.normalize();
+      repairGroup.position.addScaledVector(dir, speed * dt);
     }
   }
 }
