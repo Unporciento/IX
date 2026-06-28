@@ -35,7 +35,8 @@ html, body {
 .clean-mode .cam-panel,
 .clean-mode .topbar,
 .clean-mode #leak-history-panel,
-.clean-mode #leak-timer-badge {
+.clean-mode #leak-timer-badge,
+.clean-mode #night-mode-badge {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.5s ease;
