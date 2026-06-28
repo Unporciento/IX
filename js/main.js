@@ -1,4 +1,4 @@
-import { initThree } from './scene.js';
+import { initThree, toggleCleanView } from './scene.js';
 import {
   simulateLeak,
   toggleNightMode,
@@ -19,13 +19,33 @@ import {
 // ─── Estado global de la UI ───────────────────────────────────────────────────
 let _threeReady    = false;
 let _nightMode     = false;
-let _isolateActive = false;
 let _logEntries    = [];
 let _sessionStart  = Date.now();
 let _uptimeTimer   = null;
 
 // ─── Arranque ─────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+
+  // ── Desbloqueo de audio ───────────────────────────────────────────────────
+  // Algunos navegadores (Safari, Brave con shields estrictos) requieren que
+  // el audio se "toque" dentro del primer gesto del usuario en la página,
+  // incluso si la reproducción real ocurre más tarde en otro clic.
+  let _audioUnlocked = false;
+  function _unlockAudio() {
+    if (_audioUnlocked) return;
+    _audioUnlocked = true;
+    const el = document.getElementById('sonido-alerta');
+    if (el) {
+      el.muted = true;
+      el.play().then(() => {
+        el.pause();
+        el.currentTime = 0;
+        el.muted = false;
+      }).catch(() => { el.muted = false; });
+    }
+    document.removeEventListener('click', _unlockAudio);
+  }
+  document.addEventListener('click', _unlockAudio, { once: true });
 
   // ── Pestañas principales ──────────────────────────────────────────────────
   const tabs     = document.querySelectorAll('.nav-tab');
@@ -93,29 +113,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ── Aislar sector ─────────────────────────────────────────────────────────
-  const btnIsolate = document.getElementById('btn-clean');
-  if (btnIsolate) {
-    btnIsolate.addEventListener('click', () => {
-      _isolateActive = !_isolateActive;
-
-      if (_isolateActive) {
-        // Aisla los sectores norte y sur (los más vulnerables según la investigación)
-        isolateSector('B');
-        isolateSector('C');
-        btnIsolate.classList.add('active');
-        btnIsolate.title = 'Liberar aislamiento';
-        _addLog('warn', 'Sectores norte (B) y sur (C) aislados');
-      } else {
-        restoreSector('B');
-        restoreSector('C');
-        btnIsolate.classList.remove('active');
-        btnIsolate.title = 'Aislar sector';
-        _addLog('info', 'Aislamiento liberado — sectores B y C restaurados');
-      }
-
-      _refreshValvePanel();
+  // ── Vista limpia (oculta la UI para capturas) ─────────────────────────────
+  const btnClean = document.getElementById('btn-clean');
+  if (btnClean) {
+    btnClean.addEventListener('click', () => {
+      const clean = toggleCleanView();
+      btnClean.classList.toggle('active', clean);
+      _addLog('info', clean ? 'Vista limpia activada' : 'Vista limpia desactivada');
     });
+  }
   }
 
   // ── Cinematic tour ────────────────────────────────────────────────────────
