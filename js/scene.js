@@ -586,6 +586,18 @@ function _dashedLineZ(cx, cz, length, mat) {
   }
 }
 
+function _dashedLineX(cx, cz, length, mat) {
+  const dashLen = 1.6, gap = 1.2;
+  const count = Math.floor(length / (dashLen + gap));
+  for (let i = 0; i < count; i++) {
+    const offset = -length / 2 + i * (dashLen + gap);
+    const dash = new THREE.Mesh(new THREE.PlaneGeometry(dashLen, 0.12), mat);
+    dash.rotation.x = -Math.PI / 2;
+    dash.position.set(cx + offset, 0.022, cz);
+    scene.add(dash);
+  }
+}
+
 // ─── Cerro + Estanque — tierra adentro, lejos del agua ───────────────────────
 function _buildMountainAndTank() {
   const { x: mx, z: mz } = L.ESTANQUE;
