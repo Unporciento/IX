@@ -24,13 +24,22 @@
   </nav>
 </header>
 
+<!-- Indicador de estado de red: pasa de verde a ámbar a rojo a medida que
+     se avanza por los hallazgos — la página misma simula "una red sin
+     monitoreo" hasta que llega a la solución, donde vuelve a verde. -->
+<div class="net-status" id="netStatus" aria-hidden="true">
+  <span class="net-status-dot"></span>
+  <span class="net-status-text">Red sin monitorear</span>
+</div>
+
 <main>
 
   <!-- ───────────── SECCIÓN PROBLEMÁTICA ───────────── -->
   <section id="section-comic" class="section active">
-    <div class="hero">
+
+    <div class="hero" data-reveal>
       <div class="hero-copy">
-        <div class="eyebrow"><span class="eyebrow-dot"></span>Diagnóstico de red hídrica</div>
+        <div class="eyebrow"><span class="eyebrow-dot"></span>Diagnóstico de red hídrica · NACAP</div>
         <h1>Cada gota que se pierde<br>no vuelve a aparecer.</h1>
         <p class="lead">
           El Complejo Turístico Playa La Virgen depende de camiones aljibe y de
@@ -69,7 +78,77 @@
       </div>
     </div>
 
-    <div class="sensor-strip">
+    <div class="scroll-cue" data-reveal>
+      <span>El método</span>
+      <svg width="14" height="20" viewBox="0 0 14 20" fill="none"><path d="M7 1v16M1 11l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+
+    <!-- ───────────── EL MÉTODO ───────────── -->
+    <div class="method-block" data-reveal>
+      <div class="section-head">
+        <div class="section-tag">Metodología de investigación</div>
+        <h2>Tres formas de ver lo que la red no dice</h2>
+      </div>
+      <div class="method-grid">
+        <div class="method-card">
+          <svg class="method-icon" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="17" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="20" cy="20" r="6" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M20 3v8M20 29v8M3 20h8M29 20h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span class="method-name">AEIOU</span>
+          <p>Observación no participante en estanques y válvulas: actividades, entornos, interacciones, objetos y usuarios — registrada directamente en terreno.</p>
+        </div>
+        <div class="method-card">
+          <svg class="method-icon" viewBox="0 0 40 40" fill="none">
+            <path d="M8 6h18l8 8v20a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M26 6v8h8M13 20h14M13 26h14M13 14h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span class="method-name">Entrevista en profundidad</span>
+          <p>Conversación con Sergio Muñoz, Gerente de Operaciones (+15 años en el cargo), sobre vida útil de la red HDPE e historial real de reparaciones.</p>
+        </div>
+        <div class="method-card">
+          <svg class="method-icon" viewBox="0 0 40 40" fill="none">
+            <rect x="5" y="5" width="30" height="30" rx="2" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M5 15h30M5 25h30M15 5v30M25 5v30" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
+          <span class="method-name">Matriz de antecedentes</span>
+          <p>Cinco soluciones tecnológicas comparadas frente a costos, continuidad de servicio y mejora del control del sistema — sensores de fuga arriba en todas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────────── LO QUE ENCONTRAMOS ───────────── -->
+    <div class="findings-block" data-reveal>
+      <div class="section-head">
+        <div class="section-tag">Diagnóstico de campo</div>
+        <h2>Lo que la observación encontró</h2>
+      </div>
+      <div class="findings-grid">
+        <div class="finding-card finding-crit">
+          <span class="finding-status">● Crítico</span>
+          <h3>Humedad donde no debería haberla</h3>
+          <p>Manchas de humedad en zonas de arena, sin lluvia ni riego cercano — la huella visible de fugas subterráneas en la red HDPE que nadie había reportado.</p>
+        </div>
+        <div class="finding-card finding-warn">
+          <span class="finding-status">● Atención</span>
+          <h3>Consumo nocturno que no calza</h3>
+          <p>Aumentos anormales de caudal durante la madrugada, cuando el complejo prácticamente no opera — señal de pérdida continua, no de uso real.</p>
+        </div>
+        <div class="finding-card finding-warn">
+          <span class="finding-status">● Atención</span>
+          <h3>Mantenimiento reactivo, no preventivo</h3>
+          <p>Los reemplazos de tramos se hacen después de la falla. Existen tramos antiguos de la red sin ficha de renovación formal — se sabe que existen, no cuándo van a fallar.</p>
+        </div>
+      </div>
+
+      <blockquote class="pull-quote">
+        <p>“Se han detectado aumentos anormales de consumo durante la noche y humedad en sectores de arena donde no debería haberla, lo que sugiere fugas no visibles.”</p>
+        <footer>— Sergio Muñoz, Gerente de Operaciones · 15+ años en el cargo</footer>
+      </blockquote>
+    </div>
+
+    <div class="sensor-strip" data-reveal>
       <div class="sensor-card">
         <span class="sensor-card-id">S·01</span>
         <span class="sensor-card-num">35 m³</span>
@@ -87,9 +166,9 @@
       </div>
     </div>
 
-    <div class="solution-block">
-      <div class="solution-head">
-        <div class="solution-tag">La solución</div>
+    <div class="solution-block" data-reveal>
+      <div class="section-head">
+        <div class="section-tag solution-tag">La solución</div>
         <h2>De fuga silenciosa a corte automático</h2>
       </div>
       <p class="solution-text">
