@@ -1,199 +1,266 @@
 import * as THREE from 'three';
-import { goToView } from './controls.js';
+import { goToView, focusNode } from './controls.js';
 import * as L from './layout.js';
-import {
-  setActiveLeakPosition,
-  clearActiveLeakPosition,
-  dispatchRepairTech,
-  recallRepairTech,
-  setValveFlowClosed,
-} from './scene.js';
+import { setActiveLeakPosition, clearActiveLeakPosition, dispatchRepairTech, recallRepairTech } from './scene.js';
 
-const NIGHT_THRESHOLD = 1.2;
+// ─── Constantes ───────────────────────────────────────────────────────────────
+const NOMINAL_PRESSURE   = 4.5;   // bar — presión nominal de la red HDPE
+const NIGHT_THRESHOLD    = 1.2;   // L/s — caudal nocturno máximo aceptable
+const ALERT_PRESSURE_LOW = 3.2;   // bar — umbral bajo → alerta amarilla
+const ALERT_PRESSURE_CRIT= 2.5;   // bar — umbral crítico → alerta roja
 
+// ─── Estado del módulo ────────────────────────────────────────────────────────
 let _scene = null;
+
+// Objetos 3D de la fuga activa
 let _leakMarker  = null;
 let _puddle      = null;
 let _rippleRing  = null;
-let _sensorGroup = null;
+let _sensorGroup = null; // grupo de marcadores de sensores siempre visibles
 
+// Estado de simulación
 let _isLeakActive   = false;
 let _baseLeakSize   = 1;
 let _activeLeakPos  = null;
 let _activeLeakType = null;
+let _activeLeakSector = null;
 let _leakStartTime  = null;
 let _totalLeaks     = 0;
 let _leakHistory    = [];
 
-let _alertTimeout     = null;
-let _autoResolveTimer = null;
-let _timerInterval    = null;
-let _nightModeActive  = false;
+// Temporizadores
+let _alertTimeout      = null;
+let _autoResolveTimer  = null;
+let _timerInterval     = null;
 
-const _valves = {};
-Object.entries(L.getValvePositions()).forEach(([id, v]) => {
-  _valves[id] = { name: v.name, open: true, sector: v.sector };
-});
+// Modo nocturno
+let _nightModeActive = false;
 
-const _sensors = L.getSensorDefs().map(s => ({
-  ...s,
-  pos: new THREE.Vector3(...s.pos),
-}));
+// Estado de válvulas (cámaras de paso)
+const _valves = {
+  V01: { name: 'Planta → Colector',  open: true,  sector: 'A' },
+  V02: { name: 'Colector → Norte',   open: true,  sector: 'B' },
+  V03: { name: 'Colector → Sur',     open: true,  sector: 'C' },
+  V04: { name: 'Casa principal',     open: true,  sector: 'D' },
+  V05: { name: 'Estanque → Red',     open: true,  sector: 'D' },
+};
 
-const _pipePoints = L.getLeakNodes().map(n => ({
-  pos: new THREE.Vector3(...n.pos),
-  label: n.label,
-  sector: n.sector,
-}));
+// Sensores: posiciones reales sobre la red de tuberías (layout lateral)
+const _sensors = [
+  { id: 'S01', label: 'Colector central',  pos: new THREE.Vector3(L.COLLECTOR_X, 0.3, 0),                          pressure: 4.1, sector: 'A' },
+  { id: 'S02', label: 'Entrada planta',     pos: new THREE.Vector3(L.PLANTA_DESAL.x + 3.6, 0.3, L.PLANTA_DESAL.z),  pressure: 6.0, sector: 'A' },
+  { id: 'S03', label: 'Estanque mont.',     pos: new THREE.Vector3(L.ESTANQUE.x, 0.3, L.ESTANQUE.z),                pressure: 4.8, sector: 'D' },
+  { id: 'S04', label: 'Ramal norte oeste',  pos: new THREE.Vector3(-5.15, 0.3, L.HOUSE_ROWS_Z[0]),                  pressure: 4.0, sector: 'B' },
+  { id: 'S05', label: 'Ramal norte este',   pos: new THREE.Vector3( 5.15, 0.3, L.HOUSE_ROWS_Z[1]),                  pressure: 3.9, sector: 'B' },
+  { id: 'S06', label: 'Ramal sur oeste',    pos: new THREE.Vector3(-5.15, 0.3, L.HOUSE_ROWS_Z[4]),                  pressure: 3.8, sector: 'C' },
+  { id: 'S07', label: 'Ramal sur este',     pos: new THREE.Vector3( 5.15, 0.3, L.HOUSE_ROWS_Z[5]),                  pressure: 3.7, sector: 'C' },
+  { id: 'S08', label: 'Casa ppal.',         pos: new THREE.Vector3(5.15, 0.3, L.CASA_PRINCIPAL.z),                  pressure: 4.2, sector: 'D' },
+  { id: 'S09', label: 'Sala de máquinas',   pos: new THREE.Vector3(5.15, 0.3, L.SALA_MAQUINAS.z),                   pressure: 4.1, sector: 'A' },
+];
 
+// Puntos de fuga posibles — sobre la red de tuberías real (layout lateral).
+// Cada fila de casitas aporta 2 nodos (ramal oeste y este); se reparten en
+// sectores B (norte) y C (sur) según la mitad de la lista de filas.
+const _pipePoints = [];
+{
+  const houseStopX = 3.4 / 2 + 0.15;
+  const westStop = L.HOUSE_SIDE_X.west + houseStopX;
+  const eastStop = L.HOUSE_SIDE_X.east - houseStopX;
+  const half = Math.ceil(L.HOUSE_ROWS_Z.length / 2);
+
+  _pipePoints.push({ pos: new THREE.Vector3(L.COLLECTOR_X, 0.28, L.HOUSE_ROWS_Z[0]), label: 'Colector — extremo norte', sector: 'A' });
+  _pipePoints.push({ pos: new THREE.Vector3(L.COLLECTOR_X, 0.28, 0), label: 'Colector central', sector: 'A' });
+  _pipePoints.push({ pos: new THREE.Vector3(L.COLLECTOR_X, 0.28, L.HOUSE_ROWS_Z[L.HOUSE_ROWS_Z.length - 1]), label: 'Colector — extremo sur', sector: 'A' });
+
+  L.HOUSE_ROWS_Z.forEach((z, i) => {
+    const sector = i < half ? 'B' : 'C';
+    _pipePoints.push({ pos: new THREE.Vector3(westStop, 0.28, z), label: `Ramal cabaña oeste — fila ${i + 1}`, sector });
+    _pipePoints.push({ pos: new THREE.Vector3(eastStop, 0.28, z), label: `Ramal cabaña este — fila ${i + 1}`, sector });
+  });
+
+  _pipePoints.push({ pos: new THREE.Vector3(eastStop, 0.28, L.CASA_PRINCIPAL.z), label: 'Acometida casa principal', sector: 'D' });
+  _pipePoints.push({ pos: new THREE.Vector3(eastStop, 0.28, L.SALA_MAQUINAS.z), label: 'Acometida sala de máquinas', sector: 'D' });
+}
+
+// Tipos de fuga con severidad diferenciada
 const LEAK_TYPES = [
   {
-    label: 'Goteo leve', size: 0.45, color: 0xffaa00, resolveMs: 22000,
-    severity: 'warn', pressureDrop: 0.4, techCount: 1,
+    label:     'Goteo leve',
+    size:       0.45,
+    color:      0xffaa00,
+    resolveMs:  18000,
+    severity:  'warn',
+    pressureDrop: 0.4,   // bar de caída en los sensores del sector
     description: 'Posible termofusión defectuosa o junta envejecida.',
   },
   {
-    label: 'Fisura media', size: 0.9, color: 0xff5500, resolveMs: 14000,
-    severity: 'warn', pressureDrop: 0.9, techCount: 2,
+    label:     'Fisura media',
+    size:       0.9,
+    color:      0xff5500,
+    resolveMs:  12000,
+    severity:  'warn',
+    pressureDrop: 0.9,
     description: 'Tramo antiguo sin ficha de renovación — recambio prioritario.',
   },
   {
-    label: 'Rotura crítica', size: 1.5, color: 0xff1111, resolveMs: 9000,
-    severity: 'crit', pressureDrop: 1.8, techCount: 3,
+    label:     'Rotura crítica',
+    size:       1.5,
+    color:      0xff1111,
+    resolveMs:   7000,
+    severity:  'crit',
+    pressureDrop: 1.8,
     description: '¡Corte de servicio inminente! Aislar sector y accionar válvula.',
   },
 ];
 
-const SECTOR_VALVES = {
-  A: ['V01'],
-  B: ['V02'],
-  C: ['V03'],
-  D: ['V04', 'V05'],
-};
-
+// ─── Init ─────────────────────────────────────────────────────────────────────
 export function initLeaks(scene) {
   _scene = scene;
 
+  // Marcador de fuga (esfera pulsante)
   _leakMarker = new THREE.Mesh(
-    new THREE.SphereGeometry(0.5, 16, 16),
-    new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.9 })
+    new THREE.SphereGeometry(1, 24, 24),
+    new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.85 })
   );
   _leakMarker.visible = false;
   scene.add(_leakMarker);
 
+  // Charco en el suelo
   _puddle = new THREE.Mesh(
-    new THREE.CircleGeometry(1, 24),
-    new THREE.MeshBasicMaterial({ color: 0x2266aa, transparent: true, opacity: 0.6, side: THREE.DoubleSide })
+    new THREE.PlaneGeometry(3, 3),
+    new THREE.MeshBasicMaterial({ color: 0x225577, transparent: true, opacity: 0.55 })
   );
   _puddle.rotation.x = -Math.PI / 2;
   _puddle.visible = false;
   scene.add(_puddle);
 
+  // Onda expansiva
   _rippleRing = new THREE.Mesh(
-    new THREE.RingGeometry(0.6, 0.9, 32),
-    new THREE.MeshBasicMaterial({ color: 0x4499bb, transparent: true, opacity: 0.5, side: THREE.DoubleSide })
+    new THREE.RingGeometry(0.8, 1.1, 32),
+    new THREE.MeshBasicMaterial({ color: 0x4499bb, transparent: true, opacity: 0.4, side: THREE.DoubleSide })
   );
   _rippleRing.rotation.x = -Math.PI / 2;
   _rippleRing.visible = false;
   scene.add(_rippleRing);
 
+  // Marcadores permanentes de sensores
   _buildSensorMarkers(scene);
+
+  // UI dinámica
   _injectUI();
 }
 
+// ─── Simular / detener fuga ───────────────────────────────────────────────────
 export function simulateLeak(leakTypeIndex = null, pipePointIndex = null) {
-  _ensureAudioCtx();
+  _isLeakActive = !_isLeakActive;
 
   if (_isLeakActive) {
+    const ptIdx   = pipePointIndex ?? Math.floor(Math.random() * _pipePoints.length);
+    const typeIdx = leakTypeIndex  ?? Math.floor(Math.random() * LEAK_TYPES.length);
+
+    const point = _pipePoints[ptIdx];
+    const type  = LEAK_TYPES[typeIdx];
+
+    _activeLeakPos  = point.pos;
+    _activeLeakType = type;
+    _activeLeakSector = point.sector;
+    _baseLeakSize   = type.size;
+    _leakStartTime  = performance.now();
+    _totalLeaks++;
+
+    // Posicionar objetos 3D
+    _leakMarker.material.color.setHex(type.color);
+    _leakMarker.scale.setScalar(_baseLeakSize);
+    _puddle.scale.setScalar(0.05);
+    _rippleRing.scale.setScalar(0.1);
+
+    _leakMarker.position.copy(point.pos).add(new THREE.Vector3(0, 0.3, 0));
+    _puddle.position.copy(point.pos).add(new THREE.Vector3(0, -0.25, 0));
+    _rippleRing.position.copy(point.pos).add(new THREE.Vector3(0, -0.24, 0));
+
+    _leakMarker.visible = true;
+    _puddle.visible     = true;
+    _rippleRing.visible = true;
+
+    // Degradar presión en sensores del sector afectado
+    _applySectorPressureDrop(point.sector, type.pressureDrop);
+
+    // UI
+    _showAlert(type, point);
+    _playSound(type);
+
+    // Corte de flujo visual + despacho de técnico de reparación
+    setActiveLeakPosition(point.pos);
+    dispatchRepairTech(point.pos);
+
+    // Cámara: ángulo aéreo sobre el punto de fuga
+    const camOffset = new THREE.Vector3(6, 12, 9);
+    goToView('custom',
+      point.pos,
+      point.pos.clone().add(camOffset)
+    );
+
+    _startTimer();
+
+    // Auto-resolución tras resolveMs
+    clearTimeout(_autoResolveTimer);
+    _autoResolveTimer = setTimeout(() => {
+      if (_isLeakActive) _autoResolve();
+    }, type.resolveMs);
+
+    _updateBtnState(true);
+
+  } else {
     _deactivateLeak(false);
-    return;
   }
-
-  const ptIdx   = pipePointIndex ?? Math.floor(Math.random() * _pipePoints.length);
-  const typeIdx = leakTypeIndex  ?? Math.floor(Math.random() * LEAK_TYPES.length);
-  const point   = _pipePoints[ptIdx];
-  const type    = LEAK_TYPES[typeIdx];
-
-  _isLeakActive   = true;
-  _activeLeakPos  = point.pos.clone();
-  _activeLeakType = type;
-  _baseLeakSize   = type.size;
-  _leakStartTime  = performance.now();
-  _totalLeaks++;
-
-  _leakMarker.material.color.setHex(type.color);
-  _leakMarker.scale.setScalar(type.size * 0.5);
-  _puddle.scale.setScalar(0.1);
-  _rippleRing.scale.setScalar(0.1);
-
-  _leakMarker.position.copy(point.pos).add(new THREE.Vector3(0, 0.5, 0));
-  _puddle.position.copy(point.pos).add(new THREE.Vector3(0, -0.02, 0));
-  _rippleRing.position.copy(point.pos).add(new THREE.Vector3(0, -0.01, 0));
-
-  _leakMarker.visible = true;
-  _puddle.visible     = true;
-  _rippleRing.visible = true;
-
-  _applySectorPressureDrop(point.sector, type.pressureDrop);
-  _autoCloseSectorValves(point.sector);
-
-  setActiveLeakPosition(point.pos, type.size);
-  dispatchRepairTech(point.pos, type.techCount);
-
-  _showAlert(type, point);
-  _playSound(type);
-
-  const camOffset = new THREE.Vector3(8, 14, 10);
-  goToView('custom', point.pos, point.pos.clone().add(camOffset));
-
-  _startTimer();
-
-  clearTimeout(_autoResolveTimer);
-  _autoResolveTimer = setTimeout(() => {
-    if (_isLeakActive) _autoResolve();
-  }, type.resolveMs);
-
-  _updateBtnState(true);
-  _addLog('warn', `Fuga ${type.label} en ${point.label} — sector ${point.sector}`);
 }
 
+// ─── Activar modo nocturno ───────────────────────────────────────────────────
 export function toggleNightMode() {
   _nightModeActive = !_nightModeActive;
   _emitEvent('nightMode', { active: _nightModeActive });
+
   const badge = document.getElementById('night-mode-badge');
   if (badge) badge.style.display = _nightModeActive ? 'block' : 'none';
+
   if (_nightModeActive) {
-    _addLog('info', `Modo nocturno activo — umbral: ${NIGHT_THRESHOLD} L/s`);
+    _addLog('info', 'Modo nocturno activo — umbral de alerta: ' + NIGHT_THRESHOLD + ' L/s');
   }
   return _nightModeActive;
 }
 
+// ─── Control de válvulas ─────────────────────────────────────────────────────
 export function setValve(valveId, open) {
-  if (!_valves[valveId]) return;
+  if (!_valves[valveId]) { console.warn(`Válvula ${valveId} no existe.`); return; }
   _valves[valveId].open = open;
-  setValveFlowClosed(valveId, !open);
   _addLog(open ? 'info' : 'warn', `Válvula ${valveId} (${_valves[valveId].name}) ${open ? 'abierta' : 'cerrada'}`);
   _emitEvent('valveChange', { id: valveId, open });
 }
 
 export function getValves() { return { ..._valves }; }
 
+// ─── Aislar sector ────────────────────────────────────────────────────────────
 export function isolateSector(sector) {
-  (SECTOR_VALVES[sector] || []).forEach(id => setValve(id, false));
+  Object.entries(_valves).forEach(([id, v]) => {
+    if (v.sector === sector) setValve(id, false);
+  });
   _addLog('warn', `Sector ${sector} aislado — válvulas cerradas`);
 }
 
 export function restoreSector(sector) {
-  (SECTOR_VALVES[sector] || []).forEach(id => setValve(id, true));
+  Object.entries(_valves).forEach(([id, v]) => {
+    if (v.sector === sector) setValve(id, true);
+  });
   _addLog('info', `Sector ${sector} restaurado`);
 }
 
+// ─── Diagnóstico rápido ──────────────────────────────────────────────────────
 export function runDiagnostic(onStep) {
   const steps = [
-    { delay: 0,    msg: 'Verificando presión en colector principal…', type: 'info' },
-    { delay: 900,  msg: 'Prueba acústica en ramales norte y sur…', type: 'info' },
-    { delay: 1800, msg: 'Revisando válvulas flotantes del estanque…', type: 'info' },
-    { delay: 2700, msg: 'Comprobando sensores de caudal nocturno…', type: 'info' },
+    { delay:    0, msg: 'Verificando presión en colector principal…',     type: 'info' },
+    { delay:  900, msg: 'Prueba acústica en ramales norte y sur…',        type: 'info' },
+    { delay: 1800, msg: 'Revisando válvulas flotantes del estanque…',     type: 'info' },
+    { delay: 2700, msg: 'Comprobando sensores de caudal nocturno…',       type: 'info' },
     { delay: 3600, msg: 'Diagnóstico completo — sin anomalías adicionales.', type: 'ok' },
   ];
   steps.forEach(s => {
@@ -204,69 +271,67 @@ export function runDiagnostic(onStep) {
   });
 }
 
+// ─── Getter de estado público ─────────────────────────────────────────────────
 export function getLeakState() {
   return {
-    isActive: _isLeakActive,
-    position: _activeLeakPos ? _activeLeakPos.clone() : null,
-    leakType: _activeLeakType,
-    totalLeaks: _totalLeaks,
-    history: [..._leakHistory],
-    nightMode: _nightModeActive,
-    valves: { ..._valves },
-    sensors: _sensors.map(s => ({ ...s, pos: s.pos.clone() })),
+    isActive:    _isLeakActive,
+    position:    _activeLeakPos ? _activeLeakPos.clone() : null,
+    leakType:    _activeLeakType,
+    totalLeaks:  _totalLeaks,
+    history:     [..._leakHistory],
+    nightMode:   _nightModeActive,
+    valves:      { ..._valves },
+    sensors:     _sensors.map(s => ({ ...s })),
   };
 }
 
+// ─── Loop de animación ────────────────────────────────────────────────────────
 export function updateLeaks() {
   if (!_isLeakActive) return;
   const time = performance.now() * 0.005;
 
-  if (_leakMarker?.visible) {
-    _leakMarker.scale.setScalar(_baseLeakSize * 0.5 + Math.sin(time * 3) * 0.12);
-    _leakMarker.material.opacity = 0.7 + Math.sin(time * 5) * 0.25;
-  }
+  // Marcador pulsante
+  if (_leakMarker?.visible)
+    _leakMarker.scale.setScalar(_baseLeakSize + Math.sin(time) * 0.09);
 
+  // Charco creciente
   if (_puddle?.visible) {
-    const maxSize = _baseLeakSize * 2.5;
-    if (_puddle.scale.x < maxSize) {
-      _puddle.scale.setScalar(Math.min(_puddle.scale.x + 0.002, maxSize));
-    }
+    const maxSize = _baseLeakSize * 2.2;
+    if (_puddle.scale.x < maxSize)
+      _puddle.scale.setScalar(Math.min(_puddle.scale.x + 0.001, maxSize));
   }
 
+  // Onda expansiva cíclica
   if (_rippleRing?.visible) {
-    const cycle = (time % 2) / 2;
-    _rippleRing.scale.setScalar(0.5 + cycle * _baseLeakSize * 4);
-    _rippleRing.material.opacity = 0.6 * (1 - cycle);
+    const cycle = (time % 2.5) / 2.5;
+    _rippleRing.scale.setScalar(0.4 + cycle * _baseLeakSize * 3.5);
+    _rippleRing.material.opacity = 0.55 * (1 - cycle);
   }
 
+  // Marcadores de sensores: parpadeo en sector afectado
   if (_sensorGroup) {
-    _sensorGroup.children.forEach(marker => {
-      if (marker.userData.sector === _activeLeakType?.sector) {
-        marker.material.color.setHex(Math.sin(time * 8) > 0 ? 0xff2222 : 0xff8800);
+    _sensorGroup.children.forEach((marker) => {
+      if (marker.userData.sector === _activeLeakSector) {
+        marker.material.color.setHex(
+          Math.sin(time * 6) > 0 ? 0xff2222 : 0xff8800
+        );
       }
     });
   }
 }
 
-function _autoCloseSectorValves(sector) {
-  (SECTOR_VALVES[sector] || []).forEach(id => {
-    if (_valves[id]?.open) {
-      setValve(id, false);
-      _addLog('warn', `Cierre automático: válvula ${id} por fuga en sector ${sector}`);
-    }
-  });
-}
-
+// ─── Desactivación interna ────────────────────────────────────────────────────
 function _deactivateLeak(wasAutoResolved) {
   _isLeakActive = false;
 
   if (_leakStartTime !== null) {
     const duration = ((performance.now() - _leakStartTime) / 1000).toFixed(1);
     _leakHistory.push({
-      tipo: _activeLeakType?.label ?? '—',
-      sector: _activeLeakPos ? _findSectorForPos(_activeLeakPos) : '—',
-      duration, auto: wasAutoResolved,
-      ts: new Date().toLocaleTimeString('es-CL'),
+      tipo:     _activeLeakType?.label ?? '—',
+      sector:   _activeLeakPos ? _findSectorForPos(_activeLeakPos) : '—',
+      duration,
+      auto:     wasAutoResolved,
+      ts:       new Date().toLocaleTimeString('es-CL'),
     });
     _leakStartTime = null;
     _updateHistoryPanel();
@@ -276,25 +341,32 @@ function _deactivateLeak(wasAutoResolved) {
   _puddle.visible     = false;
   _rippleRing.visible = false;
   _activeLeakPos      = null;
+  _activeLeakSector   = null;
 
+  // Restaurar flujo visual de agua y llamar de vuelta al técnico
   clearActiveLeakPosition();
   recallRepairTech();
+
+  // Restaurar presión de sensores
   _restoreSensorPressure();
 
+  // Restaurar color de marcadores de sensores
   if (_sensorGroup) {
     _sensorGroup.children.forEach(m => m.material.color.setHex(0x00d4aa));
   }
 
   _hideAlert(wasAutoResolved);
   _stopSound();
+
   clearTimeout(_alertTimeout);
   clearTimeout(_autoResolveTimer);
+
   _stopTimer();
   _updateBtnState(false);
 
   goToView('general');
   _addLog('info', wasAutoResolved
-    ? 'Fuga reparada — tubería restaurada, válvulas en revisión'
+    ? 'Fuga resuelta automáticamente por el sistema'
     : 'Simulación detenida por el operador');
 }
 
@@ -303,12 +375,13 @@ function _autoResolve() {
   if (htmlAlert) {
     const h3 = htmlAlert.querySelector('h3');
     const p  = htmlAlert.querySelector('p');
-    if (h3) h3.textContent = '✅ Reparación completada';
-    if (p)  p.textContent  = 'Técnicos restauraron la tubería. Flujo normalizado.';
+    if (h3) h3.textContent = '✅ Fuga Controlada';
+    if (p)  p.textContent  = 'Sistema cerrado automáticamente.';
   }
   _deactivateLeak(true);
 }
 
+// ─── Presión de sensores ──────────────────────────────────────────────────────
 function _applySectorPressureDrop(sector, drop) {
   _sensors.forEach(s => {
     if (s.sector === sector) {
@@ -330,28 +403,32 @@ function _restoreSensorPressure() {
 }
 
 function _findSectorForPos(pos) {
-  const match = _pipePoints.find(p => p.pos.distanceTo(pos) < 0.5);
+  if (_activeLeakSector) return _activeLeakSector;
+  const match = _pipePoints.find(p => p.pos.equals(pos));
   return match?.sector ?? '?';
 }
 
+// ─── Marcadores 3D de sensores ────────────────────────────────────────────────
 function _buildSensorMarkers(scene) {
   _sensorGroup = new THREE.Group();
   _sensors.forEach(s => {
     const mesh = new THREE.Mesh(
-      new THREE.OctahedronGeometry(0.3, 0),
+      new THREE.OctahedronGeometry(0.35, 0),
       new THREE.MeshBasicMaterial({ color: 0x00d4aa, transparent: true, opacity: 0.85 })
     );
-    mesh.position.copy(s.pos).add(new THREE.Vector3(0, 0.5, 0));
+    mesh.position.copy(s.pos).add(new THREE.Vector3(0, 0.6, 0));
     mesh.userData = { sensorId: s.id, sector: s.sector };
     _sensorGroup.add(mesh);
   });
   scene.add(_sensorGroup);
 }
 
+// ─── UI dinámica ──────────────────────────────────────────────────────────────
 function _injectUI() {
   const wrap = document.querySelector('.canvas-wrap');
   if (!wrap) return;
 
+  // Panel de historial
   if (!document.getElementById('leak-history-panel')) {
     const panel = document.createElement('div');
     panel.id = 'leak-history-panel';
@@ -365,42 +442,42 @@ function _injectUI() {
     wrap.appendChild(panel);
   }
 
+  // Badge de modo nocturno
   if (!document.getElementById('night-mode-badge')) {
     const badge = document.createElement('div');
     badge.id = 'night-mode-badge';
     badge.textContent = '🌙 Modo nocturno activo';
-    badge.style.cssText = 'display:none;position:absolute;top:10px;right:10px;background:rgba(0,30,60,.9);color:#4af;border:1px solid #4af;border-radius:4px;padding:4px 10px;font-size:11px';
+    badge.style.cssText = 'display:none;position:absolute;top:58px;left:50%;transform:translateX(-50%);background:rgba(10,30,55,.9);color:#7ad4ef;border:1px solid rgba(122,212,239,.4);border-radius:20px;padding:5px 14px;font-size:11px;letter-spacing:.5px;backdrop-filter:blur(8px);z-index:5';
     wrap.appendChild(badge);
   }
 
+  // Timer badge
   if (!document.getElementById('leak-timer-badge')) {
     const badge = document.createElement('div');
     badge.id = 'leak-timer-badge';
-    badge.style.cssText = 'display:none;position:absolute;top:48px;right:10px;background:rgba(60,0,0,.9);color:#f44;border:1px solid #f44;border-radius:4px;padding:4px 10px;font-family:monospace;font-size:12px';
+    badge.style.cssText = 'display:none;position:absolute;top:48px;right:10px;background:rgba(60,0,0,.9);color:#f44;border:1px solid #f44;border-radius:4px;padding:4px 10px;font-family:monospace;font-size:12px;letter-spacing:1px';
     badge.textContent = '00:00';
     wrap.appendChild(badge);
   }
 }
 
 function _showAlert(type, point) {
-  const htmlAlert = document.getElementById('alerta-fuga');
-  const tipoEl    = document.getElementById('tipo-fuga');
+  const htmlAlert    = document.getElementById('alerta-fuga');
+  const tipoEl       = document.getElementById('tipo-fuga');
   if (!htmlAlert) return;
 
   htmlAlert.classList.remove('esquina', 'resuelto');
   htmlAlert.style.display = 'block';
-  htmlAlert.querySelector('h3').textContent = '🚨 ALARMA — Fuga Detectada';
 
   if (tipoEl) {
     tipoEl.innerHTML = `
       <strong>${type.label}</strong> — ${point.label}<br>
-      <small style="opacity:.75">${type.description}</small><br>
-      <small style="color:#f88">🔧 ${type.techCount} técnico(s) en camino · Válvula sector ${point.sector} cerrada</small>
+      <small style="opacity:.75">${type.description}</small>
     `;
   }
 
   clearTimeout(_alertTimeout);
-  _alertTimeout = setTimeout(() => htmlAlert.classList.add('esquina'), 3500);
+  _alertTimeout = setTimeout(() => htmlAlert.classList.add('esquina'), 2800);
 }
 
 function _hideAlert(resolved) {
@@ -414,11 +491,12 @@ function _hideAlert(resolved) {
     setTimeout(() => {
       htmlAlert.style.display = 'none';
       htmlAlert.classList.remove('resuelto');
-      htmlAlert.querySelector('h3').textContent = '🚨 Fuga Detectada';
-    }, 2500);
+    }, 2000);
   } else {
-    htmlAlert.style.display = 'none';
     htmlAlert.classList.remove('esquina');
+    htmlAlert.addEventListener('transitionend', () => {
+      if (!_isLeakActive) htmlAlert.style.display = 'none';
+    }, { once: true });
   }
 }
 
@@ -431,11 +509,15 @@ function _updateBtnState(active) {
     : '<span class="cam-icon">🚨</span> Simular fuga';
 }
 
+// ─── Historial ────────────────────────────────────────────────────────────────
+
 function _updateHistoryPanel() {
   const list  = document.getElementById('lh-list');
   const count = document.getElementById('lh-count');
   if (!list) return;
+
   if (count) count.textContent = `${_leakHistory.length} evento${_leakHistory.length !== 1 ? 's' : ''}`;
+
   list.innerHTML = _leakHistory.slice().reverse().map((e, i) => `
     <li class="lh-item ${e.auto ? 'auto' : 'manual'}">
       <span class="lh-idx">#${_leakHistory.length - i}</span>
@@ -450,11 +532,14 @@ function _addLog(type, msg) {
   _emitEvent('log', { type, msg, ts: new Date().toLocaleTimeString('es-CL') });
 }
 
-// ─── Audio — sirena Web Audio API (loop mientras fuga activa) ─────────────────
+// ─── Audio — sirena generada con Web Audio API (sin archivos externos) ──────
+// El AudioContext se crea y arranca dentro del propio click de "Simular Fuga"
+// (gesto de usuario real), por lo que nunca queda bloqueado por políticas de
+// autoplay del navegador. Suena en loop mientras la fuga esté activa, con
+// tono e intensidad escalando según la severidad del tipo de fuga.
 let _audioCtx    = null;
 let _alarmNodes  = null;
 let _alarmActive = false;
-let _alarmLoopTimer = null;
 
 function _ensureAudioCtx() {
   if (!_audioCtx) {
@@ -462,9 +547,7 @@ function _ensureAudioCtx() {
     if (!AC) return null;
     _audioCtx = new AC();
   }
-  if (_audioCtx.state === 'suspended') {
-    _audioCtx.resume().catch(() => {});
-  }
+  if (_audioCtx.state === 'suspended') _audioCtx.resume().catch(() => {});
   return _audioCtx;
 }
 
@@ -474,64 +557,89 @@ function _playSound(type) {
   if (!ctx) return;
 
   const isCrit = type?.severity === 'crit';
+  const now = ctx.currentTime;
 
-  function _startAlarmCycle() {
-    if (!_alarmActive) return;
-    const now = ctx.currentTime;
+  const master = ctx.createGain();
+  master.gain.setValueAtTime(0, now);
+  master.gain.linearRampToValueAtTime(isCrit ? 0.42 : 0.26, now + 0.18);
+  master.connect(ctx.destination);
 
-    const master = ctx.createGain();
-    master.gain.setValueAtTime(0, now);
-    master.gain.linearRampToValueAtTime(isCrit ? 0.55 : 0.38, now + 0.08);
-    master.gain.setValueAtTime(isCrit ? 0.55 : 0.38, now + 1.6);
-    master.gain.linearRampToValueAtTime(0, now + 1.75);
-    master.connect(ctx.destination);
+  // Tono base con barrido de frecuencia (efecto "wail" tipo sirena)
+  const carrier = ctx.createOscillator();
+  carrier.type = isCrit ? 'sawtooth' : 'sine';
+  carrier.frequency.value = isCrit ? 780 : 600;
 
-    const carrier = ctx.createOscillator();
-    carrier.type = isCrit ? 'sawtooth' : 'square';
-    carrier.frequency.setValueAtTime(isCrit ? 880 : 660, now);
-    carrier.frequency.linearRampToValueAtTime(isCrit ? 520 : 380, now + 0.85);
-    carrier.frequency.linearRampToValueAtTime(isCrit ? 880 : 660, now + 1.6);
+  const lfo = ctx.createOscillator();
+  lfo.type = 'sine';
+  lfo.frequency.value = isCrit ? 1.4 : 0.55;
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.value = isCrit ? 260 : 130;
+  lfo.connect(lfoGain);
+  lfoGain.connect(carrier.frequency);
 
-    const lfo = ctx.createOscillator();
-    lfo.frequency.value = isCrit ? 6 : 3.5;
-    const lfoG = ctx.createGain();
-    lfoG.gain.value = isCrit ? 0.25 : 0.15;
-    lfo.connect(lfoG);
-    lfoG.connect(master.gain);
+  const carrierGain = ctx.createGain();
+  carrierGain.gain.value = 0.7;
+  carrier.connect(carrierGain);
 
-    const cg = ctx.createGain();
-    cg.gain.value = 0.65;
-    carrier.connect(cg).connect(master);
+  // Pulso de amplitud tipo "beep-beep" de alarma industrial, encima del wail
+  const tremolo = ctx.createOscillator();
+  tremolo.type = 'square';
+  tremolo.frequency.value = isCrit ? 5 : 2.2;
+  const tremGain = ctx.createGain();
+  tremGain.gain.value = isCrit ? 0.2 : 0.12;
+  const tremFloor = ctx.createConstantSource();
+  tremFloor.offset.value = isCrit ? 0.8 : 0.88;
 
-    if (isCrit) {
-      const hi = ctx.createOscillator();
-      hi.type = 'square';
-      hi.frequency.value = 1320;
-      const hiG = ctx.createGain();
-      hiG.gain.value = 0.12;
-      hi.connect(hiG).connect(master);
-      hi.start(now);
-      hi.stop(now + 1.8);
-    }
+  const ampNode = ctx.createGain();
+  ampNode.gain.value = 0;
+  tremolo.connect(tremGain);
+  tremGain.connect(ampNode.gain);
+  tremFloor.connect(ampNode.gain);
 
-    carrier.start(now);
-    lfo.start(now);
-    carrier.stop(now + 1.8);
-    lfo.stop(now + 1.8);
+  carrierGain.connect(ampNode);
+  ampNode.connect(master);
+
+  // Sobretono agudo extra solo en fugas críticas
+  let overtone = null;
+  if (isCrit) {
+    overtone = ctx.createOscillator();
+    overtone.type = 'square';
+    overtone.frequency.value = 1180;
+    const overtoneGain = ctx.createGain();
+    overtoneGain.gain.value = 0.05;
+    overtone.connect(overtoneGain).connect(master);
+    overtone.start();
   }
 
+  carrier.start();
+  lfo.start();
+  tremolo.start();
+  tremFloor.start();
+
+  _alarmNodes  = { master, carrier, lfo, tremolo, tremFloor, overtone };
   _alarmActive = true;
-  _startAlarmCycle();
-  _alarmLoopTimer = setInterval(_startAlarmCycle, isCrit ? 1600 : 2000);
 }
 
 function _stopSound() {
+  if (!_alarmActive || !_alarmNodes || !_audioCtx) { _alarmActive = false; return; }
+  const ctx = _audioCtx;
+  const now = ctx.currentTime;
+  const { master, carrier, lfo, tremolo, tremFloor, overtone } = _alarmNodes;
+  try {
+    master.gain.cancelScheduledValues(now);
+    master.gain.setValueAtTime(master.gain.value, now);
+    master.gain.linearRampToValueAtTime(0, now + 0.22);
+    [carrier, lfo, tremolo, tremFloor, overtone].forEach(node => {
+      if (node) node.stop(now + 0.25);
+    });
+  } catch (e) {
+    // los nodos ya pudieron haberse detenido; no es un error real
+  }
   _alarmActive = false;
-  clearInterval(_alarmLoopTimer);
-  _alarmLoopTimer = null;
-  _alarmNodes = null;
+  _alarmNodes  = null;
 }
 
+// ─── Timer ────────────────────────────────────────────────────────────────────
 function _startTimer() {
   const badge = document.getElementById('leak-timer-badge');
   if (!badge) return;
@@ -551,11 +659,9 @@ function _stopTimer() {
   if (badge) badge.style.display = 'none';
 }
 
+// ─── Sistema de eventos interno ───────────────────────────────────────────────
+// Permite que scene.js o main.js reaccionen a cambios sin acoplamiento directo.
+// Uso: window.addEventListener('leaks:log', e => console.log(e.detail))
 function _emitEvent(name, detail) {
   window.dispatchEvent(new CustomEvent(`leaks:${name}`, { detail }));
-}
-
-// Export para desbloqueo de audio desde main.js
-export function unlockAudio() {
-  _ensureAudioCtx();
 }
