@@ -60,12 +60,57 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetId = this.id === 'tab-comic' ? 'section-comic' : 'section-3d';
       document.getElementById(targetId).classList.add('active');
 
+      const netStatusEl = document.getElementById('netStatus');
+      if (netStatusEl) netStatusEl.style.opacity = targetId === 'section-comic' ? '1' : '0';
+
       if (targetId === 'section-3d' && !_threeReady) {
         _threeReady = true;
         setTimeout(initThree, 100);
       }
     });
   });
+
+  // ── Scroll-reveal de la sección Problemática ──────────────────────────────
+  // Cada bloque marcado con [data-reveal] aparece con fade+slide la primera
+  // vez que entra en pantalla; no se repite al volver a scrollear.
+  const revealTargets = document.querySelectorAll('[data-reveal]');
+  if (revealTargets.length && 'IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealTargets.forEach(el => revealObserver.observe(el));
+  } else {
+    // Sin soporte de IntersectionObserver: mostrar todo de inmediato.
+    revealTargets.forEach(el => el.classList.add('is-visible'));
+  }
+
+  // ── Indicador de estado de red — reacciona al scroll dentro de Problemática
+  const netStatus = document.getElementById('netStatus');
+  const comicSection = document.getElementById('section-comic');
+  if (netStatus && comicSection) {
+    const statusText = netStatus.querySelector('.net-status-text');
+    const updateNetStatus = () => {
+      const scrollable = comicSection.scrollHeight - comicSection.clientHeight;
+      const progress = scrollable > 0 ? comicSection.scrollTop / scrollable : 0;
+      netStatus.classList.remove('is-warn', 'is-ok');
+      if (progress > 0.75) {
+        netStatus.classList.add('is-ok');
+        if (statusText) statusText.textContent = 'Corte automático activo';
+      } else if (progress > 0.35) {
+        netStatus.classList.add('is-warn');
+        if (statusText) statusText.textContent = 'Anomalía detectada';
+      } else if (statusText) {
+        statusText.textContent = 'Red sin monitorear';
+      }
+    };
+    comicSection.addEventListener('scroll', updateNetStatus, { passive: true });
+    updateNetStatus();
+  }
 
   // ── Botones de cámara ─────────────────────────────────────────────────────
   // Vistas nombradas del catálogo en controls.js
