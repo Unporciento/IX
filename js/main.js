@@ -1,4 +1,4 @@
-import { initThree, toggleCleanView, toggleXray, togglePipes } from './scene.js';
+import { initThree, toggleCleanView } from './scene.js';
 import {
   simulateLeak,
   toggleNightMode,
@@ -8,7 +8,6 @@ import {
   setValve,
   getValves,
   getLeakState,
-  unlockAudio,
 } from './leaks.js';
 import {
   goToView,
@@ -35,10 +34,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function _unlockAudio() {
     if (_audioUnlocked) return;
     _audioUnlocked = true;
-    unlockAudio();
+    const el = document.getElementById('sonido-alerta');
+    if (el) {
+      el.muted = true;
+      el.play().then(() => {
+        el.pause();
+        el.currentTime = 0;
+        el.muted = false;
+      }).catch(() => { el.muted = false; });
+    }
     document.removeEventListener('click', _unlockAudio);
   }
-  document.addEventListener('click', _unlockAudio);
+  document.addEventListener('click', _unlockAudio, { once: true });
 
   // ── Pestañas principales ──────────────────────────────────────────────────
   const tabs     = document.querySelectorAll('.nav-tab');
@@ -80,10 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Botón de fuga ─────────────────────────────────────────────────────────
   const btnFuga = document.getElementById('btn-fuga');
-  if (btnFuga) btnFuga.addEventListener('click', () => {
-    unlockAudio();
-    simulateLeak();
-  });
+  if (btnFuga) btnFuga.addEventListener('click', simulateLeak);
 
   // ── Modo nocturno ─────────────────────────────────────────────────────────
   const btnNight = document.getElementById('btn-daynight');
@@ -91,32 +95,21 @@ document.addEventListener('DOMContentLoaded', () => {
     btnNight.addEventListener('click', () => {
       _nightMode = toggleNightMode();
       btnNight.classList.toggle('active', _nightMode);
-      btnNight.innerHTML = _nightMode
-        ? '<span class="cam-icon">☀️</span> Modo Día'
-        : '<span class="cam-icon">🌙</span> Modo Noche';
-      _addLog('info', _nightMode ? 'Modo nocturno activado' : 'Modo diurno activado');
+      btnNight.title = _nightMode ? 'Desactivar modo nocturno' : 'Activar modo nocturno';
+      _addLog('info', _nightMode
+        ? 'Modo nocturno activado — monitoreo de consumo nocturno'
+        : 'Modo nocturno desactivado');
     });
   }
 
-  // ── Modo radiografía ──────────────────────────────────────────────────────
-  const btnXray = document.getElementById('btn-xray');
-  if (btnXray) {
-    btnXray.addEventListener('click', () => {
-      const xray = toggleXray();
-      btnXray.classList.toggle('active', xray);
-      _addLog('info', xray ? 'Modo radiografía activado' : 'Modo radiografía desactivado');
-    });
-  }
-
-  // ── Red de tuberías ───────────────────────────────────────────────────────
-  const btnPipes = document.getElementById('btn-pipes');
-  if (btnPipes) {
-    btnPipes.addEventListener('click', () => {
-      const visible = togglePipes();
-      btnPipes.classList.toggle('active', visible);
-      btnPipes.innerHTML = visible
-        ? '<span class="cam-icon">📐</span> Ocultar Red de Tuberías'
-        : '<span class="cam-icon">📐</span> Mostrar Red de Tuberías';
+  // ── Diagnóstico ───────────────────────────────────────────────────────────
+  const btnDiag = document.getElementById('btn-xray');
+  if (btnDiag) {
+    btnDiag.addEventListener('click', () => {
+      _addLog('info', 'Iniciando diagnóstico de red…');
+      runDiagnostic((step) => {
+        _addLog(step.type === 'ok' ? 'ok' : 'info', step.msg);
+      });
     });
   }
 
