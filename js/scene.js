@@ -1693,6 +1693,7 @@ let repairGroup = null;
 let repairState = null; // null | 'driving_in' | 'working' | 'driving_out'
 let repairTarget = new THREE.Vector3();
 let waterJet = null;
+let pitGroup = null;
 const REPAIR_BASE = new THREE.Vector3(L.PARKING.x, 0, L.PARKING.z); // sale del estacionamiento
 
 function _buildRepairTech() {
