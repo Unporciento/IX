@@ -152,11 +152,18 @@ export function initLeaks(scene) {
 
 // ─── Simular / detener fuga ───────────────────────────────────────────────────
 export function simulateLeak(leakTypeIndex = null, pipePointIndex = null) {
+  // Defensa: si esta función se conecta directamente como event listener,
+  // el navegador pasa el objeto Event como primer argumento. Si no es un
+  // número válido, lo tratamos como "no especificado" en vez de usarlo
+  // como índice de array (lo cual rompía todo con un TypeError silencioso).
+  const safeLeakTypeIndex = (typeof leakTypeIndex === 'number') ? leakTypeIndex : null;
+  const safePipePointIndex = (typeof pipePointIndex === 'number') ? pipePointIndex : null;
+
   _isLeakActive = !_isLeakActive;
 
   if (_isLeakActive) {
-    const ptIdx   = pipePointIndex ?? Math.floor(Math.random() * _pipePoints.length);
-    const typeIdx = leakTypeIndex  ?? Math.floor(Math.random() * LEAK_TYPES.length);
+    const ptIdx   = safePipePointIndex ?? Math.floor(Math.random() * _pipePoints.length);
+    const typeIdx = safeLeakTypeIndex  ?? Math.floor(Math.random() * LEAK_TYPES.length);
 
     const point = _pipePoints[ptIdx];
     const type  = LEAK_TYPES[typeIdx];
