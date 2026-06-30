@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Botón de fuga ─────────────────────────────────────────────────────────
   const btnFuga = document.getElementById('btn-fuga');
-  if (btnFuga) btnFuga.addEventListener('click', simulateLeak);
+  if (btnFuga) btnFuga.addEventListener('click', () => simulateLeak());
 
   // ── Modo nocturno ─────────────────────────────────────────────────────────
   const btnNight = document.getElementById('btn-daynight');
