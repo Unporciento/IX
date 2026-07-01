@@ -516,9 +516,9 @@ function _buildOcean() {
   ocean.position.set(-150, -0.1, 0);
   scene.add(ocean);
 
-  // Olas cerca de la orilla (franjas paralelas a la costa, perpendiculares a X)
+  // Olas cerca de la orilla — limitadas a la franja de costa real (z=-45..45)
   for (let i = 0; i < 6; i++) {
-    const geo2 = new THREE.PlaneGeometry(1.8, 220, 1, 80);
+    const geo2 = new THREE.PlaneGeometry(1.8, 90, 1, 30);
     const pos = geo2.attributes.position;
     for (let v = 0; v < pos.count; v++) {
       const y = pos.getY(v);
@@ -530,7 +530,7 @@ function _buildOcean() {
       color: 0xc8eef8, transparent: true, opacity: 0.4, roughness: 0.1, metalness: 0.2, side: THREE.DoubleSide,
     }));
     wave.rotation.x = -Math.PI / 2;
-    const waveX = -49 + i * 1.4; // dentro de la franja de playa, cerca del borde del mar (-50)
+    const waveX = -49 + i * 1.4;
     wave.position.set(waveX, 0.08, 0);
     wave.userData.isWave = true;
     wave.userData.waveBaseX = waveX;
@@ -538,10 +538,10 @@ function _buildOcean() {
     scene.add(wave);
   }
 
-  // Espuma en la línea de costa
+  // Espuma en la línea de costa — misma longitud reducida
   for (let i = 0; i < 5; i++) {
     const foam = new THREE.Mesh(
-      new THREE.PlaneGeometry(3 + Math.random() * 2, 220 + Math.random() * 40, 1, 40),
+      new THREE.PlaneGeometry(3 + Math.random() * 2, 90, 1, 10),
       new THREE.MeshBasicMaterial({ color: 0xdff5ff, transparent: true, opacity: 0.45, depthWrite: false, side: THREE.DoubleSide })
     );
     foam.rotation.x = -Math.PI / 2;
@@ -1904,6 +1904,26 @@ export function toggleXray() {
 export function toggleCleanView() {
   isClean = !isClean;
   document.body.classList.toggle('clean-mode', isClean);
+
+  // Forzar la restauración explícitamente desde JS para evitar que algunos
+  // navegadores se queden con los valores calculados durante la transición
+  // del CSS (el selector .clean-mode .elemento solo aplica cuando el body
+  // tiene la clase; al quitarla, la transición de "vuelta" puede no dispararse
+  // si el elemento no tiene opacity/pointer-events definidos en su regla base).
+  const panels = [
+    document.querySelector('.cam-panel'),
+    document.querySelector('.scada-panel'),
+    document.querySelector('.topbar'),
+    document.getElementById('leak-history-panel'),
+    document.getElementById('leak-timer-badge'),
+    document.getElementById('night-mode-badge'),
+  ];
+  panels.forEach(el => {
+    if (!el) return;
+    el.style.opacity = isClean ? '0' : '';
+    el.style.pointerEvents = isClean ? 'none' : '';
+  });
+
   return isClean;
 }
 
