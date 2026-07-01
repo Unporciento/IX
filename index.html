@@ -1,1 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playa La Virgen · Sistema de Gestión Hídrica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
 
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-drop">💧</span>
+    <div>
+      <span class="brand-name">Playa La Virgen</span>
+      <span class="brand-sub">Sistema Hídrico</span>
+    </div>
+  </div>
+  <nav class="nav-tabs">
+    <button id="tab-comic" class="nav-tab active">Problemática</button>
+    <button id="tab-3d" class="nav-tab">Maqueta 3D</button>
+  </nav>
+</header>
+
+<!-- Indicador de estado de red: pasa de verde a ámbar a rojo a medida que
+     se avanza por los hallazgos — la página misma simula "una red sin
+     monitoreo" hasta que llega a la solución, donde vuelve a verde. -->
+<div class="net-status" id="netStatus" aria-hidden="true">
+  <span class="net-status-dot"></span>
+  <span class="net-status-text">Red sin monitorear</span>
+</div>
+
+<main>
+
+  <!-- ───────────── SECCIÓN PROBLEMÁTICA ───────────── -->
+  <section id="section-comic" class="section active">
+
+    <div class="hero" data-reveal>
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-dot"></span>Diagnóstico de red hídrica · NACAP</div>
+        <h1>Cada gota que se pierde<br>no vuelve a aparecer.</h1>
+        <p class="lead">
+          El Complejo Turístico Playa La Virgen depende de camiones aljibe y de
+          una red subterránea de tuberías HDPE que, al romperse, nadie detecta
+          a tiempo: no se sabe cuándo ocurrió la fuga, cuánta agua se perdió,
+          ni en qué tramo está el daño. En temporada alta, ese silencio se
+          traduce directo en la experiencia del turista.
+        </p>
+        <button class="cta" onclick="document.getElementById('tab-3d').click()">
+          Ver maqueta interactiva 3D
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div class="hero-gauge" aria-hidden="true">
+        <svg viewBox="0 0 220 220" class="gauge-svg">
+          <circle cx="110" cy="110" r="92" class="gauge-ring-bg"
+            stroke-dasharray="433.5 144.5" transform="rotate(135 110 110)"/>
+          <circle cx="110" cy="110" r="92" class="gauge-arc-fill" id="gaugeArc"
+            transform="rotate(135 110 110)"/>
+          <g class="gauge-ticks">
+            <line x1="110" y1="22" x2="110" y2="34"/>
+            <line x1="166" y1="54" x2="158" y2="62"/>
+            <line x1="198" y1="110" x2="186" y2="110"/>
+            <line x1="166" y1="166" x2="158" y2="158"/>
+            <line x1="110" y1="198" x2="110" y2="186"/>
+            <line x1="54" y1="166" x2="62" y2="158"/>
+          </g>
+          <line x1="110" y1="110" x2="110" y2="40" class="gauge-needle" id="gaugeNeedle"/>
+          <circle cx="110" cy="110" r="7" class="gauge-hub"/>
+        </svg>
+        <div class="gauge-label">
+          <span class="gauge-state" id="gaugeState">Fuga activa</span>
+          <span class="gauge-sub">presión de red, sin monitoreo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-cue" data-reveal>
+      <span>El método</span>
+      <svg width="14" height="20" viewBox="0 0 14 20" fill="none"><path d="M7 1v16M1 11l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+
+    <!-- ───────────── EL MÉTODO ───────────── -->
+    <div class="method-block" data-reveal>
+      <div class="section-head">
+        <div class="section-tag">Metodología de investigación</div>
+        <h2>Tres formas de ver lo que la red no dice</h2>
+      </div>
+      <div class="method-grid">
+        <div class="method-card">
+          <svg class="method-icon" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="17" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="20" cy="20" r="6" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M20 3v8M20 29v8M3 20h8M29 20h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span class="method-name">AEIOU</span>
+          <p>Observación no participante en estanques y válvulas: actividades, entornos, interacciones, objetos y usuarios — registrada directamente en terreno.</p>
+        </div>
+        <div class="method-card">
+          <svg class="method-icon" viewBox="0 0 40 40" fill="none">
+            <path d="M8 6h18l8 8v20a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M26 6v8h8M13 20h14M13 26h14M13 14h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span class="method-name">Entrevista en profundidad</span>
+          <p>Conversación con Sergio Muñoz, Gerente de Operaciones (+15 años en el cargo), sobre vida útil de la red HDPE e historial real de reparaciones.</p>
+        </div>
+        <div class="method-card">
+          <svg class="method-icon" viewBox="0 0 40 40" fill="none">
+            <rect x="5" y="5" width="30" height="30" rx="2" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M5 15h30M5 25h30M15 5v30M25 5v30" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
+          <span class="method-name">Matriz de antecedentes</span>
+          <p>Cinco soluciones tecnológicas comparadas frente a costos, continuidad de servicio y mejora del control del sistema — sensores de fuga arriba en todas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────────── LO QUE ENCONTRAMOS ───────────── -->
+    <div class="findings-block" data-reveal>
+      <div class="section-head">
+        <div class="section-tag">Diagnóstico de campo</div>
+        <h2>Lo que la observación encontró</h2>
+      </div>
+      <div class="findings-grid">
+        <div class="finding-card finding-crit">
+          <span class="finding-status">● Crítico</span>
+          <h3>Humedad donde no debería haberla</h3>
+          <p>Manchas de humedad en zonas de arena, sin lluvia ni riego cercano — la huella visible de fugas subterráneas en la red HDPE que nadie había reportado.</p>
+        </div>
+        <div class="finding-card finding-warn">
+          <span class="finding-status">● Atención</span>
+          <h3>Consumo nocturno que no calza</h3>
+          <p>Aumentos anormales de caudal durante la madrugada, cuando el complejo prácticamente no opera — señal de pérdida continua, no de uso real.</p>
+        </div>
+        <div class="finding-card finding-warn">
+          <span class="finding-status">● Atención</span>
+          <h3>Mantenimiento reactivo, no preventivo</h3>
+          <p>Los reemplazos de tramos se hacen después de la falla. Existen tramos antiguos de la red sin ficha de renovación formal — se sabe que existen, no cuándo van a fallar.</p>
+        </div>
+      </div>
+
+      <blockquote class="pull-quote">
+        <p>“Se han detectado aumentos anormales de consumo durante la noche y humedad en sectores de arena donde no debería haberla, lo que sugiere fugas no visibles.”</p>
+        <footer>— Sergio Muñoz, Gerente de Operaciones · 15+ años en el cargo</footer>
+      </blockquote>
+    </div>
+
+    <div class="sensor-strip" data-reveal>
+      <div class="sensor-card">
+        <span class="sensor-card-id">S·01</span>
+        <span class="sensor-card-num">35 m³</span>
+        <span class="sensor-card-label">Capacidad diaria de la planta desalinizadora</span>
+      </div>
+      <div class="sensor-card">
+        <span class="sensor-card-id">S·02</span>
+        <span class="sensor-card-num">9</span>
+        <span class="sensor-card-label">Sensores de presión distribuidos en la red</span>
+      </div>
+      <div class="sensor-card">
+        <span class="sensor-card-id">S·03</span>
+        <span class="sensor-card-num">&lt; 30 s</span>
+        <span class="sensor-card-label">Tiempo de detección de una rotura</span>
+      </div>
+    </div>
+
+    <div class="solution-block" data-reveal>
+      <div class="section-head">
+        <div class="section-tag solution-tag">La solución</div>
+        <h2>De fuga silenciosa a corte automático</h2>
+      </div>
+      <p class="solution-text">
+        Sensores distribuidos en la red detectan caídas de presión en tiempo
+        real, calculan los litros perdidos y activan automáticamente una
+        válvula de cierre que corta el suministro al tramo afectado apenas se
+        detecta la rotura — antes de que el daño escale y antes de que el
+        complejo tenga que pedir otro camión aljibe de emergencia.
+      </p>
+      <div class="solution-flow">
+        <div class="flow-step">
+          <span class="flow-num">01</span>
+          <span class="flow-text">Caída de presión detectada por sensor</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <span class="flow-num">02</span>
+          <span class="flow-text">Sector identificado y litros estimados</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <span class="flow-num">03</span>
+          <span class="flow-text">Válvula de corte se cierra automáticamente</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── SECCIÓN MAQUETA 3D ───────────── -->
+  <section id="section-3d" class="section">
+    <div class="canvas-wrap">
+
+      <canvas id="maqueta-canvas"></canvas>
+
+      <div id="canvas-tooltip" class="canvas-tooltip">
+        🖱️ Arrastra para rotar · Scroll para zoom · Click derecho para mover
+      </div>
+
+      <!-- Botón de escape de "Vista Limpia" — INTENCIONALMENTE fuera de
+           .cam-panel: si viviera dentro, se ocultaría junto con el panel y
+           no habría forma de volver a la interfaz normal sin recargar. -->
+      <button id="btn-exit-clean" class="exit-clean-btn" title="Salir de vista limpia (Esc)">
+        ✕ <span>Salir de vista limpia</span>
+      </button>
+
+      <!-- Panel de cámaras -->
+      <div class="cam-panel">
+        <div class="cam-panel-title">Vistas</div>
+        <button id="btn-general" class="cam-btn active"><span class="cam-icon">🗺️</span> Vista General</button>
+        <button id="btn-plant"   class="cam-btn"><span class="cam-icon">🏭</span> Planta Desalinizadora</button>
+        <button id="btn-network" class="cam-btn"><span class="cam-icon">🚰</span> Red y Estanque</button>
+        <button id="btn-collector" class="cam-btn"><span class="cam-icon">🛤️</span> Colector Principal</button>
+        <button id="btn-mainhouse" class="cam-btn"><span class="cam-icon">🏠</span> Casa Principal</button>
+        <button id="btn-north"   class="cam-btn"><span class="cam-icon">🏘️</span> Sector Norte</button>
+        <button id="btn-south"   class="cam-btn"><span class="cam-icon">🏘️</span> Sector Sur</button>
+        <button id="btn-top"     class="cam-btn"><span class="cam-icon">🦅</span> Vista Cenital</button>
+        <hr class="cam-sep">
+        <div class="cam-panel-title">Modos</div>
+        <button id="btn-daynight" class="cam-btn"><span class="cam-icon">🌙</span> Modo Noche</button>
+        <button id="btn-xray"     class="cam-btn"><span class="cam-icon">🩻</span> Modo Radiografía</button>
+        <button id="btn-clean"    class="cam-btn"><span class="cam-icon">🧹</span> Vista Limpia</button>
+        <hr class="cam-sep">
+        <div class="cam-panel-title">Red hídrica</div>
+        <button id="btn-pipes" class="cam-btn"><span class="cam-icon">📐</span> Mostrar Red de Tuberías</button>
+        <button id="btn-tour"  class="cam-btn"><span class="cam-icon">🎬</span> Tour Cinematográfico</button>
+        <button id="btn-screenshot" class="cam-btn"><span class="cam-icon">📷</span> Capturar Pantalla</button>
+        <hr class="cam-sep">
+        <button id="btn-fuga" class="cam-btn btn-fuga"><span class="cam-icon">🚨</span> Simular Fuga</button>
+      </div>
+
+      <!-- Alerta de fuga -->
+      <div id="alerta-fuga" class="alerta-fuga">
+        <h3>🚨 Fuga Detectada</h3>
+        <p id="tipo-fuga">—</p>
+        <small>Válvula de corte activada automáticamente.</small>
+      </div>
+
+      <!-- Panel SCADA — sensores, válvulas y log del sistema -->
+      <div class="scada-panel">
+        <div class="scada-header">
+          <span class="scada-title">Panel SCADA</span>
+          <span class="scada-uptime">⏱ <span id="session-uptime">00:00:00</span></span>
+        </div>
+        <div class="scada-section">
+          <div class="scada-section-title">Sensores de presión <span id="event-count" class="scada-count">0</span></div>
+          <div id="sensor-panel" class="sensor-panel"></div>
+        </div>
+        <div class="scada-section">
+          <div class="scada-section-title">Válvulas de sector</div>
+          <div id="valve-panel" class="valve-panel"></div>
+        </div>
+        <div class="scada-section">
+          <div class="scada-section-title">Registro del sistema</div>
+          <div id="log-panel" class="log-panel"></div>
+        </div>
+      </div>
+
+      <audio id="sonido-alerta" preload="auto"
+        src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+    </div>
+  </section>
+
+</main>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
